@@ -1,5 +1,4 @@
 {
-  description = "my dots";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -7,26 +6,40 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
   outputs = { self, nixpkgs, home-manager }: 
 
   let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {
+	inherit system;
+	config = { allowUnfree = true; };
+    };
+
+    device = import ./device.nix { inherit pkgs; };
     tunables = import ./tunables.nix;
-    device = import ./device.nix { pkgs = nixpkgs; };
     colors = import ./color.nix { colorscheme = tunables.colorscheme; };
   in
+
   {
+    nixpkgs.config.allowUnfree = true;
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      inherit system;
       modules = [
         (import ./configuration.nix ./hardware/thinkpad.nix)
 	home-manager.nixosModules.home-manager
-	({...}: {
+	(
+{...}: {
           home-manager.users.cameron = {
-	    
+	    home.username = "cameron";
+	    home.homeDirectory = "/home/cameron";
+	    home.stateVersion = "22.05";
+
+	    nixpkgs.config.allowUnfree = true;
   programs = {
-#    neovim = import ./nvim/init.nix { pkgs = nixpkgs; inherit colors; };
+    neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; };
     alacritty = import ./alacritty.nix { colors = colors; device = device; };
-    tmux = import ./tmux/tmux.nix { pkgs = nixpkgs; colors = colors; };
+    tmux = import ./tmux/tmux.nix { inherit pkgs; colors = colors; };
     fish = import ./fish.nix;
     starship = import ./starship.nix;
     git = import ./git.nix;
@@ -38,14 +51,7 @@
     };
   };
 
-
-            home = {
-	      username = "cameron";
-	      homeDirectory = "/home/cameron";
-	      stateVersion = "22.05";
-	      sessionVariables = { EDITOR = "nvim"; };
-	      packages = with nixpkgs; [
-	        
+	    home.packages = with pkgs; [
     ripgrep
     exa
     fd
@@ -84,6 +90,10 @@
     ghc
     stack
 
+
+    # writing
+    zola
+
     # system monitoring
     acpi
     sysstat
@@ -96,10 +106,12 @@
     rust-analyzer
     haskell-language-server
     rnix-lsp
-	      ];
-	    };
+	    ];
+
 	  };
-	})
+	}
+
+)
       ];
     };
 

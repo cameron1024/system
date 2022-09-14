@@ -47,7 +47,16 @@ in
     vim-vsnip
 
     # treesitter
-    nvim-treesitter
+    (nvim-treesitter.withPlugins (
+      plugins: with plugins; [
+        tree-sitter-nix
+        tree-sitter-rust
+        tree-sitter-json
+        tree-sitter-toml
+        tree-sitter-haskell
+        tree-sitter-dart
+      ]
+    ))
     nvim-treesitter-textobjects
     nvim-treesitter-context # keep current function signature at the top of the buffer
     iswap
@@ -78,12 +87,12 @@ in
     telescope-nvim # cool fuzzy finder + UI
 
     # rust
-    unstable.vimPlugins.rust-tools-nvim
+    rust-tools-nvim
     crates-nvim
     rust-vim
 
     # dart
-    unstable.vimPlugins.flutter-tools-nvim
+    flutter-tools-nvim
   ];
 
   extraConfig = ''

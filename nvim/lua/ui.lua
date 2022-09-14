@@ -93,16 +93,6 @@ require 'lualine'.setup {
 }
 
 require'nvim-treesitter.configs'.setup {
-	ensure_installed = {
-		"rust",
-		"dart",
-		"yaml",
-		"json",
-		"toml",
-		"fish",
-    "bash",
-    "nix",
-	},
 	highlight = {
 		enable = true,
 		additional_vim_regex_highlighting = false,

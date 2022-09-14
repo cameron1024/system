@@ -12,7 +12,7 @@ let
     };
   };
 
-  currentDevice = lib.removeSuffix "\n" (builtins.readFile /home/cameron/.device);
+  currentDevice = lib.removeSuffix "\n" (builtins.readFile ./.device);
 in
 
 machines.${currentDevice} // { name = currentDevice; }
