@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+hardware: { config, pkgs, ... }:
 
 let
   linux = pkgs.linuxPackages_5_19;
@@ -8,7 +8,7 @@ in
   imports =
     [
       # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
+      hardware
     ];
 
   nix = {

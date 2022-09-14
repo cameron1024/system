@@ -19,7 +19,7 @@ in
 
 {
   enable = true;
-  package = unstable.neovim-unwrapped;
+  package = pkgs.neovim-unwrapped;
   vimdiffAlias = true;
   plugins = with pkgs.vimPlugins; [
 
