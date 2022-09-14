@@ -1,0 +1,3 @@
+require 'git-conflict'.setup {
+
+}
