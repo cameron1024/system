@@ -15,8 +15,8 @@ in
   keyMode = "vi";
   terminal = "screen-256color";
   plugins = [
-    # pkgs.tmuxPlugins.cpu
-    # pkgs.tmuxPlugins.battery
+    pkgs.tmuxPlugins.cpu
+    pkgs.tmuxPlugins.battery
   ];
 
   # colors
