@@ -73,6 +73,8 @@
     wezterm
     tmate
 
+    kodiPackages.netflix
+
     helix
 
     rustup
@@ -90,10 +92,6 @@
     ghc
     stack
 
-
-    # writing
-    zola
-
     # system monitoring
     acpi
     sysstat
@@ -101,11 +99,14 @@
     # other shit
     google-chrome
     slack
+    whatsapp-for-linux
 
     # LSPs
     rust-analyzer
     haskell-language-server
     rnix-lsp
+    
+    plover.dev
 	    ];
 
 	  };
