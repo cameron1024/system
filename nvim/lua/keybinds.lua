@@ -19,6 +19,7 @@ map('n', '#', ':set relativenumber!<CR>')
 map('i', '<C-CR>', '<Esc>o')
 
 map('i', '<C-BS>', '<C-w>')
+map('i', '<S-CR>', '<C-o>o')
 map('n', '<leader>0', 'ia<C-c>u')  -- lsp sometimes gets stuck, this helps refresh it
 map('n', ';', ':')
 map('n' ,'<leader><Tab>', '<C-^>')

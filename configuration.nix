@@ -100,6 +100,7 @@ in
     vim
     linux.perf
     gnomeExtensions.gsconnect
+
   ];
 
   environment.variables.EDITOR = "nvim";
