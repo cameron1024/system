@@ -12,7 +12,7 @@ in
     ];
 
   nix = {
-    package = pkgs.nixFlakes; # or versioned attributes like nixVersions.nix_2_8
+    package = pkgs.nixVersions.stable; # or versioned attributes like nixVersions.nix_2_8
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -74,7 +74,7 @@ in
     #media-session.enable = true;
   };
 
- 
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -96,11 +96,12 @@ in
     kate
     fish
     git
-    pkgs.gnome3.gnome-tweaks
+    pkgs.gnome.gnome-tweaks
     vim
     linux.perf
     gnomeExtensions.gsconnect
-
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal
   ];
 
   environment.variables.EDITOR = "nvim";
@@ -156,4 +157,9 @@ in
     '';
   };
 
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
 }

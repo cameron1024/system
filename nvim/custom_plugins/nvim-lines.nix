@@ -1,7 +1,8 @@
 { pkgs }:
 
 pkgs.vimUtils.buildVimPlugin {
-  name = "modes-nvim";
+  pname = "modes-nvim";
+  version = "0.0.1";
   src = pkgs.fetchgit {
     url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim";
     rev = "dbfd8e96ec2696e1ceedcd23fd70e842256e3dea";

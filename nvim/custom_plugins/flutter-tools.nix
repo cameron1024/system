@@ -1,7 +1,8 @@
 { pkgs }:
 
 pkgs.vimUtils.buildVimPlugin {
-  name = "flutter-tools";
+  pname = "flutter-tools";
+  version = "0.0.1";
   src = pkgs.fetchFromGitHub {
     owner = "akinsho";
     repo = "flutter-tools.nvim";

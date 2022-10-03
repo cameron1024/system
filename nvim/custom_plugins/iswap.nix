@@ -1,7 +1,8 @@
 { pkgs }:
 
 pkgs.vimUtils.buildVimPlugin {
-  name = "iswap-nvim";
+  pname = "iswap-nvim";
+  version = "0.0.1";
   src = pkgs.fetchFromGitHub {
     owner = "mizlan";
     repo = "iswap.nvim";

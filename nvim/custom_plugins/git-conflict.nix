@@ -1,7 +1,8 @@
 { pkgs }:
 
 pkgs.vimUtils.buildVimPlugin {
-  name = "git-conflict";
+  pname = "git-conflict";
+  version = "0.0.1";
   src = pkgs.fetchFromGitHub {
     owner = "akinsho";
     repo = "git-conflict.nvim";

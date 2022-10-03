@@ -1,7 +1,8 @@
 { pkgs }:
 
 pkgs.vimUtils.buildVimPlugin {
-  name = "dressing-nvim";
+  pname = "dressing-nvim";
+  version = "0.0.1";
   src = pkgs.fetchFromGitHub {
     owner = "stevearc";
     repo = "dressing.nvim";
