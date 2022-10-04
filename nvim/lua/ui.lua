@@ -3,6 +3,10 @@ require 'colorizer'.setup {}  -- makes #123456 appear as an actual color
 require 'lsp_lines'.setup {}  -- better diagnostics
 vim.diagnostic.config { virtual_text = false }
 
+vim.cmd [[
+set cmdheight=0
+]]
+
 require 'treesitter-context'.setup {}
 require 'toggleterm'.setup {
   open_mapping = "<F12>",

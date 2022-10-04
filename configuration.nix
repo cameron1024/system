@@ -96,7 +96,8 @@ in
     kate
     fish
     git
-    pkgs.gnome.gnome-tweaks
+    gnome.gnome-tweaks
+    gnome.dconf-editor
     vim
     linux.perf
     gnomeExtensions.gsconnect
@@ -106,12 +107,12 @@ in
 
   environment.variables.EDITOR = "nvim";
 
-  boot.extraModprobeConfig = pkgs.lib.mkMerge [
-    # idle audio card after one second
-    "options snd_hda_intel power_save=1"
-    # enable wifi power saving (keep uapsd off to maintain low latencies)
-    "options iwlwifi power_save=1 uapsd_disable=1"
-  ];
+  /* boot.extraModprobeConfig = pkgs.lib.mkMerge [ */
+  /*   # idle audio card after one second */
+  /*   "options snd_hda_intel power_save=1" */
+  /*   # enable wifi power saving (keep uapsd off to maintain low latencies) */
+  /*   "options iwlwifi power_save=1 uapsd_disable=1" */
+  /* ]; */
 
 
 
