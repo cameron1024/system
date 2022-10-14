@@ -7,6 +7,7 @@ vim.cmd [[
 set cmdheight=0
 ]]
 
+
 require 'treesitter-context'.setup {}
 require 'toggleterm'.setup {
   open_mapping = "<F12>",

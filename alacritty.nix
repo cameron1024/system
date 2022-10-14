@@ -1,10 +1,10 @@
-{ colors, device }:
+{ colors, device, font }:
 
 {
   enable = true;
   settings = {
     font = {
-      normal = { family = "FiraCode Nerd Font"; };
+      normal = { family = font; };
       size = device.fontSize;
     };
 

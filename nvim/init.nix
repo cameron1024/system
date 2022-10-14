@@ -1,4 +1,4 @@
-{ pkgs, colors }:
+{ pkgs, colors, font }:
 
 let
 
@@ -14,6 +14,7 @@ let
   flutter-tools = import ./custom_plugins/flutter-tools.nix { inherit pkgs; };
   iswap = import ./custom_plugins/iswap.nix { inherit pkgs; };
   dressing = import ./custom_plugins/dressing.nix { inherit pkgs; };
+  silicon = import ./custom_plugins/silicon.nix { inherit pkgs; };
 
 in
 
@@ -81,6 +82,7 @@ in
     lines-nvim # better LSP diagnostics
     toggleterm-nvim
     dressing # nicer looking `vim.ui` stuff
+    silicon # code renderer
 
 
     # telescope
@@ -139,6 +141,7 @@ in
       base0F = "${colors.nvim.base0F}",
     };
     require 'base16-colorscheme'.setup(colors)
+
 
     ${builtins.readFile ./lua/ui.lua}
     EOF

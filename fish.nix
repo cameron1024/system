@@ -50,8 +50,9 @@
 
       set -gx _ZO_EXCLUDE_DIRS ~/.config
 
-
       alias gc "git add -A; git commit -m $argv"
+
+      alias sl "silicon --from-clipboard --to-clipboard --langauge $argc"
 
       if status is-interactive
       and not set -q TMUX
