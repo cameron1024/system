@@ -72,6 +72,9 @@ in
       cargo-cache
       cargo-nextest
       cargo-udeps
+      cargo-edit
+
+      (import ./rust_packages/cargo-duplicates.nix { inherit pkgs; })
 
       python
       flutter

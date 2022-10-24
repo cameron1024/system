@@ -116,7 +116,7 @@ map('n', 'gt', ':Telescope lsp_type_definitions<CR>')
 map('n', 'gi', ':Telescope lsp_implementations<CR>')
 map('n', '<SM-f>', ':Format<CR>')
 map('n', '<leader>r', ':Telescope resume<CR>')
-map('n', '<MS-f>', ':lua vim.lsp.buf.formatting()<CR>')
+map('n', '<MS-f>', ':lua vim.lsp.buf.format { async = true }<CR>')
 
 -- diagnostic
 map('n', '<C-e>', require 'lsp_lines'.toggle)

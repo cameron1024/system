@@ -53,6 +53,7 @@ in
         tree-sitter-nix
         tree-sitter-rust
         tree-sitter-json
+        tree-sitter-yaml
         tree-sitter-toml
         tree-sitter-haskell
         tree-sitter-dart
