@@ -5,7 +5,12 @@ vim.diagnostic.config { virtual_text = false }
 
 vim.cmd [[
 set cmdheight=0
+set foldlevel=99
 ]]
+
+local opt = vim.opt
+opt.foldmethod = "expr"
+opt.foldexpr = "nvim_treesitter#foldexpr()"
 
 
 require 'treesitter-context'.setup {}

@@ -32,6 +32,7 @@ in
     vim-gitgutter # +/- sign in signcolumn when adding/removing lines
     git-blame-nvim # blame on cursorline
     git-conflict # conflict resolution plugin
+    octo-nvim  # github integration
 
     # LSP
     nvim-lspconfig # enable builtin LSP client

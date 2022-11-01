@@ -36,6 +36,7 @@ in
       rofi = {
         enable = true;
       };
+      kitty = import ./kitty.nix { font = tunables.font; inherit pkgs; };
     };
 
     home.packages = with pkgs; [
@@ -78,6 +79,7 @@ in
 
       python
       flutter
+      ninja
       dart
       ghc
       stack
