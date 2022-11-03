@@ -1,4 +1,4 @@
 {
   colorscheme = "gruvbox";
-  font = "FiraCode Nerd Font";
+  font = "Fira Code Regular";
 }

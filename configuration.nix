@@ -83,7 +83,7 @@ in
   users.users.cameron = {
     isNormalUser = true;
     description = "cameron";
-    extraGroups = [ "networkmanager" "wheel" "adbusers" ];
+    extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" ];
   };
 
   # Allow unfree packages
@@ -104,6 +104,10 @@ in
     xdg-desktop-portal-wlr
     xdg-desktop-portal
   ];
+
+  virtualisation.docker.enable = true;
+  virtualisation.libvirtd.enable = true;
+
 
   environment.variables.EDITOR = "nvim";
 
