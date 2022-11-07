@@ -1,7 +1,7 @@
 hardware: { config, pkgs, ... }:
 
 let
-  linux = pkgs.linuxPackages_5_19;
+  linux = pkgs.linuxPackages_6_0;
   device = import ../device.nix { nixpkgs = pkgs; };
 in
 {
@@ -83,8 +83,12 @@ in
   users.users.cameron = {
     isNormalUser = true;
     description = "cameron";
-    extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" "plugdev" ];
   };
+  users.groups.adbusers = { };
+  users.groups.docker = { };
+  users.groups.plugdev = { };
+
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -167,4 +171,8 @@ in
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
   };
+  programs.adb.enable = true;
+  services.udev.packages = [
+    pkgs.android-udev-rules
+  ];
 }
