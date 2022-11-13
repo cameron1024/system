@@ -64,6 +64,8 @@ in
 
       helix
       silicon
+      flutter
+      dart
 
       rustup
       gcc
@@ -78,9 +80,7 @@ in
       (import ./rust_packages/cargo-duplicates.nix { inherit pkgs; })
 
       python
-      flutter
       ninja
-      dart
       ghc
       stack
 

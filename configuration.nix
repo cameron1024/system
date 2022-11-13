@@ -9,6 +9,7 @@ in
     [
       # Include the results of the hardware scan.
       hardware
+      ./modules/wm/gnome
     ];
 
   nix = {
@@ -40,10 +41,6 @@ in
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-
-  # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -100,11 +97,8 @@ in
     kate
     fish
     git
-    gnome.gnome-tweaks
-    gnome.dconf-editor
     vim
     linux.perf
-    gnomeExtensions.gsconnect
     xdg-desktop-portal-wlr
     xdg-desktop-portal
   ];

@@ -66,7 +66,8 @@ map('n', '<leader>tv', ':TestVisit<CR>')
 map('n', '<leader>gb', ':GitBlameToggle<CR>')
 map('n', '<leader>gt', ':lua require("agitator").git_time_machine()<CR>')
 map('n', '<leader>gf', ':lua require("agitator").open_file_git_branch()<CR>')
-map('n', '<leader>gd', ':SignifyHunkDiff<CR>')
+map('n', '<leader>gc', ':GitConflictListQf<CR>')
+
 
 -- ctrl + hjkl to switch panes
 map('n', '<C-k>', '<C-w><Up>')
