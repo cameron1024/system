@@ -42,16 +42,19 @@ let
 
 in
 {
+
   environment.systemPackages = with pkgs; [
     sway
+    swaybg
+    swaylock
+    swayidle
+
     dbus-sway-environment
     configure-gtk
     wayland
     glib # gsettings
     dracula-theme # gtk theme
     gnome3.adwaita-icon-theme  # default gnome cursors
-    swaylock
-    swayidle
     grim # screenshot functionality
     slurp # screenshot functionality
     wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
@@ -65,6 +68,7 @@ in
     alsa.enable = true;
     pulse.enable = true;
   };
+
 
 
   # xdg-desktop-portal works by exposing a series of D-Bus interfaces
@@ -87,4 +91,8 @@ in
     enable = true;
     wrapperFeatures.gtk = true;
   };
+
+  xdg.configFile."sway/config".source = builtins.readFile ./config;
+
+
 }

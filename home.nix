@@ -16,7 +16,9 @@ in
     home.stateVersion = "22.05";
 
 
+
     programs = {
+
       neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; };
       alacritty = import ./alacritty.nix { colors = colors; device = device; font = tunables.font; };
       tmux = import ./tmux/tmux.nix { inherit pkgs; colors = colors; };

@@ -5,12 +5,9 @@ let
   device = import ../device.nix { nixpkgs = pkgs; };
 in
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      hardware
-      ./modules/wm/gnome
-    ];
+  imports = [
+    hardware
+  ];
 
   nix = {
     package = pkgs.nixVersions.stable; # or versioned attributes like nixVersions.nix_2_8
@@ -25,6 +22,7 @@ in
   boot.kernelPackages = linux;
 
   networking.hostName = "nixos"; # Define your hostname.
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -33,6 +31,8 @@ in
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  security.polkit.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/London";
@@ -71,9 +71,6 @@ in
     #media-session.enable = true;
   };
 
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.defaultUserShell = pkgs.fish;
