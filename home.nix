@@ -101,6 +101,13 @@ in
       rnix-lsp
 
       plover.dev
+
+      swaylock
+      swayidle
+      wl-clipboard
+      mako
+      wofi
+      waybar
     ];
 
   };
