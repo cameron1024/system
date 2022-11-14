@@ -5,8 +5,13 @@ let
 in
 
 {
+
+
   home-manager.users.cameron = {
 
+    imports = [
+      ./rust
+    ];
     nixpkgs.config.allowUnfree = true;
     dconf.settings = import ./dconf.nix;
 
@@ -39,48 +44,31 @@ in
       fd
       curl
       fzf
-      powertop
       xclip
       tokei
       jq
-      bottom
       bat
       tree
-      rust-script
       unzip
-      bacon
       navi
       zellij
       vlc
-      tmate
 
       kodiPackages.netflix
 
       helix
       silicon
 
-      rustup
-      gcc
-      llvmPackages.bintools-unwrapped
-      cmake
-      glibc
-      cargo-cache
-      cargo-nextest
-      cargo-udeps
-      cargo-edit
+      powertop
 
-      (import ../../rust_packages/cargo-duplicates.nix { inherit pkgs; })
 
       python
-      flutter
       ninja
-      dart
-      ghc
-      stack
 
       # system monitoring
       acpi
       sysstat
+      bottom
 
       # other shit
       google-chrome
@@ -88,8 +76,6 @@ in
       whatsapp-for-linux
 
       # LSPs
-      rust-analyzer
-      haskell-language-server
       rnix-lsp
 
       plover.dev
