@@ -1,6 +1,5 @@
 { pkgs, config, ... }:
 let
-  device = import ./device.nix { inherit pkgs; };
   tunables = import ./tunables.nix;
   colors = import ./color.nix { colorscheme = tunables.colorscheme; };
 in
@@ -18,7 +17,6 @@ in
 
     programs = {
       neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; };
-      alacritty = import ./alacritty.nix { colors = colors; device = device; font = tunables.font; };
       tmux = import ./tmux/tmux.nix { inherit pkgs; colors = colors; };
       fish = import ./fish.nix;
       starship = import ./starship.nix;

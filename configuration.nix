@@ -2,7 +2,6 @@ hardware: { config, pkgs, ... }:
 
 let
   linux = pkgs.linuxPackages_6_0;
-  device = import ../device.nix { nixpkgs = pkgs; };
 in
 {
   imports =
