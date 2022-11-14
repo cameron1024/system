@@ -27,10 +27,6 @@ in
         enable = true;
         nix-direnv.enable = true;
       };
-      wezterm = {
-        enable = true;
-        extraConfig = builtins.readFile ./wezterm.lua;
-      };
       rofi = {
         enable = true;
       };
@@ -73,7 +69,7 @@ in
       cargo-udeps
       cargo-edit
 
-      (import ./rust_packages/cargo-duplicates.nix { inherit pkgs; })
+      (import ../../rust_packages/cargo-duplicates.nix { inherit pkgs; })
 
       python
       flutter
