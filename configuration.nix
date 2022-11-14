@@ -4,11 +4,10 @@ let
   linux = pkgs.linuxPackages_6_0;
 in
 {
-  imports =
-    [
-      # Include the results of the hardware scan.
-      hardware
-    ];
+  imports = [
+    hardware
+    ./modules/gnome
+  ];
 
   nix = {
     package = pkgs.nixVersions.stable; # or versioned attributes like nixVersions.nix_2_8
@@ -34,21 +33,6 @@ in
 
   # Set your time zone.
   time.timeZone = "Europe/London";
-
-  # Select internationalisation properties. i18n.defaultLocale = "en_GB.utf8";
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the KDE Plasma Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver = {
-    layout = "gb";
-    xkbVariant = "";
-  };
 
   # Configure console keymap
   console.keyMap = "uk";

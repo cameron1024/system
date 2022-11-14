@@ -14,9 +14,10 @@ in
   newSession = true;
   keyMode = "vi";
   terminal = "screen-256color";
-  plugins = [
-    pkgs.tmuxPlugins.cpu
-    pkgs.tmuxPlugins.battery
+  plugins = with pkgs.tmuxPlugins; [
+    cpu
+    battery
+    tmux-thumbs
   ];
 
   # colors
@@ -30,6 +31,9 @@ in
     bind-key -n M-z resize-pane -Z
 
     set -g @plugin 'tmux-plugins/tmux-battery'
+    set -g @plugin 'fcsonline/tmux-thumbs'
+
+    set -g set-clipboard external
 
     unbind h
     unbind j
@@ -82,6 +86,7 @@ set-option -g status-right "#[bg=colour237,fg=colour239 nobold, nounderscore, no
 
     run-shell ${pkgs.tmuxPlugins.battery}/share/tmux-plugins/battery/battery.tmux
     run-shell ${pkgs.tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux
+    run-shell ${pkgs.tmuxPlugins.tmux-thumbs}/share/tmux-plugins/tmux-thumbs/tmux-thumbs.tmux
      
   '';
 
