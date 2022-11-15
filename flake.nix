@@ -21,7 +21,7 @@
         inherit system;
         modules = [
           (import ./configuration.nix ./hardware/thinkpad.nix)
-          (import ./home.nix)
+          ./modules/home
           home-manager.nixosModules.home-manager
         ];
       };
