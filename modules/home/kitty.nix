@@ -2,9 +2,9 @@
 
 {
   enable = true;
-  keybindings = {
-    "f11" = "toggle_fullscreen";
-  };
+  /* keybindings = { */
+  /*   "f11" = "toggle_fullscreen"; */
+  /* }; */
 
   font = {
     name = font;

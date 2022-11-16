@@ -5,6 +5,7 @@ let
 in
 
 {
+
   home-manager.users.cameron = {
 
     imports = [
@@ -40,7 +41,7 @@ in
       curl
       fzf
       powertop
-      xclip
+      wl-clipboard
       tokei
       jq
       bottom
