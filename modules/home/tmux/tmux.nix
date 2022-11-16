@@ -33,7 +33,7 @@ in
     set -g @plugin 'tmux-plugins/tmux-battery'
     set -g @plugin 'fcsonline/tmux-thumbs'
 
-    set -g set-clipboard external
+    set -g @thumbs-osc52 1
 
     unbind h
     unbind j

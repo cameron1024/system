@@ -1,6 +1,0 @@
-{
-  enable = true;
-  settings = {
-
-  };
-}

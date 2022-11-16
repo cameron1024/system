@@ -1,29 +1,33 @@
+{ ... }:
+
 {
-  enable = true;
-  userName = "Cameron";
-  userEmail = "cameron.studdstreet@gmail.com";
-
-  delta = {
+  programs.git = {
     enable = true;
-  };
+    userName = "Cameron";
+    userEmail = "cameron.studdstreet@gmail.com";
 
-  aliases = {
-    "default-branch" = "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4";
-    "co" = "checkout";
-    "cod" = "checkout '!git default-branch'";
-  };
-
-  extraConfig = {
-    core = {
-      editor = "nvim";
+    delta = {
+      enable = true;
     };
 
-    init = {
-      defaultBranch = "master";
+    aliases = {
+      "default-branch" = "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4";
+      "co" = "checkout";
+      "cod" = "checkout '!git default-branch'";
     };
 
-    push = {
-      default = "current";
+    extraConfig = {
+      core = {
+        editor = "nvim";
+      };
+
+      init = {
+        defaultBranch = "master";
+      };
+
+      push = {
+        default = "current";
+      };
     };
   };
 }

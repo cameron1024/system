@@ -7,6 +7,11 @@ in
 {
   home-manager.users.cameron = {
 
+    imports = [
+      ./rust.nix
+      ./git.nix
+    ];
+
     nixpkgs.config.allowUnfree = true;
     dconf.settings = import ./dconf.nix;
 
@@ -17,21 +22,14 @@ in
 
 
     programs = {
-
       neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; };
-      tmux = import ./tmux/tmux.nix { inherit pkgs; colors = colors; };
+      tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
       fish = import ./fish.nix;
-      starship = import ./starship.nix;
-      git = import ./git.nix;
+      starship.enable = true;
       zoxide.enable = true;
       gh.enable = true;
-      direnv = {
-        enable = true;
-        nix-direnv.enable = true;
-      };
-      rofi = {
-        enable = true;
-      };
+      direnv.enable = true;
+      direnv.nix-direnv.enable = true;
       kitty = import ./kitty.nix { font = tunables.font; inherit pkgs; };
     };
 
@@ -50,11 +48,10 @@ in
       tree
       rust-script
       unzip
-      bacon
       navi
       zellij
       vlc
-      tmate
+      du-dust
 
       kodiPackages.netflix
 
@@ -63,45 +60,24 @@ in
       flutter
       dart
 
-      rustup
-      gcc
-      llvmPackages.bintools-unwrapped
-      cmake
-      glibc
-      cargo-cache
-      cargo-nextest
-      cargo-udeps
-      cargo-edit
-
-      (import ../../rust_packages/cargo-duplicates.nix { inherit pkgs; })
-
       python
-      ninja
-      ghc
-      stack
 
       # system monitoring
       acpi
       sysstat
 
-      # other shit
+      # comms
       google-chrome
       slack
       whatsapp-for-linux
+      discord
 
       # LSPs
-      rust-analyzer
       haskell-language-server
       rnix-lsp
 
       plover.dev
-
-      swaylock
-      swayidle
-      wl-clipboard
-      mako
-      wofi
-      waybar
+      ttyper
     ];
 
   };
