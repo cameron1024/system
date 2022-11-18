@@ -20,6 +20,8 @@
 
       swayidle
       swaylock
+      wlr-randr
+      clipman
     ];
   };
 
