@@ -6,7 +6,7 @@ in
 {
   imports = [
     hardware
-    ./modules/gnome
+    ./modules/wm/sway
   ];
 
   nix = {
@@ -31,8 +31,6 @@ in
 
   # Enable networking
   networking.networkmanager.enable = true;
-
-  security.polkit.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/London";
