@@ -1,0 +1,110 @@
+{
+  "layer": "top",
+  "modules-left": [
+    "custom/arch",
+    "sway/workspaces",
+    "sway/window",
+    "sway/mode"
+  ],
+  "modules-center": ["custom/scratchpad-indicator", "tray"],
+  "modules-right": [
+    "pulseaudio",
+    "network",
+    "sway/language",
+    "battery",
+    "clock",
+    "custom/dnd",
+    "idle_inhibitor",
+    "custom/mic",
+    "custom/dismiss_notifications"
+  ],
+  "height": 25,
+  "sway/window": {
+    "max-length": 50
+  },
+  "sway/language": {
+    "format": " {}",
+    "max-length": 50,
+    "on-click": "keyboard-layout-switcher",
+    "tooltip": false
+  },
+  "clock": {
+    "format-alt": "{:%a, %d. %b  %H:%M}"
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 10
+  },
+  "network": {
+    "format": "{ifname}",
+    "format-wifi": " {essid}",
+    "format-ethernet": " {ifname} ",
+    "format-disconnected": "",
+    "tooltip-format": "{ifname}",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+    "tooltip-format-ethernet": "eth {ifname}",
+    "tooltip-format-disconnected": "Disconnected",
+    "max-length": 50
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "",
+    "format-icons": {
+      "headphones": "",
+      "default": ["", ""]
+    },
+    "scroll-step": 1,
+    "on-click": "pavucontrol"
+  },
+  "battery": {
+    "bat": "BAT0",
+    "interval": 60,
+    "states": {
+      "good": 80,
+      "warning": 50,
+      "critical": 35
+    },
+    "format": "{icon} {capacity}%",
+    "format-icons": ["", ""],
+    "max-length": 25
+  },
+  "custom/arch": {
+    "format": ""
+  },
+  "custom/mic": {
+    "exec": "$HOME/bin/waybar-mic",
+    "return-type": "json",
+    "on-click": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+  },
+  "custom/dismiss_notifications": {
+    "exec-if": "command -v makoctl",
+    "exec": "( makoctl list | jq -e '.data[] | length > 0' > /dev/null && echo '\nDismiss all notifications\n' ) || echo '' ",
+    "format": "{}",
+    "on-click": "makoctl dismiss -a",
+    "interval": 3
+  },
+  "custom/dnd": {
+    "exec-if": "sleep 0.5",
+    "exec-on-event": true,
+    "exec": "dnd-check",
+    "return-type": "json",
+    "format": "{}",
+    "on-click": "dnd-toggle > /dev/null",
+    "interval": 3
+  },
+  "custom/scratchpad-indicator": {
+    "interval": 3,
+    "return-type": "json",
+    "exec": "swaymsg -t get_tree | jq --unbuffered --compact-output '(recurse(.nodes[]) | select(.name == \"__i3_scratch\") | .focus) as $scratch_ids | [..  | (.nodes? + .floating_nodes?) // empty | .[] | select(.id |IN($scratch_ids[]))] as $scratch_nodes | if ($scratch_nodes|length) > 0 then { text: \"\\($scratch_nodes | length)\", tooltip: $scratch_nodes | map(\"\\(.app_id // .window_properties.class) (\\(.id)): \\(.name)\") | join(\"\\n\") } else empty end'",
+    "format": "{} 🗗",
+    "on-click": "exec swaymsg 'scratchpad show'",
+    "on-click-right": "exec swaymsg 'move scratchpad'"
+  }
+}

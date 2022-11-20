@@ -34,10 +34,11 @@ in
 
   imports = [
     ./wofi
+    ./waybar
   ];
 
-  programs.wofi.enable = true;
   programs.wofi.colors = colors;
+  programs.customWaybar.enable = true;
 
   environment.systemPackages = with pkgs; [
     dbus-sway-environment
@@ -45,7 +46,11 @@ in
 
     swaylock
     swayidle
-    waybar
+
+    pamixer
+    pavucontrol
+    brightnessctl
+    playerctl
   ];
 
   programs.sway = {
@@ -62,6 +67,16 @@ in
     driSupport = true;
   };
 
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
@@ -74,10 +89,5 @@ in
     text = "auth include login";
   };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-  };
 
 }
