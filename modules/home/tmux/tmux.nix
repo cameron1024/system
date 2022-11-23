@@ -35,6 +35,8 @@ in
 
     set -g @thumbs-osc52 1
 
+    set-option -ga update-environment 'SWAYSOCK'
+
     unbind h
     unbind j
     unbind k

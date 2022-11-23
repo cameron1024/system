@@ -15,6 +15,7 @@ let
   iswap = import ./custom_plugins/iswap.nix { inherit pkgs; };
   dressing = import ./custom_plugins/dressing.nix { inherit pkgs; };
   silicon-nvim = import ./custom_plugins/silicon.nix { inherit pkgs; };
+  tree-climber = import ./custom_plugins/tree-climber.nix { inherit pkgs; };
 
 in
 
@@ -62,6 +63,7 @@ in
     ))
     nvim-treesitter-textobjects
     nvim-treesitter-context # keep current function signature at the top of the buffer
+    tree-climber
     iswap
 
     # other shit 

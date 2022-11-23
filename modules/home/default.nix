@@ -53,6 +53,8 @@ in
       vlc
       du-dust
 
+      lynx
+
       kodiPackages.netflix
 
       helix

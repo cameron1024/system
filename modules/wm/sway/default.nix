@@ -44,13 +44,16 @@ in
     dbus-sway-environment
     configure-gtk
 
-    swaylock
+    swaylock-effects
     swayidle
+
+    swayr
 
     pamixer
     pavucontrol
     brightnessctl
     playerctl
+    blueberry
   ];
 
   programs.sway = {
@@ -77,9 +80,12 @@ in
     pulse.enable = true;
   };
 
+  services.hardware.bolt.enable = true;
+
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [
+      xdg-desktop-portal
       xdg-desktop-portal-wlr
       xdg-desktop-portal-gtk
     ];
