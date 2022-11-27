@@ -9,12 +9,18 @@ set $menu wofi --show drun
 set $lock swaylock -f --image $HOME/system/assets/background.jpg --fade-in 0.15 \
   --clock
 
+
 set $laptop eDP-1
 bindswitch lid:on output $laptop disable
 bindswitch lid:off output $laptop enable
 
+# fix for gtk 20+ second load issue
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+
 output DP-3 pos 0 0
 output $laptop pos 2560 0
+
+output * background $HOME/system/assets/background.jpg fill
 
 input type:keyboard {
   xkb_layout gb

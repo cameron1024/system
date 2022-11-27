@@ -66,6 +66,7 @@ in
     kate
     fish
     git
+    git-lfs
     vim
     linux.perf
     xdg-desktop-portal-wlr

@@ -46,6 +46,7 @@ in
 
     swaylock-effects
     swayidle
+    swaybg
 
     swayr
 

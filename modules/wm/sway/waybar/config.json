@@ -1,110 +1,204 @@
+// =============================================================================
+//
+// Waybar configuration
+//
+// Configuration reference: https://github.com/Alexays/Waybar/wiki/Configuration
+//
+// =============================================================================
+
 {
-  "layer": "top",
-  "modules-left": [
-    "custom/arch",
-    "sway/workspaces",
-    "sway/window",
-    "sway/mode"
-  ],
-  "modules-center": ["custom/scratchpad-indicator", "tray"],
-  "modules-right": [
-    "pulseaudio",
-    "network",
-    "sway/language",
-    "battery",
-    "clock",
-    "custom/dnd",
-    "idle_inhibitor",
-    "custom/mic",
-    "custom/dismiss_notifications"
-  ],
-  "height": 25,
-  "sway/window": {
-    "max-length": 50
-  },
-  "sway/language": {
-    "format": " {}",
-    "max-length": 50,
-    "on-click": "keyboard-layout-switcher",
-    "tooltip": false
-  },
-  "clock": {
-    "format-alt": "{:%a, %d. %b  %H:%M}"
-  },
-  "tray": {
-    "icon-size": 15,
-    "spacing": 10
-  },
-  "network": {
-    "format": "{ifname}",
-    "format-wifi": " {essid}",
-    "format-ethernet": " {ifname} ",
-    "format-disconnected": "",
-    "tooltip-format": "{ifname}",
-    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-    "tooltip-format-ethernet": "eth {ifname}",
-    "tooltip-format-disconnected": "Disconnected",
-    "max-length": 50
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "",
-      "deactivated": ""
+    // -------------------------------------------------------------------------
+    // Global configuration
+    // -------------------------------------------------------------------------
+
+    "layer": "top",
+
+    // If height property would be not present, it'd be calculated dynamically
+    "height": 28,
+
+    "modules-left": [
+        "sway/workspaces",
+    ],
+    "modules-right": [
+        "network",
+        "bluetooth",
+        "cpu",
+        "memory",
+        "battery",                  
+        "backlight",
+        "idle_inhibitor",
+        "pulseaudio",
+        "custom/pacman",
+        "tray",
+        "custom/help",
+        "clock"
+    ],
+
+    // -------------------------------------------------------------------------
+    // Modules
+    // -------------------------------------------------------------------------
+
+    "battery": {
+        "interval": 60,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format-charging": " {icon} {capacity}%", // Icon: bolt
+        "format": "{icon} {capacity}%",
+        "format-icons": [
+            "", // Icon: battery-empty
+            "", // Icon: battery-quarter
+            "", // Icon: battery-half
+            "", // Icon: battery-three-quarters
+            ""  // Icon: battery-full
+        ],
+        "tooltip": true
+    },
+
+    "clock": {
+        "interval": 60,
+        "format": " {:%e %b %Y %H:%M}", // Icon: calendar-alt
+        "tooltip": true,
+        "tooltip-format": "<big>{:%B %Y}</big>\n<tt>{calendar}</tt>",
+        "on-click": "swaymsg exec \\$calendar"
+    },
+
+    "cpu": {
+        "interval": 10,
+        "format": " {usage}%", // Icon: microchip
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "on-click": "swaymsg exec \"\\$term_float_landscape \\$cpu_mon\""
+    },
+
+    "memory": {
+        "interval": 10,
+        "format": " {}%", // Icon: memory
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "on-click": "swaymsg exec \"\\$term_float_landscape \\$mem_mon\""
+    },
+
+    "network": {
+        "interval": 30,
+        "format-wifi": " {essid} ({signalStrength}%)", // Icon: wifi
+        "format-ethernet": " {ifname}", // Icon: ethernet
+        "format-disconnected": "⚠ Disconnected",
+        "tooltip-format": "{ifname}: {ipaddr}",
+        "on-click": "swaymsg exec \\$term_float_portrait nmtui"
+    },
+
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>",
+        "tooltip": false
+    },
+
+    "sway/window": {
+        "format": "{}",
+        "max-length": 120
+    },
+
+    "sway/workspaces": {
+        "all-outputs": false,
+        "disable-scroll": true,
+        "format": "{name}"
+    },
+
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["", ""],
+        "on-scroll-down": "light -A 1",
+        "on-scroll-up": "light -U 1"
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+
+    "pulseaudio": {
+        //"scroll-step": 1,
+        "format": "{icon} {volume}%   {format_source}",
+        "format-bluetooth": "{icon} {volume}%",
+        "format-muted": "",
+        "format-icons": {
+            "headphones": "",
+            "handsfree": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", ""]
+        },
+        "on-click": "swaymsg exec \\$pulseaudio"
+    },
+
+    "temperature": {
+      "critical-threshold": 90,
+      "interval": 30,
+      "format": "{icon} {temperatureC}°C",
+      "format-icons": [
+          "", // Icon: temperature-empty
+          "", // Icon: temperature-quarter
+          "", // Icon: temperature-half
+          "", // Icon: temperature-three-quarters
+          ""  // Icon: temperature-full
+      ],
+      "tooltip": true
+    },
+
+    "tray": {
+        "icon-size": 21,
+        "spacing": 5
+    },
+
+    "custom/pacman": {
+        "format": " {}",
+        "interval": 3600,
+        "exec-if": "[ $(pamac checkupdates -q | wc -l) -gt 0 ]",
+        "exec": "pamac checkupdates -q | wc -l",
+        "on-click": "pamac-manager --updates; pkill -RTMIN+4 waybar",
+        "signal": 4
+    },
+
+    "custom/menu": {
+        "format": "",
+        "on-click": "swaymsg exec \\$app_menu",
+        "tooltip": false
+    },
+
+    "custom/help": {
+        "format": "ﲉ",
+        "on-click": "swaymsg exec \\$help",
+        "tooltip": false
+    },
+
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "",
+        "interval": 30,
+        "on-click": "blueman-manager",
+        "on-click-right": "rfkill toggle bluetooth",
+        "tooltip-format": "{}"
+    },
+
+    "custom/scratchpad": {
+        "interval": 10,
+        "return-type": "json",
+        "format" : "{icon}",
+        "format-icons": {
+            "one": "",
+            "many": ""
+        },
+        "exec": "scratchpad.sh",
+        "on-click": "swaymsg 'scratchpad show'"
     }
-  },
-  "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "",
-    "format-icons": {
-      "headphones": "",
-      "default": ["", ""]
-    },
-    "scroll-step": 1,
-    "on-click": "pavucontrol"
-  },
-  "battery": {
-    "bat": "BAT0",
-    "interval": 60,
-    "states": {
-      "good": 80,
-      "warning": 50,
-      "critical": 35
-    },
-    "format": "{icon} {capacity}%",
-    "format-icons": ["", ""],
-    "max-length": 25
-  },
-  "custom/arch": {
-    "format": ""
-  },
-  "custom/mic": {
-    "exec": "$HOME/bin/waybar-mic",
-    "return-type": "json",
-    "on-click": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
-  },
-  "custom/dismiss_notifications": {
-    "exec-if": "command -v makoctl",
-    "exec": "( makoctl list | jq -e '.data[] | length > 0' > /dev/null && echo '\nDismiss all notifications\n' ) || echo '' ",
-    "format": "{}",
-    "on-click": "makoctl dismiss -a",
-    "interval": 3
-  },
-  "custom/dnd": {
-    "exec-if": "sleep 0.5",
-    "exec-on-event": true,
-    "exec": "dnd-check",
-    "return-type": "json",
-    "format": "{}",
-    "on-click": "dnd-toggle > /dev/null",
-    "interval": 3
-  },
-  "custom/scratchpad-indicator": {
-    "interval": 3,
-    "return-type": "json",
-    "exec": "swaymsg -t get_tree | jq --unbuffered --compact-output '(recurse(.nodes[]) | select(.name == \"__i3_scratch\") | .focus) as $scratch_ids | [..  | (.nodes? + .floating_nodes?) // empty | .[] | select(.id |IN($scratch_ids[]))] as $scratch_nodes | if ($scratch_nodes|length) > 0 then { text: \"\\($scratch_nodes | length)\", tooltip: $scratch_nodes | map(\"\\(.app_id // .window_properties.class) (\\(.id)): \\(.name)\") | join(\"\\n\") } else empty end'",
-    "format": "{} 🗗",
-    "on-click": "exec swaymsg 'scratchpad show'",
-    "on-click-right": "exec swaymsg 'move scratchpad'"
-  }
 }
