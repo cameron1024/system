@@ -27,6 +27,7 @@
 
       push = {
         default = "current";
+        autoSetupRemote = true;
       };
     };
   };
