@@ -52,6 +52,7 @@ in
       zellij
       vlc
       du-dust
+      neovide
 
       lynx
 

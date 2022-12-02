@@ -17,6 +17,7 @@
   shellAbbrs = {
     e = "nvim";
     cg = "cargo";
+    gs = "git switch";
     x = "./x.py";
     hm = "home-manager";
     ls = "exa";
