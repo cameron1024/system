@@ -23,6 +23,7 @@
           (import ./configuration.nix ./hardware/thinkpad.nix)
           ./modules/home
           home-manager.nixosModules.home-manager
+
         ];
       };
 
