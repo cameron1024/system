@@ -26,7 +26,6 @@ in
       xdg.configFile."wofi/config".text = with colors; ''
         width=300
         term=kitty
-
       '';
 
       xdg.configFile."wofi/style.css".text = with colors; ''
