@@ -10,11 +10,9 @@ in
     imports = [
       ./rust.nix
       ./git.nix
-      ../tools/nvim
+      ./vscode
+      ./wezterm
     ];
-
-    programs.asdfNvim.enable = true;
-    programs.asdfNvim.colors = colors;
 
 
     nixpkgs.config.allowUnfree = true;
@@ -24,13 +22,10 @@ in
     home.homeDirectory = "/home/cameron";
     home.stateVersion = "22.05";
 
-    programs.customNvim.enable = true;
-    programs.customNvim.colors = colors;
-
 
 
     programs = {
-      /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
+      neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; };
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
       fish = import ./fish.nix;
       starship.enable = true;
@@ -61,6 +56,8 @@ in
       vlc
       du-dust
       neovide
+
+      comma
 
       lynx
 

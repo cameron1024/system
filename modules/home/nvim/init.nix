@@ -125,6 +125,8 @@ in
 
     let g:auto_save = 1
 
+    set guifont=Fira\ Code\ Nerd\ Font:h11
+
     lua << EOF
     local colors = {
       base00 = "${colors.nvim.base00}",

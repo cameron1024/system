@@ -16,6 +16,7 @@
 
   shellAbbrs = {
     e = "nvim";
+    ed = "neovide --multigrid";
     cg = "cargo";
     gs = "git switch";
     x = "./x.py";
@@ -28,6 +29,7 @@
     c = "cd -";
     h = "nvim ~/nixpkgs/tunables.nix";
     nt = "cargo nextest run";
+    pub = "flutter pub";
   };
   interactiveShellInit = ''
     	starship init fish | source

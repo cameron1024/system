@@ -4,6 +4,7 @@
   enable = true;
   keybindings = {
     "f11" = "toggle_fullscreen";
+    "ctrl+;" = "send_text \x02";
   };
 
   font = {

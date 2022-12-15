@@ -17,6 +17,7 @@ map('n', 'q', '')
 map('n', '#', ':set relativenumber!<CR>')
 
 map('i', '<C-CR>', '<Esc>o')
+map('i', 'jj', '<Esc>')
 
 map('i', '<C-BS>', '<C-w>')
 map('i', '<S-CR>', '<C-o>o')
@@ -33,6 +34,7 @@ map('n', '<C-s>', ':%s/\\<<C-r><C-w>\\>/')
 map('n', '<C-v>', ':vs<CR>')
 map('n', '<C-x>', ':sp<CR>')
 map('n', '<leader>u', ':%s/\\r//g<CR>')  -- when copy/pasting from windows, you get CRLF newlines, this fixes them
+
 
 map('n', '<leader>w', ':wa<CR>')
 map('n', '<leader>q', ':x<CR>')
@@ -80,6 +82,8 @@ map('i', '<C-k>', '<Up>')
 map('i', '<C-j>', '<Down>')
 map('i', '<C-h>', '<Left>')
 map('i', '<C-l>', '<Right>')
+
+map('i', '<C-;>', '<C-o><S-Right>a;')
 
 -- indenting selections without deselecting
 map('v', '<', '<gv')
