@@ -155,7 +155,6 @@ map('n', '<S-F11>', ":Twilight<CR>")
 
 -- language specific
 map('n', '<C-p>', ':RustParentModule<CR>')
-map('n', '<CS-i>', ':RustToggleInlayHints<CR>')
 
 -- treesitter
 vim.api.nvim_set_keymap('x', 'iu', ':lua require"treesitter-unit".select()<CR>', {noremap=true})

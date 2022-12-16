@@ -29,11 +29,22 @@
 
       thinkpad = nixos-hardware.nixosModules.thinkpad;
 
+      switch = pkgs.writeShellScriptBin "s" ''
+        git add -A
+        sudo nixos-rebuild switch --flake .
+      '';
+
     in
 
     {
       nixpkgs.config.allowUnfree = true;
       nixosConfigurations.nixos = buildSystem { hardware = thinkpad; };
+
+      devShells.${system}.default = pkgs.mkShell {
+        nativeBuildInputs = [
+          switch 
+        ];
+      };
 
     };
 

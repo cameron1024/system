@@ -1,4 +1,3 @@
-local trouble = require 'trouble'
 local actions = require 'telescope.actions'
 local action_layout = require 'telescope.actions.layout'
 
@@ -6,14 +5,18 @@ require 'telescope'.setup {
   layout_strategy = "vertical",
   defaults = {
     mappings = {
-      n = { 
-        ["<c-t>"] = trouble.open_with_trouble
-      },
       i = {
         ["<esc>"] = actions.close,
         ["<C-s>"] = action_layout.toggle_preview,
-        ["<c-t>"] = trouble.open_with_trouble,
       },
     },
   }  
 }
+
+local opts = { noremap = true, silent = true }
+local map = function(mode, key, action) 
+  vim.api.nvim_set_keymap(mode, key, action, opts)
+end
+
+map('n', '<leader>n', ':Telescope find_files<CR>')
+map('n', '<leader>f', ':Telescope live_grep<CR>')

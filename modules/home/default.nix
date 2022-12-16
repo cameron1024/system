@@ -12,7 +12,9 @@ in
       ./git.nix
       ./vscode
       ./wezterm
+      ../tools/nvim
     ];
+
 
 
     nixpkgs.config.allowUnfree = true;
@@ -25,8 +27,9 @@ in
 
 
     programs = {
-      neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; };
+      /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
+      myNvim.enable = true;
       fish = import ./fish.nix;
       starship.enable = true;
       zoxide.enable = true;
