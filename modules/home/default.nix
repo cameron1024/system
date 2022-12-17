@@ -1,7 +1,8 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   tunables = import ./tunables.nix;
-  colors = import ./color.nix { colorscheme = tunables.colorscheme; };
+  # colors = import ./color.nix { colorscheme = tunables.colorscheme; };
+  colors = config.tunables.colors;
 in
 
 {
@@ -14,8 +15,6 @@ in
       ./wezterm
       ../tools/nvim
     ];
-
-
 
     nixpkgs.config.allowUnfree = true;
     dconf.settings = import ./dconf.nix;

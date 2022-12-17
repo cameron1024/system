@@ -1,3 +1,5 @@
+-- colors injected
+
 local wezterm = require 'wezterm'
 
 return {

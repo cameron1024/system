@@ -22,11 +22,12 @@ in
 
     ./plugins/autosave.nix
     ./plugins/neotree.nix
+
+    ./plugins/impatient.nix  # this must be last, so it appears at the top of the init.vim
   ];
 
   options = with lib; {
     programs.myNvim = {
-
       enable = mkOption {
         type = types.bool;
         default = false;
@@ -43,6 +44,7 @@ in
       enable = true;
       plugins = with pkgs.vimPlugins; [
         impatient-nvim 
+        nvim-web-devicons
       ];
       extraConfig = ''
       	${includeLua ./settings.lua}
