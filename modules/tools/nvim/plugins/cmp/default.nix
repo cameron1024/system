@@ -7,6 +7,7 @@
 
     nvim-cmp
     cmp-nvim-lsp
+    cmp-nvim-lsp-signature-help
     cmp-path
     cmp-buffer
     cmp_luasnip # nice underscore

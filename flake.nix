@@ -33,6 +33,10 @@
         git add -A
         sudo nixos-rebuild switch --flake .
       '';
+      update = pkgs.writeShellScriptBin "u" ''
+        git add -A
+        sudo nixos-rebuild switch --flake .
+      '';
 
     in
 
@@ -43,6 +47,7 @@
       devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = [
           switch 
+          update 
         ];
       };
 

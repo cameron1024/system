@@ -139,4 +139,7 @@ in
   services.udev.packages = [
     pkgs.android-udev-rules
   ];
+  services.blueman.enable = true;
+  hardware.bluetooth.enable = true;
+  services.thermald.enable = true;
 }

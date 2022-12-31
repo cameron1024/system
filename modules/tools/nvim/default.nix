@@ -12,16 +12,23 @@ let
 in
 {
   imports = [
-    ./colors.nix
 
     ./plugins/telescope
     ./plugins/cmp
     ./plugins/lsp
     ./plugins/treesitter
     ./plugins/lualine
+    ./plugins/rust
+    ./plugins/flutter
+    ./plugins/term
+    ./plugins/neotree
 
+    ./plugins/git.nix
     ./plugins/autosave.nix
-    ./plugins/neotree.nix
+    ./plugins/util.nix
+    ./plugins/colorizer.nix
+
+    ./colors.nix
 
     ./plugins/impatient.nix  # this must be last, so it appears at the top of the init.vim
   ];
@@ -49,6 +56,11 @@ in
       extraConfig = ''
       	${includeLua ./settings.lua}
       	${includeLua ./keybinds.lua}
+
+        augroup highlight_yank
+            autocmd!
+            au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
+        augroup END
       '';
 
     };

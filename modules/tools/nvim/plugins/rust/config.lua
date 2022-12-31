@@ -7,9 +7,9 @@ require('rust-tools').setup {
           features = "all",
           loadOutDirsFromCheck = true,
         },
-        checkOnSave = {
-          command = "clippy"
-        },
+        -- checkOnSave = {
+        --   command = "clippy"
+        -- },
         diagnostics = {
           disabled = { "inactive-code" }
         },
@@ -18,6 +18,3 @@ require('rust-tools').setup {
 	},
 }
 
-require 'rust-tools'.inlay_hints.enable()
-
-require 'crates'.setup {} 

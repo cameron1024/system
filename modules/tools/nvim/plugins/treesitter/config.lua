@@ -1,6 +1,8 @@
 require 'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
+		additional_vim_regex_highlighting = false,
+		disable = { "rust" },  -- rust-tools provides better highlighting
   },
   textobjects = {
     select = {

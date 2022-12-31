@@ -1,8 +1,7 @@
 { pkgs, lib, config, ... }:
 let
   tunables = import ./tunables.nix;
-  # colors = import ./color.nix { colorscheme = tunables.colorscheme; };
-  colors = config.tunables.colors;
+  colors = import ./color.nix { colorscheme = tunables.colorscheme; };
 in
 
 {

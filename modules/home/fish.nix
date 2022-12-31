@@ -21,7 +21,7 @@
     gs = "git switch";
     x = "./x.py";
     hm = "home-manager";
-    ls = "exa";
+    ls = "exa -l";
     dev = "nix develop --command fish";
     dr = "direnv reload";
     rs = "rust-script";

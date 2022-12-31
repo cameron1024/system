@@ -10,5 +10,13 @@
       EOF
       '';
     }
+    {
+      plugin = fidget-nvim;
+      config = "lua require 'fidget'.setup {}";
+    }
+    {
+      plugin = trouble-nvim;
+      config = "lua require 'trouble'.setup {}";
+    }
   ];
 }

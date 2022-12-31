@@ -1,5 +1,5 @@
 {
-  gruvbox = {
+  gruvbox = rec {
     base00 = "#1d2021";
     base01 = "#3c3836";
     base02 = "#504945";
@@ -16,6 +16,26 @@
     base0D = "#83a598";
     base0E = "#d3869b";
     base0F = "#d65d0e";
+    normal = {
+      black = "#fbf1c7";
+      red = "#cc241d";
+      green = base0B;
+      yellow = "#d79921";
+      blue = "#458588";
+      magenta = "#b16286";
+      cyan = "#689d6a";
+      white = "#7c6f64";
+    };
+    bright = {
+      black =   "#928374";
+      red =     "#9d0006";
+      green =   "#79740e";
+      yellow =  "#b57614";
+      blue =    "#076678";
+      magenta = "#8f3f71";
+      cyan =    "#427b58";
+      white =   "#3c3836";
+    };
   };
   apathy = {
     base00 = "#031a16";

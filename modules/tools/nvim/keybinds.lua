@@ -13,7 +13,7 @@ map('n', '<leader>d', ':Telescope diagnostics<CR>')
 map('n', '`', ':Telescope commands<CR>')
 
 -- neotree
-map('n', '<leader>p', ':Neotree toggle current reveal_force_cwd<CR>')
+map('n', '<leader>p', ':Neotree toggle reveal_force_cwd<CR>')
 
 -- saving and closing
 map('n', '<leader>q', ':x<CR>')
@@ -40,9 +40,7 @@ map('i', '<C-j>', '<Down>')
 map('i', '<C-h>', '<Left>')
 map('i', '<C-l>', '<Right>')
 
--- shift + hjkl to move far in normal mode
-map('n', 'K', 'gg')
-map('n', 'J', 'G')
+-- shift + hl to move far in normal mode
 map('n', 'H', '0')
 map('n', 'L', '$')
 
@@ -50,11 +48,19 @@ map('n', 'L', '$')
 map('v', '<', '<gv')
 map('v', '>', '>gv')
 
+-- deselect
+map('n', '<C-d>', ':nohl<CR>')
+map('i', '<C-d>', '<C-o>:nohl<CR>')
+
 -- make * stay on the same entry
 map('n', '*', '*N')
 
 -- why is escape not the default "get out of terminal" bind...
 map('t', '<ESC>', '<C-\\><C-n>')
+map('t', '<C-h>', [[<Cmd>wincmd h<CR>]])
+map('t', '<C-j>', [[<Cmd>wincmd j<CR>]])
+map('t', '<C-k>', [[<Cmd>wincmd k<CR>]])
+map('t', '<C-l>', [[<Cmd>wincmd l<CR>]])
 
 -- yank current file path
 map('n', '<leader>cf', ':let @+ = expand("%")<CR>')
@@ -70,6 +76,7 @@ map('n', '<C-n>', vim.diagnostic.goto_next)
 map('n', '<C-b>', vim.diagnostic.goto_prev)
 map('n', 'E', vim.diagnostic.open_float)
 map('n', 'Q', vim.diagnostic.setloclist)
+map('n', '<leader>e', ':TroubleToggle workspace_diagnostics<CR>')
 
 -- goto
 map('n', 'gd', vim.lsp.buf.definition)
@@ -82,3 +89,7 @@ map('n', 'gr', vim.lsp.buf.references)
 map('n', '<F2>', vim.lsp.buf.rename)
 map('n', '<leader>a', vim.lsp.buf.code_action)
 map('n', '<MS-f>', function() vim.lsp.buf.format { async = true } end)
+map('n', 'K', vim.lsp.buf.hover)
+
+map('n', '<C-p>', ':lua require "rust-tools".parent_module.parent_module()<CR>')
+map('n', '<C-m>', ':lua require "rust-tools".expand_macro.expand_macro()<CR>')

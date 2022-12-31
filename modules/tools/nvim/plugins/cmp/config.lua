@@ -7,7 +7,7 @@ cmp.setup {
   map_complete = true,
   snippet = {
     expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
+      require 'luasnip'.lsp_expand(args.body)
     end,
   },
   mapping = {
@@ -27,7 +27,8 @@ cmp.setup {
 
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'vsnip' },
+    { name = 'nvim_lsp_signature_help' },
+    { name = 'luasnip' },
     { name = 'path' },
     { name = 'buffer' },
     { name = 'emoji', insert = true }

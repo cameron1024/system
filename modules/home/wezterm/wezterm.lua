@@ -1,5 +1,3 @@
--- colors injected
-
 local wezterm = require 'wezterm'
 
 return {
@@ -7,5 +5,23 @@ return {
   harfbuzz_features = {"zero" , "ss01", "cv05"},
   enable_tab_bar = false,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0, },
-  default_prog = { 'fish', '--command', 'tmux' }
+  default_prog = { 'fish', '--command', 'tmux' },
+  color_scheme = "Gruvbox dark, hard (base16)",
+
+  keys = {
+    {
+      key = "Enter",
+      mods = "ALT",
+      action = wezterm.action.DisableDefaultAssignment,
+    },
+    {
+      key = "q",
+      mods = "SUPER",
+      action = wezterm.action.DisableDefaultAssignment,
+    },
+    {
+      key = "F11",
+      action = wezterm.action.ToggleFullScreen,
+    },
+  },
 }

@@ -55,6 +55,12 @@ in
     brightnessctl
     playerctl
     blueberry
+
+    # screenies
+    slurp
+    grim
+
+    wl-clipboard
   ];
 
   programs.sway = {

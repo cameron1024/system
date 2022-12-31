@@ -3,7 +3,7 @@ set $left h
 set $down j
 set $up k
 set $right l
-set $term kitty fish --command tmux
+set $term wezterm
 set $menu wofi --show drun
 
 set $lock swaylock -f --image $HOME/system/assets/background.jpg --fade-in 0.15 \
@@ -44,6 +44,7 @@ exec swayidle -w \
 input "1739:52915:SYNA8016:00_06CB:CEB3_Touchpad" {
     tap enabled
     natural_scroll enabled
+    dwt disabled
 }
 
 bindsym $mod+Return exec $term
@@ -70,6 +71,7 @@ bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 bindsym XF86Search exec $menu
+bindsym Print exec 'grim - | wl-copy'
 
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
