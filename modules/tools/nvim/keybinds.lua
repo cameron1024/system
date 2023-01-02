@@ -93,3 +93,9 @@ map('n', 'K', vim.lsp.buf.hover)
 
 map('n', '<C-p>', ':lua require "rust-tools".parent_module.parent_module()<CR>')
 map('n', '<C-m>', ':lua require "rust-tools".expand_macro.expand_macro()<CR>')
+
+
+-- editor settings
+map('n', '<C-w>', ':set wrap!')
+map('n', '#', ':set relativenumber!<CR>')
+
