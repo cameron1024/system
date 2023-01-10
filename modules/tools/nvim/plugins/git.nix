@@ -13,8 +13,7 @@ in
       plugin = octo-nvim;
       config = "lua require 'octo'.setup {}";
     }
-
+    vim-fugitive
     git-blame-nvim
-    
   ];
 }

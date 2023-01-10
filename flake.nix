@@ -5,16 +5,20 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     nixgl.url = "github:guibou/nixGL";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, nixgl }:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, nixgl, neovim-nightly-overlay }:
 
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = { allowUnfree = true; };
-        overlays = [ nixgl.overlay ];
+        overlays = [ 
+          nixgl.overlay 
+          neovim-nightly-overlay.overlay 
+        ];
       };
 
       buildSystem = { hardware }: nixpkgs.lib.nixosSystem {

@@ -1,3 +1,3 @@
 require 'flutter-tools'.setup {
-  flutter_lookup_cmd = "dirname $(which flutter)",
+  flutter_path = "/home/cameron/.nix-profile/bin/flutter"
 }
