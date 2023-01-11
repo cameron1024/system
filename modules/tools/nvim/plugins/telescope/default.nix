@@ -1,9 +1,10 @@
 { pkgs, lib, config, ... }:
 
 {
-  programs.neovim.plugins = [
+  programs.neovim.plugins = with pkgs.vimPlugins; [
+    telescope-fzf-native-nvim 
     {
-      plugin = pkgs.vimPlugins.telescope-nvim;
+      plugin = telescope-nvim;
       config = ''
       lua << EOF
       ${builtins.readFile ./config.lua}

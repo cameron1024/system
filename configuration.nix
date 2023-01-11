@@ -6,7 +6,7 @@ in
 {
   imports = [
     hardware
-    ./modules/wm/sway
+    ./modules/wm/gnome
   ];
 
   nix = {

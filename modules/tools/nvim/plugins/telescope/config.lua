@@ -1,7 +1,8 @@
 local actions = require 'telescope.actions'
 local action_layout = require 'telescope.actions.layout'
+local telescope = require 'telescope'
 
-require 'telescope'.setup {
+telescope.setup {
   layout_strategy = "vertical",
   defaults = {
     mappings = {
@@ -12,6 +13,8 @@ require 'telescope'.setup {
     },
   }  
 }
+
+telescope.load_extension 'fzf'
 
 local opts = { noremap = true, silent = true }
 local map = function(mode, key, action) 
