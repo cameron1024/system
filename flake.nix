@@ -4,29 +4,26 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
-    nixgl.url = "github:guibou/nixGL";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, nixgl, neovim-nightly-overlay }:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, hyprland }:
 
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = { allowUnfree = true; };
-        overlays = [ 
-          nixgl.overlay 
-          neovim-nightly-overlay.overlay 
-        ];
       };
 
       buildSystem = { hardware }: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
+          hyprland.nixosModules.default
+          home-manager.nixosModules.home-manager
+
           (import ./configuration.nix ./hardware/thinkpad.nix)
           ./modules/home
-          home-manager.nixosModules.home-manager
 
         ];
       };

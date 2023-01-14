@@ -22,8 +22,6 @@ in
     home.homeDirectory = "/home/cameron";
     home.stateVersion = "22.05";
 
-
-
     programs = {
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
