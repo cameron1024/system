@@ -92,7 +92,7 @@ map('n', '<MS-f>', function() vim.lsp.buf.format { async = true } end)
 map('n', 'K', vim.lsp.buf.hover)
 
 map('n', '<C-p>', ':lua require "rust-tools".parent_module.parent_module()<CR>')
-map('n', '<C-m>', ':lua require "rust-tools".expand_macro.expand_macro()<CR>')
+map('n', '<leader>rm', ':lua require "rust-tools".expand_macro.expand_macro()<CR>')
 
 
 -- editor settings
