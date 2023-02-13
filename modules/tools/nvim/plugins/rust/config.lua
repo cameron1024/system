@@ -85,7 +85,12 @@ local opts = {
     -- standalone file support
     -- setting it to false may improve startup time
     standalone = false,
-  }, -- rust-analyzer options
+    ["rust-analyzer"] = {
+      cargo = {
+        check = "clippy",
+      },
+    },
+  }, 
 
   -- debugging stuff
   dap = {

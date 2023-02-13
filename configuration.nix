@@ -14,6 +14,9 @@ in
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
+    settings = {
+      trusted-users = [ "root" "@wheel" ];
+    };
   };
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

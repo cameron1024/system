@@ -85,6 +85,8 @@ in
 
       plover.dev
       ttyper
+
+      dwarf-fortress
     ];
 
   };
