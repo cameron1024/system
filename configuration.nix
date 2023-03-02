@@ -1,12 +1,16 @@
 hardware: { config, pkgs, ... }:
 
 let
-  linux = pkgs.linuxPackages_6_0;
+  linux = pkgs.linuxPackages_6_1;
 in
 {
   imports = [
     hardware
     ./modules/wm/gnome
+  ];
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "python-2.7.18.6"
   ];
 
   nix = {
@@ -145,4 +149,5 @@ in
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
   services.thermald.enable = true;
+  # services.clamav.daemon.enable = true;
 }

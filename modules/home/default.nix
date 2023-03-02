@@ -64,10 +64,6 @@ in
 
       helix
       silicon
-      flutter
-      dart
-
-      python
 
       # system monitoring
       acpi
@@ -87,6 +83,11 @@ in
       ttyper
 
       dwarf-fortress
+      asciiquarium
+      cmatrix
+
+      solaar
+
     ];
 
   };

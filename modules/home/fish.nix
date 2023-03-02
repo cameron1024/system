@@ -30,12 +30,15 @@
     h = "nvim ~/nixpkgs/tunables.nix";
     nt = "cargo nextest run";
     pub = "flutter pub";
+    fr = "flutter run";
   };
   interactiveShellInit = ''
     	starship init fish | source
     	zoxide init fish | source
     	direnv hook fish | source
       navi widget fish | source
+
+      set PATH $HOME/.cargo/bin $PATH
 
       set fish_greeting
 

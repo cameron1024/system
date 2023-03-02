@@ -100,5 +100,6 @@ map('n', '<C-w>', ':set wrap!')
 map('n', '#', ':set relativenumber!<CR>')
 
 
--- regex and stuff
+-- regex and find/replace stuff
 map('n', 'R', [[:%s/\<<C-r><C-w>\>/]])
+map('n', 'q', ':%s/')
