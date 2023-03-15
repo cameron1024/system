@@ -47,8 +47,8 @@
 
       devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = [
-          switch 
-          update 
+          switch
+          update
         ];
       };
 

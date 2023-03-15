@@ -35,7 +35,7 @@ NIX_CC='/nix/store/1y8i61anhs9hh1g5x3zw2fvdbivwixzg-gcc-wrapper-11.3.0'
 export NIX_CC
 NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu='1'
 export NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu
-NIX_CFLAGS_COMPILE=' -frandom-seed=a05zpy1hgq'
+NIX_CFLAGS_COMPILE=' -frandom-seed=68qamggc4s'
 export NIX_CFLAGS_COMPILE
 NIX_ENFORCE_NO_NATIVE='1'
 export NIX_ENFORCE_NO_NATIVE
@@ -129,7 +129,7 @@ guess='16'
 initialPath='/nix/store/lljkbrqh1nkayprky3lrigj0fbxj35rv-coreutils-9.1 /nix/store/gmhwrs2qs86dfc4v347lni2nfwfi1hdp-findutils-4.9.0 /nix/store/dangi3s2jn47ll5n77bhhgp1fbdjlrqw-diffutils-3.8 /nix/store/7ywpyk7z2vlk6k8b1gkhmfxg0082r8yk-gnused-4.9 /nix/store/5kzf7riyyqqh3mpdawpnfkpawarifxwr-gnugrep-3.7 /nix/store/jq7v3l01q0461bf283y3na9ljg9l1064-gawk-5.2.1 /nix/store/bm9cby2wqmdb9sv7zs4hgw0k59y6p147-gnutar-1.34 /nix/store/iww7rl6rlv1jm8p12a6mc96f3iqnki6p-gzip-1.12 /nix/store/s2217ynn463r3jj3yy0ci66j1cnfapkm-bzip2-1.0.8-bin /nix/store/hzbivzf4fn6dl97lsj0w6xzxq2fni2yi-gnumake-4.4 /nix/store/qqa28hmysc23yy081d178jfd9a1yk8aw-bash-5.2-p15 /nix/store/48zscadjm3k10rhjdq5h26mjfwcx13bw-patch-2.7.6 /nix/store/ma9lzyxvg5y8l55vnl3fcpd9h34lf759-xz-5.4.1-bin /nix/store/pv7b1r34c6lq9jclccpm5ihsh2pg64q1-file-5.43'
 mesonFlags=''
 export mesonFlags
-name='nix-shell'
+name='nix-shell-env'
 export name
 nativeBuildInputs='/nix/store/va1v70hy1i6ma1j5kq0kqx1w95cllmlx-s /nix/store/vkr0llg2fc2lkxsaw31gzpi2ybp8dqba-u'
 export nativeBuildInputs

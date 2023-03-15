@@ -1,23 +1,23 @@
-
+vim.g.mapleader = " "
 local disabled_built_ins = {
-  "2html_plugin",
-  "getscript",
-  "getscriptPlugin",
-  "gzip",
-  "logipat",
-  "netrw",
-  "netrwPlugin",
-  "netrwSettings",
-  "netrwFileHandlers",
-  "matchit",
-  "matchparen",
-  "tar",
-  "tarPlugin",
-  "rrhelper",
-  "vimball",
-  "vimballPlugin",
-  "zip",
-  "zipPlugin",
+    "2html_plugin",
+    "getscript",
+    "getscriptPlugin",
+    "gzip",
+    "logipat",
+    "netrw",
+    "netrwPlugin",
+    "netrwSettings",
+    "netrwFileHandlers",
+    "matchit",
+    "matchparen",
+    "tar",
+    "tarPlugin",
+    "rrhelper",
+    "vimball",
+    "vimballPlugin",
+    "zip",
+    "zipPlugin",
 }
 local g = vim.g
 for _, plugin in pairs(disabled_built_ins) do
@@ -64,6 +64,5 @@ local options = {
 vim.opt.shortmess:append "c"
 
 for key, value in pairs(options) do
-    vim.opt[key] = value
+  vim.opt[key] = value
 end
-

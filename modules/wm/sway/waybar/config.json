@@ -17,7 +17,7 @@
     "height": 28,
 
     "modules-left": [
-        "sway/workspaces",
+        "wlr/workspaces",
     ],
     "modules-right": [
         "network",
@@ -103,10 +103,12 @@
         "max-length": 120
     },
 
-    "sway/workspaces": {
-        "all-outputs": false,
-        "disable-scroll": true,
-        "format": "{name}"
+    "wlr/workspaces": {
+      "all-outputs": false,
+      "on-scroll-up": "hyprctl dispatch workspace e+1",
+      "on-scroll-down": "hyprctl dispatch workspace e-1",
+      "on-click": "activate",
+      "format": "{name}"
     },
 
     "backlight": {

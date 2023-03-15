@@ -28,6 +28,8 @@ in
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.kernelPackages = linux;
 
+  systemd.coredump.enable = true;
+
   networking.hostName = "nixos"; # Define your hostname.
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -149,5 +151,11 @@ in
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
   services.thermald.enable = true;
+
+  networking = {
+    dhcpcd.wait = "background";
+    dhcpcd.extraConfig = "noarp";
+  };
+  
   # services.clamav.daemon.enable = true;
 }

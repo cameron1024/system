@@ -12,7 +12,7 @@ in
       ./git.nix
       ./vscode
       ./wezterm
-      ../tools/nvim
+      ../tools/neovim-again
     ];
 
     nixpkgs.config.allowUnfree = true;
