@@ -13,7 +13,7 @@ map('n', '<C-g>', ':Octo ')
 
 -- neotree
 map('n', '<leader>p', ':Neotree toggle reveal_force_cwd<CR>')
-map('n', '<leader>o', ':SymbolsOutline<CR>')
+map('n', '<leader>o', ':AerialToggle<CR>')
 
 -- saving and closing
 map('n', '<leader>q', ':x<CR>')
@@ -21,7 +21,7 @@ map('n', '<leader>Q', ':wqa<CR>')
 map('n', '<leader>w', ':wa<CR>')
 
 -- window management
-map('n' ,'<leader><Tab>', '<C-^>')
+map('n', '<leader><Tab>', '<C-^>')
 map('n', '<C-v>', ':vs<CR>')
 map('n', '<C-x>', ':sp<CR>')
 
@@ -109,4 +109,3 @@ map('n', 'q', ':%s/')
 
 -- test
 map('n', '<leader>tf', ':TestFile<CR>')
-

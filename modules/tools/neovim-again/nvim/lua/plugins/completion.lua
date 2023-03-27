@@ -45,6 +45,7 @@ return {
         { name = 'luasnip' },
         { name = 'path' },
         { name = 'buffer' },
+        { name = 'crates' },
         { name = 'emoji', insert = true }
       },
     }

@@ -1,10 +1,10 @@
 return {
   "catppuccin/nvim",
   dependencies = {
-    "simrat39/symbols-outline.nvim",
+    "stevearc/aerial.nvim",
   },
   config = function()
-    require 'symbols-outline'.setup {}
+    require 'aerial'.setup {}
     require 'catppuccin'.setup {
       flavour = "mocha",
       integrations = {
@@ -23,7 +23,7 @@ return {
           autocmd!
           au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
       augroup END
-      
+
       set cmdheight=0
       set laststatus=3
     ]]

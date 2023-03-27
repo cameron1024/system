@@ -87,6 +87,7 @@ in
       cmatrix
 
       solaar
+      pandoc
 
     ];
 

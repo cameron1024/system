@@ -28,10 +28,9 @@ in
       source = ./nvim;
       recursive = true;
     };
-    
+
     home.sessionVariables = {
       LLDB_LOCATION = "${lldb}";
-      EXAMPLE = "asdf";
     };
   };
 }
