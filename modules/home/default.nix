@@ -13,6 +13,7 @@ in
       ./vscode
       ./wezterm
       ../tools/neovim-again
+      ./erdtree.nix
     ];
 
     nixpkgs.config.allowUnfree = true;
@@ -89,6 +90,7 @@ in
       solaar
       pandoc
 
+      mprocs
     ];
 
   };
