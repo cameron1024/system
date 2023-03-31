@@ -6,7 +6,6 @@ in
 {
   imports = [
     hardware
-    ./modules/wm/gnome
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -69,15 +68,13 @@ in
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    #  wget
     firefox
-    kate
     fish
     git
     git-lfs
     vim
     linux.perf
+
     xdg-desktop-portal-wlr
     xdg-desktop-portal
   ];
@@ -104,6 +101,8 @@ in
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+
+  programs.fish.enable = true;
 
   # List services that you want to enable:
 

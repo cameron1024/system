@@ -17,7 +17,6 @@ in
     ];
 
     nixpkgs.config.allowUnfree = true;
-    dconf.settings = import ./dconf.nix;
 
     home.username = "cameron";
     home.homeDirectory = "/home/cameron";

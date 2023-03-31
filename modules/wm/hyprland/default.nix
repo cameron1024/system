@@ -32,4 +32,34 @@
 
     wl-clipboard
   ];
+
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+  };
+
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
+  services.hardware.bolt.enable = true;
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
+  };
+
+  security.pam.services.swaylock = {
+    text = "auth include login";
+  };
 }
