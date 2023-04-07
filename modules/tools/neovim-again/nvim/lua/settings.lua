@@ -24,7 +24,10 @@ for _, plugin in pairs(disabled_built_ins) do
   g["loaded_" .. plugin] = 1
 end
 
-vim.cmd [[filetype plugin indent on]]
+vim.cmd [[
+  filetype plugin indent on
+  set laststatus=3
+]]
 
 local options = {
     shell = "fish",
@@ -56,7 +59,6 @@ local options = {
     cmdheight = 1,
     undodir = "/tmp/.nvimdid",
     undofile = true,
-    laststatus = 3,
     updatetime = 50,
     background = "dark",
 }

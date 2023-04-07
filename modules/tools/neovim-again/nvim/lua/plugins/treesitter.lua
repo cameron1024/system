@@ -27,7 +27,7 @@ return {
     }
 
     require 'various-textobjs'.setup {
-      useDefaultKeymaps = true,
+      useDefaultKeymaps = false,
     }
 
     require 'treesitter-context'.setup {}

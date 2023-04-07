@@ -9,7 +9,9 @@
     glibc
     ninja
 
-    rust-analyzer
+    (rust-analyzer.overrideAttrs (oldAttrs: { 
+      RUSTC_FLAGS = "-Ctarget-cpu=native";
+    }))
     bacon
 
     cargo-cache

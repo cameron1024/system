@@ -16,6 +16,14 @@ in
       ./erdtree.nix
     ];
 
+    gtk = {
+      enable = true;
+      theme = {
+        package = pkgs.gnome.gnome-themes-extra;
+        name = "Adwaita-dark";
+      };
+    };
+
     nixpkgs.config.allowUnfree = true;
 
     home.username = "cameron";

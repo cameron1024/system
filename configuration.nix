@@ -6,6 +6,7 @@ in
 {
   imports = [
     hardware
+    ./modules/wm/gnome
   ];
 
   nixpkgs.config.permittedInsecurePackages = [

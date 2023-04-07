@@ -1,7 +1,11 @@
 { pkgs, config, lib, ... }:
 
 {
-  dconf.settings = import ./dconf.nix;
+
+  imports = [
+    ../../workarounds/cursor_fix.nix
+  ];
+  /* dconf.settings = import ./dconf.nix; */
   sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
