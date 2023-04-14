@@ -30,6 +30,10 @@ in
     home.homeDirectory = "/home/cameron";
     home.stateVersion = "22.05";
 
+    # override cursor theme
+    home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
+
+
     programs = {
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };

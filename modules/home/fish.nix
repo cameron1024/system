@@ -50,6 +50,7 @@
 
       set -gx NIXPKGS_ALLOW_UNFREE 1
 
+      set -gx XCURSOR_THEME Adwaita
       set -gx fish_term24bit 1
       set -gx theme_nerd_fonts yes
 

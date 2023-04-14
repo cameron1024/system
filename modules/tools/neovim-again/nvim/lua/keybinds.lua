@@ -8,6 +8,7 @@ map('n', '<leader>n', ':Telescope find_files<CR>')
 map('n', '<leader>f', ':Telescope live_grep<CR>')
 map('n', '<leader>b', ':Telescope buffers<CR>')
 map('n', '<leader>d', ':Telescope diagnostics<CR>')
+map('n', '<leader>r', ':Telescope resume<CR>')
 map('n', '`', ':Telescope commands<CR>')
 map('n', '<C-g>', ':Octo ')
 
@@ -80,14 +81,13 @@ map('n', '<leader>e', ':TroubleToggle workspace_diagnostics<CR>')
 
 -- goto
 map('n', 'gd', vim.lsp.buf.definition)
-map('n', 'gD', vim.lsp.buf.declaration)
 map('n', 'gi', vim.lsp.buf.implementation)
 map('n', 'gt', vim.lsp.buf.type_definition)
 map('n', 'gr', vim.lsp.buf.references)
 
-map('n', 'GD', ':lua require "goto-preview".goto_preview_definition()<CR>')
-map('n', 'GT', ':lua require "goto-preview".goto_preview_type_definition()<CR>')
-map('n', 'GI', ':lua require "goto-preview".goto_preview_implementation()<CR>')
+map('n', 'gD', ':lua require "goto-preview".goto_preview_definition()<CR>')
+map('n', 'gT', ':lua require "goto-preview".goto_preview_type_definition()<CR>')
+map('n', 'gI', ':lua require "goto-preview".goto_preview_implementation()<CR>')
 -- actions
 -- map('n', '<F2>', vim.lsp.buf.rename)
 map('n', '<leader>a', vim.lsp.buf.code_action)
