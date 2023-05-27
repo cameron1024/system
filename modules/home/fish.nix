@@ -61,7 +61,7 @@
 
       alias gc "git add -A; git commit -m $argv"
 
-      alias sl "silicon --from-clipboard --to-clipboard --langauge $argc"
+      alias sl "silicon --from-clipboard --to-clipboard --language $argc"
   '';
 
 

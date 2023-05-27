@@ -127,17 +127,19 @@ in
   services.deluge.enable = true;
 
   fonts.fonts = with pkgs; [
-    nerdfonts
+    (nerdfonts.override {
+      fonts = [ "FiraCode" "DroidSansMono" ];
+    })
   ];
 
-  /* services.postgresql = { */
-  /*   enable = true; */
-  /*   authentication = pkgs.lib.mkOverride 10 '' */
-  /*     local all all trust */
-  /*     host all all 127.0.0.1/32 trust */
-  /*     host all all ::1/128 trust */
-  /*   ''; */
-  /* }; */
+  services.postgresql = {
+    enable = true; 
+    authentication = pkgs.lib.mkOverride 10 '' 
+      local all all trust 
+      host all all 127.0.0.1/32 trust 
+      host all all ::1/128 trust 
+    ''; 
+  }; 
 
   programs.steam = {
     enable = true;
@@ -156,6 +158,6 @@ in
     dhcpcd.wait = "background";
     dhcpcd.extraConfig = "noarp";
   };
-  
+
   # services.clamav.daemon.enable = true;
 }

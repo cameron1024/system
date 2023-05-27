@@ -22,6 +22,8 @@ in
       rnix-lsp
       lua-language-server
       lldb
+      coursier
+      metals
     ];
 
     home.file."./.config/nvim/" = {

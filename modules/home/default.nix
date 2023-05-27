@@ -102,6 +102,12 @@ in
       pandoc
 
       mprocs
+      blender
+
+      kubo
+      inlyne # cool markdown viewer
+      wabt
+
     ];
 
   };

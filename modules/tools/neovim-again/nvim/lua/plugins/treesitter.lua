@@ -12,7 +12,7 @@ return {
       auto_install = true,
       highlight = {
         enable = true,
-        disable = { "rust" },
+        -- disable = { "rust" },
         additional_vim_regex_highlighting = false,
       },
       incremental_selection = {

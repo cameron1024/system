@@ -20,5 +20,7 @@
     cargo-edit
     cargo-bloat
     (import ../../rust_packages/cargo-duplicates.nix { inherit pkgs; })
+
+    wasm-tools
   ];
 }
