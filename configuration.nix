@@ -6,7 +6,7 @@ in
 {
   imports = [
     hardware
-    ./modules/wm/gnome
+    ./modules/wm/hyprland
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
