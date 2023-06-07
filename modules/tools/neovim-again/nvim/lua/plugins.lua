@@ -14,6 +14,7 @@ return {
   require "plugins.files",
   require "plugins.statusline",
   require "plugins.test",
+  require "plugins.neorg",
 }
 
 

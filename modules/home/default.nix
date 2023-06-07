@@ -108,6 +108,12 @@ in
       inlyne # cool markdown viewer
       wabt
 
+      python3
+
+      nixfmt
+
+      discord
+
     ];
 
   };
