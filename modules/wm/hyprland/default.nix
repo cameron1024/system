@@ -12,6 +12,7 @@
 
   home-manager.users.cameron = {
     xdg.configFile."hypr/hyprland.conf".source = ./hyprland.conf;
+    xdg.configFile."hypr/mocha.conf".source = ./mocha.conf;
   };
 
   environment.systemPackages = with pkgs; [
