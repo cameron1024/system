@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
+
 {
-  RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   home.packages = with pkgs; [
     rustup
     gcc
@@ -9,6 +9,8 @@
     cmake
     glibc
     ninja
+
+    # rust-analyzer
 
     # (rust-analyzer.overrideAttrs (oldAttrs: { 
     #   RUSTC_FLAGS = "-Ctarget-cpu=native";
