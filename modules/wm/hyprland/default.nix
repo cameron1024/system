@@ -1,18 +1,36 @@
-{ pkgs, lib, config, ...}:
+{ pkgs, lib, config, ... }:
 
+let
+  hyprlandWorkspaces = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "hyprland-workspaces";
+    version = "1.2.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "FieldofClay";
+      repo = pname;
+      rev = "v1.2.0";
+      hash = "sha256-qJDpp6q13zYfQCU1VIHc4t0bPuilglIKjqOLuUrU3lM=";
+    };
+    cargoHash = "sha256-crvGsdBqV/Xy25o4ddxpSCdbOiWxSqu8ncCixd8O5zc=";
+  };
+
+in
 {
   imports = [
     ../sway/wofi
+    ../common/rofi
     ../sway/waybar
   ];
 
   # programs.wofi.colors = colors;
   programs.customWaybar.enable = true;
   programs.hyprland.enable = true;
+  programs.rofi.enable = true;
 
   home-manager.users.cameron = {
     xdg.configFile."hypr/hyprland.conf".source = ./hyprland.conf;
     xdg.configFile."hypr/mocha.conf".source = ./mocha.conf;
+    xdg.configFile."swaylock/config".source = ./swaylock.conf;
+    
   };
 
   environment.systemPackages = with pkgs; [
@@ -20,6 +38,8 @@
     swayidle
     swaybg
     swayr
+
+    swayimg
 
     pamixer
     pavucontrol
@@ -32,6 +52,10 @@
     grim
 
     wl-clipboard
+
+    hyprlandWorkspaces
+
+    eww-wayland
   ];
 
   hardware.opengl = {
