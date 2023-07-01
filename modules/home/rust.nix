@@ -1,6 +1,8 @@
 { pkgs, ... }:
 
 
+
+
 {
   home.packages = with pkgs; [
     rustup
@@ -25,5 +27,13 @@
     (import ../../rust_packages/cargo-duplicates.nix { inherit pkgs; })
 
     wasm-tools
+
+    evcxr
   ];
+
+  programs.fish.shellAbbrs = {
+    r = "evcxr";
+    cg = "cargo";
+    nt = "cargo nextest run";
+  };
 }

@@ -76,6 +76,8 @@ in
     vim
     linux.perf
 
+    killall
+
     xdg-desktop-portal-wlr
     xdg-desktop-portal
   ];
@@ -127,19 +129,21 @@ in
   services.deluge.enable = true;
 
   fonts.fonts = with pkgs; [
+    fira
+
     (nerdfonts.override {
       fonts = [ "FiraCode" "DroidSansMono" ];
     })
   ];
 
   services.postgresql = {
-    enable = true; 
+    enable = true;
     authentication = pkgs.lib.mkOverride 10 '' 
       local all all trust 
       host all all 127.0.0.1/32 trust 
       host all all ::1/128 trust 
-    ''; 
-  }; 
+    '';
+  };
 
   programs.steam = {
     enable = true;

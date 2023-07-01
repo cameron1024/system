@@ -15,11 +15,17 @@ in
 
   config = {
     home-manager.users.cameron = {
-      home.packages = [
-        pkgs.rofi-wayland
-      ];
+      home.packages = [ pkgs.rofi-wayland ];
 
-      xdg.configFile."".source = ./config.rasi;
+      # xdg.configFile."".source = ./config.rasi;
+      xdg.configFile."rofi/bin" = {
+        source = ./bin;
+        recursive = true;
+      };
+      xdg.configFile."rofi/config" = {
+        source = ./config;
+        recursive = true;
+      };
       home.file.".local/share/rofi/themes/catppuccin-mocha.rasi".source = ./theme.rasi;
     };
   };

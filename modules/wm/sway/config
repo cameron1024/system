@@ -54,7 +54,7 @@ bindsym $mod+Shift+c reload
 
 # bindsym Mod1+tab workspace next_on_output 
 # bindsym Mod1+Shift+tab workspace prev_on_output 
-bindsym $mod+b exec killall -SIGUSR1 waybar
+bindsym $mod+b exec killall -SIGUSR1 .waybar-wrapped
 
 floating_modifier $mod normal
 

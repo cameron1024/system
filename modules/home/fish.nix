@@ -5,30 +5,19 @@
     o = "cd -";
     g = "z";
     q = "exit";
-    p = "cd ~/projects/playground";
-
-    # git stuff
-    gps = "git push $argv";
-    gpl = "git pull $argv";
-    grst = "git reset --hard HEAD";
-
   };
 
   shellAbbrs = {
     e = "nvim";
     ed = "neovide --multigrid";
-    cg = "cargo";
-    gs = "git switch";
+    p = "cd ~/projects/playground";
     x = "./x.py";
-    hm = "home-manager";
     ls = "exa -l";
     dev = "nix develop --command fish";
     dr = "direnv reload";
     rs = "rust-script";
     t = "cd /tmp";
     c = "cd -";
-    h = "nvim ~/nixpkgs/tunables.nix";
-    nt = "cargo nextest run";
     pub = "flutter pub";
     fr = "flutter run";
   };

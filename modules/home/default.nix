@@ -11,6 +11,7 @@ in
       ./rust.nix
       ./git.nix
       ./vscode
+      ./starship
       ./wezterm
       ../tools/neovim-again
       ./erdtree.nix
@@ -39,7 +40,6 @@ in
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
       myNvim.enable = true;
       fish = import ./fish.nix;
-      starship.enable = true;
       zoxide.enable = true;
       gh.enable = true;
       direnv.enable = true;
@@ -113,6 +113,7 @@ in
       nixfmt
 
       discord
+      libreoffice
 
     ];
 

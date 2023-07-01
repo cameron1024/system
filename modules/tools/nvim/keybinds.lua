@@ -103,3 +103,6 @@ map('n', '#', ':set relativenumber!<CR>')
 -- regex and find/replace stuff
 map('n', 'R', [[:%s/\<<C-r><C-w>\>/]])
 map('n', 'q', ':%s/')
+
+-- exit and undo in insert mode
+map('i', '<C-i>', '<ESC>u')

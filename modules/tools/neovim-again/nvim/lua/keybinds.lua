@@ -29,6 +29,9 @@ map('n', '<C-x>', ':sp<CR>')
 -- remap <C-v> for block select mode
 map('n', '<leader>v', '<C-v>')
 
+-- enter for ciw, absolute lifesaver
+map('n', '<CR>', 'ciw')
+
 -- ctrl + hjkl to switch panes
 map('n', '<C-k>', '<C-w><Up>')
 map('n', '<C-j>', '<C-w><Down>')

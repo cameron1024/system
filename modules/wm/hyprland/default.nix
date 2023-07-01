@@ -16,9 +16,15 @@ let
 in
 {
   imports = [
+    ../common/monitoring.nix
     ../sway/wofi
     ../common/rofi
+    ../common/eww-bar
     ../sway/waybar
+
+    ./lock
+    ./kanshi
+    ./sound.nix
   ];
 
   # programs.wofi.colors = colors;
@@ -26,23 +32,20 @@ in
   programs.hyprland.enable = true;
   programs.rofi.enable = true;
 
+
   home-manager.users.cameron = {
     xdg.configFile."hypr/hyprland.conf".source = ./hyprland.conf;
     xdg.configFile."hypr/mocha.conf".source = ./mocha.conf;
-    xdg.configFile."swaylock/config".source = ./swaylock.conf;
-    
+
+    programs.fish.shellAbbrs."hr" = "hyprctl reload";
   };
 
   environment.systemPackages = with pkgs; [
-    swaylock-effects
     swayidle
     swaybg
-    swayr
 
     swayimg
 
-    pamixer
-    pavucontrol
     brightnessctl
     playerctl
     blueberry
@@ -55,7 +58,11 @@ in
 
     hyprlandWorkspaces
 
-    eww-wayland
+    wev
+
+    xdg-utils
+
+
   ];
 
   hardware.opengl = {
@@ -63,15 +70,7 @@ in
     driSupport = true;
   };
 
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   services.hardware.bolt.enable = true;
 

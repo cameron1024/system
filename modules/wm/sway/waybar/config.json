@@ -1,206 +1,62 @@
-// =============================================================================
-//
-// Waybar configuration
-//
-// Configuration reference: https://github.com/Alexays/Waybar/wiki/Configuration
-//
-// =============================================================================
-
 {
-    // -------------------------------------------------------------------------
-    // Global configuration
-    // -------------------------------------------------------------------------
-
-    "layer": "top",
-
-    // If height property would be not present, it'd be calculated dynamically
-    "height": 28,
-
-    "modules-left": [
-        "wlr/workspaces",
-    ],
-    "modules-right": [
-        "network",
-        "bluetooth",
-        "cpu",
-        "memory",
-        "battery",                  
-        "backlight",
-        "idle_inhibitor",
-        "pulseaudio",
-        "custom/pacman",
-        "tray",
-        "custom/help",
-        "clock"
-    ],
-
-    // -------------------------------------------------------------------------
-    // Modules
-    // -------------------------------------------------------------------------
-
-    "battery": {
-        "interval": 60,
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        "format-charging": " {icon} {capacity}%", // Icon: bolt
-        "format": "{icon} {capacity}%",
-        "format-icons": [
-            "", // Icon: battery-empty
-            "", // Icon: battery-quarter
-            "", // Icon: battery-half
-            "", // Icon: battery-three-quarters
-            ""  // Icon: battery-full
-        ],
-        "tooltip": true
+  "layer": "top",
+    "modules-left": ["custom/arch", "wlr/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["backlight", "pulseaudio", "bluetooth", "network", "battery"],
+    "custom/arch": {
+      "format": "",
+      "tooltip": false,
+      "on-click": "sh $HOME/.config/rofi/bin/powermenu"
     },
-
-    "clock": {
-        "interval": 60,
-        "format": " {:%e %b %Y %H:%M}", // Icon: calendar-alt
-        "tooltip": true,
-        "tooltip-format": "<big>{:%B %Y}</big>\n<tt>{calendar}</tt>",
-        "on-click": "swaymsg exec \\$calendar"
-    },
-
-    "cpu": {
-        "interval": 10,
-        "format": " {usage}%", // Icon: microchip
-        "states": {
-            "warning": 70,
-            "critical": 90
-        },
-        "on-click": "swaymsg exec \"\\$term_float_landscape \\$cpu_mon\""
-    },
-
-    "memory": {
-        "interval": 10,
-        "format": " {}%", // Icon: memory
-        "states": {
-            "warning": 70,
-            "critical": 90
-        },
-        "on-click": "swaymsg exec \"\\$term_float_landscape \\$mem_mon\""
-    },
-
-    "network": {
-        "interval": 30,
-        "format-wifi": " {essid} ({signalStrength}%)", // Icon: wifi
-        "format-ethernet": " {ifname}", // Icon: ethernet
-        "format-disconnected": "⚠ Disconnected",
-        "tooltip-format": "{ifname}: {ipaddr}",
-        "on-click": "swaymsg exec \\$term_float_portrait nmtui"
-    },
-
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>",
-        "tooltip": false
-    },
-
-    "sway/window": {
-        "format": "{}",
-        "max-length": 120
-    },
-
     "wlr/workspaces": {
-      "all-outputs": false,
-      "on-scroll-up": "hyprctl dispatch workspace e+1",
-      "on-scroll-down": "hyprctl dispatch workspace e-1",
-      "on-click": "activate",
-      "format": "{name}"
+      "format": "{name}",
+      "format": "{icon}",
+      "tooltip": false,
+      "all-outputs": true,
+      "format-icons": {
+        "active": "",
+        "default": ""
+      }
     },
-
+    "clock": {
+      "format": "{:%H:%M}",
+    },
     "backlight": {
-        "format": "{icon} {percent}%",
-        "format-icons": ["", ""],
-        "on-scroll-down": "light -A 1",
-        "on-scroll-up": "light -U 1"
+      "device": "intel_backlight",
+      "format": "{icon} {percent}%",
+      "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
-
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
-    },
-
     "pulseaudio": {
-        //"scroll-step": 1,
-        "format": "{icon} {volume}%   {format_source}",
-        "format-bluetooth": "{icon} {volume}%",
-        "format-muted": "",
-        "format-icons": {
-            "headphones": "",
-            "handsfree": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", ""]
-        },
-        "on-click": "swaymsg exec \\$pulseaudio"
+      "format": "{volume}%",
+      "format-muted": "",
+      "tooltip": false,
+      "format-icons": {
+        "headphone": "",
+        "default": ["", "", "󰕾", "󰕾", "󰕾", "", "", ""]
+      },
+      "scroll-step": 1,
+      "on-click": "pavucontrol",
     },
-
-    "temperature": {
-      "critical-threshold": 90,
-      "interval": 30,
-      "format": "{icon} {temperatureC}°C",
-      "format-icons": [
-          "", // Icon: temperature-empty
-          "", // Icon: temperature-quarter
-          "", // Icon: temperature-half
-          "", // Icon: temperature-three-quarters
-          ""  // Icon: temperature-full
-      ],
-      "tooltip": true
-    },
-
-    "tray": {
-        "icon-size": 21,
-        "spacing": 5
-    },
-
-    "custom/pacman": {
-        "format": " {}",
-        "interval": 3600,
-        "exec-if": "[ $(pamac checkupdates -q | wc -l) -gt 0 ]",
-        "exec": "pamac checkupdates -q | wc -l",
-        "on-click": "pamac-manager --updates; pkill -RTMIN+4 waybar",
-        "signal": 4
-    },
-
-    "custom/menu": {
-        "format": "",
-        "on-click": "swaymsg exec \\$app_menu",
-        "tooltip": false
-    },
-
-    "custom/help": {
-        "format": "ﲉ",
-        "on-click": "swaymsg exec \\$help",
-        "tooltip": false
-    },
-
     "bluetooth": {
-        "format": "",
-        "format-disabled": "",
-        "interval": 30,
-        "on-click": "blueman-manager",
-        "on-click-right": "rfkill toggle bluetooth",
-        "tooltip-format": "{}"
+      "format": "<span color='#b4befe'></span> {status}",
+      "format-disabled": "", // an empty format will hide the module
+      "format-connected": "</span> {num_connections}",
+      "tooltip-format": "{device_enumerate}",
+      "tooltip-format-enumerate-connected": "{device_alias}   {device_address}",
+      "on-click": "blueman-manager",
     },
-
-    "custom/scratchpad": {
-        "interval": 10,
-        "return-type": "json",
-        "format" : "{icon}",
-        "format-icons": {
-            "one": "",
-            "many": ""
-        },
-        "exec": "scratchpad.sh",
-        "on-click": "swaymsg 'scratchpad show'"
-    }
+    "network": {
+      "interface": "wlo1",
+      "format": "{ifname}",
+      "format-wifi": "<span color='#b4befe'> </span>{essid}",
+      "format-ethernet": "{ipaddr}/{cidr} ",
+      "format-disconnected": "<span color='#b4befe'>󰖪 </span>No Network",
+      "tooltip": false,
+    },
+    "battery": {
+      "format": "<span color='#b4befe'>{icon}</span> {capacity}%",
+      "format-icons": ["", "", "", "", "", "", "", "", "", ""],
+      "format-charging": "<span color='#b4befe'></span> {capacity}%",
+      "tooltip": false,
+    },
 }

@@ -17,18 +17,22 @@
     };
 
     extraConfig = {
-      core = {
-        editor = "nvim";
-      };
-
-      init = {
-        defaultBranch = "master";
-      };
+      core.editor = "nvim";
+      init.defaultBranch = "master";
 
       push = {
         default = "current";
         autoSetupRemote = true;
       };
+
+      pull.rebase = "false";
     };
+  };
+
+  programs.fish.shellAbbrs = {
+    gs = "git switch";
+    gps = "git push";
+    gpl = "git pull";
+    grst = "git reset --hard HEAD";
   };
 }
