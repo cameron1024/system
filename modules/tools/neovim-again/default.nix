@@ -1,29 +1,20 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, ... }:
 let
-  cfg = config.programs.myNvim;
   lldb = pkgs.vscode-extensions.vadimcn.vscode-lldb;
 in
 {
-  options = with lib; {
-    programs.myNvim = {
-      enable = mkOption {
-        type = types.bool;
-        default = false;
-      };
-    };
-  };
-
-  config = lib.mkIf cfg.enable {
+  home-manager.users.cameron = {
     home.packages = with pkgs; [
       neovim
 
       vimPlugins.telescope-fzf-native-nvim
 
-      rnix-lsp
+      nil
       lua-language-server
       lldb
       coursier
       metals
+      pyright
     ];
 
     home.file."./.config/nvim/" = {

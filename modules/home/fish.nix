@@ -43,7 +43,6 @@
       set -gx fish_term24bit 1
       set -gx theme_nerd_fonts yes
 
-      set -gx FZF_DEFAULT_COMMAND 'rg --hidden'
       set -gx CHROME_EXECUTABLE (which google-chrome-stable)
 
       set -gx _ZO_EXCLUDE_DIRS ~/.config

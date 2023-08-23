@@ -12,7 +12,8 @@ return {
 
     -- lspconfig.rust_analyzer.setup { capabilities = capabilities, }
     lspconfig.dartls.setup { capabilities = capabilities, }
-    lspconfig.rnix.setup { capabilities = capabilities, }
+    lspconfig.nil_ls.setup { capabilities = capabilities, }
+    lspconfig.pyright.setup { capabilities = capabilities, }
     lspconfig.lua_ls.setup {
       capabilities = capabilities,
       settings = {

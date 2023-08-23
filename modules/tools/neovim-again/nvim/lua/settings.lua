@@ -61,6 +61,7 @@ local options = {
     undofile = true,
     updatetime = 50,
     background = "dark",
+    laststatus = 3,
 }
 
 vim.opt.shortmess:append "c"

@@ -1,11 +1,16 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, ... }:
 
 {
 
   imports = [
     ../../workarounds/cursor_fix.nix
+    ./chinese-input.nix
   ];
-  /* dconf.settings = import ./dconf.nix; */
+
+#   environment.systemPackages = with pkgs; [
+#     gnomeExtensions.pop-shell
+#   ];
+
   sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;

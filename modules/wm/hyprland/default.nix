@@ -23,7 +23,7 @@ in
     ../sway/waybar
 
     ./lock
-    ./kanshi
+    # ./kanshi
     ./sound.nix
   ];
 

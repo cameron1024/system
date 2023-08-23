@@ -34,7 +34,7 @@
         git add -A
         sudo nixos-rebuild switch --flake .
       '';
-      update = pkgs.writeShellScriptBin "u" ''
+      switchOffline = pkgs.writeShellScriptBin "so" ''
         git add -A
         sudo nixos-rebuild switch --flake .
       '';
@@ -46,9 +46,9 @@
       nixosConfigurations.nixos = buildSystem { hardware = thinkpad; };
 
       devShells.${system}.default = pkgs.mkShell {
-        nativeBuildInputs = [
+        packages = [
           switch
-          update
+                switchOffline
         ];
       };
 

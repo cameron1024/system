@@ -1,12 +1,15 @@
 hardware: { config, pkgs, ... }:
 
 let
-  linux = pkgs.linuxPackages_6_1;
+  linux = pkgs.linuxPackages_6_4;
 in
 {
   imports = [
     hardware
-    ./modules/wm/hyprland
+    ./modules/wm/gnome
+    ./modules/hardware/usb_wake.nix
+    
+    ./modules/tools
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -78,8 +81,11 @@ in
 
     killall
 
+    # should these be in gnome? or hyprland?
     xdg-desktop-portal-wlr
     xdg-desktop-portal
+
+    linux.system76-scheduler
   ];
 
   virtualisation.docker.enable = true;

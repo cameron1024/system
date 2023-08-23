@@ -29,9 +29,6 @@ map('n', '<C-x>', ':sp<CR>')
 -- remap <C-v> for block select mode
 map('n', '<leader>v', '<C-v>')
 
--- enter for ciw, absolute lifesaver
-map('n', '<CR>', 'ciw')
-
 -- ctrl + hjkl to switch panes
 map('n', '<C-k>', '<C-w><Up>')
 map('n', '<C-j>', '<C-w><Down>')
@@ -84,6 +81,7 @@ map('n', '<leader>e', ':TroubleToggle workspace_diagnostics<CR>')
 
 -- goto
 map('n', 'gd', vim.lsp.buf.definition)
+map('n', 'gc', vim.lsp.buf.declaration)
 map('n', 'gi', vim.lsp.buf.implementation)
 map('n', 'gt', vim.lsp.buf.type_definition)
 map('n', 'gr', vim.lsp.buf.references)

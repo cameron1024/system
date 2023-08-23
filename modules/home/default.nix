@@ -13,7 +13,7 @@ in
       ./vscode
       ./starship
       ./wezterm
-      ../tools/neovim-again
+      ./cli
       ./erdtree.nix
     ];
 
@@ -38,7 +38,6 @@ in
     programs = {
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
-      myNvim.enable = true;
       fish = import ./fish.nix;
       zoxide.enable = true;
       gh.enable = true;
@@ -52,7 +51,6 @@ in
       exa
       fd
       curl
-      fzf
       powertop
       xclip
       tokei
@@ -98,7 +96,6 @@ in
       asciiquarium
       cmatrix
 
-      solaar
       pandoc
 
       mprocs
