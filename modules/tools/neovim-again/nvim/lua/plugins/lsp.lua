@@ -10,10 +10,19 @@ return {
     local lspconfig = require 'lspconfig'
     local capabilities = require 'cmp_nvim_lsp'.default_capabilities()
 
+    vim.tbl_deep_extend('keep', lspconfig, {
+      noir = {
+        cmd = { 'nargo lsp' },
+        filetypes = 'nr',
+        name = 'noir',
+      }
+    })
+
     -- lspconfig.rust_analyzer.setup { capabilities = capabilities, }
     lspconfig.dartls.setup { capabilities = capabilities, }
     lspconfig.nil_ls.setup { capabilities = capabilities, }
     lspconfig.pyright.setup { capabilities = capabilities, }
+    lspconfig.noir.setup { capabilities = capabilities, }
     lspconfig.lua_ls.setup {
       capabilities = capabilities,
       settings = {

@@ -8,6 +8,9 @@ return {
   default_prog = { 'fish', '--command', 'tmux' },
   color_scheme = "Catppuccin Mocha",
   hide_mouse_cursor_when_typing = false,
+  warn_about_missing_glyphs = false,
+
+  enable_kitty_keyboard = true,
 
   keys = {
     {

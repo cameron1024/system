@@ -2,7 +2,9 @@ return {
   'nvim-telescope/telescope.nvim',
   tag = '0.1.1',
   dependencies = {
+    'nvim-telescope/telescope-frecency.nvim',
     'nvim-lua/plenary.nvim',
+    "LinArcX/telescope-env.nvim",
     "LinArcX/telescope-env.nvim",
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make", },
   },
@@ -10,6 +12,7 @@ return {
     local actions = require 'telescope.actions'
     local action_layout = require 'telescope.actions.layout'
     local telescope = require 'telescope'
+
 
     telescope.setup {
       layout_strategy = "vertical",
@@ -37,6 +40,7 @@ return {
     }
 
     telescope.load_extension 'env'
+    telescope.load_extension "frecency"
 
     local opts = { noremap = true, silent = true }
     local map = function(mode, key, action)
@@ -45,5 +49,10 @@ return {
 
     map('n', '<leader>n', ':Telescope find_files<CR>')
     map('n', '<leader>f', ':Telescope live_grep<CR>')
+    map('n', '<leader>b', ':Telescope buffers<CR>')
+    map('n', '<leader>d', ':Telescope diagnostics<CR>')
+    map('n', '<leader>g', ':Telescope resume<CR>')
+    map('n', '<leader>t', ':Telescope frecency<CR>')
+    map('n', '`', ':Telescope commands<CR>')
   end
 }

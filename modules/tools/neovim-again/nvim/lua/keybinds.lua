@@ -3,13 +3,6 @@ local map = function(mode, key, action)
   vim.keymap.set(mode, key, action, opts)
 end
 
--- telescope pickers
-map('n', '<leader>n', ':Telescope find_files<CR>')
-map('n', '<leader>f', ':Telescope live_grep<CR>')
-map('n', '<leader>b', ':Telescope buffers<CR>')
-map('n', '<leader>d', ':Telescope diagnostics<CR>')
-map('n', '<leader>r', ':Telescope resume<CR>')
-map('n', '`', ':Telescope commands<CR>')
 map('n', '<C-g>', ':Octo ')
 
 -- neotree
@@ -48,6 +41,9 @@ map('n', 'L', '$')
 -- indenting selections without deselecting
 map('v', '<', '<gv')
 map('v', '>', '>gv')
+
+-- duplicate
+map('v', '<C-w>', [[y'>p]])
 
 -- deselect
 map('n', '<C-d>', ':nohl<CR>')
@@ -100,7 +96,6 @@ map('n', '<leader>rm', ':lua require "rust-tools".expand_macro.expand_macro()<CR
 
 
 -- editor settings
-map('n', '<C-w>', ':set wrap!')
 map('n', '#', ':set relativenumber!<CR>')
 
 

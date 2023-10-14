@@ -86,6 +86,8 @@ in
     xdg-desktop-portal
 
     linux.system76-scheduler
+
+    logiops
   ];
 
   virtualisation.docker.enable = true;
@@ -134,7 +136,7 @@ in
 
   services.deluge.enable = true;
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     fira
 
     (nerdfonts.override {
@@ -168,6 +170,5 @@ in
     dhcpcd.wait = "background";
     dhcpcd.extraConfig = "noarp";
   };
-
   # services.clamav.daemon.enable = true;
 }
