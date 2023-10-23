@@ -8,11 +8,10 @@ return {
   event = "BufEnter",
   config = function()
     require 'nvim-treesitter.configs'.setup {
-      ensure_installed = { 'rust', 'lua', 'json', 'yaml', 'dart', 'toml', 'nix' },
+      ensure_installed = { 'rust', 'json', 'yaml', 'toml', 'nix' },
       auto_install = true,
       highlight = {
         enable = true,
-        -- disable = { "rust" },
         additional_vim_regex_highlighting = false,
       },
       incremental_selection = {

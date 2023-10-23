@@ -1,12 +1,6 @@
 {
   enable = true;
 
-  shellAliases = {
-    o = "cd -";
-    g = "z";
-    q = "exit";
-  };
-
   shellAbbrs = {
     e = "nvim";
     ed = "neovide --multigrid";
@@ -20,7 +14,10 @@
     c = "cd -";
     pub = "flutter pub";
     fr = "flutter run";
+    g = "z";
+    gr = "zoxide remove .";
   };
+
   interactiveShellInit = ''
     	starship init fish | source
     	zoxide init fish | source

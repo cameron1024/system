@@ -1,10 +1,13 @@
 return {
-  "akinsho/flutter-tools.nvim",
+  'akinsho/flutter-tools.nvim',
+  lazy = false,
   dependencies = {
-    "stevearc/dressing.nvim",
+    'nvim-lua/plenary.nvim',
+    'stevearc/dressing.nvim',
   },
-  event = "BufEnter",
-  config = function ()
-    require 'flutter-tools'.setup {}
-  end
+  opts = {
+    lsp = {
+      capabilities = vim.lsp.protocol.make_client_capabilities(),
+    },
+  },
 }

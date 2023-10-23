@@ -105,3 +105,5 @@ map('n', 'q', ':%s/')
 
 -- test
 map('n', '<leader>tf', ':TestFile<CR>')
+
+map('n', '<leader>c', ':lua require "treesitter-context".go_to_context()<CR>')

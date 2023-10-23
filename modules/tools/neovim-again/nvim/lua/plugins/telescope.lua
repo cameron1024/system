@@ -1,6 +1,6 @@
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.1',
+  tag = '0.1.4',
   dependencies = {
     'nvim-telescope/telescope-frecency.nvim',
     'nvim-lua/plenary.nvim',
@@ -39,8 +39,8 @@ return {
       }
     }
 
-    telescope.load_extension 'env'
-    telescope.load_extension "frecency"
+    -- telescope.load_extension 'env'
+    -- telescope.load_extension "frecency"
 
     local opts = { noremap = true, silent = true }
     local map = function(mode, key, action)

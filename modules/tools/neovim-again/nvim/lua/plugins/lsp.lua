@@ -1,28 +1,20 @@
 return {
   "neovim/nvim-lspconfig",
   dependencies = {
-    "j-hui/fidget.nvim",
+    { "j-hui/fidget.nvim", tag = "legacy" },
     "smjonas/inc-rename.nvim",
     "rmagatti/goto-preview",
   },
   event = "BufEnter",
   config = function()
     local lspconfig = require 'lspconfig'
-    local capabilities = require 'cmp_nvim_lsp'.default_capabilities()
 
-    vim.tbl_deep_extend('keep', lspconfig, {
-      noir = {
-        cmd = { 'nargo lsp' },
-        filetypes = 'nr',
-        name = 'noir',
-      }
-    })
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
 
     -- lspconfig.rust_analyzer.setup { capabilities = capabilities, }
     lspconfig.dartls.setup { capabilities = capabilities, }
     lspconfig.nil_ls.setup { capabilities = capabilities, }
     lspconfig.pyright.setup { capabilities = capabilities, }
-    lspconfig.noir.setup { capabilities = capabilities, }
     lspconfig.lua_ls.setup {
       capabilities = capabilities,
       settings = {

@@ -48,7 +48,7 @@ in
 
     home.packages = with pkgs; [
       ripgrep
-      exa
+      eza
       fd
       curl
       powertop

@@ -1,7 +1,7 @@
 hardware: { config, pkgs, ... }:
 
 let
-  linux = pkgs.linuxPackages_6_4;
+  linux = pkgs.linuxPackages_6_5;
 in
 {
   imports = [
