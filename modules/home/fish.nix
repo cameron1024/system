@@ -16,6 +16,7 @@
     fr = "flutter run";
     g = "z";
     gr = "zoxide remove .";
+    q = "exit";
   };
 
   interactiveShellInit = ''

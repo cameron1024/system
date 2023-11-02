@@ -11,7 +11,7 @@ map('n', '<leader>o', ':AerialToggle<CR>')
 
 -- saving and closing
 map('n', '<leader>q', ':x<CR>')
-map('n', '<leader>Q', ':wqa<CR>')
+map('n', '<leader>Q', ':wqa!<CR>')
 map('n', '<leader>w', ':wa<CR>')
 
 -- window management
