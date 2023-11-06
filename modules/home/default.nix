@@ -14,6 +14,7 @@ in
       ./starship
       ./wezterm
       ./cli
+      ./tmux_mod
       ./erdtree.nix
     ];
 
@@ -37,8 +38,8 @@ in
 
     programs = {
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
-      tmux = import ./tmux/tmux.nix { inherit pkgs; inherit colors; };
-      fish = import ./fish.nix;
+      # tmux = import ./tmux/tmux.nix { inherit pkgs; };
+      # fish = import ./fish.nix;
       zoxide.enable = true;
       gh.enable = true;
       direnv.enable = true;

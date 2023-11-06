@@ -1,11 +1,7 @@
-{ pkgs, colors }:
+{ pkgs }:
 
-let
-  leftArrow = { before, after }: "#[bg=${before},fg=${after} nobold, nounderscore, noitalics]";
-  rightArrow = { before, after }: "#[bg=${after},fg=${before},noitalics]";
-
-in
 {
+  shell
   enable = true;
   clock24 = true;
   historyLimit = 30000;
@@ -25,7 +21,7 @@ in
   # 214 = yellow
   # 237 = mid-grey
 
-  extraConfig = with colors.tmux; ''
+  extraConfig = ''
     
     # alt-z to zoom pane
     bind-key -n M-z resize-pane -Z
@@ -72,9 +68,6 @@ in
 
     set -g  default-terminal "screen-256color"
     set -ga terminal-overrides ",xterm-256color:Tc"
-
-    set-option -g status-style bg=${default.background},fg=${default.foreground}
-
 
     ${builtins.readFile ./tmux.conf}
 

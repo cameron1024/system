@@ -1,6 +1,6 @@
 {
   imports = [
-    ./neovim-again 
-    ./with.nix
+    ./neovim
+    ./shell
   ];
 }

@@ -31,7 +31,6 @@ local options = {
     undodir = "/tmp/.nvimdid",
     undofile = true,
     pumheight = 10,
-    laststatus = 3,
     updatetime = 50,
     background = "dark",
     grepprg = "rg --hidden"
