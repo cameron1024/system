@@ -5,6 +5,7 @@
       neovim
 
       nil  # nix lsp
+      lua-language-server
     ]; 
 
     home.file."./.config/nvim/" = {

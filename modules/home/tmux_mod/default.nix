@@ -8,6 +8,6 @@
     keyMode = "vi";
     escapeTime = 0;
     sensibleOnTop = true;
-    shell = pkgs.nushell;
+    shell = "nu";
   };
 }

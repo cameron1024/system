@@ -1,7 +1,6 @@
 { pkgs }:
 
 {
-  shell
   enable = true;
   clock24 = true;
   historyLimit = 30000;

@@ -40,7 +40,7 @@ in
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       # tmux = import ./tmux/tmux.nix { inherit pkgs; };
       # fish = import ./fish.nix;
-      zoxide.enable = true;
+      # zoxide.enable = true;
       gh.enable = true;
       direnv.enable = true;
       direnv.nix-direnv.enable = true;

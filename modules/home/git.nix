@@ -29,7 +29,7 @@
     };
   };
 
-  programs.fish.shellAbbrs = {
+  programs.nushell.shellAliases = {
     gs = "git switch";
     gps = "git push";
     gpl = "git pull";

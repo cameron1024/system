@@ -1,7 +1,7 @@
 vim.cmd [[filetype plugin indent on]]
 
 local options = {
-    shell = "fish",
+    shell = "nushell",
     timeoutlen = 300,
     number = true,
     relativenumber = true,

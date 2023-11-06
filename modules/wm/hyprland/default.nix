@@ -37,7 +37,7 @@ in
     xdg.configFile."hypr/hyprland.conf".source = ./hyprland.conf;
     xdg.configFile."hypr/mocha.conf".source = ./mocha.conf;
 
-    programs.fish.shellAbbrs."hr" = "hyprctl reload";
+    programs.nushell.shellAliases."hr" = "hyprctl reload";
   };
 
   environment.systemPackages = with pkgs; [

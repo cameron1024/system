@@ -38,7 +38,7 @@ in
     de-init
   ];
 
-  programs.fish.shellAbbrs = {
+  programs.nushell.shellAliases = {
     r = "evcxr";
     cg = "cargo";
     nt = "cargo nextest run";

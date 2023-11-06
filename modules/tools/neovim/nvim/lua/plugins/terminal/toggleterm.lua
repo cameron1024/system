@@ -4,6 +4,7 @@ return {
   opts = {
     persist_size = false,
     open_mapping = [[<F12>]],
+    shell = "nu",
   },
   -- config = function()
   --   local opts = { noremap = true, silent = true }
