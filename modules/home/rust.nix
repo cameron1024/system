@@ -1,12 +1,4 @@
 { pkgs, ... }:
-let
-  de-init = pkgs.writeShellScriptBin "de-init" ''
-    echo "use flake" > .envrc
-    echo "/.direnv/" >> .gitignore
-    git add -A
-    direnv allow
-  '';
-in
 
 {
   home.packages = with pkgs; [
@@ -34,8 +26,6 @@ in
     wasm-tools
 
     evcxr
-
-    de-init
   ];
 
   programs.nushell.shellAliases = {

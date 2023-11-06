@@ -28,11 +28,19 @@
       pull.rebase = "false";
     };
   };
-
+  
   programs.nushell.shellAliases = {
     gs = "git switch";
     gps = "git push";
     gpl = "git pull";
     grst = "git reset --hard HEAD";
   };
+
+  programs.nushell.extraConfig = ''
+    def gc [message] {
+      git add -A;
+      git commit -m $message;
+      null
+    }
+  '';
 }
