@@ -1,4 +1,4 @@
 $env.config = {
   show_banner: false,
-  edit_mode: vi,
+  # edit_mode: vi,
 }

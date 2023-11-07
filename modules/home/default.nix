@@ -10,7 +10,6 @@ in
       ./rust.nix
       ./git.nix
       ./vscode
-      ./starship
       ./wezterm
       ./cli
       ./tmux_mod
