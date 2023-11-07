@@ -20,6 +20,7 @@
         nix_shell.format = "$symbol";
         git_metrics.disabled = false;
         right_format = "$time";
+        time.format = "[$time]($style)";
         time.disabled = false;
         time.time_format = "%H:%M:%S - %a %d/%m";
         time.style = "dimmed";
