@@ -4,10 +4,9 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
-    hyprland.url = "github:hyprwm/Hyprland";
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager, hyprland }:
+  outputs = { self, nixpkgs, nixos-hardware, home-manager }:
 
     let
       system = "x86_64-linux";
@@ -19,7 +18,6 @@
       buildSystem = { hardware }: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          hyprland.nixosModules.default
           home-manager.nixosModules.home-manager
 
           (import ./configuration.nix ./hardware/thinkpad.nix)
@@ -36,7 +34,7 @@
       '';
       switchOffline = pkgs.writeShellScriptBin "so" ''
         git add -A
-        sudo nixos-rebuild switch --flake .
+        sudo nixos-rebuild switch --flake . --offline
       '';
 
     in
