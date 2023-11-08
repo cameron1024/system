@@ -7,8 +7,7 @@ let
   screenOn = "hyprctl dispatch dpms on";
 
   lock = pkgs.writeShellScriptBin "lock-screen" ''
-    echo "hello"
-    ${swaylock}
+    ${swaylock}/bin/swaylock
   '';
 in
 {
