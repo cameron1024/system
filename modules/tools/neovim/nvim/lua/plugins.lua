@@ -8,6 +8,7 @@ local plugins = {
   require 'plugins.editing.surround',
   require 'plugins.editing.comment',
   require 'plugins.editing.completion',
+  require 'plugins.editing.autosave',
 
   require 'plugins.treesitter.base',
 

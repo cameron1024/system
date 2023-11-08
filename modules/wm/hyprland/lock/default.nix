@@ -1,21 +1,37 @@
 { pkgs, ... }:
 
+let
+  swaylock = pkgs.swaylock-effects;
+  swayidle = pkgs.swayidle;
+  screenOff = "hyprctl dispatch dpms off";
+  screenOn = "hyprctl dispatch dpms on";
+
+  lock = pkgs.writeShellScriptBin "lock-screen" ''
+    echo "hello"
+    ${swaylock}
+  '';
+in
 {
+  # actually allow swaylock to unlock the screen
+  security.pam.services.swaylock = {};
 
-  home-manager.users.cameron = {
-    xdg.configFile."swaylock/config".source = ./swaylock.conf;
-  };
+  environment.systemPackages = [
+    swaylock
+    swayidle
 
-  environment.systemPackages = with pkgs; [
-    swaylock-effects
+    lock
   ];
+ 
+  home-manager.users.cameron = {
+    
+    wayland.windowManager.hyprland.settings = {
+      exec-once = [
+        "swayidle -w timeout 300 ${lock} timeout 600 '${screenOff}' resume '${screenOn}'"
+      ]; 
 
-  services.fprintd.enable = true;
-  security.pam.services.login.fprintAuth = true;
-
-
-  #  environment.etc."pam.d/swaylock".text = '' 
-  #    auth            sufficient      pam_unix.so try_first_pass likeauth nullok
-  #    auth            sufficient      pam_fprintd.so 
-  #  '';
+      bind = [
+        "SUPER, w, exec, ${lock}"
+      ];
+    };
+  };
 }
