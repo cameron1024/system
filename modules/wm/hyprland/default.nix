@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 {
   imports = [
@@ -6,6 +6,7 @@
     ./bar
     ./theme
     ./launcher
+    ./notifications
   ];
 
   config = {
@@ -15,7 +16,6 @@
       enable = true;
       extraPortals = with pkgs; [
         xdg-desktop-portal-gtk 
-        # xdg-desktop-portal-hyprland 
       ];
     };
 
@@ -29,9 +29,15 @@
       pulse.enable = true;
     };
 
-    home-manager.users.cameron = {
+    environment.systemPackages = with pkgs; [
+      sutils  # battery, etc
 
-      services.mako.enable = true;
+      libnotify
+      glib
+    ];
+
+    home-manager.users.${username} = {
+
 
       wayland.windowManager.hyprland = {
         enable = true;

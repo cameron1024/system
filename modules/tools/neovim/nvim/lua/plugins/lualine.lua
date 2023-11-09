@@ -9,18 +9,18 @@ return {
 
     vim.o.laststatus = 3
 
-    local mode_map = {
-      ["n"] = "[N]",
-      ["i"] = "[I]",
-      ["v"] = "[V]",
-    };
+    local mode = {
+      'mode',
+    }
 
-    local function modes()
-      return mode_map[vim.api.nvim_get_mode().mode] or "[?]"
-    end
+    local filename = {
+      'filename',
+      path = 1,
+    }
 
     require 'lualine'.setup {
-      lualine_a = { modes },
+      lualine_a = { mode },
+      lualine_c = { filename },
     }
   end
 }

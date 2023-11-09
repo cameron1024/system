@@ -1,9 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 let
   lldb = pkgs.vscode-extensions.vadimcn.vscode-lldb;
 in
 {
-  home-manager.users.cameron = {
+  home-manager.users.${username} = {
     home.packages = with pkgs; [
       neovim
 

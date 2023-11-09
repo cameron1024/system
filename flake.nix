@@ -39,6 +39,10 @@
         git add -A
         sudo nixos-rebuild switch --flake . --offline
       '';
+      reload = pkgs.writeShellScriptBin "rl" ''
+        hyprctl reload
+        eww reload
+      '';
 
     in
 
@@ -49,7 +53,8 @@
       devShells.${system}.default = pkgs.mkShell {
         packages = [
           switch
-                switchOffline
+          switchOffline
+          reload
         ];
       };
 

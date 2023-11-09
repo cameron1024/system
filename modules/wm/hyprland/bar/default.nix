@@ -1,33 +1,28 @@
 { pkgs, ... }:
 
+let
+  toggleBar = pkgs.writeShellScriptBin "toggle-bar" ''
+    if eww windows | grep -q '*statusbar'; then
+      eww close statusbar
+    else
+      eww open statusbar
+    fi
+  '';
+in
+
 {
   home-manager.users.cameron = {
-
+    programs.eww = {
+      enable = true;
+      package = pkgs.eww-wayland;
+      configDir = ./eww;
+    };
 
     wayland.windowManager.hyprland.settings = {
-      exec-once = [ "waybar" ];
+      bind = [
+        "SUPER, b, exec, ${toggleBar}/bin/toggle-bar"
+      ];
     };
 
-  
-    programs.waybar = {
-      enable = true;
-      settings = {
-        mainBar = {
-          layer = "top";
-          position = "top";
-          height = 30;
-          output = [ "eDP-1" ];
-          modules-left = [ "hyprland/workspaces" "wlr/taskbar" ];
-          modules-right = [ "temperature" ];
-        };
-
-        "hyprland/workspaces" = {
-          format = "{icon}";
-          on-scroll-up = "hyprctl dispatch workspace e+1";
-          on-scroll-down = "hyprctl dispatch workspace e-1";
-          on-click = "activate";
-        };
-      };
-    };
   };
 }

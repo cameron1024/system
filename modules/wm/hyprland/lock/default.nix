@@ -4,7 +4,6 @@ let
   swaylock = pkgs.swaylock-effects;
   screenOff = "hyprctl dispatch dpms off";
   screenOn = "hyprctl dispatch dpms on";
-
 in
 {
   # actually allow swaylock to unlock the screen

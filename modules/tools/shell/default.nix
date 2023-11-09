@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ username, ... }:
 
 {
-  home-manager.users.cameron = {
+  home-manager.users.${username} = {
     programs.zoxide = {
       enable = true;
       enableNushellIntegration = true;

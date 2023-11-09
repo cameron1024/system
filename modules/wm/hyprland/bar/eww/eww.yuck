@@ -1,0 +1,38 @@
+(defwindow statusbar
+  :monitor 0
+  :stacking "fg"
+  :windowtype "normal"
+  :exclusive true
+  :focusable true
+  :geometry (geometry
+    :width "100%" 
+    :height "30" 
+    :anchor "top center"
+  )
+
+  (_buttons)
+)
+
+(defwidget _buttons []
+  (box
+    :class "button-box"
+    :spacing 5
+    :valign "fill"
+    :halign "end"
+    :vexpand true
+    :hexpand false
+    (button :height "100%" :onclick `notify-send hello` "⏻")
+  )
+)
+
+(defpoll time 
+  :interval "5s"
+  :initial `date +'{"hour":"%H","min":"%M"}'`
+  `date +'{"hour":"%H","min":"%M"}'`
+)
+
+(defpoll net 
+  :interval "100s"
+  :initial `N/A`
+  `nmcli -t -f SIGNAL,ACTIVE device wifi | awk -F':' '{if($2=="yes")print$1}'`
+)

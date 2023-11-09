@@ -1,10 +1,10 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, username, ... }:
 let
   tunables = import ./tunables.nix;
 in
 
 {
-  home-manager.users.cameron = {
+  home-manager.users.${username} = {
 
     imports = [
       ./rust.nix
@@ -26,8 +26,8 @@ in
 
     nixpkgs.config.allowUnfree = true;
 
-    home.username = "cameron";
-    home.homeDirectory = "/home/cameron";
+    home.username = username;
+    home.homeDirectory = "/home/${username}";
     home.stateVersion = "22.05";
 
     # override cursor theme

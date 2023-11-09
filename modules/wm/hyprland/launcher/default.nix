@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, username, ... }:
 
 let
   themeFile = pkgs.writeTextFile {
@@ -8,7 +8,7 @@ let
 in
 
 {
-  home-manager.users.cameron = {
+  home-manager.users.${username} = {
     home.packages = with pkgs; [
       oranchelo-icon-theme
     ];
