@@ -2,34 +2,45 @@
 
 let
   swaylock = pkgs.swaylock-effects;
-  swayidle = pkgs.swayidle;
   screenOff = "hyprctl dispatch dpms off";
   screenOn = "hyprctl dispatch dpms on";
 
-  lock = pkgs.writeShellScriptBin "lock-screen" ''
-    ${swaylock}/bin/swaylock
-  '';
 in
 {
   # actually allow swaylock to unlock the screen
   security.pam.services.swaylock = {};
-
-  environment.systemPackages = [
-    swaylock
-    swayidle
-
-    lock
-  ];
  
   home-manager.users.cameron = {
+
+    programs.swaylock = {
+      enable = true;   
+      package = swaylock;
+      settings = {
+        image = "/home/cameron/system/assets/background.jpg";
+        effect-blur = "20x20";
+
+        ring-color = "b4befe";
+        ring-clear-color = "f5e0dc";
+        ring-wrong-color = "eba0ac";
+        separator-color = "eba0ac";
+        text-color = "cdd6f4";
+        text-clear-color = "f5e0dc";
+        text-wrong-color = "eba0ac";
+        key-hl-color="a6e3a1";
+      };
+    };
+
+    services.swayidle = {
+      enable = true;
+      timeouts = [
+        { timeout = 300; command = "${swaylock}/bin/swaylock"; }
+        { timeout = 600; command = screenOff; resumeCommand = screenOn; }
+      ];
+    };
     
     wayland.windowManager.hyprland.settings = {
-      exec-once = [
-        "swayidle -w timeout 300 ${lock} timeout 600 '${screenOff}' resume '${screenOn}'"
-      ]; 
-
       bind = [
-        "SUPER, w, exec, ${lock}"
+        "SUPER, escape, exec, swaylock"
       ];
     };
   };

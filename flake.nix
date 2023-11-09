@@ -17,6 +17,9 @@
 
       buildSystem = { hardware }: nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = {
+          username = "cameron";
+        };
         modules = [
           home-manager.nixosModules.home-manager
 

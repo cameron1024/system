@@ -4,6 +4,7 @@ local plugins = {
   require 'plugins.theme.color',
   require 'plugins.theme.dressing',
   require 'plugins.theme.greeter',
+  require 'plugins.theme.colorizer',
 
   require 'plugins.editing.surround',
   require 'plugins.editing.comment',
