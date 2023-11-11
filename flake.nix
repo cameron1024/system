@@ -15,21 +15,23 @@
         config = { allowUnfree = true; };
       };
 
-      buildSystem = { hardware }: nixpkgs.lib.nixosSystem {
+      hardware = import ./hardware/thinkpad.nix;
+
+      nixosSystem = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
           username = "cameron";
+          inherit hardware;
         };
         modules = [
           home-manager.nixosModules.home-manager
 
-          (import ./configuration.nix ./hardware/thinkpad.nix)
+          (import ./configuration.nix )
           ./modules/home
 
         ];
       };
 
-      thinkpad = nixos-hardware.nixosModules.thinkpad;
 
       switch = pkgs.writeShellScriptBin "s" ''
         git add -A
@@ -48,7 +50,7 @@
 
     {
       nixpkgs.config.allowUnfree = true;
-      nixosConfigurations.nixos = buildSystem { hardware = thinkpad; };
+      nixosConfigurations.nixos = nixosSystem;
 
       devShells.${system}.default = pkgs.mkShell {
         packages = [

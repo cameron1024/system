@@ -1,4 +1,4 @@
-hardware: { config, pkgs, ... }:
+{ pkgs, hardware, ... }:
 
 let
   linux = pkgs.linuxPackages_6_5;

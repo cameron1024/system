@@ -1,7 +1,6 @@
 (defwindow statusbar
   :monitor 0
   :stacking "fg"
-  :windowtype "normal"
   :exclusive true
   :focusable true
   :geometry (geometry
@@ -10,19 +9,42 @@
     :anchor "top center"
   )
 
-  (_buttons)
+  (status_buttons)
 )
 
-(defwidget _buttons []
+(defwindow powermenu
+  :monitor 0
+  :stacking "fg"
+  :exclusive true
+  :focusable true
+  :geometry (geometry
+    :width "40%"
+    :height "40%"
+    :anchor "center" 
+  )
+
+  (box 
+    (button :onclick `eww close powermenu`)
+    (text "stuff")
+  )
+)
+
+(defwidget status_buttons []
   (box
-    :class "button-box"
     :spacing 5
     :valign "fill"
     :halign "end"
     :vexpand true
     :hexpand false
-    (button :height "100%" :onclick `notify-send hello` "⏻")
+    (button :class "icon-button" :onclick `eww show powermenu` battery)
+    (button :class "icon-button" :onclick `eww show powermenu` "⏻")
   )
+)
+
+(defpoll battery
+  :interval "1m"
+  :initial `battery`
+  `battery`
 )
 
 (defpoll time 

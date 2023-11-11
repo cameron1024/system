@@ -1,8 +1,13 @@
 @import "colors.scss";
 
 * {
-  background-color: $bg;
+  background-color: $black;
   color: $pink;
   padding: 5px;
   font-family: FiraCode Nerd Font;
 }
+
+// .button-box {
+//   border: none;
+//   text-align: center;
+// }

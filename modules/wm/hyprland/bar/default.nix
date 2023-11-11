@@ -1,14 +1,5 @@
 { pkgs, ... }:
 
-let
-  toggleBar = pkgs.writeShellScriptBin "toggle-bar" ''
-    if eww windows | grep -q '*statusbar'; then
-      eww close statusbar
-    else
-      eww open statusbar
-    fi
-  '';
-in
 
 {
   home-manager.users.cameron = {
@@ -20,7 +11,7 @@ in
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER, b, exec, ${toggleBar}/bin/toggle-bar"
+        "SUPER, b, exec, eww open statusbar --toggle"
       ];
     };
 
