@@ -50,7 +50,6 @@ in
       eza
       fd
       curl
-      powertop
       xclip
       tokei
       jq

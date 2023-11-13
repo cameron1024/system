@@ -49,6 +49,8 @@ in
       glib
       brightnessctl
 
+      powertop
+
       (change-brightness "10%+")
     ];
 
