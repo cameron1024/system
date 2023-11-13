@@ -5,18 +5,15 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     naersk.url = "github:nix-community/naersk";
     nix-darwin.url = "github:LnL7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-23.05-darwin";
-
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixpkgs-darwin, nix-darwin, naersk }:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, naersk }:
 
     let
 
       macArgs = import ./platform/mac.nix {
-        inherit naersk;   
-        nixpkgs = nixpkgs-darwin;
+        inherit naersk nixpkgs;
       };
 
       linuxArgs = import ./platform/linux.nix {
