@@ -72,9 +72,6 @@ in
       silicon
 
       # comms
-      slack
-      whatsapp-for-linux
-      discord
 
       # LSPs
       haskell-language-server
@@ -105,6 +102,9 @@ in
 
     ] ++ (if isDarwin then [] else [
       google-chrome
+      slack
+      whatsapp-for-linux
+      discord
     ]);
 
   };
