@@ -8,5 +8,6 @@ with lib; {
 
   users.users.${username} = mkIf isDarwin {
     description = username;
+    home = "/Users/${username}";
   };
 }
