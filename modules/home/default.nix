@@ -72,7 +72,6 @@ in
       silicon
 
       # comms
-      google-chrome
       slack
       whatsapp-for-linux
       discord
@@ -104,7 +103,9 @@ in
       discord
       libreoffice
 
-    ];
+    ] ++ (if isDarwin then [] else [
+      google-chrome
+    ]);
 
   };
 
