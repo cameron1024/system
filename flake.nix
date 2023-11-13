@@ -78,7 +78,7 @@
       nixpkgs.config.allowUnfree = true;
 
       nixosConfigurations.nixos = nixosSystem;
-      darwinConfiguration."camerons-macbook" = macosSystem;
+      darwinConfigurations."Camerons-MacBook-Pro" = macosSystem;
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [
