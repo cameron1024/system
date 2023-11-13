@@ -76,30 +76,6 @@ in
       # LSPs
       haskell-language-server
       rnix-lsp
-
-      plover.dev
-      ttyper
-
-      dwarf-fortress
-      asciiquarium
-      cmatrix
-
-      pandoc
-
-      mprocs
-      blender
-
-      kubo
-      inlyne # cool markdown viewer
-      wabt
-
-      python3
-
-      nixfmt
-
-      discord
-      libreoffice
-
     ] ++ (if isDarwin then [] else [
       google-chrome
       slack
