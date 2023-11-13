@@ -11,7 +11,6 @@
   outputs = { self, nixpkgs, home-manager, nix-darwin, naersk }:
 
     let
-
       macArgs = import ./platform/mac.nix {
         inherit naersk nixpkgs;
       };
@@ -35,6 +34,8 @@
         modules = [
           home-manager.nixosModules.home-manager
 
+          ./modules/nix-config.nix
+
           ./configuration.nix
           ./modules/home
           ./tools
@@ -52,14 +53,8 @@
 
         modules = [
           home-manager.darwinModules.home-manager
-          {
-            nixpkgs.hostPlatform = "aarch64-darwin";
-            services.nix-daemon.enable = true;
 
-            users.users.cameron = {
-              description = "cameron";
-            };
-          }
+          ./modules/nix-config.nix
 
           # ./configuration.nix 
           ./modules/home

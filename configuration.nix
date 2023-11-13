@@ -70,10 +70,6 @@ in
   users.groups.docker = { };
   users.groups.plugdev = { };
 
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
     firefox
     fish
@@ -173,5 +169,4 @@ in
     dhcpcd.wait = "background";
     dhcpcd.extraConfig = "noarp";
   };
-  # services.clamav.daemon.enable = true;
 }
