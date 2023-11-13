@@ -52,7 +52,7 @@
         };
 
         modules = [
-          ./configuration.nix 
+          # ./configuration.nix 
           ./modules/home
           ./tools
         ];
