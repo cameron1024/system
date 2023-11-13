@@ -53,10 +53,15 @@
 
         modules = [
           home-manager.darwinModules.home-manager
+          {
+            nixpkgs.hostPlatform = "aarch64-darwin";
+            services.nix-daemon.enable = true;
+          }
 
           # ./configuration.nix 
           ./modules/home
           # ./tools
+
         ];
       };
 
