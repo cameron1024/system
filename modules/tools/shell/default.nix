@@ -1,7 +1,7 @@
-{ pkgs, username, ... }:
+{ pkgs, username, isDarwin, lib, ... }:
 
-{
-  security.sudo.package = pkgs.sudo.override { withInsults = true; };
+with lib; {
+  security.sudo.package = mkIf (!isDarwin) (pkgs.sudo.override { withInsults = true; });
 
   home-manager.users.${username} = {
     programs.zoxide = {
