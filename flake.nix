@@ -56,6 +56,12 @@
           {
             nixpkgs.hostPlatform = "aarch64-darwin";
             services.nix-daemon.enable = true;
+
+            users.users.cameron = {
+              isNormalUser = true;
+              description = "cameron";
+              extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" "plugdev" "audio" "video" "sound" ];
+            };
           }
 
           # ./configuration.nix 
