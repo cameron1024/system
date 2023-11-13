@@ -71,10 +71,6 @@ in
       helix
       silicon
 
-      # system monitoring
-      acpi
-      sysstat
-
       # comms
       google-chrome
       slack
