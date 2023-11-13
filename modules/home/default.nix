@@ -67,7 +67,6 @@ in
 
       lynx
 
-      kodiPackages.netflix
 
       helix
       silicon
