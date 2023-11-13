@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, lib, isDarwin, username, ... }:
 let
   tunables = import ./tunables.nix;
 in
@@ -24,8 +24,10 @@ in
 
     nixpkgs.config.allowUnfree = true;
 
-    home.username = username;
-    home.homeDirectory = "/home/${username}";
+
+
+    home.username = lib.mkIf (!isDarwin) username;
+    home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
     home.stateVersion = "22.05";
 
     # override cursor theme

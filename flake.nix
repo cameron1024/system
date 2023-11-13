@@ -32,6 +32,7 @@
           inherit hardware;
           naersk = linuxArgs.naersk;
           username = "cameron";
+          isDarwin = false;
         };
 
         modules = [
@@ -49,6 +50,7 @@
         specialArgs = {
           inherit hardware naersk;
           username = "cameron";
+          isDarwin = true;
         };
 
         modules = [
