@@ -60,7 +60,6 @@
             users.users.cameron = {
               isNormalUser = true;
               description = "cameron";
-              extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" "plugdev" "audio" "video" "sound" ];
             };
           }
 
