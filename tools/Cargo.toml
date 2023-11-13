@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+  "cams-home-utilities"
+]
+
+[workspace.dependencies]
+clap = { version = "4", features = ["derive", "string"] }

@@ -39,7 +39,7 @@ in
     
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER, escape, exec, swaylock"
+        "SUPER, grave, exec, swaylock"
       ];
     };
   };

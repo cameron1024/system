@@ -1,6 +1,8 @@
-{ username, ... }:
+{ pkgs, username, ... }:
 
 {
+  security.sudo.package = pkgs.sudo.override { withInsults = true; };
+
   home-manager.users.${username} = {
     programs.zoxide = {
       enable = true;

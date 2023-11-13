@@ -1,13 +1,6 @@
-{ pkgs, lib, config, ...}:
+{ pkgs, ...}:
 
-let 
-  colors = (import ../../home/colorschemes.nix).gruvbox;
-in
 {
   home.packages = with pkgs; [ wezterm ];
-  
-  xdg.configFile."wezterm/wezterm.lua".text = with colors; ''
-  
-  ${builtins.readFile ./wezterm.lua}
-  '';
+  xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
 }

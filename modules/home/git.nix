@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   programs.git = {
@@ -28,6 +28,13 @@
       pull.rebase = "false";
     };
   };
+
+  programs.gh = {
+    enable = true;
+  };
+
+  programs.gh-dash.enable = true;
+
   
   programs.nushell.shellAliases = {
     gs = "git switch";

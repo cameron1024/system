@@ -3,45 +3,71 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-hardware.url = "github:nixos/nixos-hardware/master";
+    naersk.url = "github:nix-community/naersk";
+    nix-darwin.url = "github:LnL7/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs-darwin";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-23.05-darwin";
+
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, home-manager }:
+  outputs = { self, nixpkgs, home-manager, nixpkgs-darwin, nix-darwin, naersk }:
 
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config = { allowUnfree = true; };
+
+      macArgs = import ./platform/mac.nix {
+        inherit naersk;   
+        nixpkgs = nixpkgs-darwin;
       };
 
+      linuxArgs = import ./platform/linux.nix {
+        inherit naersk nixpkgs;
+      };
+      
       hardware = import ./hardware/thinkpad.nix;
 
       nixosSystem = nixpkgs.lib.nixosSystem {
-        inherit system;
+        system = "x86_64-linux";
+
         specialArgs = {
-          username = "cameron";
           inherit hardware;
+          naersk = linuxArgs.naersk;
+          username = "cameron";
         };
+
         modules = [
           home-manager.nixosModules.home-manager
 
-          (import ./configuration.nix )
+          ./configuration.nix
           ./modules/home
+          ./tools
 
         ];
       };
 
+      macosSystem = nix-darwin.lib.darwinSystem {
 
-      switch = pkgs.writeShellScriptBin "s" ''
+        specialArgs = {
+          inherit hardware naersk;
+          username = "cameron";
+        };
+
+        modules = [
+          ./configuration.nix 
+          ./modules/home
+          ./tools
+        ];
+      };
+
+
+      switch = pkgs: pkgs.writeShellScriptBin "s" ''
         git add -A
         sudo nixos-rebuild switch --flake .
       '';
-      switchOffline = pkgs.writeShellScriptBin "so" ''
+      switchOffline = pkgs: pkgs.writeShellScriptBin "so" ''
         git add -A
         sudo nixos-rebuild switch --flake . --offline
       '';
-      reload = pkgs.writeShellScriptBin "rl" ''
+      reload = pkgs: pkgs.writeShellScriptBin "rl" ''
         hyprctl reload
         eww reload
       '';
@@ -50,13 +76,23 @@
 
     {
       nixpkgs.config.allowUnfree = true;
-      nixosConfigurations.nixos = nixosSystem;
 
-      devShells.${system}.default = pkgs.mkShell {
+      nixosConfigurations.nixos = nixosSystem;
+      darwinConfiguration."camerons-macbook" = macosSystem;
+
+      devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [
-          switch
-          switchOffline
-          reload
+          (switch pkgs)
+          (switchOffline pkgs)
+          (reload pkgs)
+        ];
+      };
+
+      devShells."aarch64-darwin".default = with macArgs; pkgs.mkShell {
+        packages = [
+          (switch pkgs)
+          (switchOffline pkgs)
+          (reload pkgs)
         ];
       };
 

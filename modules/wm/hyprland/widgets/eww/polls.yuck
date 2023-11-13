@@ -1,0 +1,10 @@
+(defpoll time 
+  :interval "5s"
+  `clock`
+)
+
+(defpoll net 
+  :interval "100s"
+  :initial `N/A`
+  `nmcli -t -f SIGNAL,ACTIVE device wifi | awk -F':' '{if($2=="yes")print$1}'`
+)

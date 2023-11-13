@@ -2,7 +2,7 @@
 
 {
   home.packages = [
-    (import ../../rust_packages/erdtree.nix { inherit pkgs; })
+    pkgs.erdtree
   ];
 
   xdg.configFile."erdtree/.erdtreerc".text = ''

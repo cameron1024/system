@@ -7,6 +7,7 @@
       backgroundColor = "#313244";
       borderRadius = 10;
       font = "FiraCode Nerd Font";
+      defaultTimeout = 10000;
     };
   };
 }

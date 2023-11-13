@@ -10,6 +10,7 @@ in
 
     home.packages = with pkgs; [
       hyprpaper 
+      brightnessctl
     ];
 
     xdg.configFile."hypr/hyprpaper.conf".text = ''

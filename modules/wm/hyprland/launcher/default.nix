@@ -15,18 +15,15 @@ in
 
     programs.rofi = {
       enable = true;
-      cycle = true;
-      font = "Fira Code";
-      terminal = "wezterm";
       theme = "${themeFile}";
       plugins = with pkgs; [
-        rofi-calc
+        rofi-power-menu
       ];
     };
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER, space, exec, rofi -show drun"
+        "SUPER, space, exec, rofi -show combi"
       ];
     };
   };

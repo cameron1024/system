@@ -7,6 +7,7 @@
         "SUPER, q, killactive"
 
         "SUPER, return, exec, wezterm"
+        "SUPER SHIFT, return, exec, google-chrome-stable"
 
         "SUPER, h, movefocus, l"
         "SUPER, j, movefocus, d"
@@ -40,6 +41,10 @@
 
         "SUPER, s, togglespecialworkspace, magic"
         "SUPER SHIFT, s, movetoworkspace, special:magic"
+
+        "SUPER, f, fullscreen"
+        "SUPER SHIFT, f, togglefloating"
+        "SUPER, p, pin"
       ];
 
       bindm = [

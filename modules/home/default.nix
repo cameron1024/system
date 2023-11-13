@@ -11,8 +11,6 @@ in
       ./git.nix
       ./vscode
       ./wezterm
-      ./cli
-      ./tmux_mod
       ./erdtree.nix
     ];
 
