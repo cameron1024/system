@@ -58,7 +58,6 @@
             services.nix-daemon.enable = true;
 
             users.users.cameron = {
-              isNormalUser = true;
               description = "cameron";
             };
           }
