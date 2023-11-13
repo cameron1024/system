@@ -1,9 +1,6 @@
 { pkgs, username, isDarwin, lib, ... }:
 
 with lib; {
-  security.sudo = mkIf (!isDarwin) {
-    package = pkgs.sudo.override {withInsults = true; };
-  };
   # security.sudo.package = mkIf (!isDarwin) (pkgs.sudo.override { withInsults = true; });
 
   home-manager.users.${username} = {
