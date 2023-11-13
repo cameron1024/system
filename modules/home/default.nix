@@ -60,7 +60,6 @@ in
       unzip
       navi
       zellij
-      vlc
       du-dust
       neovide
 
