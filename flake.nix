@@ -38,6 +38,7 @@
 
           ./configuration.nix
           ./modules/home
+          ./modules/tools
           ./tools
 
         ];
@@ -58,6 +59,7 @@
 
           # ./configuration.nix 
           ./modules/home
+          ./modules/tools
           # ./tools
 
         ];

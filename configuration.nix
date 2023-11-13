@@ -8,8 +8,6 @@ in
     hardware
     ./modules/wm
     ./modules/hardware/usb_wake.nix
-    
-    ./modules/tools
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
