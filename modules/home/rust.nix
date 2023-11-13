@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, isDarwin, ... }:
 
 {
   home.packages = with pkgs; [
@@ -6,7 +6,6 @@
     gcc
     llvmPackages.bintools-unwrapped
     cmake
-    glibc
     ninja
 
     # rust-analyzer
@@ -26,7 +25,7 @@
     wasm-tools
 
     evcxr
-  ];
+  ] ++ (if isDarwin then [] else [ glibc ]);
 
   programs.nushell.shellAliases = {
     r = "evcxr";
