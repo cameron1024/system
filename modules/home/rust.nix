@@ -1,4 +1,4 @@
-{ pkgs, isDarwin, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = with pkgs; [
@@ -25,7 +25,7 @@
     wasm-tools
 
     evcxr
-  ] ++ (if isDarwin then [] else [ glibc ]);
+  ];
 
   programs.nushell.shellAliases = {
     r = "evcxr";
