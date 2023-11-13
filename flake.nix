@@ -52,9 +52,11 @@
         };
 
         modules = [
+          home-manager.darwinModules.home-manager
+
           # ./configuration.nix 
           ./modules/home
-          ./tools
+          # ./tools
         ];
       };
 
