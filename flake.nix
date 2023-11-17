@@ -34,8 +34,6 @@
         modules = [
           home-manager.nixosModules.home-manager
 
-          ./modules/nix-config.nix
-
           ./configuration.nix
           ./modules/home
           ./modules/tools
@@ -55,9 +53,7 @@
         modules = [
           home-manager.darwinModules.home-manager
 
-          ./modules/nix-config.nix
-
-          # ./configuration.nix 
+          ./configuration.nix 
           ./modules/home
           ./modules/tools
           # ./tools
@@ -85,7 +81,7 @@
       nixpkgs.config.allowUnfree = true;
 
       nixosConfigurations.nixos = nixosSystem;
-      darwinConfigurations."Camerons-MacBook-Pro" = macosSystem;
+      darwinConfigurations."DGQ204V94P" = macosSystem;
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [

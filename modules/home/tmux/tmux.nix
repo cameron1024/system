@@ -15,11 +15,6 @@
     tmux-thumbs
   ];
 
-  # colors
-  #
-  # 214 = yellow
-  # 237 = mid-grey
-
   extraConfig = ''
     
     # alt-z to zoom pane
@@ -30,7 +25,6 @@
 
     set -g @thumbs-osc52 1
 
-    set-option -ga update-environment 'SWAYSOCK'
 
     unbind h
     unbind j

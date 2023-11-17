@@ -7,8 +7,6 @@ in
   home-manager.users.${username} = {
 
     imports = [
-      ./rust.nix
-      ./git.nix
       ./vscode
       ./wezterm
       ./erdtree.nix
@@ -54,7 +52,6 @@ in
       tokei
       jq
       bottom
-      bat
       tree
       rust-script
       unzip

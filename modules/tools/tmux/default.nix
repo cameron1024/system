@@ -30,6 +30,7 @@ in
       extraConfig = ''
         
         set -as terminal-features ",xterm-256color:RGB"
+        set -g default-command ${nushell}
 
         thm_bg="#1e1e2e"
         thm_fg="#cdd6f4"
@@ -50,11 +51,13 @@ in
 
         bind-key -n M-\; command-prompt
 
+        bind -n M-x split-window -v -c "#{pane_current_path}"
+        bind -n M-v split-window -h -c "#{pane_current_path}"
 
-        bind -n M-x split-window -v
-        bind -n M-v split-window -h
         unbind '"'
         unbind %
+
+        bind c new-window -c "#{pane_current_path}"
 
         bind C-a last-window
 
@@ -62,6 +65,9 @@ in
         bind -n M-l select-pane -R
         bind -n M-k select-pane -U
         bind -n M-j select-pane -D
+
+        bind -n M-enter set -g status
+
       '';
     };
 

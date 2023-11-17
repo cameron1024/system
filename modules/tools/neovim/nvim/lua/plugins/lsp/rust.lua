@@ -5,7 +5,7 @@ return {
   },
   ft = { "rust", 'toml' },
   opts = {},
-  -- config = function()
-  --   require 'crates'.setup {}
-  -- end
+  config = function()
+    require 'crates'.setup {}
+  end
 }

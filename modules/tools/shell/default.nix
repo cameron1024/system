@@ -1,9 +1,9 @@
-{ pkgs, username, isDarwin, lib, ... }:
+{ username, ... }:
 
-with lib; {
-  # security.sudo.package = mkIf (!isDarwin) (pkgs.sudo.override { withInsults = true; });
+{
+  imports = [ ./bat ];
 
-  home-manager.users.${username} = {
+  config.home-manager.users.${username} = {
     programs.zoxide = {
       enable = true;
       enableNushellIntegration = true;
@@ -42,6 +42,7 @@ with lib; {
         t = "cd /tmp";
         g = "z";
         q = "exit";
+        cat = "bat";
       };
       configFile.source = ./config.nu;
     };
