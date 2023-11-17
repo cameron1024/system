@@ -60,21 +60,6 @@
 
         ];
       };
-
-
-      switch = pkgs: pkgs.writeShellScriptBin "s" ''
-        git add -A
-        sudo nixos-rebuild switch --flake .
-      '';
-      switchOffline = pkgs: pkgs.writeShellScriptBin "so" ''
-        git add -A
-        sudo nixos-rebuild switch --flake . --offline
-      '';
-      reload = pkgs: pkgs.writeShellScriptBin "rl" ''
-        hyprctl reload
-        eww reload
-      '';
-
     in
 
     {
@@ -85,17 +70,19 @@
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [
-          (switch pkgs)
-          (switchOffline pkgs)
-          (reload pkgs)
+          (pkgs.writeShellScriptBin "s" ''
+            git add -A
+            sudo nixos-rebuild switch --flake . 
+          '')
         ];
       };
 
       devShells."aarch64-darwin".default = with macArgs; pkgs.mkShell {
         packages = [
-          (switch pkgs)
-          (switchOffline pkgs)
-          (reload pkgs)
+          (pkgs.writeShellScriptBin "s" ''
+            git add -A
+            nix run nix-darwin -- switch --flake .
+          '')
         ];
       };
 
