@@ -13,6 +13,7 @@ return {
   event = "VeryLazy",
   config = function()
     local cmp = require 'cmp'
+    local luasnip = require 'luasnip'
 
     require 'nvim-autopairs'.setup {}
     local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
@@ -21,12 +22,10 @@ return {
       map_complete = true,
       snippet = {
         expand = function(args)
-          require 'luasnip'.lsp_expand(args.body)
+          luasnip.lsp_expand(args.body)
         end,
       },
       mapping = {
-        ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-        ['<Tab>'] = cmp.mapping.select_next_item(),
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(),
@@ -35,8 +34,26 @@ return {
           behavior = cmp.ConfirmBehavior.Insert,
           select = false,
         }),
-        ['<Down>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
-        ['<Up>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
+        ['<Down>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+        ['<Up>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
+        ['<Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
       },
 
       sources = {
@@ -46,7 +63,7 @@ return {
         { name = 'path' },
         { name = 'buffer' },
         { name = 'crates' },
-        { name = 'emoji', insert = true }
+        { name = 'emoji',                  insert = true }
       },
     }
 

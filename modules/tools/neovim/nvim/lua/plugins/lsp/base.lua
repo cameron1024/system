@@ -4,21 +4,22 @@ return {
   cmd = { "LspInfo" },
   config = function()
     local lspconfig = require 'lspconfig'
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    local cmp = require 'cmp_nvim_lsp'
+    local capabilities = cmp.default_capabilities()
 
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.dartls.setup { capabilities = capabilities }
 
-    lspconfig.rust_analyzer.setup {
-      capabilities = capabilities,
-      settings = {
-          ["rust-analyzer"] = {
-            check = {
-              command = "clippy",
-            },
-          },
-        },
-    }
+    -- lspconfig.rust_analyzer.setup {
+    --   capabilities = capabilities,
+    --   settings = {
+    --       ["rust-analyzer"] = {
+    --         check = {
+    --           command = "clippy",
+    --         },
+    --       },
+    --     },
+    -- }
 
     lspconfig.lua_ls.setup {
       capabilities = capabilities,
