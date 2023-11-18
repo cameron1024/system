@@ -3,7 +3,7 @@ return {
   dependencies = {
     "Saecki/crates.nvim",
   },
-  ft = { "rust", 'toml' },
+  event = "VeryLazy",
   opts = {},
   config = function()
     require 'crates'.setup {}

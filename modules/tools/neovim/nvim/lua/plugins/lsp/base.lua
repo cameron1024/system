@@ -8,6 +8,18 @@ return {
 
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.dartls.setup { capabilities = capabilities }
+
+    lspconfig.rust_analyzer.setup {
+      capabilities = capabilities,
+      settings = {
+          ["rust-analyzer"] = {
+            check = {
+              command = "clippy",
+            },
+          },
+        },
+    }
+
     lspconfig.lua_ls.setup {
       capabilities = capabilities,
       settings = {

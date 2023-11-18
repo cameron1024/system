@@ -1,4 +1,4 @@
-{ pkgs, hardware, isDarwin, ... }:
+{ pkgs, hardware, ... }:
 
 let
   linux = pkgs.linuxPackages_6_5;
@@ -6,8 +6,8 @@ in
 {
   imports = [
     hardware
-    ./modules/wm
-    ./modules/hardware/usb_wake.nix
+    ../modules/wm
+    ../modules/hardware/usb_wake.nix
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -34,19 +34,12 @@ in
 
   networking.hostName = "nixos"; # Define your hostname.
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/London";
-
-
 
   # Configure console keymap
   console.keyMap = "uk";

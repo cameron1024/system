@@ -9,17 +9,17 @@ return {
       require 'rust-tools'.setup {
         server = {
           settings = {
-            ["rust-analyzer"] = {
-              procMacro = {
-                enable = true,
-              },
-              cargo = {
-                features = "all",
-              },
-              checkOnSave = {
-                command = "clippy"
-              },
-            },
+            -- ["rust-analyzer"] = {
+            --   procMacro = {
+            --     enable = true,
+            --   },
+            --   cargo = {
+            --     features = "all",
+            --   },
+            --   checkOnSave = {
+            --     command = "clippy"
+            --   },
+            -- },
           },
         },
       }

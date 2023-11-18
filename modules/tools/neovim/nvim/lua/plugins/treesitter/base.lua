@@ -3,7 +3,7 @@ return {
   event = 'BufReadPost',
   main = 'nvim-treesitter.configs',
   opts = {
-    ensure_installed = { 'rust', 'c', 'dart', 'toml', 'json', 'json5', 'vim', 'vimdoc', 'query' },
+    -- ensure_installed = { 'rust', 'c', 'dart', 'toml', 'json', 'json5', 'vim', 'vimdoc', 'query' },
     sync_install = false,
     auto_install = true,
 
