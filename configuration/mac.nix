@@ -38,4 +38,12 @@ in
     taps = [ "leoafarias/fvm" ];
   };
 
+  home-manager.users.${username} = {
+    programs.nushell = {
+      shellAliases = {
+        brew = "/opt/homebrew/bin/brew";
+      };
+    };
+  };
+
 }
