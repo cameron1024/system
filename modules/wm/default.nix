@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
   imports = [
-    ./hyprland
+    ./gnome
   ];
 }
