@@ -11,6 +11,8 @@ local plugins = {
   require 'plugins.editing.completion',
   require 'plugins.editing.autosave',
 
+  require 'plugins.extras.crates',
+
   require 'plugins.treesitter.base',
 
   require 'plugins.lsp.base',

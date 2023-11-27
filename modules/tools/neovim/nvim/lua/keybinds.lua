@@ -107,3 +107,6 @@ map('n', 'q', ':%s/')
 map('n', '<leader>tf', ':TestFile<CR>')
 
 map('n', '<leader>c', ':lua require "treesitter-context".go_to_context()<CR>')
+
+-- git
+map('n', 'gb', ':Gitsigns blame_line<CR>')
