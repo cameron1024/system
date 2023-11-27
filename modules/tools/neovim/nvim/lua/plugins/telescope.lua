@@ -25,6 +25,7 @@ return {
     local builtin = require 'telescope.builtin'
 
     map('<leader>n', builtin.find_files)
+    map('<leader>b', builtin.buffers)
     map('<leader>m', builtin.lsp_workspace_symbols)
     map('<leader>g', builtin.grep_string)
     map('<leader>f', builtin.live_grep)

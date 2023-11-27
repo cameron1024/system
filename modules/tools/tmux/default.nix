@@ -22,7 +22,6 @@ in
       sensibleOnTop = true;
       historyLimit = 50000;
       keyMode = "vi";
-      tmuxp.enable = true;
       plugins = with pkgs.tmuxPlugins; [
         power-theme
         net-speed
