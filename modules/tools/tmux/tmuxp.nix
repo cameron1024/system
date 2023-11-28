@@ -6,12 +6,12 @@ in
 
 {
   home-manager.users.${username} = {
-    programs.tmuxp = {
-
-    };
-
-    programs.nushell.environmentVariables = {
-      
-    };
+    # programs.tmuxp = {
+    #
+    # };
+    #
+    # programs.nushell.environmentVariables = {
+    #   
+    # };
   };
 }
