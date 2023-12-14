@@ -77,6 +77,7 @@ in
       google-chrome
       slack
       whatsapp-for-linux
+      telegram-desktop
       discord
     ]);
 

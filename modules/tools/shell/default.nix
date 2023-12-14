@@ -1,4 +1,10 @@
-{ username, lib, ... }:
+{ pkgs, username, lib, ... }:
+
+let
+  recentNushell = pkgs.nushell.overrideAttrs {
+
+  };
+in
 
 {
   imports = [ ./bat ];
@@ -32,10 +38,10 @@
       enableNushellIntegration = true;
     };
 
-    programs.carapace = {
-      enable = true;
-      enableNushellIntegration = true;
-    };
+    # programs.carapace = {
+    #   enable = true;
+    #   enableNushellIntegration = true;
+    # };
 
     programs.starship = {
       enable = true;

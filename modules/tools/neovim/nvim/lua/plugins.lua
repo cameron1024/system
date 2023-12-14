@@ -34,7 +34,7 @@ local plugins = {
 
   require 'plugins.neotree',
 
-  require 'plugins.which_key',
+--  require 'plugins.which_key',
 }
 
 require 'lazy'.setup {
