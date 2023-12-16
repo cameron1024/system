@@ -67,6 +67,7 @@ map('n', '<leader>cp', ':let @+ = expand("%:p")<CR>')
 map('n', ';', ':')
 
 -- lsp
+map('n', '<F2>', vim.lsp.buf.rename)
 
 -- diagnostics
 map('n', '<C-n>', vim.diagnostic.goto_next)

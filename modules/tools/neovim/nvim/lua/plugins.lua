@@ -18,7 +18,6 @@ local plugins = {
   require 'plugins.lsp.base',
   require 'plugins.lsp.fidget',
   require 'plugins.lsp.trouble',
-  require 'plugins.lsp.inc_rename',
   require 'plugins.lsp.rust',
 
   require 'plugins.git.diffview',

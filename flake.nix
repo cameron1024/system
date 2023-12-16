@@ -18,19 +18,17 @@
       linuxArgs = import ./platform/linux.nix {
         inherit naersk nixpkgs;
       };
-      
-      hardware = import ./hardware/thinkpad.nix;
 
-      nixosSystem = nixpkgs.lib.nixosSystem {
+      makeLinux =  { hyprland, hardware }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
         specialArgs = {
-          inherit hardware;
+          inherit hardware hyprland;
           naersk = linuxArgs.naersk;
           username = "cameron";
           isDarwin = false;
-        };
 
+        };
         modules = [
           home-manager.nixosModules.home-manager
 
@@ -38,14 +36,22 @@
           ./modules/home
           ./modules/tools
           ./tools
-
         ];
       };
 
-      macosSystem = nix-darwin.lib.darwinSystem {
+      miniSystem = makeLinux {
+        hardware = import ./hardware/mini.nix;
+        hyprland = true;
+      };
 
+      thinkpadSystem = makeLinux {
+        hardware = import ./hardware/thinkpad.nix;
+        hyprland = false;
+      };
+
+      macosSystem = nix-darwin.lib.darwinSystem {
         specialArgs = {
-          inherit hardware naersk;
+          inherit naersk;
           username = "cameron";
           isDarwin = true;
         };
@@ -65,14 +71,19 @@
     {
       nixpkgs.config.allowUnfree = true;
 
-      nixosConfigurations.nixos = nixosSystem;
+      nixosConfigurations.mini = miniSystem;
+      nixosConfigurations.thinkpad = thinkpadSystem;
       darwinConfigurations."DGQ204V94P" = macosSystem;
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [
-          (pkgs.writeShellScriptBin "s" ''
+          (pkgs.writeShellScriptBin "st" ''
             git add -A
-            sudo nixos-rebuild switch --flake . 
+            sudo nixos-rebuild switch --flake .#thinkpad
+          '')
+          (pkgs.writeShellScriptBin "sm" ''
+            git add -A
+            sudo nixos-rebuild switch --flake .#mini
           '')
         ];
       };

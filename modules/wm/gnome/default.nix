@@ -7,9 +7,9 @@
     ./chinese-input.nix
   ];
 
-#   environment.systemPackages = with pkgs; [
-#     gnomeExtensions.pop-shell
-#   ];
+  environment.systemPackages = with pkgs; [
+    gnome.gnome-tweaks
+  ];
 
   sound.enable = true;
   hardware.pulseaudio.enable = false;

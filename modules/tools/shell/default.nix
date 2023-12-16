@@ -1,9 +1,17 @@
 { pkgs, username, lib, ... }:
 
 let
-  recentNushell = pkgs.nushell.overrideAttrs {
-
-  };
+  # recentNushell = pkgs.nushell.overrideAttrs (old: rec {
+  #   version = "0.88.1";
+  #   src = pkgs.fetchFromGitHub {
+  #     owner = "nushell";
+  #     repo = "nushell";
+  #     rev = version;
+  #     hash = "sha256-UuKXonAEMX57pZwP37N1FuUtkRE+3xB6Oj30yxSpJk4=";
+  #   };
+  #
+  #   cargoSha256 = "";
+  # });
 in
 
 {
@@ -12,6 +20,7 @@ in
   config.home-manager.users.${username} = {
     programs.nushell = {
       enable = true;
+      # package = recentNushell;
       shellAliases = {
         e = "nvim";
         ed = "neovide --multigrid";
