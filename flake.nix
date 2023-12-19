@@ -62,7 +62,7 @@
           ./configuration.nix 
           ./modules/home
           ./modules/tools
-          # ./tools
+          ./tools
 
         ];
       };
