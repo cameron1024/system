@@ -1,12 +1,16 @@
-{ pkgs, username, ... }:
+{ lib, pkgs, config, username, ... }:
 
 let
-  wallpaperPath = "/home/${username}/system/assets/background.jpg";
+  wallpaper = config.wallpaper;
 in
 
 {
 
-  home-manager.users.${username} = {
+  options = with lib; {
+    wallpaper = mkOption {};
+  };
+
+  config.home-manager.users.${username} = {
 
     home.packages = with pkgs; [
       hyprpaper 
@@ -14,8 +18,8 @@ in
     ];
 
     xdg.configFile."hypr/hyprpaper.conf".text = ''
-      preload = ${wallpaperPath}
-      wallpaper = eDP-1,${wallpaperPath}
+      preload = ${wallpaper}
+      wallpaper = DP-2,${wallpaper}
     '';
 
     wayland.windowManager.hyprland.settings = {

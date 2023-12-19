@@ -23,8 +23,10 @@ in
       historyLimit = 50000;
       keyMode = "vi";
       plugins = with pkgs.tmuxPlugins; [
-        power-theme
-        net-speed
+        {
+          plugin = power-theme;
+          extraConfig = "set -g @tmux_power_theme '#f5c2e7'";
+        }
       ];
       extraConfig = ''
         
@@ -45,7 +47,6 @@ in
         thm_orange="#fab387"
         thm_black4="#585b70"
 
-        set -g @plugin 'wfxr/tmux-net-speed'
         set -g @tmux_power_theme '#f5c2e7'
 
         bind-key -n M-\; command-prompt

@@ -32,6 +32,9 @@
 
     programs.gh = {
       enable = true;
+      settings = {
+        version = 1;
+      };
     };
 
     programs.gh-dash.enable = true;

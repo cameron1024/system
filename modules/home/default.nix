@@ -1,7 +1,4 @@
 { pkgs, lib, isDarwin, username, ... }:
-let
-  tunables = import ./tunables.nix;
-in
 
 {
   home-manager.users.${username} = {
@@ -9,6 +6,7 @@ in
     imports = [
       ./vscode
       ./wezterm
+      ./kitty
       ./erdtree.nix
     ];
 
@@ -40,7 +38,6 @@ in
       gh.enable = true;
       direnv.enable = true;
       direnv.nix-direnv.enable = true;
-      kitty = import ./kitty.nix { font = tunables.font; inherit pkgs; };
     };
 
     home.packages = with pkgs; [

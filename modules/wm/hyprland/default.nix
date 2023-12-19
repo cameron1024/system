@@ -8,6 +8,12 @@ let
     NEW_BRIGHTNESS_PERCENT=$((100 * $NEW_BRIGHTNESS / $MAX_BRIGHTNESS))
     notify-send --category change-brightness $NEW_BRIGHTNESS_PERCENT
   '';
+
+  wallpaperUrl = "https://wallpaperchill.com/download.php?file=https://media.wallpaperchill.com/2880x2560-wallpapers/2880x2560-background-hd-wallpaper-s060.jpg";
+  wallpaper = pkgs.fetchurl {
+    url = wallpaperUrl;
+    hash = "sha256-1J7pW0zTlfT2nGtxF6VW0rO+E+ZqWqbL9zr7wEPb22Y=";
+  };
 in
 
 {
@@ -18,10 +24,12 @@ in
     ./notifications
     ./widgets
     ./windowing
-    # ./displays
+    ./displays
   ];
 
   config = {
+    inherit wallpaper;
+
     programs.hyprland.enable = true;
 
     xdg.portal = {
@@ -51,6 +59,8 @@ in
 
       powertop
 
+      imv
+
       (change-brightness "10%+")
     ];
 
@@ -60,8 +70,6 @@ in
       wayland.windowManager.hyprland = {
         enable = true;
         settings = {
-
-          
           monitor = [
             "eDP-1,1920x1200@60,0x0,1"
           ];
@@ -79,8 +87,6 @@ in
             ",XF86MonBrightnessDown, exec, ${change-brightness "10%-"}/bin/change-brightness"
             ",XF86MonBrightnessUp, exec, ${change-brightness "10%+"}/bin/change-brightness"
           ];
-
-
 
         };
       };

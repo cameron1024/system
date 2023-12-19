@@ -1,46 +1,55 @@
-{ pkgs, ... }:
+{ lib, pkgs, config, ... }:
 
 let
   swaylock = pkgs.swaylock-effects;
-  screenOff = "hyprctl dispatch dpms off";
-  screenOn = "hyprctl dispatch dpms on";
+  # screenOff = "hyprctl dispatch dpms off";
+  # screenOn = "hyprctl dispatch dpms on";
+
+  wallpaper = config.wallpaper;
 in
 {
-  # actually allow swaylock to unlock the screen
-  security.pam.services.swaylock = {};
- 
-  home-manager.users.cameron = {
 
-    programs.swaylock = {
-      enable = true;   
-      package = swaylock;
-      settings = {
-        image = "/home/cameron/system/assets/background.jpg";
-        effect-blur = "20x20";
+  options = with lib; {
+    wallpaper = mkOption {};
+  };
 
-        ring-color = "b4befe";
-        ring-clear-color = "f5e0dc";
-        ring-wrong-color = "eba0ac";
-        separator-color = "eba0ac";
-        text-color = "cdd6f4";
-        text-clear-color = "f5e0dc";
-        text-wrong-color = "eba0ac";
-        key-hl-color="a6e3a1";
+  config = {
+    # actually allow swaylock to unlock the screen
+    security.pam.services.swaylock = {};
+  
+    home-manager.users.cameron = {
+
+      programs.swaylock = {
+        enable = true;   
+        package = swaylock;
+        settings = {
+          image = "${wallpaper}"; 
+          effect-blur = "10x10";
+          clock = true;
+          ring-color = "#b4befe";
+          ring-clear-color = "#f5e0dc";
+          ring-wrong-color = "#eba0ac";
+          separator-color = "#eba0ac";
+          text-color = "#cdd6f4";
+          text-clear-color = "#f5e0dc";
+          text-wrong-color = "#eba0ac";
+          key-hl-color="#a6e3a1";
+        };
       };
-    };
 
-    services.swayidle = {
-      enable = true;
-      timeouts = [
-        { timeout = 300; command = "${swaylock}/bin/swaylock"; }
-        { timeout = 600; command = screenOff; resumeCommand = screenOn; }
-      ];
-    };
-    
-    wayland.windowManager.hyprland.settings = {
-      bind = [
-        "SUPER, grave, exec, swaylock"
-      ];
+      services.swayidle = {
+        enable = true;
+        timeouts = [
+          # { timeout = 300; command = "${swaylock}/bin/swaylock"; }
+          # { timeout = 600; command = screenOff; resumeCommand = screenOn; }
+        ];
+      };
+      
+      wayland.windowManager.hyprland.settings = {
+        bind = [
+          "SUPER SHIFT, q, exec, ${swaylock}/bin/swaylock"
+        ];
+      };
     };
   };
 }

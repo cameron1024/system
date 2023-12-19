@@ -1,7 +1,10 @@
 { username, ... }:
 
 {
-  home-manager.users.${username} = {
+  imports = [ 
+    #  ./hdrop.nix 
+  ];
+  config.home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER, q, killactive"
@@ -39,8 +42,8 @@
         "SUPER SHIFT, 8, movetoworkspace, 8"
         "SUPER SHIFT, 9, movetoworkspace, 9"
 
-        "SUPER, s, togglespecialworkspace, magic"
-        "SUPER SHIFT, s, movetoworkspace, special:magic"
+        # "SUPER, s, togglespecialworkspace, magic"
+        # "SUPER SHIFT, s, movetoworkspace, special:magic"
 
         "SUPER, f, fullscreen"
         "SUPER SHIFT, f, togglefloating"

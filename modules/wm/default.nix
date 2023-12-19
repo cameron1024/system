@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ hyprland, ... }:
 {
   imports = [
-    ./gnome
+    (if hyprland then ./hyprland else ./gnome)
   ];
 }
