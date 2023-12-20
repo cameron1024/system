@@ -13,6 +13,7 @@ with lib; {
       cargo-edit
       cargo-bloat
       cargo-duplicates
+      cargo-info
 
       wasm-tools
 

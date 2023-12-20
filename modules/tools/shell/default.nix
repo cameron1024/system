@@ -36,13 +36,15 @@ let
 in
 
 {
-  imports = [ ./bat ];
+  imports = [ 
+    ./bat
+    ./fish
+    ./tools
+  ];
 
   config.home-manager.users.${username} = {
-    programs.thefuck.enable = true;
     programs.nushell = {
       enable = true;
-      # package = recentNushell;
       shellAliases = {
         e = "nvim";
         ed = "neovide --multigrid";
@@ -59,54 +61,10 @@ in
       envFile.source = ./env.nu;
     };
 
-    programs.zoxide = {
-      enable = true;
-      # package = recentZoxide;
-      enableNushellIntegration = true;
-    };
-
-    programs.direnv = {
-      enable = true;
-      enableNushellIntegration = true;
-    };
-
-    programs.carapace = {
-      enable = true;
-      enableNushellIntegration = true;
-    };
-
-    programs.starship = {
-      enable = true;
-      enableNushellIntegration = true;
-      settings = {
-        format = "$nix_shell$directory$git_branch$git_metrics$git_state";
-        right_format = "$time";
-        add_newline = true;
-
-        time = {
-          disabled = false;
-          format = "[$time]($style)";
-          time_format = "%H:%M:%S - %a %d/%m";
-          style = "dimmed";
-        };
-
-        git_branch = {
-          disabled = false;
-          format = "[$symbol$branch(:$remote_branch)]($style) ";
-        };
-
-        git_metrics = {
-          disabled = false;
-        };
-
-        nix_shell = {
-          disabled = false;
-          format = "$symbol ";
-          symbol = "[󰜗]($style)";
-        };
-
-      };
-    };
-
+    programs.zoxide.enableNushellIntegration = true;
+    programs.direnv.enableNushellIntegration = true;
+    programs.carapace.enableNushellIntegration = true;
+    programs.starship.enableNushellIntegration = true;
   };
+
 }

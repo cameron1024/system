@@ -20,6 +20,7 @@ in
     xdg.configFile."hypr/hyprpaper.conf".text = ''
       preload = ${wallpaper}
       wallpaper = DP-2,${wallpaper}
+      wallpaper = HDMI-A-1,${wallpaper}
     '';
 
     wayland.windowManager.hyprland.settings = {
@@ -42,10 +43,8 @@ in
 
       animations = {
         enabled = true;
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-
         animation = [
-          "windows, 1, 1.5, myBezier"
+          "windows, 1, 1.5, default"
           "windowsOut, 1, 1.5, default, popin 80%"
           "border, 1, 1.5, default"
           "borderangle, 1, 1.5, default"

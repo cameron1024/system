@@ -4,7 +4,7 @@
   home-manager.users.${username} = {
 
     imports = [
-      ./vscode
+      # ./vscode
       ./wezterm
       ./kitty
       ./erdtree.nix
@@ -33,11 +33,8 @@
     programs = {
       /* neovim = import ./nvim/init.nix { inherit pkgs; colors = colors; font = tunables.font; }; */
       # tmux = import ./tmux/tmux.nix { inherit pkgs; };
-      # fish = import ./fish.nix;
       # zoxide.enable = true;
       gh.enable = true;
-      direnv.enable = true;
-      direnv.nix-direnv.enable = true;
     };
 
     home.packages = with pkgs; [

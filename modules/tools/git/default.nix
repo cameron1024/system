@@ -1,5 +1,14 @@
 { username, ... }:
 
+let
+  abbrs = {
+    gs = "git switch";
+    gps = "git push";
+    gpl = "git pull";
+    grst = "git reset --hard HEAD";
+  };
+in
+
 {
   home-manager.users.${username} = {
     programs.git = {
@@ -40,12 +49,8 @@
     programs.gh-dash.enable = true;
 
     
-    programs.nushell.shellAliases = {
-      gs = "git switch";
-      gps = "git push";
-      gpl = "git pull";
-      grst = "git reset --hard HEAD";
-    };
+    programs.nushell.shellAliases = abbrs;
+    programs.fish.shellAbbrs = abbrs // { gc = "git add -A && git commit -m"; };
 
     programs.nushell.extraConfig = ''
       def gc [message] {

@@ -1,7 +1,7 @@
 { username, pkgs, ... }:
 
 let 
-  nushell = "${pkgs.nushell}/bin/nu";
+  shell = "${pkgs.fish}/bin/fish";
 in
 
 {
@@ -13,7 +13,7 @@ in
     programs.tmux = {
       enable = true;
       prefix = "C-a";
-      shell = nushell;
+      inherit shell;
       terminal = "screen-256color";
       escapeTime = 0;
       clock24 = true;
@@ -31,7 +31,7 @@ in
       extraConfig = ''
         
         set -as terminal-features ",xterm-256color:RGB"
-        set -g default-command ${nushell}
+        set -g default-command ${shell}
 
         thm_bg="#1e1e2e"
         thm_fg="#cdd6f4"
