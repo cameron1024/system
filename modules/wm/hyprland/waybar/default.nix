@@ -1,16 +1,13 @@
-{ pkgs, ... }:
+{ username, ... }:
 
 {
-  home-manager.users.cameron = {
-
-
+  home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
       exec-once = [ "waybar" ];
       bind = [
         "SUPER, b, exec, killall -SIGUSR1 waybar"
       ];
     };
-
   
     programs.waybar = {
       enable = true;

@@ -1,4 +1,4 @@
-{ pkgs, hardware, ... }:
+{ pkgs, hardware, boot, ... }:
 
 let
   linux = pkgs.linuxPackages_6_5;
@@ -27,8 +27,9 @@ in
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
+
 
   systemd.coredump.enable = true;
 

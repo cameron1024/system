@@ -19,15 +19,14 @@
         inherit naersk nixpkgs;
       };
 
-      makeLinux =  { hyprland, hardware }: nixpkgs.lib.nixosSystem {
+      makeLinux =  { hyprland, hardware, boot }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
         specialArgs = {
-          inherit hardware hyprland;
+          inherit hardware hyprland boot;
           naersk = linuxArgs.naersk;
           username = "cameron";
           isDarwin = false;
-
         };
         modules = [
           home-manager.nixosModules.home-manager
@@ -42,11 +41,13 @@
       miniSystem = makeLinux {
         hardware = import ./hardware/mini.nix;
         hyprland = true;
+        boot = "/boot";
       };
 
       thinkpadSystem = makeLinux {
         hardware = import ./hardware/thinkpad.nix;
         hyprland = false;
+        boot = "/boot/efi";
       };
 
       macosSystem = nix-darwin.lib.darwinSystem {
