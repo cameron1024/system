@@ -1,0 +1,22 @@
+window {
+    font-family: "FiraCode Nerd Font";
+    font-size: 10em;
+    color: #cdd6f4; /* text */
+    background-color: rgba(30, 30, 46, 0.95);
+}
+
+button {
+    margin: 10px;
+    padding: 20px;
+    color: #313244;
+    background-color: #f5c2e7;
+    box-shadow: 5px 5px ;
+    transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, margin 0.2s ease-in-out;
+}
+
+button:hover {
+    margin: 5px;
+    background-color: #cba6f7;
+    box-shadow: 30px 30px;
+}
+

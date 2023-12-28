@@ -15,7 +15,9 @@ local plugins = {
 
   require 'plugins.treesitter.base',
 
+  require 'plugins.lsp.aerial',
   require 'plugins.lsp.base',
+  -- require 'plugins.lsp.debug',
   require 'plugins.lsp.fidget',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.rust',

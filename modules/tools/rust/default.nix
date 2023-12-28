@@ -25,6 +25,16 @@ with lib; {
       ninja
     ];
 
+    home.sessionPath = [
+      "$HOME/.cargo/bin"
+    ];
+
+    programs.fish.shellAbbrs = {
+      r = "evcxr";
+      cg = "cargo";
+      nt = "cargo nextest run";
+    };
+
     programs.nushell.shellAliases = {
       r = "evcxr";
       cg = "cargo";

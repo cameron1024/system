@@ -41,4 +41,6 @@ vim.cmd [[
       autocmd!
       au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
   augroup END
+
+  autocmd FileType markdown,rust,dart setlocal spell
 ]]

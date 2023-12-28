@@ -1,11 +1,10 @@
 { lib, pkgs, config, ... }:
 
 let
-  swaylock = pkgs.swaylock-effects;
-  # screenOff = "hyprctl dispatch dpms off";
-  # screenOn = "hyprctl dispatch dpms on";
-
   wallpaper = config.wallpaper;
+  swaylock = pkgs.swaylock-effects;
+  screenOff = "hyprctl dispatch dpms off";
+  screenOn = "hyprctl dispatch dpms on";
 in
 {
 
@@ -40,14 +39,8 @@ in
       services.swayidle = {
         enable = true;
         timeouts = [
-          # { timeout = 300; command = "${swaylock}/bin/swaylock"; }
-          # { timeout = 600; command = screenOff; resumeCommand = screenOn; }
-        ];
-      };
-      
-      wayland.windowManager.hyprland.settings = {
-        bind = [
-          "SUPER SHIFT, q, exec, ${swaylock}/bin/swaylock"
+          { timeout = 300; command = "${swaylock}/bin/swaylock"; }
+          { timeout = 600; command = screenOff; resumeCommand = screenOn; }
         ];
       };
     };

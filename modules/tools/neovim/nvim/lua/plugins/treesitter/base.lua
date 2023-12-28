@@ -1,5 +1,6 @@
 return {
   "nvim-treesitter/nvim-treesitter",
+  dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
   event = 'BufReadPost',
   main = 'nvim-treesitter.configs',
   opts = {
@@ -19,6 +20,32 @@ return {
         node_incremental = ",",
         scope_incremental = "<C-,>",
         node_decremental = "m",
+      },
+    },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          ["af"] = "@function.outer",
+          ["if"] = "@function.inner",
+          ["ac"] = "@class.outer",
+          ["ic"] = "@class.inner",
+          ["as"] = "@scope",
+        },
+      },
+      move = {
+        enable = true,
+        set_jumps = true,
+      },
+      lsp_interop = {
+        enable = true,
+        border = 'none',
+        floating_preview_opts = {},
+        peek_definition_code = {
+          ["<leader>df"] = "@function.outer",
+          ["<leader>dF"] = "@class.outer",
+        },
       },
     },
   }

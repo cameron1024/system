@@ -9,7 +9,6 @@
     -s size
     --disk-usage logical
     --icons
-    --size-left
     --prune
   '';
 }

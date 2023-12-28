@@ -46,7 +46,7 @@
 
       thinkpadSystem = makeLinux {
         hardware = import ./hardware/thinkpad.nix;
-        hyprland = false;
+        hyprland = true;
         boot = "/boot/efi";
       };
 

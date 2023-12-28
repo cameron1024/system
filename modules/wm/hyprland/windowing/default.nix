@@ -3,13 +3,14 @@
 {
   imports = [ 
     #  ./hdrop.nix 
+    ./switcher.nix
   ];
   config.home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER, q, killactive"
 
-        "SUPER, return, exec, wezterm"
+        "SUPER, return, exec, kitty"
         "SUPER SHIFT, return, exec, google-chrome-stable"
 
         "SUPER, h, movefocus, l"

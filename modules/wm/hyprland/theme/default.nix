@@ -1,32 +1,25 @@
-{ lib, pkgs, config, username, ... }:
+{ pkgs, config, username, ... }:
 
 let
   wallpaper = config.wallpaper;
 in
 
 {
-
-  options = with lib; {
-    wallpaper = mkOption {};
-  };
-
-  config.home-manager.users.${username} = {
-
+  home-manager.users.${username} = {
     home.packages = with pkgs; [
-      hyprpaper 
+      swww 
       brightnessctl
     ];
 
     xdg.configFile."hypr/hyprpaper.conf".text = ''
       preload = ${wallpaper}
-      wallpaper = DP-2,${wallpaper}
-      wallpaper = HDMI-A-1,${wallpaper}
+      wallpaper = ,${wallpaper}
     '';
 
     wayland.windowManager.hyprland.settings = {
   
       exec-once = [
-        "hyprpaper"
+        "swww init && swww img ${wallpaper} --transition-step 1 --transition-fps 60 --transition-type random"
       ];
 
       general = {

@@ -16,8 +16,7 @@ in
       inherit shell;
       terminal = "screen-256color";
       escapeTime = 0;
-      clock24 = true;
-      mouse = true;
+      clock24 = true; mouse = true;
       resizeAmount = 5;
       sensibleOnTop = true;
       historyLimit = 50000;
@@ -58,6 +57,7 @@ in
         unbind %
 
         bind c new-window -c "#{pane_current_path}"
+        bind-key C-a command-prompt -p "window name:" "new-window -c #{pane_current_path}; rename-window '%%'"
 
         bind C-a last-window
 

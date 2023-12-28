@@ -4,7 +4,7 @@ return {
   opts = {
     persist_size = false,
     open_mapping = [[<F12>]],
-    shell = "nu",
+    shell = "fish",
   },
   -- config = function()
   --   local opts = { noremap = true, silent = true }
