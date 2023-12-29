@@ -39,13 +39,13 @@
       };
 
       miniSystem = makeLinux {
-        hardware = import ./hardware/mini.nix;
+        hardware = import ./configuration/hardware/mini.nix;
         hyprland = true;
         boot = "/boot";
       };
 
       thinkpadSystem = makeLinux {
-        hardware = import ./hardware/thinkpad.nix;
+        hardware = import ./configuration/hardware/thinkpad.nix;
         hyprland = true;
         boot = "/boot/efi";
       };

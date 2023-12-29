@@ -1,5 +1,5 @@
 [package]
-name = "cams-home-utilities"
+name = "device-manager"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 clap.workspace = true
+dirs.workspace = true
+inquire.workspace = true

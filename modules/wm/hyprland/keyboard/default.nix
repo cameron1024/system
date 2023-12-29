@@ -22,7 +22,7 @@
 
           exec-once = [
             # disable middle click paste
-            "wl-paste -p --watch wl-copy -p ''"
+            # "wl-paste -p --watch wl-copy -p ''"
           ];
 
           bind = [

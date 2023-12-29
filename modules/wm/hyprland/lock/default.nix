@@ -37,7 +37,7 @@ in
       };
 
       services.swayidle = {
-        enable = true;
+        enable = false;
         timeouts = [
           { timeout = 300; command = "${swaylock}/bin/swaylock"; }
           { timeout = 600; command = screenOff; resumeCommand = screenOn; }

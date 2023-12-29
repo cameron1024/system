@@ -1,8 +1,11 @@
 [workspace]
 
 members = [
-  "cams-home-utilities"
+  "cams-home-utilities",
+  "device-manager",
 ]
 
 [workspace.dependencies]
 clap = { version = "4", features = ["derive", "string"] }
+dirs = "5"
+inquire = "0.6"

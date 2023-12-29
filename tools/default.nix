@@ -1,7 +1,7 @@
 { naersk, ... }:
 
 let
-  packages = [ "cams-home-utilities" ];
+  packages = [ "cams-home-utilities" "device-manager" ];
 
   build = pname: naersk.buildPackage {
     inherit pname; 
