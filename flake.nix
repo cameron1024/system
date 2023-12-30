@@ -19,6 +19,8 @@
         inherit naersk nixpkgs;
       };
 
+      args = import ./configuration/args.nix { inherit macArgs linuxArgs; };
+
       makeLinux =  { hyprland, hardware, boot }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
@@ -67,8 +69,8 @@
 
         ];
       };
-    in
 
+    in
     {
       nixpkgs.config.allowUnfree = true;
 
@@ -78,13 +80,9 @@
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [
-          (pkgs.writeShellScriptBin "st" ''
+          (pkgs.writeShellScriptBin "s" ''
             git add -A
-            sudo nixos-rebuild switch --flake .#thinkpad
-          '')
-          (pkgs.writeShellScriptBin "sm" ''
-            git add -A
-            sudo nixos-rebuild switch --flake .#mini
+            eval $(device-manager switch)
           '')
         ];
       };
@@ -93,7 +91,7 @@
         packages = [
           (pkgs.writeShellScriptBin "s" ''
             git add -A
-            nix run nix-darwin -- switch --flake .
+            eval $(device-manager switch)
           '')
         ];
       };

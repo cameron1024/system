@@ -9,3 +9,5 @@ edition = "2021"
 clap.workspace = true
 dirs.workspace = true
 inquire.workspace = true
+serde.workspace = true
+toml.workspace = true

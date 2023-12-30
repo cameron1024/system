@@ -9,3 +9,5 @@ members = [
 clap = { version = "4", features = ["derive", "string"] }
 dirs = "5"
 inquire = "0.6"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
