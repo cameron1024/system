@@ -11,6 +11,8 @@
       wiki-tui
       mprocs
       speedtest-rs
+
+      hyperfine
     ];
 
     programs.zoxide.enable = true;

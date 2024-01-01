@@ -1,14 +1,22 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     naersk.url = "github:nix-community/naersk";
+    naersk.inputs.nixpkgs.follows = "nixpkgs";
+
+    hyprland-contrib.url = "github:hyprwm/contrib";
+    hyprland-contrib.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, naersk }:
+  outputs = { self, nixpkgs, home-manager, nix-darwin, naersk, ... } @ inputs:
 
     let
       macArgs = import ./platform/mac.nix {
@@ -16,7 +24,7 @@
       };
 
       linuxArgs = import ./platform/linux.nix {
-        inherit naersk nixpkgs;
+        inherit naersk nixpkgs; 
       };
 
       args = import ./configuration/args.nix { inherit macArgs linuxArgs; };
@@ -25,7 +33,7 @@
         system = "x86_64-linux";
 
         specialArgs = {
-          inherit hardware hyprland boot;
+          inherit hardware hyprland boot inputs;
           naersk = linuxArgs.naersk;
           username = "cameron";
           isDarwin = false;

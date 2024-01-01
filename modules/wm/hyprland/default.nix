@@ -1,4 +1,4 @@
-{ lib, pkgs, username, ... }:
+{ lib, pkgs, username, inputs, ... }:
 
 let
   wallpaperUrl = "https://i.redd.it/n4futnleiuia1.png";
@@ -60,6 +60,9 @@ in
       powertop
 
       imv
+
+      inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+      hyprpicker
     ];
 
     home-manager.users.${username} = {

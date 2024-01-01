@@ -1,8 +1,15 @@
-{ username, ... }:
+{ pkgs, username, ... }:
+
+let
+  kittyDropdown = pkgs.writeShellScriptBin "kitty-dropdown" (builtins.readFile ./kitty-dropdown.sh);
+in
 
 {
+
+  environment.systemPackages = [ kittyDropdown ];
   
   home-manager.users.${username} = {
+    
     wayland.windowManager.hyprland.settings = {
 
       animations = {
@@ -27,7 +34,7 @@
       ];
 
       bind = [
-        "SUPER, grave, togglespecialworkspace"
+        "SUPER, F12, togglespecialworkspace"
       ];
     };
   };

@@ -80,9 +80,6 @@ in
   virtualisation.docker.enable = true;
   virtualisation.libvirtd.enable = true;
 
-
-  environment.variables.EDITOR = "nvim";
-
   /* boot.extraModprobeConfig = pkgs.lib.mkMerge [ */
   /*   # idle audio card after one second */
   /*   "options snd_hda_intel power_save=1" */

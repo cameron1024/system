@@ -17,6 +17,10 @@ in
     '';
 
     wayland.windowManager.hyprland.settings = {
+
+      misc = {
+        disable_hyprland_logo = true;
+      };
   
       exec-once = [
         "swww init && swww img ${wallpaper} --transition-step 1 --transition-fps 60 --transition-type random"

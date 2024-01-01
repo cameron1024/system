@@ -7,6 +7,7 @@ in
 {
   imports = [
     ./tmuxp.nix
+    ./tmate.nix
   ];
   
   config.home-manager.users.${username} = {

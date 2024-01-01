@@ -15,8 +15,6 @@ with lib; {
       cargo-duplicates
       cargo-info
 
-      wasm-tools
-
       evcxr
     ] ++ optionals (!isDarwin) [
       gcc

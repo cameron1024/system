@@ -2,7 +2,7 @@
 
 {
   imports = [ 
-    #  ./hdrop.nix 
+    ./hdrop.nix 
     ./switcher.nix
   ];
   config.home-manager.users.${username} = {
