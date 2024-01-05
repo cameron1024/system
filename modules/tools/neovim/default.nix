@@ -9,8 +9,8 @@ in
 
       nil  # nix lsp
       lua-language-server
-      lldb
-      lldbAdapter
+      # lldb
+      # lldbAdapter
 
     ]; 
 
@@ -19,10 +19,10 @@ in
       recursive = true;
     };
 
-    home.sessionVariables = {
-      LIBLLDB_PATH = "${lldbAdapter}/lib/libcodelldb.so";
-      CODELLDB_PATH = "${lldbAdapter}/bin/codelldb";
-    };
+    # home.sessionVariables = {
+    #   LIBLLDB_PATH = "${lldbAdapter}/lib/libcodelldb.so";
+    #   CODELLDB_PATH = "${lldbAdapter}/bin/codelldb";
+    # };
 
   };
 }

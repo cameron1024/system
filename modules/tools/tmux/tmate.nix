@@ -1,4 +1,4 @@
-{ username, ...}:
+{ username, lib, isDarwin, ...}:
 
 {
   home-manager.users.${username} = {
@@ -6,7 +6,7 @@
       enable = true;
     };
 
-    xdg.desktopEntries = {
+    xdg.desktopEntries = lib.mkIf (!isDarwin) {
       kitty-tmate = {
         name = "kitty-fish";
         exec = "kitty fish";
