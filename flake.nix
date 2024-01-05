@@ -16,30 +16,21 @@
 
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin, naersk, ... } @ inputs:
+  outputs = { nixpkgs, home-manager, nix-darwin, naersk, ... } @ inputs:
 
     let
-      macArgs = import ./platform/mac.nix {
-        inherit naersk nixpkgs;
-      };
+      macArgs = import ./platform/mac.nix { inherit naersk nixpkgs; };
+      linuxArgs = import ./platform/linux.nix { inherit naersk nixpkgs; };
 
-      linuxArgs = import ./platform/linux.nix {
-        inherit naersk nixpkgs; 
-      };
+      specialArgs = import ./configuration/args.nix { inherit macArgs linuxArgs; };
 
-      args = import ./configuration/args.nix { inherit macArgs linuxArgs; };
-
-      makeLinux =  { hyprland, hardware, boot }: nixpkgs.lib.nixosSystem {
+      makeLinux =  { specialArgs }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
+        specialArgs = specialArgs // { inherit inputs; };
 
-        specialArgs = {
-          inherit hardware hyprland boot inputs;
-          naersk = linuxArgs.naersk;
-          username = "cameron";
-          isDarwin = false;
-        };
         modules = [
           home-manager.nixosModules.home-manager
+          { home-manager.extraSpecialArgs = specialArgs; }
 
           ./configuration.nix
           ./modules/home
@@ -48,27 +39,15 @@
         ];
       };
 
-      miniSystem = makeLinux {
-        hardware = import ./configuration/hardware/mini.nix;
-        hyprland = true;
-        boot = "/boot";
-      };
-
-      thinkpadSystem = makeLinux {
-        hardware = import ./configuration/hardware/thinkpad.nix;
-        hyprland = true;
-        boot = "/boot/efi";
-      };
+      miniSystem = makeLinux { specialArgs = specialArgs.mini; };
+      thinkpadSystem = makeLinux { specialArgs = specialArgs.thinkpad; };
 
       macosSystem = nix-darwin.lib.darwinSystem {
-        specialArgs = {
-          inherit naersk;
-          username = "cameron";
-          isDarwin = true;
-        };
+        specialArgs = specialArgs // { inherit inputs; };
 
         modules = [
           home-manager.darwinModules.home-manager
+          { home-manager.extraSpecialArgs = specialArgs; }
 
           ./configuration.nix 
           ./modules/home

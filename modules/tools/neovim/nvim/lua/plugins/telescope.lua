@@ -1,7 +1,7 @@
 return {
   'nvim-telescope/telescope.nvim',
   tag = '0.1.4',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' },
+  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'nvim-telescope/telescope-frecency.nvim' },
   event = "VeryLazy",
   config = function()
     local telescope = require 'telescope'
@@ -13,6 +13,12 @@ return {
           i = {
             ["<ESC>"] = actions.close
           },
+        },
+      },
+
+      extensions = {
+        frecency = {
+
         },
       },
     }
