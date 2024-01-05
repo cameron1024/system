@@ -1,4 +1,4 @@
-{ naersk, ... }:
+{ naersk, lib, isDarwin, ... }:
 
 let
   packages = [ "cams-home-utilities" "device-manager" ];
@@ -10,5 +10,5 @@ let
 in
 
 {
-  environment.systemPackages = map build packages;
+  environment.systemPackages = lib.mkIf (!isDarwin) (map build packages);
 }

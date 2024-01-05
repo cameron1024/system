@@ -1,6 +1,9 @@
 { pkgs, lib, isDarwin, username, ... }:
 
 {
+  home-manager.extraSpecialArgs = {
+    inherit isDarwin;
+  };
   home-manager.users.${username} = {
 
     imports = [
