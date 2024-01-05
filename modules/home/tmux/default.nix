@@ -1,4 +1,4 @@
-{ username, pkgs, ... }:
+{ pkgs, ... }:
 
 let 
   shell = "${pkgs.fish}/bin/fish";
@@ -6,11 +6,10 @@ in
 
 {
   imports = [
-    ./tmuxp.nix
     ./tmate.nix
   ];
   
-  config.home-manager.users.${username} = {
+  config = {
     programs.tmux = {
       enable = true;
       prefix = "C-a";
@@ -71,7 +70,5 @@ in
 
       '';
     };
-
-
   };
 }

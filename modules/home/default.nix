@@ -4,7 +4,9 @@
   home-manager.users.${username} = {
 
     imports = [
-      # ./vscode
+      ./shell
+      ./git
+      ./tmux
       ./wezterm
       ./kitty
       ./erdtree.nix
@@ -40,10 +42,7 @@
       tree
       rust-script
       unzip
-      navi
-      zellij
       du-dust
-      neovide
 
       lynx
 

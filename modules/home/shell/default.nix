@@ -7,8 +7,7 @@
     ./tools
   ];
 
-  config.home-manager.users.${username} = {
-
+  config = {
     home.sessionVariables = {
       EDITOR = "nvim";
       GIT_EDITOR = "nvim";

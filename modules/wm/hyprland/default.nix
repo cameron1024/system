@@ -10,6 +10,7 @@ in
 
 {
   imports = [
+    ./greeter
     ./lock
     ./theme
     ./launcher

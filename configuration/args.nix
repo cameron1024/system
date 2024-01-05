@@ -1,8 +1,19 @@
 { linuxArgs, macArgs }:
 
+let
+  displays = import ./args/displays.nix;
+in
+
 rec {
   shared = {
     username = "cameron";
+    realName = "Cameron";
+    email = "cameron.studdstreet@gmail.com";
+  };
+
+  macos = shared // {
+    naersk = macArgs.naersk;
+    isDarwin = true;
   };
 
   mini = shared // {
@@ -12,6 +23,7 @@ rec {
     laptop = false; 
     hyprland = true;
     boot = "/boot";
+    displays = with displays; [ benq lg ];
   };
 
   thinkpad = shared // {
@@ -21,10 +33,7 @@ rec {
     laptop = true;
     hyprland = false;
     boot = "/boot/efi";
+    displays = with displays; [ thinkpadBuiltin ];
   };
 
-  macos = shared // {
-    naersk = macArgs.naersk;
-    isDarwin = true;
-  };
 }

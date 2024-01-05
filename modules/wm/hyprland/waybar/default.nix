@@ -21,7 +21,7 @@
           layer = "top";
           position = "top";
           height = 30;
-          output = [ "eDP-1" ];
+          output = [ "eDP-1" "DP-2" "HDMI-A-1" ];
           modules-left = [ 
             "hyprland/workspaces" 
             "wlr/taskbar" 
