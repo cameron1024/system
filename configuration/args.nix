@@ -1,7 +1,7 @@
 { linuxArgs, macArgs }:
 
 let
-  displays = import ./args/displays.nix;
+  allDisplays = import ./args/displays.nix;
 in
 
 rec {
@@ -23,7 +23,7 @@ rec {
     laptop = false; 
     hyprland = true;
     boot = "/boot";
-    displays = with displays; [ benq lg ];
+    displays = with allDisplays; [ benq lg ];
   };
 
   thinkpad = shared // {
@@ -33,7 +33,7 @@ rec {
     laptop = true;
     hyprland = false;
     boot = "/boot/efi";
-    displays = with displays; [ thinkpadBuiltin ];
+    displays = with allDisplays; [ thinkpadBuiltin ];
   };
 
 }

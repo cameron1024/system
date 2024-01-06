@@ -1,9 +1,14 @@
 { pkgs, lib, isDarwin, username, ... }:
 
+let
+  linuxPackages = with pkgs; [
+    google-chrome
+  ];
+
+  darwinPackages = [];
+in
+
 {
-  home-manager.extraSpecialArgs = {
-    inherit isDarwin;
-  };
   home-manager.users.${username} = {
 
     imports = [
@@ -15,14 +20,6 @@
       ./erdtree.nix
       ./social
     ];
-
-    gtk = {
-      enable = true;
-      theme = {
-        package = pkgs.gnome.gnome-themes-extra;
-        name = "Adwaita-dark";
-      };
-    };
 
     nixpkgs.config.allowUnfree = true;
 
@@ -51,9 +48,7 @@
 
       silicon
 
-    ] ++ (if isDarwin then [] else [
-      google-chrome
-    ]);
+    ] ++ (if isDarwin then darwinPackages else linuxPackages);
 
   };
 

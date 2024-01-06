@@ -3,7 +3,7 @@
 {
 
   imports = [
-    ../../workarounds/cursor_fix.nix
+    ./workarounds/cursor_fix.nix
     ./chinese-input.nix
   ];
 

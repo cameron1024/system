@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, username, displays, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -21,7 +21,7 @@
           layer = "top";
           position = "top";
           height = 30;
-          output = [ "eDP-1" "DP-2" "HDMI-A-1" ];
+          output = map (d: d.name) displays;
           modules-left = [ 
             "hyprland/workspaces" 
             "wlr/taskbar" 

@@ -32,13 +32,10 @@ in
   config = {
     inherit wallpaper;
 
-    programs.hyprland.enable = true;
-
     xdg.portal = {
       enable = true;
       extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk 
-        xdg-desktop-portal-wlr
+        xdg-desktop-portal-hyprland
       ];
     };
 
@@ -67,17 +64,7 @@ in
     ];
 
     home-manager.users.${username} = {
-      wayland.windowManager.hyprland = {
-        enable = true;
-        settings = {
-          monitor = [
-            "eDP-1,1920x1200@60,0x0,1"
-          ];
-
-
-
-        };
-      };
+      wayland.windowManager.hyprland.enable = true;
     };
 
   };

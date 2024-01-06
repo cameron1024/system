@@ -4,6 +4,7 @@
     resolution = "1920x1200";
     position = "0x0";
     refreshRate = 60;
+    scale = 1;
   };
 
   benq = {
@@ -11,6 +12,7 @@
     resolution = "3840x2160";
     position = "0x0";
     refreshRate = 60;
+    scale = 1;
   };
 
   lg = {
@@ -18,6 +20,7 @@
     resolution = "2560x2880";
     position = "3840x0";
     refreshRate = 60;
+    scale = 1;
   };
  
 }
