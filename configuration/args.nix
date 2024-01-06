@@ -9,6 +9,11 @@ rec {
     username = "cameron";
     realName = "Cameron";
     email = "cameron.studdstreet@gmail.com";
+
+    fonts = {
+      normal = "Fira Sans";
+      monospace = "Fira Code NerdFont";
+    };
   };
 
   macos = shared // {
