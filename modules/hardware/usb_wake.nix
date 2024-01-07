@@ -1,4 +1,5 @@
-{ pkgs, lib, ... }: 
+{ pkgs, ... }: 
+
 let
   shell = pkgs.bash;
 in

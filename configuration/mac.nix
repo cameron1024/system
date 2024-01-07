@@ -3,6 +3,7 @@
 let
   fonts = with pkgs; [
     fira
+    monaspace
 
     (nerdfonts.override {
       fonts = [ "FiraCode" "DroidSansMono" ];

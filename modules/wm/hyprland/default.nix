@@ -37,6 +37,7 @@ in
       extraPortals = with pkgs; [
         xdg-desktop-portal-hyprland
       ];
+      config.common.default = "*";
     };
 
     sound.enable = true;

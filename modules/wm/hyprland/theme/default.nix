@@ -5,8 +5,11 @@ let
 in
 
 {
-  home-manager.users.${username} = {
 
+  # GTK needs dconf
+  programs.dconf.enable = true;
+
+  home-manager.users.${username} = {
     gtk = {
       enable = true;
 
@@ -23,8 +26,8 @@ in
         name = "Catppuccin-Mocha-Compact-Pink-Dark"; 
         package = pkgs.catppuccin-gtk.override {
           accents = [ "pink" ];
-          size = "compact";
-          tweaks = [ "rimless" ];
+          size = "standard";
+          tweaks = [];
           variant = "mocha";
         };
       };
@@ -33,7 +36,7 @@ in
 
     home.packages = with pkgs; [
       swww 
-      brightnessctl
+        brightnessctl
     ];
 
     xdg.configFile."hypr/hyprpaper.conf".text = ''

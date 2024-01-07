@@ -1,7 +1,7 @@
 { linuxArgs, macArgs }:
 
 let
-  allDisplays = import ./args/displays.nix;
+  allDisplays = import ./displays.nix;
 in
 
 rec {

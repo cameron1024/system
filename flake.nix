@@ -22,7 +22,7 @@
       macArgs = import ./platform/mac.nix { inherit naersk nixpkgs; };
       linuxArgs = import ./platform/linux.nix { inherit naersk nixpkgs; };
 
-      specialArgs = import ./configuration/args.nix { inherit macArgs linuxArgs; };
+      specialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
 
       makeLinux =  { specialArgs }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -32,7 +32,7 @@
           home-manager.nixosModules.home-manager
           { home-manager.extraSpecialArgs = specialArgs; }
 
-          ./configuration.nix
+          ./configuration
           ./modules/home
           ./modules/tools
           ./tools
@@ -49,7 +49,7 @@
           home-manager.darwinModules.home-manager
           { home-manager.extraSpecialArgs = specialArgs; }
 
-          ./configuration.nix 
+          ./configuration
           ./modules/home
           ./modules/tools
           ./tools

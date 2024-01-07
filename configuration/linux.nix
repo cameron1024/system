@@ -6,8 +6,9 @@ in
 {
   imports = [
     hardware
+    
+    ./devices
     ../modules/wm
-    ../modules/hardware/usb_wake.nix
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -15,8 +16,10 @@ in
   ];
 
     
+  fonts.fontDir.enable = true;
   fonts.packages = with pkgs; [
     fira
+    monaspace
 
     (nerdfonts.override {
       fonts = [ "FiraCode" "DroidSansMono" ];
@@ -69,8 +72,8 @@ in
     killall
 
     # should these be in gnome? or hyprland?
-    xdg-desktop-portal-wlr
-    xdg-desktop-portal
+    # xdg-desktop-portal-wlr
+    # xdg-desktop-portal
 
     linux.system76-scheduler
 
