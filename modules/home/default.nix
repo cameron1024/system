@@ -1,4 +1,4 @@
-{ pkgs, lib, isDarwin, username, ... }:
+{ pkgs, lib, isDarwin, username, inputs, ... }:
 
 let
   linuxPackages = with pkgs; [
@@ -6,19 +6,21 @@ let
   ];
 
   darwinPackages = [];
+
+  extraModules = if isDarwin then [inputs.mac-app-util.homeManagerModules.default] else [];
 in
 
 {
   home-manager.users.${username} = {
 
-    imports = [
+    imports = extraModules ++ [
       ./shell
       ./git
       ./tmux
       ./wezterm
       ./kitty
       ./social
-    ];
+    ] ;
 
     nixpkgs.config.allowUnfree = true;
 
