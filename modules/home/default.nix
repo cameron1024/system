@@ -17,7 +17,6 @@ in
       ./tmux
       ./wezterm
       ./kitty
-      ./erdtree.nix
       ./social
     ];
 

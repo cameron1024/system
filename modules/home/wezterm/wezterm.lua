@@ -1,8 +1,8 @@
 local wezterm = require 'wezterm'
 
 return {
-  font = wezterm.font 'Monaspace Krypton',
-  -- harfbuzz_features = {"zero" , "ss01", "cv05"},
+  font = wezterm.font 'Monaspace Neon',
+  harfbuzz_features = { "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "calt", "dlig", "liga"},
   enable_tab_bar = false,
   window_padding = { left = 0, right = 0, top = 0, bottom = 0, },
   default_prog = { 'tmux' },

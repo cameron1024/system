@@ -21,39 +21,34 @@
     let
       macArgs = import ./platform/mac.nix { inherit naersk nixpkgs; };
       linuxArgs = import ./platform/linux.nix { inherit naersk nixpkgs; };
+      allSpecialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
 
-      specialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
+      sharedModules = [
+        ./configuration
+        ./modules/home
+        ./modules/tools
+        ./tools
+      ];
 
-      makeLinux =  { specialArgs }: nixpkgs.lib.nixosSystem {
+      makeLinux =  { specialArgs }: nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
-        specialArgs = specialArgs // { inherit inputs; };
+        specialArgs = allSpecialArgs // { inherit inputs; };
 
-        modules = [
+        modules = sharedModules ++ [
           home-manager.nixosModules.home-manager
           { home-manager.extraSpecialArgs = specialArgs; }
-
-          ./configuration
-          ./modules/home
-          ./modules/tools
-          ./tools
         ];
       };
 
-      miniSystem = makeLinux { specialArgs = specialArgs.mini; };
-      thinkpadSystem = makeLinux { specialArgs = specialArgs.thinkpad; };
+      miniSystem = makeLinux { specialArgs = allSpecialArgs.mini; };
+      thinkpadSystem = makeLinux { specialArgs = allSpecialArgs.thinkpad; };
 
-      macosSystem = nix-darwin.lib.darwinSystem {
-        specialArgs = specialArgs // { inherit inputs; };
+      macosSystem = nix-darwin.lib.darwinSystem rec {
+        specialArgs = allSpecialArgs.macos // { inherit inputs; };
 
-        modules = [
+        modules = sharedModules ++ [
           home-manager.darwinModules.home-manager
           { home-manager.extraSpecialArgs = specialArgs; }
-
-          ./configuration
-          ./modules/home
-          ./modules/tools
-          ./tools
-
         ];
       };
 
