@@ -1,7 +1,8 @@
 { pkgs, config, username, ... }:
 
 let
-  wallpaper = config.wallpaper;
+  wallpapers = map (pkgs.fetchurl) config.wallpapers;
+  wallpaper = builtins.elemAt wallpapers 0;
 in
 
 {
@@ -9,40 +10,35 @@ in
   # GTK needs dconf
   programs.dconf.enable = true;
 
+  environment.systemPackages = with pkgs; [
+    dracula-icon-theme
+  ];
+
   home-manager.users.${username} = {
     gtk = {
       enable = true;
 
-      font = {
-        name = "Fira Sans";
+      theme = {
+        name = "Catppuccin-Mocha-Compact-Pink-Dark";
+        package = pkgs.catppuccin-gtk.override {
+          accents = [ "pink" ];
+          size = "compact";
+          tweaks = [ "rimless" ];
+          variant = "mocha";
+        };
       };
 
       cursorTheme = {
         name = "Catppuccin-Mocha-Lavender-Cursors";
         package = pkgs.catppuccin-cursors.mochaLavender;
       };
-
-      theme = {
-        name = "Catppuccin-Mocha-Compact-Pink-Dark"; 
-        package = pkgs.catppuccin-gtk.override {
-          accents = [ "pink" ];
-          size = "standard";
-          tweaks = [];
-          variant = "mocha";
-        };
-      };
     };
 
 
     home.packages = with pkgs; [
       swww 
-        brightnessctl
+      brightnessctl
     ];
-
-    xdg.configFile."hypr/hyprpaper.conf".text = ''
-      preload = ${wallpaper}
-      wallpaper = ,${wallpaper}
-    '';
 
     wayland.windowManager.hyprland.settings = {
 

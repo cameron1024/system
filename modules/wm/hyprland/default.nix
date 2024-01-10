@@ -1,11 +1,17 @@
 { lib, pkgs, username, inputs, ... }:
 
 let
-  wallpaperUrl = "https://i.redd.it/n4futnleiuia1.png";
-  wallpaper = pkgs.fetchurl {
-    url = wallpaperUrl;
-    hash = "sha256-2CMsp3bltiABLTkUEwj9hQ+ovBPXcnkp5POtOd10OfA=";
-  };
+  wallpapers = [
+    {
+      url = "https://github.com/xerolinux/xero-catppuccin-wallpapers/blob/main/usr/share/wallpapers/Catppuccin%20-%2013.png?raw=true";
+      hash = "sha256-kwcw+P8NoJPnGPdAQ8NqHfU1RbwYkkc0e0iYb7vVX2k=";
+    }
+
+    {
+      url = "https://i.redd.it/n4futnleiuia1.png";
+      hash = "sha256-2CMsp3bltiABLTkUEwj9hQ+ovBPXcnkp5POtOd10OfA=";
+    }
+  ];
 in
 
 {
@@ -15,22 +21,21 @@ in
     ./theme
     ./launcher
     ./notifications
-    ./widgets
     ./windowing
     ./displays
     ./waybar
-    ./keyboard
+    ./input
     ./wofi
     ./wlogout
     ./utilities
   ];
 
   options = with lib; {
-    wallpaper = mkOption {};
+    wallpapers = mkOption {};
   };
 
   config = {
-    inherit wallpaper;
+    inherit wallpapers;
 
     xdg.portal = {
       enable = true;
@@ -62,6 +67,8 @@ in
 
       inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
       hyprpicker
+
+      nwg-look
     ];
 
     home-manager.users.${username} = {

@@ -1,72 +1,199 @@
-{ pkgs, username, displays, ... }:
+{ pkgs, username, displays, laptop, ... }:
+let 
+  # save battery if we're on a laptop
+  defaultInterval = 0.5;
+  launchBtm = "wezterm start btm";
+in
 
 {
   environment.systemPackages = with pkgs; [
     pavucontrol
   ];
 
+  services.upower = {
+    enable = true;
+  };
+
+  services.cpupower-gui.enable = true;
+
   home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
       exec-once = [ "waybar" ];
+
       bind = [
-        "SUPER, b, exec, killall -SIGUSR1 waybar"
+        "SUPER, b, exec, killall -SIGUSR1 .waybar-wrapped"
       ];
     };
+
   
     programs.waybar = {
       enable = true;
       style = ./style.css;
+      # systemd.enable = true;
+
       settings = {
         mainBar = {
           layer = "top";
           position = "top";
-          height = 30;
+          height = 48;
           output = map (d: d.name) displays;
+          spacing = 0;
+          margin-top = 0;
+          margin-left = 10;
+          margin-right = 10;
           modules-left = [ 
-            "hyprland/workspaces" 
-            "wlr/taskbar" 
+            # "custom/launcher"
+            "cpu"
+            "memory"
+            "temperature"
+            "disk"
+            "network"
           ];
           modules-center = [ 
-            "clock" 
+            "hyprland/workspaces"
+            "hyprland/window"
           ];
-          modules-right = [ 
-            "tray"
-            "pulseaudio"
-            "temperature" 
-            "custom/power_profile" 
-            "battery" 
-            "backlight" 
-            "cpu"
-          ];
+          modules-right = if laptop 
+          then 
+            [
+              "pulseaudio"
+              "backlight"
+              # "upower"
+              "custom/notifications"
+              "tray"
+              "clock"
+              # "custom/weather"
+              # "custom/power"
+            ] 
+          else 
+            [ 
+              "pulseaudio"
+              "custom/notifications"
+              "tray"
+              "clock"
+              # "custom/weather"
+              # "custom/power"
+            ];
+
+
+          "custom/launcher" = {
+            format = "{}";
+            tooltip = true;
+            interval = defaultInterval;
+            on-click = "wofi";
+          };
+
+          "cpu" = {
+            interval = defaultInterval;
+            format = "󰍛 {usage}%";
+            on-click = launchBtm;
+          };
+
+          "memory" = {
+            interval = defaultInterval;
+            format = " {percentage}%";
+            max-length = 30;
+            tooltip = true;
+            # tooltip-format = " {used:0.1f}GB/{total:0.1f}GB";
+            on-click = launchBtm;
+          };
+
+          "temperature" = {
+            interval = defaultInterval;
+            on-click = launchBtm;
+            format = "{temperatureC}°C ";
+            format-icons = [ "" "" "" "" "" ];
+          };
+
+          "disk" = {
+            format = " {free}";
+            format-alt = " {percentage_used}% ({free})";
+            tooltip = true;
+            on-click-right = "kitty --start-as=fullscreen --title all_is_kitty sh -c 'ncdu'";
+            interval = 10;
+          };
+
+          "network" = {
+            format = "󰹹{bandwidthTotalBytes}";
+            format-disconnected = "No Internet⚡";
+            format-linked = "{ifname} (No IP)!!";
+            format-alt = " {bandwidthUpBytes} |  {bandwidthDownBytes}";
+            format-wifi = "{essid}({signalStrength}%) 󰖩 ";
+            format-ethernet = "🌐 {ipaddr}/{cidr} ";
+            tooltip-format-wifi = "󰖩  {essid}({signalStrength}%)";
+            tooltip-format-ethernet = "🌐 {ipaddr}/{cidr}";
+            tooltip-format-disconnected = "󰖪 ";
+            on-click-right = "nm-connection-editor";
+            interval = defaultInterval;
+          };
+
+          "hyprland/workspaces" = {
+            disable-scroll = false;
+            on-scroll-up = "hyprctl dispatch workspace -1";
+            on-scroll-down = "hyprctl dispatch workspace +1";
+            format = "{name}";
+            format-icons = {
+              urgent = "󰗖";
+              active = "󰝥";
+              default = "󰝦";
+            };
+          };
+
+          "hyprland/window" = {
+            format = "{}";
+            separate-outputs = true;
+            max-length = 32;
+            rewrite = {
+              "(.*)tmux" = "";
+              "(.*)Google Chrome" = "";
+            };
+          };
+
+          "pulseaudio" = {
+            format = "{icon} {volume}";
+            format-bluetooth = "{icon}  {volume}%";
+            format-bluetooth-muted = "󰝟 {icon}";
+            format-muted = "婢 {volume}";
+            tooltip-format = "{icon} {desc} // {volume}%";
+            scroll-step = 5;
+            format-icons = {
+              headphone = "";
+              hands-free = "";
+              headset = "";
+              phone = "";
+              portable = "";
+              car = "";
+              default = [ "" "" "" ];
+            };
+            on-click = "pavucontrol";
+          };
+
+          "custom/notifications" = {
+            format = "{icon}";
+            format-icons = {
+              notification = " <span foreground='red'><sup></sup></span>";
+              none = "";
+              dnd-notification = "<span foreground='red'><sup></sup></span>";
+              dnd-none = "";
+            };
+            # return-type = "json";
+            # exec-if = "which swaync-client";
+            # exec = "swaync-client -swb";
+            # on-click = "swaync-client -t -sw";
+            # on-click-right = "swaync-client -d -sw";
+            # escape = true;
+          };
+
+          "tray" = {
+            icon-size = 15;
+            spacing = 15;
+          };
+
+
         };
 
-        "hyprland/workspaces" = {
-          format = "{icon}";
-          on-scroll-up = "hyprctl dispatch workspace e+1";
-          on-scroll-down = "hyprctl dispatch workspace e-1";
-          on-click = "activate";
-        };
 
-        "custom/launch_wofi" = {
 
-        };
-
-        "pulseaudio" = {
-          on-click = "pavucontrol";
-        };
-
-        "custom/lock_screen" = {
-          format = "🔒";
-          on-click = "sh -c swaylock & disown";
-          tooltip = false;
-        };
-
-        "cpu" = {
-          interval = 10;
-          format = " {usage}%";
-          max-length = 10;
-          on-click = "kitty --start-as=fullscreen --title btm sh -c 'btm'";
-        };
 
       };
     };

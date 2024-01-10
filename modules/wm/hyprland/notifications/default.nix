@@ -1,4 +1,4 @@
-{ username, ... }:
+{ username, pkgs, ... }:
 
 {
   home-manager.users.${username} = {
@@ -9,6 +9,9 @@
       font = "FiraCode Nerd Font";
       defaultTimeout = 5000;
     };
-    
+
+    home.packages = with pkgs; [
+      swaynotificationcenter
+    ];
   };
 }

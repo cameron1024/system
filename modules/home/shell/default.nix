@@ -1,5 +1,3 @@
-{  username, ... }:
-
 {
   imports = [ 
     ./bat
@@ -32,10 +30,6 @@
       envFile.source = ./env.nu;
     };
 
-    programs.zoxide.enableNushellIntegration = true;
-    programs.direnv.enableNushellIntegration = true;
-    programs.carapace.enableNushellIntegration = true;
-    programs.starship.enableNushellIntegration = true;
   };
 
 }

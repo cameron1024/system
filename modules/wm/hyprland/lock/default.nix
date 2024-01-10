@@ -1,16 +1,14 @@
-{ lib, pkgs, config, ... }:
+{  pkgs, config, ... }:
 
 let
-  wallpaper = config.wallpaper;
+  wallpapers = map (pkgs.fetchurl) config.wallpapers;
+  wallpaper = builtins.elemAt wallpapers 1;
   swaylock = pkgs.swaylock-effects;
   screenOff = "hyprctl dispatch dpms off";
   screenOn = "hyprctl dispatch dpms on";
 in
 {
 
-  options = with lib; {
-    wallpaper = mkOption {};
-  };
 
   config = {
     # actually allow swaylock to unlock the screen

@@ -8,13 +8,31 @@
     hyperfine
   ];
 
-  programs.zoxide.enable = true;
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
-  programs.carapace.enable = true;
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
+    enableNushellIntegration = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  programs.carapace = {
+    enable = true;
+    enableFishIntegration = true;
+    enableNushellIntegration = true;
+  };
 
   programs.gitui.enable = true;
   programs.gitui.theme = ./gitui-theme.ron;
+
+  programs.navi.enable = true;
+  programs.navi.enableFishIntegration = true;
+
+  programs.fzf.enable = true;
+  programs.fzf.enableFishIntegration = true;
 
   programs.starship = {
     enable = true;

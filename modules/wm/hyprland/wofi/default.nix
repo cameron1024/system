@@ -6,9 +6,10 @@
       enable = true;
       style = builtins.readFile ./style.css;
       settings = {
-        width = 600;
-        height = 350;
+        width = 420;
+        height = 530;
         location = "center";
+        matching = "fuzzy";
         show = "drun";
         prompt = "Search...";
         filter_rate = 100;
@@ -21,6 +22,7 @@
         allow_images = true;
         image_size = 40;
         gtk_dark = true;
+        term = "kitty";
       };
     };
 

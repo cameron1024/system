@@ -15,9 +15,6 @@
             kb_layout = "gb,cn";
             kb_options = "ctrl:nocaps";  # caps lock becomes a second ctrl
 
-            touchpad = {
-              natural_scroll = true;
-            };
           };
 
           exec-once = [

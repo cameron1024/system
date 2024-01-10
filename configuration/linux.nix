@@ -21,6 +21,8 @@ in
     fira
     monaspace
 
+    noto-fonts-monochrome-emoji
+
     (nerdfonts.override {
       fonts = [ "FiraCode" "DroidSansMono" ];
     })
@@ -65,7 +67,6 @@ in
   environment.systemPackages = with pkgs; [
     firefox
     git
-    git-lfs
     vim
     linux.perf
 

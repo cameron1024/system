@@ -15,6 +15,8 @@
       f = "flutter";
       g = "z";
       q = "exit";
+
+      cpd = "cp ~/Downloads/";
     };
   };
 

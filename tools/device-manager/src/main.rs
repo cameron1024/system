@@ -1,4 +1,4 @@
-use std::{fs::File, io::ErrorKind, path::PathBuf, process::ExitCode};
+use std::{io::ErrorKind, path::PathBuf, process::ExitCode};
 
 use clap::Parser;
 use inquire::Text;

@@ -36,7 +36,10 @@ in
 
       pull.rebase = "false";
     };
+
+    lfs.enable = true;
   };
+
 
   programs.gh = {
     enable = true;
