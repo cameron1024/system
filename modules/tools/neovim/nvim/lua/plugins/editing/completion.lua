@@ -21,9 +21,11 @@ return {
     'hrsh7th/cmp-path',
     'hrsh7th/cmp-cmdline',
     'hrsh7th/cmp-emoji',
+    'f3fora/cmp-spell',
     'L3MON4D3/LuaSnip',
     'saadparwaiz1/cmp_luasnip',
-    "windwp/nvim-autopairs",
+    'windwp/nvim-autopairs',
+    'Saecki/crates.nvim',
   },
   event = "VeryLazy",
   config = function()
@@ -78,6 +80,7 @@ return {
         { name = 'path' },
         { name = 'buffer' },
         { name = 'crates' },
+        { name = 'spell' },
         { name = 'emoji',                  insert = true }
       },
     }

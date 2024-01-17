@@ -9,18 +9,15 @@ return {
 
     vim.o.laststatus = 3
 
-    local mode = {
-      'mode',
-    }
-
-    local filename = {
-      'filename',
-      path = 1,
-    }
-
     require 'lualine'.setup {
-      lualine_a = { mode },
-      lualine_c = { filename },
+      sections = {
+        lualine_a = {'mode'},
+        lualine_b = {'branch', 'diff', 'diagnostics'},
+        lualine_c = { { 'filename', path = 1 } },
+        lualine_x = {'fileformat'},
+        lualine_y = {'aerial'},
+        lualine_z = {'location'}
+      },
     }
   end
 }

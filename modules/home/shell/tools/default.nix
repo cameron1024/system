@@ -6,6 +6,8 @@
     mprocs
     speedtest-rs
     hyperfine
+
+    sad
   ];
 
   programs.zoxide = {
