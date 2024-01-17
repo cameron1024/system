@@ -1,32 +1,36 @@
 { pkgs, username, ... }:
 
 {
-  imports = [ ./chinese.nix ];
-  config = {
-    environment.systemPackages = with pkgs; [
-      brightnessctl
-      wl-clipboard
-    ];
+  i18n = {
+    inputMethod = {
+      enabled = "ibus";
+    };
+  };
 
-    home-manager.users.${username} = {
-      wayland.windowManager.hyprland = {
-        settings = {
-          input = {
-            kb_layout = "gb,cn";
-            kb_options = "ctrl:nocaps";  # caps lock becomes a second ctrl
+  environment.systemPackages = with pkgs; [
+    brightnessctl
+    wl-clipboard
+    pulseaudio
+  ];
 
-          };
+  home-manager.users.${username} = {
+    wayland.windowManager.hyprland = {
+      settings = {
+        input = {
+          kb_layout = "gb,cn";
+          kb_options = "ctrl:nocaps";  # caps lock becomes a second ctrl
 
-          exec-once = [
-            # disable middle click paste
-            # "wl-paste -p --watch wl-copy -p ''"
-          ];
-
-          bind = [
-            ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
-            ",XF86MonBrightnessUp, exec, brightnessctl set 10%+"
-          ];
         };
+
+        bind = [
+          "SUPER ALT, space, exec, hyprctl switchxkblayout logitech-usb-receiver next"
+
+          ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
+          ",XF86MonBrightnessUp, exec, brightnessctl set 10%+"
+          ",XF86AudioLowerVolume, exec, pactl set-sink-volume 0 -5%"
+          ",XF86AudioRaiseVolume, exec, pactl set-sink-volume 0 +5%"
+          ",XF86AudioMute, exec, pactl set-sink-mute 0 toggle"
+        ];
       };
     };
   };

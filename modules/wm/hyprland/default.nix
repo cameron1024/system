@@ -2,10 +2,10 @@
 
 let
   wallpapers = [
-    {
-      url = "https://github.com/xerolinux/xero-catppuccin-wallpapers/blob/main/usr/share/wallpapers/Catppuccin%20-%2013.png?raw=true";
-      hash = "sha256-kwcw+P8NoJPnGPdAQ8NqHfU1RbwYkkc0e0iYb7vVX2k=";
-    }
+    # {
+    #   url = "https://github.com/xerolinux/xero-catppuccin-wallpapers/blob/main/usr/share/wallpapers/Catppuccin%20-%2013.png";
+    #   hash = "sha256-kwcw+P8NoJPnGPdAQ8NqHfU1RbwYkkc0e0iYb7vVX2k=";
+    # }
 
     {
       url = "https://i.redd.it/n4futnleiuia1.png";
@@ -21,6 +21,7 @@ in
     ./theme
     ./launcher
     ./notifications
+    ./services
     ./windowing
     ./displays
     ./waybar

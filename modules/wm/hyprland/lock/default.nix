@@ -2,7 +2,7 @@
 
 let
   wallpapers = map (pkgs.fetchurl) config.wallpapers;
-  wallpaper = builtins.elemAt wallpapers 1;
+  wallpaper = builtins.elemAt wallpapers 0;
   swaylock = pkgs.swaylock-effects;
   screenOff = "hyprctl dispatch dpms off";
   screenOn = "hyprctl dispatch dpms on";

@@ -15,18 +15,44 @@ in
     "python-2.7.18.6"
   ];
 
+
+  fonts = {
+    fontDir.enable = true;
     
-  fonts.fontDir.enable = true;
-  fonts.packages = with pkgs; [
-    fira
-    monaspace
+    packages = with pkgs; [
+      fira
+      monaspace
+      noto-fonts
+      noto-fonts-extra
+      google-fonts
+      # noto-fonts-monochrome-emoji
+      (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
+    ];
 
-    noto-fonts-monochrome-emoji
+    fontconfig = {
+      defaultFonts = {
+        monospace = [
+          "Monaspace Neon"
+          "FiraCode Nerd Font"
+        ];
 
-    (nerdfonts.override {
-      fonts = [ "FiraCode" "DroidSansMono" ];
-    })
-  ];
+        emoji = [ 
+          "NotoEmoji-Regular"
+        ];
+
+        sansSerif = [
+          "Noto Sans"
+        ];
+
+        serif = [
+          "Noto Serif"
+        ];  
+      };
+    };
+  };
+    
+
+
 
 
   # Bootloader.

@@ -1,8 +1,11 @@
-{ pkgs, config, username, ... }:
+{ lib, pkgs, config, username, ... }:
 
 let
   wallpapers = map (pkgs.fetchurl) config.wallpapers;
-  wallpaper = builtins.elemAt wallpapers 0;
+  wallpaperList = lib.concatStrings (map toString (lib.strings.intersperse " " wallpapers));
+  randomWallpaper = pkgs.writeShellScriptBin "random-wallpaper" ''
+    cams-home-utilities random-wallpaper ${wallpaperList}
+  '';
 in
 
 {
@@ -12,6 +15,7 @@ in
 
   environment.systemPackages = with pkgs; [
     dracula-icon-theme
+    randomWallpaper
   ];
 
   home-manager.users.${username} = {
@@ -47,7 +51,7 @@ in
       };
   
       exec-once = [
-        "swww init && swww img ${wallpaper} --transition-step 1 --transition-fps 60 --transition-type random"
+        "swww init && sleep 2 && random-wallpaper"
       ];
 
       general = {

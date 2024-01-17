@@ -10,8 +10,5 @@
       defaultTimeout = 5000;
     };
 
-    home.packages = with pkgs; [
-      swaynotificationcenter
-    ];
   };
 }
