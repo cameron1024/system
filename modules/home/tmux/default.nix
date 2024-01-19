@@ -7,6 +7,7 @@ in
 {
   imports = [
     ./tmate.nix
+    ./twm.nix
   ];
   
   config = {

@@ -64,18 +64,33 @@ in
 
       decoration = {
         rounding = 20;
+
+        drop_shadow = true;
+        shadow_range = 30;
       };
 
       animations = {
         enabled = true;
-        animation = [
-          "windows, 1, 1.5, default"
-          "windowsOut, 1, 1.5, default, popin 80%"
-          "border, 1, 1.5, default"
-          "borderangle, 1, 1.5, default"
-          "borderangle, 1, 1.5, default"
-          "fade, 1, 1.5, default"
-          "workspaces, 1, 1.5, default"
+
+        bezier = [
+          "myBezier, 0.10, 0.9, 0.1, 1.05"
+        ];
+
+        animation = 
+        let
+          enabled = "1";
+          duration = "1.5";
+          curve = "myBezier";
+        in 
+
+        [
+          "windows, ${enabled}, ${duration}, ${curve}, popin 80%"
+          "windowsOut, ${enabled}, ${duration}, ${curve}, popin 80%"
+          "border, ${enabled}, ${duration}, ${curve}"
+          "borderangle, ${enabled}, ${duration}, ${curve}"
+          "borderangle, ${enabled}, ${duration}, ${curve}"
+          "fade, ${enabled}, ${duration}, ${curve}"
+          "workspaces, ${enabled}, ${duration}, ${curve}"
         ];
       };
     };

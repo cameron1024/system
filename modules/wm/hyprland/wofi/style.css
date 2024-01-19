@@ -1,75 +1,90 @@
-window {
+/* Mocha Green */
+@define-color accent #a6e3a1;
+@define-color txt #cad3f5;
+@define-color bg #24273a;
+@define-color bg2 #494d64;
+
+ * {
+    font-family: 'Monaspace Neon', monospace;
+    font-size: 14px;
+ }
+
+ /* Window */
+ window {
     margin: 0px;
-    border: 5px solid #1e1e2e;
-    background-color: #cdd6f4;
-    border-radius: 15px;
-}
+    padding: 10px;
+    border: 3px solid @accent;
+    border-radius: 7px;
+    background-color: @bg;
+ }
 
-#input {
-    padding: 4px;
-    margin: 4px;
-    padding-left: 20px;
+ /* Slide In */
+ @keyframes slideIn {
+    0% {
+       opacity: 0;
+    }
+
+    100% {
+       opacity: 1;
+    }
+ }
+
+ /* Inner Box */
+ #inner-box {
+    margin: 5px;
+    padding: 10px;
     border: none;
-    color: #cdd6f4;
-    font-weight: bold;
-    background-color: #1e1e2e;
-   	outline: none;
-    border-radius: 15px;
-    margin: 10px;
-    margin-bottom: 2px;
-}
-#input:focus {
-    border: 0px solid #1e1e2e;
-    margin-bottom: 0px;
-}
+    background-color: @bg;
+ }
 
-#inner-box {
-    margin: 4px;
-    border: 10px solid #1e1e2e;
-    color: #cdd6f4;
-    font-weight: bold;
-    background-color: #1e1e2e;
-    border-radius: 15px;
-}
+ /* Fade In */
+ @keyframes fadeIn {
+    0% {
+       opacity: 0;
+    }
 
-#outer-box {
+    100% {
+       opacity: 1;
+    }
+ }
+
+ /* Outer Box */
+ #outer-box {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    background-color: @bg;
+ }
+
+ /* Scroll */
+ #scroll {
     margin: 0px;
+    padding: 10px;
     border: none;
-    border-radius: 15px;
-    background-color: #1e1e2e;
-}
+ }
 
-#scroll {
-    margin-top: 5px;
+ /* Input */
+ #input {
+    margin: 5px;
+    padding: 10px;
     border: none;
-    border-radius: 15px;
-    margin-bottom: 5px;
-    /* background: rgb(255,255,255); */
-}
+    color: @accent;
+    background-color: @bg2;
+ }
 
-#img:selected {
-    background-color: #89b4fa;
-    border-radius: 15px;
-}
-
-#text:selected {
-    color: #cdd6f4;
-    margin: 0px 0px;
+ /* Text */
+ #text {
+    margin: 5px;
+    padding: 10px;
     border: none;
-    border-radius: 15px;
-    background-color: #89b4fa;
-}
+    color: @txt;
+ }
 
-#entry {
-    margin: 0px 0px;
-    border: none;
-    border-radius: 15px;
-    background-color: transparent;
-}
+ /* Selected Entry */
+ #entry:selected {
+   background-color: @accent;
+ }
 
-#entry:selected {
-    margin: 0px 0px;
-    border: none;
-    border-radius: 15px;
-    background-color: #89b4fa;
-}
+ #entry:selected #text {
+    color: @bg2;
+ }

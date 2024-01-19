@@ -1,4 +1,4 @@
-{ pkgs, hardware, boot, ... }:
+{ pkgs, hardware, boot, hostname, ... }:
 
 let
   linux = pkgs.linuxPackages_6_5;
@@ -64,7 +64,7 @@ in
 
   systemd.coredump.enable = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = hostname;
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
   # Enable networking

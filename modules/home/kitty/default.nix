@@ -8,13 +8,14 @@ in
 {
   programs.kitty = {
     enable = true;
-    font.name = "Monaspace Krypton";
+    font.name = "FiraCode NerdFont";
     font.size = 12;
     theme = "Catppuccin-Mocha";
     settings = {
       disable_ligatures = "never";
-      # font_features = "FiraCode-Regular +ss01 +ss02 +ss03 +ss04 +ss05 +ss07 +ss08 +zero +onum";
+      font_features = "FiraCode-Regular +ss01 +ss02 +ss03 +ss04 +ss05 +ss07 +ss08 +zero +onum";
       startup_session = "${startupSession}";
     };
+    
   };
 }

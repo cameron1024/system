@@ -9,7 +9,6 @@
         width = 420;
         height = 530;
         location = "center";
-        matching = "fuzzy";
         show = "drun";
         prompt = "Search...";
         filter_rate = 100;

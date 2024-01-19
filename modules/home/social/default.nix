@@ -11,4 +11,6 @@ in
 
 {
   home.packages = lib.mkIf (!isDarwin) packages;
+
+  xdg.configFile."BetterDiscord/themes/Catppuccin.theme.css".source = ./catppuccin-discord.css;
 }

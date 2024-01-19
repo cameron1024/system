@@ -27,6 +27,7 @@ rec {
     isDarwin = false;
     laptop = false; 
     hyprland = true;
+    hostname = "teeny";
     boot = "/boot";
     displays = with allDisplays; [ benq lg ];
   };
@@ -37,6 +38,7 @@ rec {
     isDarwin = false;
     laptop = true;
     hyprland = false;
+    hostname = "thinkchad";
     boot = "/boot/efi";
     displays = with allDisplays; [ thinkpadBuiltin ];
   };

@@ -33,9 +33,9 @@
         ./tools
       ];
 
-      makeLinux =  { specialArgs }: nixpkgs.lib.nixosSystem rec {
+      makeLinux =  { args }: nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
-        specialArgs = allSpecialArgs // { inherit inputs; };
+        specialArgs = args // { inherit inputs; };
 
         modules = sharedModules ++ [
           home-manager.nixosModules.home-manager
@@ -43,8 +43,8 @@
         ];
       };
 
-      miniSystem = makeLinux { specialArgs = allSpecialArgs.mini; };
-      thinkpadSystem = makeLinux { specialArgs = allSpecialArgs.thinkpad; };
+      miniSystem = makeLinux { args = allSpecialArgs.mini; };
+      thinkpadSystem = makeLinux { args = allSpecialArgs.thinkpad; };
 
       macosSystem = nix-darwin.lib.darwinSystem rec {
         specialArgs = allSpecialArgs.macos // { inherit inputs; };
