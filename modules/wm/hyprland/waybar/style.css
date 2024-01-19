@@ -43,7 +43,7 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "Monaspace Krypton", monospace;
+  font-family: "FiraCode Nerd Font", monospace;
   font-size: 16px;
   min-height: 0;
 }
@@ -392,10 +392,12 @@
 /* Backlight Module */
 #backlight {
   color: @peach;
-  border-radius: 0;
   margin-right: 0px;
-  padding-left: 5px;
+  margin-left: 0px;
+  padding-left: 10px;
   padding-right: 5px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 /* =============================== */
@@ -416,9 +418,10 @@
 /* Battery Module */
 #upower {
   color: @green;
-  border-radius: 0;
-  margin-right: 0px;
-  padding-left: 5px;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  margin-right: 10px;
+  padding-left: 10px;
   padding-right: 5px;
 }
 #battery {

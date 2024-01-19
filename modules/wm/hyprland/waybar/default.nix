@@ -58,7 +58,7 @@ in
             [
               "pulseaudio"
               "backlight"
-              # "upower"
+              "upower"
               "custom/notifications"
               "tray"
               "clock"
@@ -166,6 +166,10 @@ in
               default = [ "" "" "" ];
             };
             on-click = "pavucontrol";
+          };
+
+          "backlight" = {
+            format = "󰃠 {percent}%";
           };
 
           "custom/notifications" = {

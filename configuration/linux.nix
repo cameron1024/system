@@ -25,11 +25,14 @@ in
       noto-fonts
       noto-fonts-extra
       google-fonts
+      font-awesome
       # noto-fonts-monochrome-emoji
       (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
     ];
 
     fontconfig = {
+      enable = true;
+
       defaultFonts = {
         monospace = [
           "Monaspace Neon"
@@ -38,6 +41,8 @@ in
 
         emoji = [ 
           "NotoEmoji-Regular"
+          "Font Awesome 6 Free" 
+          "Font Awesome 6 Brands" 
         ];
 
         sansSerif = [

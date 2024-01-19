@@ -37,7 +37,7 @@ rec {
     naersk = linuxArgs.naersk;
     isDarwin = false;
     laptop = true;
-    hyprland = false;
+    hyprland = true;
     hostname = "thinkchad";
     boot = "/boot/efi";
     displays = with allDisplays; [ thinkpadBuiltin ];

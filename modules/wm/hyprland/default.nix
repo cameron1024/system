@@ -8,6 +8,11 @@ let
     # }
 
     {
+      url = "https://w.wallhaven.cc/full/6d/wallhaven-6dygpl.jpg";
+      hash = "sha256-GXrhyPoLdl3EncpLNNdVJs1YLyB7Bd2VxyqunbniC0k=";
+    }
+
+    {
       url = "https://i.redd.it/n4futnleiuia1.png";
       hash = "sha256-2CMsp3bltiABLTkUEwj9hQ+ovBPXcnkp5POtOd10OfA=";
     }
