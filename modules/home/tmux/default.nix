@@ -1,7 +1,17 @@
-{ pkgs, ... }:
+{ pkgs, laptop, ... }:
 
 let 
   shell = "${pkgs.fish}/bin/fish";
+
+  batteryString = if laptop then "battery " else "";
+  modules = "${batteryString}date_time session";
+
+  laptopModules = with pkgs.tmuxPlugins; [
+    {
+      plugin = battery;
+      extraConfig = "set -g @plugin 'tmux-plugins/tmux-battery'";
+    }
+  ];
 in
 
 {
@@ -23,31 +33,38 @@ in
       historyLimit = 50000;
       keyMode = "vi";
       plugins = with pkgs.tmuxPlugins; [
+
+
         {
-          plugin = power-theme;
-          extraConfig = "set -g @tmux_power_theme '#f5c2e7'";
+          plugin = catppuccin;
+          extraConfig = ''
+            set -g @plugin 'catppuccin/tmux'
+            set -g @catppuccin_flavour 'mocha'
+
+            set -g @catppuccin_date_time_text "%H:%M %d/%m"
+
+            set -g @catppuccin_window_left_separator "█"
+            set -g @catppuccin_window_right_separator "█ "
+            set -g @catppuccin_window_number_position "right"
+            set -g @catppuccin_window_middle_separator "  █"
+
+            set -g @catppuccin_window_default_fill "number"
+
+            set -g @catppuccin_window_current_fill "number"
+
+            set -g @catppuccin_status_modules "${modules}"
+            set -g @catppuccin_status_left_separator  ""
+            set -g @catppuccin_status_right_separator " "
+            set -g @catppuccin_status_right_separator_inverse "yes"
+            set -g @catppuccin_status_fill "all"
+            set -g @catppuccin_status_connect_separator "no"
+          '';
         }
-      ];
+      ] ++ (if laptop then laptopModules else []);
       extraConfig = ''
         
         set -as terminal-features ",xterm-256color:RGB"
         set -g default-command ${shell}
-
-        thm_bg="#1e1e2e"
-        thm_fg="#cdd6f4"
-        thm_cyan="#89dceb"
-        thm_black="#181825"
-        thm_gray="#313244"
-        thm_magenta="#cba6f7"
-        thm_pink="#f5c2e7"
-        thm_red="#f38ba8"
-        thm_green="#a6e3a1"
-        thm_yellow="#f9e2af"
-        thm_blue="#89b4fa"
-        thm_orange="#fab387"
-        thm_black4="#585b70"
-
-        set -g @tmux_power_theme '#f5c2e7'
 
         bind-key -n M-\; command-prompt
 
