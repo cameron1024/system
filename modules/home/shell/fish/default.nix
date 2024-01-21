@@ -3,6 +3,7 @@
     enable = true;
     shellAbbrs = {
       e = "nvim";
+      d = "nvim -d";
       p = "cd ~/projects/playground";
       ls = "exa -l";
       dev = "nix develop --command fish";

@@ -16,6 +16,7 @@
       enable = true;
       shellAliases = {
         e = "nvim";
+        d = "nvim -d";
         ed = "neovide --multigrid";
         p = "cd ~/projects/playground";
         dev = "nix develop --command fish";
