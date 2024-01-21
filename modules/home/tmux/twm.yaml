@@ -1,0 +1,59 @@
+search_paths:  
+    - "~"      
+
+exclude_path_components:  
+  - .git
+  - .direnv
+  - target
+
+max_search_depth: 5  
+session_name_path_components: 3    
+                                   
+                                   
+
+workspace_definitions:             
+    - name: docker-compose         
+      has_any_file:
+        - docker-compose.yaml
+        - docker-compose.yml
+      has_all_files:
+        - Dockerfile
+        - .git
+
+    - name: catchall               
+      default_layout: catchall-dev 
+
+    - name: rust
+      has_any_file:
+        - Cargo.toml
+        - Cargo.lock
+      default_layout: rust-dev
+
+
+layouts:                           
+
+    - name: rust-dev
+      commands:
+        - tmux split-window -h
+        - tmux resize-pane -x 80
+        - tmux select-pane -t 0
+        - tmux send-keys -t 1 'cargo watch -x test -x run' C-m
+        - nvim .
+
+    - name: catchall-dev
+      commands:
+        - nvim .
+
+    - name: split-bottom-panes
+      commands:
+        - tmux split-window -v
+        - tmux resize-pane -y 20
+        - tmux split-window -h
+        - tmux select-pane -t 0
+
+    - name: syslog-monitor
+      inherits:
+        - split-bottom-panes       
+      commands:
+        - tmux send-keys -t 1 'tail -f /var/log/syslog' C-m
+        - tmux send-keys -t 2 'journalctl -f' C-m

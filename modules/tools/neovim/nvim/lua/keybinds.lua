@@ -34,9 +34,17 @@ map('i', '<C-j>', '<Down>')
 map('i', '<C-h>', '<Left>')
 map('i', '<C-l>', '<Right>')
 
+map('v', '<C-k>', '<Up>')
+map('v', '<C-j>', '<Down>')
+map('v', '<C-h>', '<Left>')
+map('v', '<C-l>', '<Right>')
+
 -- shift + hl to move far in normal mode
 map('n', 'H', '0')
 map('n', 'L', '$')
+
+map('v', '<C-H>', '0')
+map('v', '<C-L>', '$')
 
 -- indenting selections without deselecting
 map('v', '<', '<gv')

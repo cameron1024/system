@@ -34,6 +34,10 @@ in
       keyMode = "vi";
       plugins = with pkgs.tmuxPlugins; [
 
+        {
+          plugin = sessionist;
+          extraConfig = "set -g @plugin 'tmux-plugins/tmux-sessionist'";
+        }
 
         {
           plugin = catppuccin;
