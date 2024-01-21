@@ -43,7 +43,7 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "FiraCode Nerd Font", monospace;
+  font-family: "FiraCode Nerd Font", "Font Awesome 6 Free", monospace;
   font-size: 16px;
   min-height: 0;
 }

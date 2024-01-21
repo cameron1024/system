@@ -16,49 +16,6 @@ in
   ];
 
 
-  fonts = {
-    fontDir.enable = true;
-    
-    packages = with pkgs; [
-      fira
-      monaspace
-      noto-fonts
-      noto-fonts-extra
-      google-fonts
-      font-awesome
-      # noto-fonts-monochrome-emoji
-      (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" ]; })
-    ];
-
-    fontconfig = {
-      enable = true;
-
-      defaultFonts = {
-        monospace = [
-          "Monaspace Neon"
-          "FiraCode Nerd Font"
-        ];
-
-        emoji = [ 
-          "NotoEmoji-Regular"
-          "Font Awesome 6 Free" 
-          "Font Awesome 6 Brands" 
-        ];
-
-        sansSerif = [
-          "Noto Sans"
-        ];
-
-        serif = [
-          "Noto Serif"
-        ];  
-      };
-    };
-  };
-    
-
-
-
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

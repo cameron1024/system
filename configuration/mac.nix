@@ -1,24 +1,11 @@
 { pkgs, username, ... }:
 
-let
-  fonts = with pkgs; [
-    fira
-    monaspace
-
-    (nerdfonts.override {
-      fonts = [ "FiraCode" "DroidSansMono" ];
-    })
-  ];
-
-in
 
 {
   environment.systemPackages = with pkgs; [
     karabiner-elements 
   ];
 
-  fonts.fonts = fonts;
-  fonts.fontDir.enable = true;
 
   system.keyboard.enableKeyMapping = true;
   system.keyboard.remapCapsLockToControl = true;

@@ -2,7 +2,6 @@ local wezterm = require 'wezterm'
 
 return {
   font = wezterm.font_with_fallback {
-    'Monaspace Neon',
     'FiraCode Nerd Font',
   },
   harfbuzz_features = { "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "ss07", "ss08", "calt", "dlig", "liga" },

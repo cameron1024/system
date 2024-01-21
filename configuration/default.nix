@@ -6,7 +6,7 @@ in
 
 {
   imports = [
-    ./shared.nix
+    ./shared
     platformSpecific
   ];
 }
