@@ -1,7 +1,7 @@
 { isDarwin, ... }:
 
 let
-  platformSpecific = if isDarwin then ./mac.nix else ./linux.nix;
+  platformSpecific = if isDarwin then ./mac else ./linux;
 in
 
 {

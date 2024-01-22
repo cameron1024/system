@@ -19,6 +19,7 @@ rec {
   macos = shared // {
     naersk = macArgs.naersk;
     isDarwin = true;
+    laptop = true;
   };
 
   mini = shared // {

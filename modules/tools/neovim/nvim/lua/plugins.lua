@@ -16,9 +16,9 @@ local plugins = {
 
   require 'plugins.treesitter.base',
 
+  require 'plugins.lsp.action-preview',
   require 'plugins.lsp.aerial',
   require 'plugins.lsp.base',
-  -- require 'plugins.lsp.debug',
   require 'plugins.lsp.fidget',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.rust',
@@ -35,8 +35,6 @@ local plugins = {
   require 'plugins.firenvim',
 
   require 'plugins.neotree',
-
---  require 'plugins.which_key',
 }
 
 require 'lazy'.setup {

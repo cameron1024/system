@@ -7,8 +7,9 @@ in
   imports = [
     hardware
     
-    ./devices
-    ../modules/wm
+    ./fonts.nix
+    ../devices
+    ../../modules/wm
   ];
 
   nixpkgs.config.permittedInsecurePackages = [

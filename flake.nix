@@ -77,6 +77,7 @@
       devShells."aarch64-darwin".default = with macArgs; pkgs.mkShell {
         packages = [
           (pkgs.writeShellScriptBin "s" ''
+            git add -A
             nix run nix-darwin --extra-experimental-features flakes --extra-experimental-features nix-command -- switch --flake .
           '')
         ];

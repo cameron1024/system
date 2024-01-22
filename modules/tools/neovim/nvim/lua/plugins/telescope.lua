@@ -1,7 +1,13 @@
 return {
   'nvim-telescope/telescope.nvim',
   tag = '0.1.4',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'nvim-telescope/telescope-frecency.nvim' },
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-tree/nvim-web-devicons',
+    'nvim-telescope/telescope-frecency.nvim',
+    'nvim-telescope/telescope-ui-select.nvim',
+    'fdschmidt93/telescope-egrepify.nvim',
+  },
   event = "VeryLazy",
   config = function()
     local telescope = require 'telescope'
@@ -21,7 +27,6 @@ return {
       },
 
       pickers = {
-
         find_files = default_picker,
         buffers = default_picker,
         lsp_workspace_symbols = default_picker,
@@ -33,13 +38,16 @@ return {
       },
 
       extensions = {
-        frecency = {
-
+        ["ui-select"] = {
+          require 'telescope.themes'.get_dropdown {},
         },
+        frecency = {},
       },
     }
 
     telescope.load_extension "frecency"
+    telescope.load_extension "ui-select"
+    telescope.load_extension "egrepify"
 
 
     local map = function(key, action)
