@@ -48,5 +48,15 @@ return {
         },
       },
     },
-  }
+  },
+  config = function()
+    require 'nvim-treesitter.parsers'.get_parser_configs().just = {
+      install_info = {
+        url = "https://github.com/IndianBoy42/tree-sitter-just",
+        files = { "src/parser.c", "src/scanner.c" },
+        branch = "main",
+      },
+      maintainers = { "@IndianBoy42" },
+    }
+  end
 }

@@ -16,6 +16,7 @@ in
     "python-2.7.18.6"
   ];
 
+  
 
 
   # Bootloader.
@@ -23,6 +24,8 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
+
+
 
 
   systemd.coredump.enable = true;

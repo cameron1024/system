@@ -17,13 +17,18 @@
     mac-app-util.url = "github:hraban/mac-app-util";
     mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
 
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+
+    anyrun.url = "github:Kirottu/anyrun";
+    anyrun.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
-  outputs = { nixpkgs, home-manager, nix-darwin, naersk, mac-app-util, ... } @ inputs:
+  outputs = { nixpkgs, home-manager, nix-darwin, naersk, mac-app-util, anyrun, ... } @ inputs:
 
     let
-      macArgs = import ./platform/mac.nix { inherit naersk nixpkgs; };
-      linuxArgs = import ./platform/linux.nix { inherit naersk nixpkgs; };
+      macArgs = import ./platform/mac.nix inputs;
+      linuxArgs = import ./platform/linux.nix inputs;
       allSpecialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
 
       sharedModules = [

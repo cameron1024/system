@@ -23,7 +23,7 @@ in
 
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER SHIFT, space, exec, rofi -show combi"
+        # "SUPER SHIFT, space, exec, rofi -show combi"
       ];
     };
   };

@@ -8,6 +8,7 @@
     hyperfine
 
     sad
+    ripdrag
   ];
 
   programs.zoxide = {

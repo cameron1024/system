@@ -7,10 +7,14 @@ let
 
   darwinPackages = [];
 
-  extraModules = if isDarwin then [inputs.mac-app-util.homeManagerModules.default] else [];
+  extraModules = 
+    if isDarwin 
+    then [inputs.mac-app-util.homeManagerModules.default] 
+    else [inputs.anyrun.homeManagerModules.default];
 in
 
 {
+  home-manager.useGlobalPkgs = true;
   home-manager.users.${username} = {
 
     imports = extraModules ++ [
