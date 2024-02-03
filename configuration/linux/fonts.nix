@@ -7,12 +7,18 @@
     fontDir.enable = true;
     
     packages = with pkgs; [
+ # icon fonts
+      material-symbols
+      # normal fonts
       noto-fonts
-      noto-fonts-extra
       noto-fonts-cjk
       noto-fonts-emoji
-      font-awesome
-      open-sans
+      roboto
+
+      maple-mono
+      maple-mono-NF
+      maple-mono-SC-NF
+
       nerdfonts
     ];
 

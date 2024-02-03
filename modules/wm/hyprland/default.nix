@@ -70,6 +70,7 @@ in
 
       powertop
 
+      pcmanfm
       imv
 
       inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
@@ -79,7 +80,14 @@ in
     ];
 
     home-manager.users.${username} = {
-      wayland.windowManager.hyprland.enable = true;
+      wayland.windowManager.hyprland = {
+        enable = true;
+        settings = {
+          exec-once = [
+            "pcmanfm --daemon-mode" 
+          ];
+        };
+      };
     };
 
   };

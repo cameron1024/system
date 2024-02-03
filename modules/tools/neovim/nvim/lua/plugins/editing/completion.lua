@@ -1,11 +1,11 @@
 function leave_snippet()
-    if
-        ((vim.v.event.old_mode == 's' and vim.v.event.new_mode == 'n') or vim.v.event.old_mode == 'i')
-        and require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
-        and not require('luasnip').session.jump_active
-    then
-        require('luasnip').unlink_current()
-    end
+  if
+      ((vim.v.event.old_mode == 's' and vim.v.event.new_mode == 'n') or vim.v.event.old_mode == 'i')
+      and require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
+      and not require('luasnip').session.jump_active
+  then
+    require('luasnip').unlink_current()
+  end
 end
 
 -- stop snippets when you leave to normal mode
@@ -21,7 +21,6 @@ return {
     'hrsh7th/cmp-path',
     'hrsh7th/cmp-cmdline',
     'hrsh7th/cmp-emoji',
-    'f3fora/cmp-spell',
     'L3MON4D3/LuaSnip',
     'saadparwaiz1/cmp_luasnip',
     'windwp/nvim-autopairs',
@@ -80,7 +79,6 @@ return {
         { name = 'path' },
         { name = 'buffer' },
         { name = 'crates' },
-        { name = 'spell' },
         { name = 'emoji',                  insert = true }
       },
     }
@@ -91,4 +89,3 @@ return {
     )
   end
 }
-

@@ -100,8 +100,8 @@ map('n', '<leader>a', vim.lsp.buf.code_action)
 map('n', '<MS-f>', function() vim.lsp.buf.format { async = true } end)
 map('n', 'K', vim.lsp.buf.hover)
 
-map('n', '<C-p>', ':RustLsp parentModule')
-map('n', '<leader>rm', ':RustLsp expandMacro')
+map('n', '<C-p>', ':RustLsp parentModule<CR>')
+map('n', '<leader>rm', ':RustLsp expandMacro<CR>')
 map('n', '<leader>rl', require 'ferris.methods.view_memory_layout')
 
 -- editor settings

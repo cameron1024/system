@@ -9,6 +9,7 @@
 
     sad
     ripdrag
+    fzf-make
   ];
 
   programs.zoxide = {
@@ -36,6 +37,12 @@
 
   programs.fzf.enable = true;
   programs.fzf.enableFishIntegration = true;
+
+  programs.yazi = {
+    enable = true;
+    enableFishIntegration = true;
+    enableNushellIntegration = true;
+  };
 
   programs.starship = {
     enable = true;
