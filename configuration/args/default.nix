@@ -48,7 +48,10 @@ rec {
   };
 
   server = shared // {
-    
+    isDarwin = false;
+    headless = true;
+    laptop = false; 
+    hyprland = false;
   };
 
 }

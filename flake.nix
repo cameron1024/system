@@ -76,6 +76,7 @@
         pkgs = linuxArgs.pkgs;
 
         modules = [
+          { home.stateVersion = "23.11"; }
           ./modules/home
           ./modules/tools
         ];
