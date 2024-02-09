@@ -3,6 +3,7 @@
     ./bat
     ./fish
     ./tools
+    ./toys
   ];
 
   config = {

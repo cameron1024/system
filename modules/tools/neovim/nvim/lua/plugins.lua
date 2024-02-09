@@ -23,6 +23,8 @@ local plugins = {
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.rust',
 
+  -- require 'plugins.test.neotest',
+
   require 'plugins.git.diffview',
   require 'plugins.git.gitsigns',
 

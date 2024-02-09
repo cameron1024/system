@@ -9,6 +9,10 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
+if vim.g.neovide then
+  vim.o.guifont = "FiraCode Nerd Font:h14"
+end
+
 
 vim.g.firenvim_config = {
   localSettings = {

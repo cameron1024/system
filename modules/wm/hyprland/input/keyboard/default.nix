@@ -2,10 +2,8 @@
 
 {
   i18n.inputMethod = {
-    enabled = "ibus";
-    ibus.engines = with pkgs.ibus-engines; [
-      libpinyin
-    ];
+    enabled = "fcitx5";
+    fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-chinese-addons fcitx5-table-extra ];
   };
 
   environment.systemPackages = with pkgs; [

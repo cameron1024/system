@@ -32,6 +32,7 @@ in
     ./displays
     ./waybar
     ./input
+    ./screenshot
     ./wofi
     ./wlogout
     ./utilities
@@ -75,6 +76,7 @@ in
 
       inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
       hyprpicker
+
 
       nwg-look
     ];

@@ -19,6 +19,7 @@ rec {
   macos = shared // {
     naersk = macArgs.naersk;
     isDarwin = true;
+    headless = false;
     laptop = true;
   };
 
@@ -26,6 +27,7 @@ rec {
     hardware = import ./hardware/mini.nix;
     naersk = linuxArgs.naersk;
     isDarwin = false;
+    headless = false;
     laptop = false; 
     hyprland = true;
     hostname = "teeny";
@@ -37,11 +39,16 @@ rec {
     hardware = import ./hardware/thinkpad.nix;
     naersk = linuxArgs.naersk;
     isDarwin = false;
+    headless = false;
     laptop = true;
     hyprland = true;
     hostname = "thinkchad";
     boot = "/boot/efi";
     displays = with allDisplays; [ thinkpadBuiltin ];
+  };
+
+  server = shared // {
+    
   };
 
 }

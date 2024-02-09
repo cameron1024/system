@@ -1,5 +1,7 @@
 return {
   "klen/nvim-test",
   event = "VeryLazy",
-  opts = {},
+  opts = {
+    terminal = "toggleterm",
+  },
 }

@@ -102,7 +102,7 @@ map('n', 'K', vim.lsp.buf.hover)
 
 map('n', '<C-p>', ':RustLsp parentModule<CR>')
 map('n', '<leader>rm', ':RustLsp expandMacro<CR>')
-map('n', '<leader>rl', require 'ferris.methods.view_memory_layout')
+-- map('n', '<leader>rl', require 'ferris.methods.view_memory_layout')
 
 -- editor settings
 map('n', '#', ':set relativenumber!<CR>')

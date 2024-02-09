@@ -68,7 +68,19 @@
 
       nixosConfigurations.mini = miniSystem;
       nixosConfigurations.thinkpad = thinkpadSystem;
+
       darwinConfigurations."DGQ204V94P" = macosSystem;
+
+      homeConfigurations."cameron" = home-manager.lib.homeManagerConfiguration {
+        extraSpecialArgs = allSpecialArgs.server;
+        pkgs = linuxArgs.pkgs;
+
+        modules = [
+          ./modules/home
+          ./modules/tools
+        ];
+
+      };
 
       devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
         packages = [

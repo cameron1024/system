@@ -42,6 +42,13 @@
     enable = true;
     enableFishIntegration = true;
     enableNushellIntegration = true;
+    settings = {
+      opener = {
+        text = [
+          { exec = ''nvim "$@"''; block = true; }
+        ];
+      };
+    };
   };
 
   programs.starship = {
