@@ -34,7 +34,6 @@
       sharedModules = [
         ./configuration
         ./modules/home
-        ./modules/tools
         ./tools
       ];
 
@@ -78,7 +77,6 @@
         modules = [
           { home.stateVersion = "23.11"; }
           ./modules/home
-          ./modules/tools
         ];
 
       };

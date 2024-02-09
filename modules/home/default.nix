@@ -24,6 +24,7 @@ in
       ./wezterm
       ./kitty
       ./social
+      ./tools
     ] ;
 
     nixpkgs.config.allowUnfree = true;
