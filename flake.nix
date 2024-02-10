@@ -33,7 +33,6 @@
 
       sharedModules = [
         ./configuration
-        ./modules/home
         ./tools
       ];
 
@@ -43,7 +42,14 @@
 
         modules = sharedModules ++ [
           home-manager.nixosModules.home-manager
-          { home-manager.extraSpecialArgs = specialArgs; }
+
+          { 
+            home-manager.extraSpecialArgs = specialArgs; 
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.${allSpecialArgs.shared.username} = {
+              imports = [ ./modules/home ];
+            };
+          }
         ];
       };
 
@@ -55,7 +61,13 @@
 
         modules = sharedModules ++ [
           home-manager.darwinModules.home-manager
-          { home-manager.extraSpecialArgs = specialArgs; }
+          { 
+            home-manager.extraSpecialArgs = specialArgs; 
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.${allSpecialArgs.shared.username} = {
+              imports = [ ./modules/home ];
+            };
+          }
           
           mac-app-util.darwinModules.default
         ];

@@ -14,49 +14,46 @@ let
 in
 
 {
-  home-manager.useGlobalPkgs = true;
-  home-manager.users.${username} = {
 
-    imports = extraModules ++ [
-      ./shell
-      ./git
-      ./tmux
-      ./wezterm
-      ./kitty
-      ./social
-      ./tools
-    ] ;
+  imports = extraModules ++ [
+    ./shell
+    ./git
+    ./tmux
+    ./wezterm
+    ./kitty
+    ./social
+    ./tools
+  ];
 
-    nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
-    home.username = lib.mkIf (!isDarwin) username;
-    home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
-    home.stateVersion = "22.05";
+  home.username = lib.mkIf (!isDarwin) username;
+  home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
+  home.stateVersion = "22.05";
 
-    # override cursor theme
-    home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
+  # override cursor theme
+  home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
 
-    home.packages = with pkgs; [
-      ripgrep
-      eza
-      fd
-      curl
-      xclip
-      tokei
-      jq
-      bottom
-      tree
-      rust-script
-      unzip
-      du-dust
+  home.packages = with pkgs; [
+    ripgrep
+    eza
+    fd
+    curl
+    xclip
+    tokei
+    jq
+    bottom
+    tree
+    rust-script
+    unzip
+    du-dust
 
-      lynx
+    lynx
 
-      silicon
+    silicon
 
-    ] ++ (if isDarwin then darwinPackages else linuxPackages);
+  ] ++ (if isDarwin then darwinPackages else linuxPackages);
 
-  };
 
 }
 
