@@ -71,7 +71,7 @@
       darwinConfigurations."DGQ204V94P" = macosSystem;
 
       homeConfigurations."cameron" = home-manager.lib.homeManagerConfiguration {
-        extraSpecialArgs = allSpecialArgs.server // inputs;
+        extraSpecialArgs = allSpecialArgs.server // { inherit inputs; };
         pkgs = linuxArgs.pkgs;
 
         modules = [
