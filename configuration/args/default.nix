@@ -48,6 +48,7 @@ rec {
   };
 
   server = shared // {
+    naersk = linuxArgs.naersk;
     isDarwin = false;
     headless = true;
     laptop = false; 

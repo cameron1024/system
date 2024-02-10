@@ -1,7 +1,9 @@
-{ hyprland, ... }:
+{ hyprland, headless, ... }:
+
+let 
+  wm = if hyprland then ./hyprland else ./gnome;
+in
 
 {
-  imports = [
-    (if hyprland then ./hyprland else ./gnome)
-  ];
+  imports = if headless then [] else [ wm ];
 }
