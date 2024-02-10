@@ -29,7 +29,6 @@ in
 
   home.username = lib.mkIf (!isDarwin) username;
   home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
-  home.stateVersion = "22.05";
 
   # override cursor theme
   home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
