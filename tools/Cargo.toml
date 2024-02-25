@@ -1,9 +1,6 @@
 [workspace]
 
-members = [
-  "cams-home-utilities",
-  "device-manager",
-]
+members = ["cams-home-utilities", "device-manager"]
 
 [workspace.dependencies]
 clap = { version = "4", features = ["derive", "string"] }
@@ -12,3 +9,4 @@ inquire = "0.6"
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
 rand = "0.8"
+# catppuccinifier-rs ={ git = "https://github.com/lighttigerXIV/catppuccinifier-rs"}

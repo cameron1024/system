@@ -6,11 +6,30 @@
   ];
 
   config.home-manager.users.${username} = {
+    wayland.windowManager.hyprland.extraConfig = ''
+      bind=SUPER,R,submap,resize
+
+      submap=resize
+
+      binde=,h,resizeactive,20 0
+      binde=,l,resizeactive,-20 0
+      binde=,k,resizeactive,0 -20
+      binde=,j,resizeactive,0 20
+
+      binde=SHIFT,h,resizeactive,40 0
+      binde=SHIFT,l,resizeactive,-40 0
+      binde=SHIFT,k,resizeactive,0 -40
+      binde=SHIFT,j,resizeactive,0 40
+
+      bind=,escape,submap,reset 
+
+      submap=reset
+    '';
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER, q, killactive"
 
-        "SUPER, return, exec, kitty"
+        "SUPER, return, exec, wezterm"
         "SUPER SHIFT, return, exec, google-chrome-stable"
 
         "SUPER, h, movefocus, l"
@@ -46,6 +65,8 @@
         "SUPER, f, fullscreen"
         "SUPER SHIFT, f, togglefloating"
         "SUPER, p, pin"
+
+        "SUPER, Backspace, togglespecialworkspace"
       ];
 
       bindm = [
@@ -55,6 +76,16 @@
 
       gestures = {
         workspace_swipe = true;
+      };
+
+      exec-once = [
+        "[workspace special silent; opacity 0.5, size 100% 40% ] wezterm" 
+      ];
+
+      animations = {
+        animation = [
+          "specialWorkspace, 1, 4, default, slidevert"
+        ];
       };
 
       dwindle.no_gaps_when_only = false;

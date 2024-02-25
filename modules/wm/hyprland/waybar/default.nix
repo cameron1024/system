@@ -42,7 +42,7 @@ in
           margin-left = 10;
           margin-right = 10;
           modules-left = [ 
-            # "custom/launcher"
+            "custom/wlogout"
             "cpu"
             "memory"
             "temperature"
@@ -75,6 +75,11 @@ in
               # "custom/power"
             ];
 
+          "custom/wlogout" = {
+            format= "󰜗";
+            interval = "once";
+            on-click = "wlogout";
+          };
 
           "custom/launcher" = {
             format = "{}";

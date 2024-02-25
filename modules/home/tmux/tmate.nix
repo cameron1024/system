@@ -6,9 +6,9 @@
   };
 
   xdg.desktopEntries = lib.mkIf (!isDarwin) {
-    kitty-tmate = {
-      name = "kitty-fish";
-      exec = "kitty fish";
+    wezterm-fish = {
+      name = "wezterm fish";
+      exec = "wezterm start fish";
     };
   };
 }

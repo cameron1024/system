@@ -97,7 +97,7 @@ map('n', 'gI', ':lua require "goto-preview".goto_preview_implementation()<CR>')
 -- actions
 -- map('n', '<F2>', vim.lsp.buf.rename)
 map('n', '<leader>a', vim.lsp.buf.code_action)
-map('n', '<MS-f>', function() vim.lsp.buf.format { async = true } end)
+map('n', '<MS-f>', function() require 'conform'.format { lsp_fallback = true, } end)
 map('n', 'K', vim.lsp.buf.hover)
 
 map('n', '<C-p>', ':RustLsp parentModule<CR>')

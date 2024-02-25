@@ -4,7 +4,7 @@ let
   abbrs = {
     gs = "git switch";
     gps = "git push";
-    gpl = "git pull";
+    gpl = "git fetch && git pull";
     grst = "git reset --hard HEAD";
   };
 in

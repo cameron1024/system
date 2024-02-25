@@ -22,6 +22,9 @@
     anyrun.url = "github:Kirottu/anyrun";
     anyrun.inputs.nixpkgs.follows = "nixpkgs";
 
+    catppuccinifier.url = "github:lighttigerXIV/catppuccinifier";
+    catppuccinifier.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs = { nixpkgs, home-manager, nix-darwin, naersk, mac-app-util, anyrun, ... } @ inputs:

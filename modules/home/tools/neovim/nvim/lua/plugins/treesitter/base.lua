@@ -22,6 +22,7 @@ return {
         node_decremental = "m",
       },
     },
+
     textobjects = {
       select = {
         enable = true,
@@ -58,5 +59,6 @@ return {
       },
       maintainers = { "@IndianBoy42" },
     }
+
   end
 }

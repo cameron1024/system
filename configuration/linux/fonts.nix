@@ -20,6 +20,8 @@
       maple-mono-SC-NF
 
       nerdfonts
+
+      fira
     ];
 
     fontconfig = {

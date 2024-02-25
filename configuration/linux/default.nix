@@ -1,4 +1,4 @@
-{ pkgs, hardware, boot, hostname, ... }:
+{ pkgs, hardware, boot, hostname, inputs, ... }:
 
 let
   linux = pkgs.linuxPackages_6_5;
@@ -16,6 +16,9 @@ in
     "python-2.7.18.6"
   ];
 
+
+  nix.registry.nixpkgs.flake = inputs.nixpkgs;
+  environment.etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
   
 
 

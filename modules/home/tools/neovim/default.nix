@@ -19,6 +19,9 @@ in
     # lldb
     # lldbAdapter
 
+    taplo
+    yamlfmt
+
   ] ++ (if isDarwin then macosPackages else linuxPackages); 
 
   home.file."./.config/nvim/" = {

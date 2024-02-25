@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 clap.workspace = true
 rand.workspace = true
+# catppuccinifier-rs.workspace = true

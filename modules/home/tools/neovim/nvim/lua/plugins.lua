@@ -19,6 +19,7 @@ local plugins = {
   require 'plugins.lsp.action-preview',
   require 'plugins.lsp.aerial',
   require 'plugins.lsp.base',
+  require 'plugins.lsp.conform',
   require 'plugins.lsp.fidget',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.rust',

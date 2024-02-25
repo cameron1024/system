@@ -21,7 +21,7 @@
         allow_images = true;
         image_size = 40;
         gtk_dark = true;
-        term = "kitty";
+        term = "wezterm";
       };
     };
 

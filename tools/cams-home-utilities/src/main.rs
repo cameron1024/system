@@ -9,6 +9,7 @@ mod wallpaper;
 enum Args {
     Battery,
     RandomWallpaper { wallpapers: Vec<PathBuf> },
+    // Catppuccinify { path: PathBuf },
 }
 
 fn main() {

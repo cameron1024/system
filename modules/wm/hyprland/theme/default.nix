@@ -1,6 +1,23 @@
-{ lib, pkgs, config, username, ... }:
+{ lib, pkgs, config, username, inputs, ... }:
 
 let
+      
+  cli = inputs.catppuccinifier.packages.${pkgs.system}.cli;
+
+  makeWallpaper = { url }: 
+    let
+      wallpaperFile = pkgs.fetchurl url;
+    in
+
+    pkgs.stdenv.mkDerivation {
+      buildInputs = [ cli ];
+      buildPhase = ''
+        ${cli}/bin/catppuccinifier-cli --image ${wallpaperFile}
+      '';
+    };
+
+
+
   wallpapers = map (pkgs.fetchurl) config.wallpapers;
   wallpaperList = lib.concatStrings (map toString (lib.strings.intersperse " " wallpapers));
   randomWallpaper = pkgs.writeShellScriptBin "random-wallpaper" ''
@@ -15,6 +32,7 @@ in
 
   environment.systemPackages = with pkgs; [
     dracula-icon-theme
+    cli
     randomWallpaper
   ];
 
