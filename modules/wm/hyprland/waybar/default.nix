@@ -28,7 +28,7 @@ in
   
     programs.waybar = {
       enable = true;
-      style = ./style.css;
+      style = ./style3.css;
       # systemd.enable = true;
 
       settings = {
@@ -42,38 +42,28 @@ in
           margin-left = 10;
           margin-right = 10;
           modules-left = [ 
-            "custom/wlogout"
-            "cpu"
-            "memory"
-            "temperature"
-            "disk"
-            "network"
+            "custom/menu"
+            "hyprland/workspaces"
+            "custom/updates"
           ];
           modules-center = [ 
-            "hyprland/workspaces"
-            "hyprland/window"
+            "custom/playerctl"
+            "custom/playerlabel"
           ];
-          modules-right = if laptop 
-          then 
-            [
-              "pulseaudio"
-              "backlight"
-              "upower"
-              "custom/notifications"
-              "tray"
-              "clock"
-              # "custom/weather"
-              # "custom/power"
-            ] 
-          else 
-            [ 
-              "pulseaudio"
-              "custom/notifications"
-              "tray"
-              "clock"
-              # "custom/weather"
-              # "custom/power"
-            ];
+          modules-right = [
+            "network"
+            "custom/div"
+            "pulseaudio"
+            "custom/div"
+            "clock"
+            "tray"
+            "custom/power"
+          ];
+
+          "clock" = {
+            format = "{:%H:%M}";
+            tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+          };
 
           "custom/wlogout" = {
             format= "󰜗";
@@ -194,8 +184,7 @@ in
           };
 
           "tray" = {
-            icon-size = 15;
-            spacing = 15;
+            spacing = 10;
           };
 
 
