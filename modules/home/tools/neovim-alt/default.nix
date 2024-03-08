@@ -14,13 +14,22 @@ in
   home.packages = with pkgs; [
     neovim-nightly
 
-    nil  # nix lsp
-    lua-language-server
-    # lldb
-    # lldbAdapter
+    # Terminal graphics
+    chafa
+    imagemagick
+    ffmpegthumbnailer
+    poppler
+    gnome-epub-thumbnailer
+    fontpreview
 
+    # LSPs
+    nil 
+    lua-language-server
     taplo
-    yamlfmt
+    yaml-language-server
+    nodePackages_latest.vscode-json-languageserver
+    inlyne
+
 
   ] ++ (if isDarwin then macosPackages else linuxPackages); 
 

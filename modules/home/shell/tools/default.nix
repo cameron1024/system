@@ -10,6 +10,8 @@
     sad
     ripdrag
     fzf-make
+
+    comma
   ];
 
   programs.zoxide = {

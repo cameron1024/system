@@ -1,7 +1,7 @@
-{ pkgs, hardware, boot, hostname, inputs, ... }:
+{ pkgs, hardware, boot, hostname, inputs, swapDevices, ... }:
 
 let
-  linux = pkgs.linuxPackages_6_5;
+  linux = pkgs.linuxPackages_6_6;
 in
 {
   imports = [
@@ -19,6 +19,7 @@ in
 
   nix.registry.nixpkgs.flake = inputs.nixpkgs;
   environment.etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
+
   
 
 
@@ -28,8 +29,9 @@ in
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
 
+  services.system76-scheduler.enable = true;
 
-
+  inherit swapDevices;
 
   systemd.coredump.enable = true;
 
@@ -66,12 +68,6 @@ in
     linux.perf
 
     killall
-
-    # should these be in gnome? or hyprland?
-    # xdg-desktop-portal-wlr
-    # xdg-desktop-portal
-
-    linux.system76-scheduler
 
     logiops
   ];

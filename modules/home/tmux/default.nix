@@ -12,6 +12,10 @@ let
       extraConfig = "set -g @plugin 'tmux-plugins/tmux-battery'";
     }
   ];
+
+  tmuxWithSixel = pkgs.tmux.overrideAttrs (final: prev: {
+    configureFlags = prev.configureFlags ++ ["--enable-sixel"];
+  });
 in
 
 {
@@ -23,9 +27,9 @@ in
   config = {
     programs.tmux = {
       enable = true;
+      package = tmuxWithSixel;
       prefix = "C-a";
       inherit shell;
-      terminal = "screen-256color";
       escapeTime = 0;
       clock24 = true; mouse = true;
       resizeAmount = 5;
@@ -64,16 +68,24 @@ in
             set -g @catppuccin_status_connect_separator "no"
           '';
         }
+
+        vim-tmux-navigator
+
       ] ++ (if laptop then laptopModules else []);
       extraConfig = ''
-        
-        set -as terminal-features ",xterm-256color:RGB"
+
+        set -g default-terminal "tmux-256color"
+        set -ag terminal-overrides ",xterm-256color:RGB" 
+
+        # set -as terminal-features ",xterm-256color:RGB:Sxl"
         set -g default-command ${shell}
 
         bind-key -n M-\; command-prompt
 
         bind -n M-x split-window -v -c "#{pane_current_path}"
         bind -n M-v split-window -h -c "#{pane_current_path}"
+
+        bind -n M-z resize-pane -Z
 
         unbind '"'
         unbind %
@@ -82,11 +94,6 @@ in
         bind-key C-a command-prompt -p "window name:" "new-window -c #{pane_current_path}; rename-window '%%'"
 
         bind C-a last-window
-
-        bind -n M-h select-pane -L
-        bind -n M-l select-pane -R
-        bind -n M-k select-pane -U
-        bind -n M-j select-pane -D
 
         bind -n M-enter set -g status
 

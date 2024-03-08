@@ -16,6 +16,7 @@
     programs.nushell = {
       enable = true;
       shellAliases = {
+        gr = "cd (git rev-parse --show-toplevel)";
         e = "nvim";
         d = "nvim -d";
         ed = "neovide --multigrid";

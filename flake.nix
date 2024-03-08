@@ -30,8 +30,13 @@
   outputs = { nixpkgs, home-manager, nix-darwin, naersk, mac-app-util, anyrun, ... } @ inputs:
 
     let
-      macArgs = import ./platform/mac.nix inputs;
-      linuxArgs = import ./platform/linux.nix inputs;
+
+      overlays = [
+        inputs.neovim-nightly-overlay.overlay
+      ];
+
+      macArgs = import ./platform/mac.nix { inherit inputs overlays; };
+      linuxArgs = import ./platform/linux.nix { inherit inputs overlays; };
       allSpecialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
 
       sharedModules = [
@@ -47,6 +52,7 @@
           home-manager.nixosModules.home-manager
 
           { 
+            nixpkgs.overlays = overlays;
             home-manager.extraSpecialArgs = specialArgs; 
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {

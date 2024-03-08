@@ -33,6 +33,12 @@ rec {
     hostname = "teeny";
     boot = "/boot";
     displays = with allDisplays; [ benq lg ];
+    swapDevices = [ 
+      {
+        device = "/var/swap";
+        size = 32 * 1024;
+      } 
+    ];
   };
 
   thinkpad = shared // {
@@ -45,6 +51,7 @@ rec {
     hostname = "thinkchad";
     boot = "/boot/efi";
     displays = with allDisplays; [ thinkpadBuiltin ];
+    swapDevices = [];
   };
 
   server = shared // {
