@@ -2,31 +2,42 @@ return {
   'neovim/nvim-lspconfig',
   dependencies = {
     'nvim-tree/nvim-web-devicons',
-    require 'lazy',
+    require 'plugins.lsp.cmp',
   },
   event = { "BufReadPost", "BufNewFile" },
   cmd = { "LspInfo" },
   config = function()
     local lspconfig = require 'lspconfig'
-    -- local cmp = require 'cmp_nvim_lsp'
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    local capabilities = require 'cmp_nvim_lsp'.default_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
 
     lspconfig.nil_ls.setup { capabilities = capabilities }
-    lspconfig.dartls.setup { capabilities = capabilities }
-    lspconfig.rust_analyzer.setup { capabilities = capabilities }
-    lspconfig.jsonls.setup { capabilities = capabilities }
     lspconfig.taplo.setup { capabilities = capabilities }
     lspconfig.yamlls.setup { capabilities = capabilities }
+    lspconfig.biome.setup { capabilities = capabilities }
+    lspconfig.markdown_oxide.setup { capabilities = capabilities }
+    lspconfig.nickel_ls.setup { capabilities = capabilities }
+
+    lspconfig.jsonls.setup {
+      capabilities = capabilities,
+      cmd = { "vscode-json-languageserver", "--stdio" },
+    }
+
+    lspconfig.dartls.setup {
+      capabilities = capabilities,
+      cmd = { "nix", "run", "nixpkgs#dart", "--", "language-server", "--protocol=lsp" },
+    }
 
     -- lspconfig.rust_analyzer.setup {
     --   capabilities = capabilities,
+    --   cmd = { "nix", "run", "nixpkgs#rust-analyzer" },
     --   settings = {
-    --       ["rust-analyzer"] = {
-    --         check = {
-    --           command = "clippy",
-    --         },
+    --     ["rust-analyzer"] = {
+    --       check = {
+    --         command = "clippy",
     --       },
     --     },
+    --   },
     -- }
 
     lspconfig.lua_ls.setup {
@@ -54,12 +65,21 @@ return {
     }
   end,
   keys = {
-    { "K",  ":lua vim.lsp.buf.hover()<cr>",           desc = "LSP Hover" },
-    { "gd", ":lua vim.lsp.buf.definition()<cr>",      desc = "LSP Goto Definition" },
-    { "gc", ":lua vim.lsp.buf.declaration()<cr>",     desc = "LSP Goto Declaration" },
-    { "gi", ":lua vim.lsp.buf.implementation()<cr>",  desc = "LSP Goto Implementation" },
-    { "gt", ":lua vim.lsp.buf.type_definition()<cr>", desc = "LSP Goto Type Definition" },
-    { "gr", ":lua vim.lsp.buf.references()<cr>",      desc = "LSP References" },
-    { "<MS-f>", ":lua vim.lsp.buf.format()<cr>",      desc = "LSP Format" },
+    { "K",      ":lua vim.lsp.buf.hover()<cr>",           desc = "LSP Hover" },
+    { "gd",     ":lua vim.lsp.buf.definition()<cr>",      desc = "LSP Goto Definition" },
+    { "gc",     ":lua vim.lsp.buf.declaration()<cr>",     desc = "LSP Goto Declaration" },
+    { "gi",     ":lua vim.lsp.buf.implementation()<cr>",  desc = "LSP Goto Implementation" },
+    { "gt",     ":lua vim.lsp.buf.type_definition()<cr>", desc = "LSP Goto Type Definition" },
+    { "gr",     ":lua vim.lsp.buf.references()<cr>",      desc = "LSP References" },
+    { "<MS-f>", ":lua vim.lsp.buf.format()<cr>",          desc = "LSP Format" },
+    { "<C-e>",  ":lua vim.diagnostic.open_float()<cr>",   desc = "Show Diagnostic" },
+    { "Q",      ":lua vim.diagnostic.setloclist()<cr>",   desc = "Open Diagnostic Loclist" },
+    { "<C-n>",  ":lua vim.diagnostic.goto_next()<cr>",    desc = "Goto Next Diagnostic" },
+    { "<C-b>",  ":lua vim.diagnostic.goto_prev()<cr>",    desc = "Goto Next Diagnostic" },
   },
 }
+
+-- map('n', '<C-n>', vim.diagnostic.goto_next)
+-- map('n', '<C-b>', vim.diagnostic.goto_prev)
+-- map('n', 'E', vim.diagnostic.open_float)
+-- map('n', 'Q', vim.diagnostic.setloclist)

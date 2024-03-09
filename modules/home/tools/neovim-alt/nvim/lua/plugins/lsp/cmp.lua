@@ -26,7 +26,7 @@ return {
     'windwp/nvim-autopairs',
     'Saecki/crates.nvim',
   },
-  event = "InsertEnter",
+  -- event = "InsertEnter",
   config = function()
     local cmp = require 'cmp'
     local luasnip = require 'luasnip'
@@ -40,6 +40,10 @@ return {
         expand = function(args)
           luasnip.lsp_expand(args.body)
         end,
+      },
+      window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
       },
       mapping = {
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
@@ -73,7 +77,14 @@ return {
       },
 
       sources = {
-        { name = 'nvim_lsp' },
+        {
+          name = 'nvim_lsp',
+          option = {
+            markdown_oxide = {
+              keyword_pattern = [[\(\k\| \|\/\|#\)\+]]
+            },
+          },
+        },
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'path' },

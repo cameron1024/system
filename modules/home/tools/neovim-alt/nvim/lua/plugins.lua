@@ -3,13 +3,17 @@ local plugins = {
   require 'plugins.editing.comment',
   require 'plugins.editing.image-view',
   -- require 'plugins.editing.oil',
+  require 'plugins.editing.surround',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
 
   require 'plugins.firenvim',
 
+  require 'plugins.git.octo',
+
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
+  require 'plugins.lsp.rust',
 
   require 'plugins.lualine',
 
