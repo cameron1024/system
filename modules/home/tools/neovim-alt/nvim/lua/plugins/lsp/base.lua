@@ -2,6 +2,7 @@ return {
   'neovim/nvim-lspconfig',
   dependencies = {
     'nvim-tree/nvim-web-devicons',
+    require 'lazy',
   },
   event = { "BufReadPost", "BufNewFile" },
   cmd = { "LspInfo" },

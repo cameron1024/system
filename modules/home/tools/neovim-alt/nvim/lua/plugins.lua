@@ -6,6 +6,8 @@ local plugins = {
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
 
+  require 'plugins.firenvim',
+
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
 

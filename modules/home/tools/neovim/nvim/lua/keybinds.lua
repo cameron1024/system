@@ -23,10 +23,10 @@ map('n', '<C-x>', ':sp<CR>')
 map('n', '<leader>v', '<C-v>')
 
 -- ctrl + hjkl to switch panes
-map('n', '<C-k>', '<C-w><Up>')
-map('n', '<C-j>', '<C-w><Down>')
-map('n', '<C-h>', '<C-w><Left>')
-map('n', '<C-l>', '<C-w><Right>')
+-- map('n', '<C-k>', '<C-w><Up>')
+-- map('n', '<C-j>', '<C-w><Down>')
+-- map('n', '<C-h>', '<C-w><Left>')
+-- map('n', '<C-l>', '<C-w><Right>')
 
 -- ctrl + hjkl to move in insert mode
 map('i', '<C-k>', '<Up>')
