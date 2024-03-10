@@ -1,6 +1,7 @@
 local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
+  require 'plugins.editing.flash',
   require 'plugins.editing.image-view',
   -- require 'plugins.editing.oil',
   require 'plugins.editing.surround',
@@ -9,11 +10,15 @@ local plugins = {
 
   require 'plugins.firenvim',
 
+  require 'plugins.git.diffview',
   require 'plugins.git.octo',
+  require 'plugins.git.gitsigns',
 
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
   require 'plugins.lsp.rust',
+  require 'plugins.lsp.trouble',
+  -- require 'plugins.lsp.ui',
 
   require 'plugins.lualine',
 
@@ -27,8 +32,10 @@ local plugins = {
   require 'plugins.theme.base',
   require 'plugins.theme.noice',
   require 'plugins.theme.greeter',
+  require 'plugins.theme.twilight',
 
   require 'plugins.treesitter.base',
+  require 'plugins.treesitter.wildfire',
 }
 
 require 'lazy'.setup {

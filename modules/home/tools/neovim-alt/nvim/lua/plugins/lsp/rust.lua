@@ -12,6 +12,7 @@ vim.g.rustaceanvim = {
 return {
   'mrcjkb/rustaceanvim',
   version = '^4',
+  event = "VeryLazy",
   ft = { 'rust' },
   keys = {
     { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },

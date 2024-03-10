@@ -24,7 +24,7 @@ in
       gnome-epub-thumbnailer
       fontpreview
 
-      # LSPs
+      tree-sitter
 
 
     ] ++ (if isDarwin then macosPackages else linuxPackages); 

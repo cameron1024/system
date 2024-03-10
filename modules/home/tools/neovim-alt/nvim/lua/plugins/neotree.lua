@@ -5,9 +5,8 @@ return {
     'nvim-tree/nvim-web-devicons',
     'MunifTanjim/nui.nvim',
     require 'plugins.editing.image-view',
-    { 's1n7ax/nvim-window-picker', lazy = true, opts = { hint = "floating-big-letter" }},
+    { 's1n7ax/nvim-window-picker', lazy = true, opts = { hint = "floating-big-letter" } },
   },
-  event = "VeryLazy",
   opts = {
     close_if_last_window = true,
     filesystem = {

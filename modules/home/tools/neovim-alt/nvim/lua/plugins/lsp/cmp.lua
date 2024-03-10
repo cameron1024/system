@@ -25,6 +25,7 @@ return {
     'saadparwaiz1/cmp_luasnip',
     'windwp/nvim-autopairs',
     'Saecki/crates.nvim',
+    'petertriho/cmp-git',
   },
   -- event = "InsertEnter",
   config = function()
@@ -33,6 +34,7 @@ return {
 
     require 'nvim-autopairs'.setup {}
     local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+
 
     cmp.setup {
       map_complete = true,
@@ -88,9 +90,10 @@ return {
         { name = 'nvim_lsp_signature_help' },
         { name = 'luasnip' },
         { name = 'path' },
+        { name = "git" },
         { name = 'buffer' },
         { name = 'crates' },
-        { name = 'emoji',                  insert = true }
+        { name = 'emoji',                  insert = true },
       },
     }
 
@@ -98,5 +101,7 @@ return {
       'confirm_done',
       cmp_autopairs.on_confirm_done()
     )
+
+    require 'cmp_git'.setup {}
   end
 }
