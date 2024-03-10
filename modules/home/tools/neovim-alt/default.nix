@@ -11,7 +11,10 @@ let
 
 in
 {
-  imports = [ ./lsps.nix ];
+  imports = [ 
+    ./lsps.nix 
+    ./inlyne.nix
+  ];
   config = {
     home.packages = with pkgs; [
       neovim-nightly

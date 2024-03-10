@@ -18,7 +18,6 @@
     taplo
     yaml-language-server
     nodePackages_latest.vscode-json-languageserver
-    inlyne
     biome # JS
     nls # nickel
   ];

@@ -53,10 +53,6 @@ in
 
   ] ++ (if isDarwin then darwinPackages else linuxPackages);
 
-  xdg.configFile."inlyne/inlyne.toml".text = ''
-    [font-options]
-    regular-font = "Fira Sans"
-  '';
 
 }
 
