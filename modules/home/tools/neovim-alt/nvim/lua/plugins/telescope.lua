@@ -62,14 +62,14 @@ return {
   cmd = { "Telescope" },
 
   keys = {
-    { "<leader>n",  ":lua require 'telescope.builtin'.find_files()<cr>",            desc = "Telescope Find Files" },
-    { "<leader>b",  ":lua require 'telescope.builtin'.buffers()<cr>",               desc = "Telescope Buffers" },
-    { "<leader>m",  ":lua require 'telescope.builtin'.lsp_workspace_symbols()<cr>", desc = "Telescope LSP Symbols" },
-    { "<leader>g",  ":lua require 'telescope.builtin'.grep_string()<cr>",           desc = "Telescope Grep String" },
-    { "<leader>f",  ":lua require 'telescope.builtin'.live_grep()<cr>",             desc = "Telescope Live Grep" },
-    { "<leader>sh", ":lua require 'telescope.builtin'.search_history()<cr>",        desc = "Telescope Search History" },
-    { "<leader>ch", ":lua require 'telescope.builtin'.command_history()<cr>",       desc = "Telescope Command History" },
-    { '<leader>"',  ":lua require 'telescope.builtin'.registers()<cr>",             desc = "Telescope Registers" },
+    { "<leader>n",  function() require 'telescope.builtin'.find_files { hidden = true } end, desc = "Telescope Find Files" },
+    { "<leader>b",  function() require 'telescope.builtin'.buffers() end,                    desc = "Telescope Buffers" },
+    { "<leader>m",  function() require 'telescope.builtin'.lsp_workspace_symbols() end,      desc = "Telescope LSP Symbols" },
+    { "<leader>g",  function() require 'telescope.builtin'.grep_string() end,                desc = "Telescope Grep String" },
+    { "<leader>f",  function() require 'telescope.builtin'.live_grep() end,                  desc = "Telescope Live Grep" },
+    { "<leader>sh", function() require 'telescope.builtin'.search_history() end,             desc = "Telescope Search History" },
+    { "<leader>ch", function() require 'telescope.builtin'.command_history() end,            desc = "Telescope Command History" },
+    { '<leader>"',  function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
   },
 
 }

@@ -49,3 +49,13 @@ map('t', '<C-l>', [[<Cmd>wincmd l<CR>]])
 -- indenting selections without deselecting
 map('v', '<', '<gv')
 map('v', '>', '>gv')
+
+-- yank current file path
+map('n', '<leader>cf', ':let @+ = expand("%")<CR>')
+map('n', '<leader>cp', ':let @+ = expand("%:p")<CR>')
+
+--duplicate selection
+map('v', '<C-d>', [[y'>pgv]])
+
+-- make * stay on the same entry
+map('n', '*', '*N')

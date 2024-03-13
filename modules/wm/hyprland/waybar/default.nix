@@ -28,7 +28,7 @@ in
   
     programs.waybar = {
       enable = true;
-      style = ./style3.css;
+      style = ./style;
       # systemd.enable = true;
 
       settings = {

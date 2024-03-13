@@ -1,5 +1,9 @@
 return {
   "lewis6991/gitsigns.nvim",
-  event = "VeryLazy",
+  lazy = true,
+  event = "BufEnter",
   opts = {},
+  keys = {
+    { "gb", "<cmd>Gitsigns blame_line<cr>", desc = "Git Blame Line" },
+  }
 }

@@ -4,6 +4,7 @@ local plugins = {
   require 'plugins.editing.flash',
   require 'plugins.editing.image-view',
   -- require 'plugins.editing.oil',
+  require 'plugins.editing.maximize',
   require 'plugins.editing.surround',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
@@ -16,6 +17,8 @@ local plugins = {
 
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
+  require 'plugins.lsp.crates',
+  require 'plugins.lsp.overseer',
   require 'plugins.lsp.rust',
   require 'plugins.lsp.trouble',
   -- require 'plugins.lsp.ui',
@@ -34,8 +37,10 @@ local plugins = {
   require 'plugins.theme.greeter',
   require 'plugins.theme.twilight',
 
+  require 'plugins.treesitter.aerial',
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.wildfire',
+  require 'plugins.treesitter.context',
 }
 
 require 'lazy'.setup {
