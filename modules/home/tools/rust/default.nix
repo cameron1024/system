@@ -1,26 +1,32 @@
-{ pkgs, lib, isDarwin, ... }:
-
+{
+  pkgs,
+  lib,
+  isDarwin,
+  ...
+}:
 with lib; {
-  home.packages = with pkgs; [
-    rustup
+  home.packages = with pkgs;
+    [
+      rustup
 
-    bacon
+      bacon
 
-    cargo-cache
-    cargo-nextest
-    cargo-udeps
-    cargo-edit
-    cargo-bloat
-    cargo-duplicates
-    cargo-info
+      cargo-cache
+      cargo-nextest
+      cargo-udeps
+      cargo-edit
+      cargo-bloat
+      cargo-duplicates
+      cargo-info
 
-    evcxr
-  ] ++ optionals (!isDarwin) [
-    gcc
-    llvmPackages.bintools-unwrapped
-    cmake
-    ninja
-  ];
+      evcxr
+    ]
+    ++ optionals (!isDarwin) [
+      gcc
+      llvmPackages.bintools-unwrapped
+      cmake
+      ninja
+    ];
 
   home.sessionPath = [
     "$HOME/.cargo/bin"

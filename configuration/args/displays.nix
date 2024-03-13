@@ -22,5 +22,4 @@
     refreshRate = 60;
     scale = 1;
   };
- 
 }

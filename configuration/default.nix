@@ -1,10 +1,9 @@
-{ isDarwin, ... }:
-
-let
-  platformSpecific = if isDarwin then ./mac else ./linux;
-in
-
-{
+{isDarwin, ...}: let
+  platformSpecific =
+    if isDarwin
+    then ./mac
+    else ./linux;
+in {
   imports = [
     ./shared
     platformSpecific

@@ -1,9 +1,11 @@
-{ pkgs, username, ... }:
-
 {
+  pkgs,
+  username,
+  ...
+}: {
   i18n.inputMethod = {
     enabled = "fcitx5";
-    fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-chinese-addons fcitx5-table-extra ];
+    fcitx5.addons = with pkgs; [fcitx5-rime fcitx5-chinese-addons fcitx5-table-extra];
   };
 
   environment.systemPackages = with pkgs; [
@@ -16,13 +18,12 @@
     wayland.windowManager.hyprland = {
       settings = {
         exec-once = [
-          "ibus start"  
+          "ibus start"
         ];
 
         input = {
           kb_layout = "gb,cn";
-          kb_options = "ctrl:nocaps";  # caps lock becomes a second ctrl
-
+          kb_options = "ctrl:nocaps"; # caps lock becomes a second ctrl
         };
 
         bind = [

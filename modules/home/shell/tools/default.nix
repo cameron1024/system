@@ -1,6 +1,4 @@
-{ pkgs, ...}:
-
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     wiki-tui
     mprocs
@@ -10,6 +8,8 @@
     sad
     ripdrag
     fzf-make
+
+    comma
   ];
 
   programs.zoxide = {
@@ -45,7 +45,10 @@
     settings = {
       opener = {
         text = [
-          { exec = ''nvim "$@"''; block = true; }
+          {
+            exec = ''nvim "$@"'';
+            block = true;
+          }
         ];
       };
     };
@@ -79,7 +82,6 @@
         format = "$symbol ";
         symbol = "[󰜗]($style)";
       };
-
     };
   };
 }

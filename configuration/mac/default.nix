@@ -1,16 +1,16 @@
-{ pkgs, username, ... }:
-
-
 {
+  pkgs,
+  username,
+  ...
+}: {
   imports = [
     ./fonts.nix
   ];
 
   config = {
     environment.systemPackages = with pkgs; [
-      karabiner-elements 
+      karabiner-elements
     ];
-
 
     system.keyboard.enableKeyMapping = true;
     system.keyboard.remapCapsLockToControl = true;
@@ -20,15 +20,15 @@
     nixpkgs.hostPlatform = "aarch64-darwin";
     services.nix-daemon.enable = true;
 
-    users.users.${username} =  {
+    users.users.${username} = {
       description = username;
       home = "/Users/${username}";
     };
 
     homebrew = {
       enable = true;
-      brews = [ "fvm" ];
-      taps = [ "leoafarias/fvm" ];
+      brews = ["fvm"];
+      taps = ["leoafarias/fvm"];
     };
 
     home-manager.users.${username} = {
@@ -40,4 +40,3 @@
     };
   };
 }
-

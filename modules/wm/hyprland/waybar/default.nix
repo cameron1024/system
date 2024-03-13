@@ -1,11 +1,14 @@
-{ pkgs, username, displays, laptop, ... }:
-let 
+{
+  pkgs,
+  username,
+  displays,
+  laptop,
+  ...
+}: let
   # save battery if we're on a laptop
   defaultInterval = 0.5;
   launchBtm = "wezterm start btm";
-in
-
-{
+in {
   environment.systemPackages = with pkgs; [
     pavucontrol
   ];
@@ -18,17 +21,16 @@ in
 
   home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
-      exec-once = [ "waybar" ];
+      exec-once = ["waybar"];
 
       bind = [
         "SUPER, b, exec, killall -SIGUSR1 .waybar-wrapped"
       ];
     };
 
-  
     programs.waybar = {
       enable = true;
-      style = ./style3.css;
+      style = ./style;
       # systemd.enable = true;
 
       settings = {
@@ -41,34 +43,75 @@ in
           margin-top = 0;
           margin-left = 10;
           margin-right = 10;
-          modules-left = [ 
-            "custom/menu"
+          modules-left = [
             "hyprland/workspaces"
-            "custom/updates"
+            "hyprland/window"
           ];
-          modules-center = [ 
-            "custom/playerctl"
-            "custom/playerlabel"
+          modules-center = [
+            "clock"
           ];
           modules-right = [
-            "network"
-            "custom/div"
-            "pulseaudio"
-            "custom/div"
-            "clock"
+            "custom/terminal"
+            "custom/files"
+            "custom/browser"
+            "custom/apps"
             "tray"
+            "hyprland/language"
+            "pulseaudio"
+            "network"
             "custom/power"
           ];
+
+          "custom/browser" = {
+            format = "󰖟";
+            on-click = "google-chrome-stable";
+          };
+
+          "custom/files" = {
+            format = "";
+            on-click = "wezterm start yazi";
+          };
+
+          "custom/terminal" = {
+            format = "";
+            on-click = "wezterm";
+          };
+
+          "custom/power" = {
+            format = "";
+            on-click = "wlogout";
+          };
+
+          "hyprland/workspaces" = {
+            disable-scroll = false;
+            all-outputs = true;
+            warp-on-scroll = true;
+            on-scroll-up = "hyprctl disatch workspace e+1";
+            on-scroll-down = "hyprctl dispatch workspace e-1";
+            format = " {icon} ";
+            format-icons = {
+              "10" = "0";
+            };
+          };
+
+          "hyprland/language" = {
+            format = "{}";
+            format-en = "EN";
+            format-zh = "ZH";
+            on-click = "hyprctl switchxkblayout thinkpad-extra-buttons next";
+          };
+
+          "hyprland/window" = {
+            format = "{title}";
+          };
+
+          "tray" = {
+            spacing = 10;
+          };
 
           "clock" = {
             format = "{:%H:%M}";
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          };
-
-          "custom/wlogout" = {
-            format= "󰜗";
-            interval = "once";
-            on-click = "wlogout";
           };
 
           "custom/launcher" = {
@@ -97,7 +140,7 @@ in
             interval = defaultInterval;
             on-click = launchBtm;
             format = "{temperatureC}°C ";
-            format-icons = [ "" "" "" "" "" ];
+            format-icons = ["" "" "" "" ""];
           };
 
           "disk" = {
@@ -122,28 +165,6 @@ in
             interval = defaultInterval;
           };
 
-          "hyprland/workspaces" = {
-            disable-scroll = false;
-            on-scroll-up = "hyprctl dispatch workspace -1";
-            on-scroll-down = "hyprctl dispatch workspace +1";
-            format = "{name}";
-            format-icons = {
-              urgent = "󰗖";
-              active = "󰝥";
-              default = "󰝦";
-            };
-          };
-
-          "hyprland/window" = {
-            format = "{}";
-            separate-outputs = true;
-            max-length = 32;
-            rewrite = {
-              "(.*)tmux" = "";
-              "(.*)Google Chrome" = "";
-            };
-          };
-
           "pulseaudio" = {
             format = "{icon} {volume}";
             format-bluetooth = "{icon}  {volume}%";
@@ -158,7 +179,7 @@ in
               phone = "";
               portable = "";
               car = "";
-              default = [ "" "" "" ];
+              default = ["" "" ""];
             };
             on-click = "pavucontrol";
           };
@@ -182,17 +203,7 @@ in
             # on-click-right = "swaync-client -d -sw";
             # escape = true;
           };
-
-          "tray" = {
-            spacing = 10;
-          };
-
-
         };
-
-
-
-
       };
     };
   };

@@ -1,6 +1,8 @@
-{ username, pkgs, ... }:
-
 {
+  username,
+  pkgs,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     libinput
     wev
@@ -17,7 +19,6 @@
       bind = [
         "SUPER, mouse:274, killactive"
       ];
-      
     };
   };
 }

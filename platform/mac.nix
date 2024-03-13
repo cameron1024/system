@@ -1,16 +1,13 @@
-{ nixpkgs, ... } @ inputs:
-
-rec {
+{
+  inputs,
+  overlays,
+}: rec {
   system = "aarch64-darwin";
 
-  pkgs = import nixpkgs {
-    inherit system;
-    config = { allowUnfree = true; };
-    overlays = [
-      inputs.neovim-nightly-overlay.overlay
-    ];
+  pkgs = import inputs.nixpkgs {
+    inherit system overlays;
+    config = {allowUnfree = true;};
   };
 
   naersk = pkgs.callPackage inputs.naersk {};
 }
-

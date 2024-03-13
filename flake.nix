@@ -24,81 +24,94 @@
 
     catppuccinifier.url = "github:lighttigerXIV/catppuccinifier";
     catppuccinifier.inputs.nixpkgs.follows = "nixpkgs";
-
   };
 
-  outputs = { nixpkgs, home-manager, nix-darwin, naersk, mac-app-util, anyrun, ... } @ inputs:
+  outputs = {
+    nixpkgs,
+    home-manager,
+    nix-darwin,
+    naersk,
+    mac-app-util,
+    anyrun,
+    ...
+  } @ inputs: let
+    overlays = [
+      inputs.neovim-nightly-overlay.overlay
+    ];
 
-    let
-      macArgs = import ./platform/mac.nix inputs;
-      linuxArgs = import ./platform/linux.nix inputs;
-      allSpecialArgs = import ./configuration/args { inherit macArgs linuxArgs; };
+    macArgs = import ./platform/mac.nix {inherit inputs overlays;};
+    linuxArgs = import ./platform/linux.nix {inherit inputs overlays;};
+    allSpecialArgs = import ./configuration/args {inherit macArgs linuxArgs;};
 
-      sharedModules = [
-        ./configuration
-        ./tools
-      ];
+    sharedModules = [
+      ./configuration
+      ./tools
+    ];
 
-      makeLinux =  { args }: nixpkgs.lib.nixosSystem rec {
+    makeLinux = {args}:
+      nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
-        specialArgs = args // { inherit inputs; };
+        specialArgs = args // {inherit inputs;};
 
-        modules = sharedModules ++ [
-          home-manager.nixosModules.home-manager
+        modules =
+          sharedModules
+          ++ [
+            home-manager.nixosModules.home-manager
 
-          { 
-            home-manager.extraSpecialArgs = specialArgs; 
-            home-manager.useGlobalPkgs = true;
-            home-manager.users.${allSpecialArgs.shared.username} = {
-              home.stateVersion = "22.05";
-              imports = [ ./modules/home ];
-            };
-          }
-        ];
+            {
+              nixpkgs.overlays = overlays;
+              home-manager.extraSpecialArgs = specialArgs;
+              home-manager.useGlobalPkgs = true;
+              home-manager.users.${allSpecialArgs.shared.username} = {
+                home.stateVersion = "22.05";
+                imports = [./modules/home];
+              };
+            }
+          ];
       };
 
-      miniSystem = makeLinux { args = allSpecialArgs.mini; };
-      thinkpadSystem = makeLinux { args = allSpecialArgs.thinkpad; };
+    miniSystem = makeLinux {args = allSpecialArgs.mini;};
+    thinkpadSystem = makeLinux {args = allSpecialArgs.thinkpad;};
 
-      macosSystem = nix-darwin.lib.darwinSystem rec {
-        specialArgs = allSpecialArgs.macos // { inherit inputs; };
+    macosSystem = nix-darwin.lib.darwinSystem rec {
+      specialArgs = allSpecialArgs.macos // {inherit inputs;};
 
-        modules = sharedModules ++ [
+      modules =
+        sharedModules
+        ++ [
           home-manager.darwinModules.home-manager
-          { 
-            home-manager.extraSpecialArgs = specialArgs; 
+          {
+            home-manager.extraSpecialArgs = specialArgs;
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
               home.stateVersion = "22.05";
               imports = [ ./modules/home ];
             };
           }
-          
+
           mac-app-util.darwinModules.default
         ];
-      };
+    };
+  in {
+    nixpkgs.config.allowUnfree = true;
 
-    in
-    {
-      nixpkgs.config.allowUnfree = true;
+    nixosConfigurations.mini = miniSystem;
+    nixosConfigurations.thinkpad = thinkpadSystem;
 
-      nixosConfigurations.mini = miniSystem;
-      nixosConfigurations.thinkpad = thinkpadSystem;
+    darwinConfigurations."DGQ204V94P" = macosSystem;
 
-      darwinConfigurations."DGQ204V94P" = macosSystem;
+    homeConfigurations."cameron" = home-manager.lib.homeManagerConfiguration {
+      extraSpecialArgs = allSpecialArgs.server // {inherit inputs;};
+      pkgs = linuxArgs.pkgs;
 
-      homeConfigurations."cameron" = home-manager.lib.homeManagerConfiguration {
-        extraSpecialArgs = allSpecialArgs.server // { inherit inputs; };
-        pkgs = linuxArgs.pkgs;
+      modules = [
+        {home.stateVersion = "23.11";}
+        ./modules/home
+      ];
+    };
 
-        modules = [
-          { home.stateVersion = "23.11"; }
-          ./modules/home
-        ];
-
-      };
-
-      devShells."x86_64-linux".default = with linuxArgs; pkgs.mkShell {
+    devShells."x86_64-linux".default = with linuxArgs;
+      pkgs.mkShell {
         packages = [
           (pkgs.writeShellScriptBin "s" ''
             git add -A
@@ -107,7 +120,8 @@
         ];
       };
 
-      devShells."aarch64-darwin".default = with macArgs; pkgs.mkShell {
+    devShells."aarch64-darwin".default = with macArgs;
+      pkgs.mkShell {
         packages = [
           (pkgs.writeShellScriptBin "s" ''
             git add -A
@@ -115,7 +129,5 @@
           '')
         ];
       };
-
-    };
-
+  };
 }

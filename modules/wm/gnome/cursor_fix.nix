@@ -1,21 +1,23 @@
 # Module to set a default cursor theme
 # taken from https://github.com/NixOS/nixpkgs/issues/22652
-
-{ config, pkgs, lib, ... }:
-
-with lib;
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
   cfg = config.environment.defaultCursor;
 
-  indexThemeText = theme: generators.toINI {} {"icon theme" = { Inherits = "${theme}"; }; };
+  indexThemeText = theme: generators.toINI {} {"icon theme" = {Inherits = "${theme}";};};
 
-  mkDefaultCursorFile = theme: pkgs.writeTextDir
+  mkDefaultCursorFile = theme:
+    pkgs.writeTextDir
     "share/icons/default/index.theme"
     "${indexThemeText theme}";
 
   defaultCursorPkg = mkDefaultCursorFile cfg.theme;
-in
-{
+in {
   options = {
     environment.defaultCursor = {
       enable = mkOption {

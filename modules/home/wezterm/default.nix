@@ -1,6 +1,9 @@
-{ pkgs, lib, naersk, ... }:
-
-let 
+{
+  pkgs,
+  lib,
+  naersk,
+  ...
+}: let
   wezterm = naersk.buildPackage {
     src = pkgs.fetchFromGitHub {
       owner = "wez";
@@ -27,9 +30,7 @@ let
   #     outputHash = "sha256-WXOsP2rjbT4unc7lXbxbRbCcrc89SfyVdErzFndBF9o=";
   #   });
   # });
-in
-
-{
-  home.packages = [ pkgs.wezterm ];
+in {
+  home.packages = [pkgs.wezterm];
   xdg.configFile."wezterm/wezterm.lua".source = ./wezterm.lua;
 }

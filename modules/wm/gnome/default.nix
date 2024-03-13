@@ -1,7 +1,4 @@
-{ pkgs, ... }:
-
-{
-
+{pkgs, ...}: {
   imports = [
     ./cursor_fix.nix
     ./chinese-input.nix

@@ -1,29 +1,33 @@
-{ pkgs, lib, isDarwin, username, inputs, ... }:
-
-let
+{
+  pkgs,
+  lib,
+  isDarwin,
+  username,
+  inputs,
+  ...
+}: let
   linuxPackages = with pkgs; [
     google-chrome
   ];
 
   darwinPackages = [];
 
-  extraModules = 
-    if isDarwin 
-    then [inputs.mac-app-util.homeManagerModules.default] 
+  extraModules =
+    if isDarwin
+    then [inputs.mac-app-util.homeManagerModules.default]
     else [inputs.anyrun.homeManagerModules.default];
-in
-
-{
-
-  imports = extraModules ++ [
-    ./shell
-    ./git
-    ./tmux
-    ./wezterm
-    ./kitty
-    ./social
-    ./tools
-  ];
+in {
+  imports =
+    extraModules
+    ++ [
+      ./shell
+      ./git
+      ./tmux
+      ./wezterm
+      ./kitty
+      ./social
+      ./tools
+    ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -33,31 +37,28 @@ in
   # override cursor theme
   home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
 
-  home.packages = with pkgs; [
-    ripgrep
-    eza
-    fd
-    curl
-    xclip
-    tokei
-    jq
-    bottom
-    tree
-    rust-script
-    unzip
-    du-dust
+  home.packages = with pkgs;
+    [
+      ripgrep
+      eza
+      fd
+      curl
+      xclip
+      tokei
+      jq
+      bottom
+      tree
+      rust-script
+      unzip
+      du-dust
 
-    lynx
+      lynx
 
-    silicon
-
-  ] ++ (if isDarwin then darwinPackages else linuxPackages);
-
-  xdg.configFile."inlyne/inlyne.toml".text = ''
-    [font-options]
-    regular-font = "Fira Sans"
-  '';
-
+      silicon
+    ]
+    ++ (
+      if isDarwin
+      then darwinPackages
+      else linuxPackages
+    );
 }
-
-

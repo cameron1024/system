@@ -1,13 +1,13 @@
-{ pkgs, username, ... }:
-
-let
+{
+  pkgs,
+  username,
+  ...
+}: let
   themeFile = pkgs.writeTextFile {
     name = "catppuccin.rasi";
     text = builtins.readFile ./theme.rasi;
   };
-in
-
-{
+in {
   home-manager.users.${username} = {
     home.packages = with pkgs; [
       oranchelo-icon-theme

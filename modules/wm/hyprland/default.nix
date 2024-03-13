@@ -1,6 +1,10 @@
-{ lib, pkgs, username, inputs, ... }:
-
-let
+{
+  lib,
+  pkgs,
+  username,
+  inputs,
+  ...
+}: let
   wallpapers = [
     # {
     #   url = "https://github.com/xerolinux/xero-catppuccin-wallpapers/blob/main/usr/share/wallpapers/Catppuccin%20-%2013.png";
@@ -17,9 +21,7 @@ let
       hash = "sha256-2CMsp3bltiABLTkUEwj9hQ+ovBPXcnkp5POtOd10OfA=";
     }
   ];
-in
-
-{
+in {
   imports = [
     ./anyrun
     ./greeter
@@ -64,7 +66,7 @@ in
     };
 
     environment.systemPackages = with pkgs; [
-      sutils  # battery, etc
+      sutils # battery, etc
 
       libnotify
       glib
@@ -77,7 +79,6 @@ in
       inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
       hyprpicker
 
-
       nwg-look
     ];
 
@@ -86,11 +87,10 @@ in
         enable = true;
         settings = {
           exec-once = [
-            "pcmanfm --daemon-mode" 
+            "pcmanfm --daemon-mode"
           ];
         };
       };
     };
-
   };
 }

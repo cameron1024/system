@@ -1,12 +1,17 @@
-{ pkgs, hardware, boot, hostname, inputs, ... }:
-
-let
-  linux = pkgs.linuxPackages_6_5;
-in
 {
+  pkgs,
+  hardware,
+  boot,
+  hostname,
+  inputs,
+  swapDevices,
+  ...
+}: let
+  linux = pkgs.linuxPackages_6_6;
+in {
   imports = [
     hardware
-    
+
     ./fonts.nix
     ../devices
     ../../modules/wm
@@ -16,11 +21,8 @@ in
     "python-2.7.18.6"
   ];
 
-
   nix.registry.nixpkgs.flake = inputs.nixpkgs;
   environment.etc."channels/nixpkgs".source = inputs.nixpkgs.outPath;
-  
-
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -28,13 +30,14 @@ in
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
 
+  services.system76-scheduler.enable = true;
 
-
+  inherit swapDevices;
 
   systemd.coredump.enable = true;
 
   networking.hostName = hostname;
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.nameservers = ["1.1.1.1" "8.8.8.8"];
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -48,16 +51,15 @@ in
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.cameron = {
     isNormalUser = true;
     description = "cameron";
-    extraGroups = [ "networkmanager" "wheel" "adbusers" "docker" "plugdev" "audio" "video" "sound" ];
+    extraGroups = ["networkmanager" "wheel" "adbusers" "docker" "plugdev" "audio" "video" "sound"];
   };
-  users.groups.adbusers = { };
-  users.groups.docker = { };
-  users.groups.plugdev = { };
+  users.groups.adbusers = {};
+  users.groups.docker = {};
+  users.groups.plugdev = {};
 
   environment.systemPackages = with pkgs; [
     firefox
@@ -67,26 +69,30 @@ in
 
     killall
 
-    # should these be in gnome? or hyprland?
-    # xdg-desktop-portal-wlr
-    # xdg-desktop-portal
-
-    linux.system76-scheduler
-
     logiops
   ];
 
   virtualisation.docker.enable = true;
   virtualisation.libvirtd.enable = true;
 
-  /* boot.extraModprobeConfig = pkgs.lib.mkMerge [ */
-  /*   # idle audio card after one second */
-  /*   "options snd_hda_intel power_save=1" */
-  /*   # enable wifi power saving (keep uapsd off to maintain low latencies) */
-  /*   "options iwlwifi power_save=1 uapsd_disable=1" */
-  /* ]; */
-
-
+  /*
+  boot.extraModprobeConfig = pkgs.lib.mkMerge [
+  */
+  /*
+  # idle audio card after one second
+  */
+  /*
+  "options snd_hda_intel power_save=1"
+  */
+  /*
+  # enable wifi power saving (keep uapsd off to maintain low latencies)
+  */
+  /*
+  "options iwlwifi power_save=1 uapsd_disable=1"
+  */
+  /*
+  ];
+  */
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -117,13 +123,12 @@ in
 
   services.deluge.enable = true;
 
-
   services.postgresql = {
     enable = true;
-    authentication = pkgs.lib.mkOverride 10 '' 
-      local all all trust 
-      host all all 127.0.0.1/32 trust 
-      host all all ::1/128 trust 
+    authentication = pkgs.lib.mkOverride 10 ''
+      local all all trust
+      host all all 127.0.0.1/32 trust
+      host all all ::1/128 trust
     '';
   };
 

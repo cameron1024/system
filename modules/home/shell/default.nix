@@ -1,5 +1,5 @@
 {
-  imports = [ 
+  imports = [
     ./bat
     ./fish
     ./tools
@@ -16,6 +16,7 @@
     programs.nushell = {
       enable = true;
       shellAliases = {
+        gr = "cd (git rev-parse --show-toplevel)";
         e = "nvim";
         d = "nvim -d";
         ed = "neovide --multigrid";
@@ -31,7 +32,5 @@
       configFile.source = ./config.nu;
       envFile.source = ./env.nu;
     };
-
   };
-
 }

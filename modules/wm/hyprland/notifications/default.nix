@@ -1,6 +1,8 @@
-{ username, pkgs, ... }:
-
 {
+  username,
+  pkgs,
+  ...
+}: {
   home-manager.users.${username} = {
     services.mako = {
       enable = true;
@@ -9,6 +11,5 @@
       font = "FiraCode Nerd Font";
       defaultTimeout = 5000;
     };
-
   };
 }

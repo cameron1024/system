@@ -1,6 +1,4 @@
-{ username, ... }:
-
-{
+{username, ...}: {
   home-manager.users.${username} = {
     programs.wofi = {
       enable = true;

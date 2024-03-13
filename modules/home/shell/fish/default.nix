@@ -2,6 +2,7 @@
   programs.fish = {
     enable = true;
     shellAbbrs = {
+      gr = "cd (git rev-parse --show-toplevel)";
       e = "nvim";
       b = "yazi";
       p = "cd ~/projects/playground";
@@ -25,5 +26,4 @@
   # programs.direnv.enableFishIntegration = true;
   # programs.carapace.enableFishIntegration = true;
   # programs.starship.enableFishIntegration = true;
-
 }

@@ -1,15 +1,11 @@
-{ pkgs, ...}:
-
-let
+{pkgs, ...}: let
   abbrs = {
     gs = "git switch";
     gps = "git push";
     gpl = "git fetch && git pull";
     grst = "git reset --hard HEAD";
   };
-in
-
-{
+in {
   programs.git = {
     enable = true;
     userName = "Cameron";
@@ -40,7 +36,6 @@ in
     lfs.enable = true;
   };
 
-
   programs.gh = {
     enable = true;
     settings = {
@@ -50,9 +45,9 @@ in
       ];
     };
   };
-  
+
   programs.nushell.shellAliases = abbrs;
-  programs.fish.shellAbbrs = abbrs // { gc = "git add -A && git commit -m"; };
+  programs.fish.shellAbbrs = abbrs // {gc = "git add -A && git commit -m";};
 
   programs.nushell.extraConfig = ''
     def gc [message] {
@@ -61,4 +56,7 @@ in
       null
     }
   '';
+
+  programs.gitui.enable = true;
+  programs.lazygit.enable = true;
 }

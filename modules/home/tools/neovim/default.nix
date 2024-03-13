@@ -1,28 +1,33 @@
-{ pkgs, isDarwin, ... }:
-let
-   
+{
+  pkgs,
+  isDarwin,
+  ...
+}: let
   lldbAdapter = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
 
-  linuxPackages = with pkgs;[
+  linuxPackages = with pkgs; [
     neovide
   ];
 
   macosPackages = [];
+in {
+  home.packages = with pkgs;
+    [
+      neovim-nightly
 
-in
-{
-  home.packages = with pkgs; [
-    neovim
+      nil # nix lsp
+      lua-language-server
+      # lldb
+      # lldbAdapter
 
-    nil  # nix lsp
-    lua-language-server
-    # lldb
-    # lldbAdapter
-
-    taplo
-    yamlfmt
-
-  ] ++ (if isDarwin then macosPackages else linuxPackages); 
+      taplo
+      yamlfmt
+    ]
+    ++ (
+      if isDarwin
+      then macosPackages
+      else linuxPackages
+    );
 
   home.file."./.config/nvim/" = {
     source = ./nvim;
