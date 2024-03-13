@@ -69,6 +69,7 @@
             home-manager.extraSpecialArgs = specialArgs; 
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
+              home.stateVersion = "22.05";
               imports = [ ./modules/home ];
             };
           }
