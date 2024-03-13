@@ -1,8 +1,10 @@
-{ pkgs, username, inputs, ... }:
-
 {
+  pkgs,
+  username,
+  inputs,
+  ...
+}: {
   home-manager.users.${username} = {
-
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER SHIFT, space, exec, anyrun"
@@ -38,5 +40,4 @@
       '';
     };
   };
-
 }

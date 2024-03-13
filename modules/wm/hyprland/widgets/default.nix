@@ -1,7 +1,4 @@
-{ pkgs, ... }:
-
-
-{
+{pkgs, ...}: {
   home-manager.users.cameron = {
     programs.eww = {
       enable = true;
@@ -15,6 +12,5 @@
         "SUPER, escape, exec, eww open powermenu --toggle"
       ];
     };
-
   };
 }

@@ -17,6 +17,7 @@ local plugins = {
 
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
+  require 'plugins.lsp.conform',
   require 'plugins.lsp.crates',
   require 'plugins.lsp.overseer',
   require 'plugins.lsp.rust',

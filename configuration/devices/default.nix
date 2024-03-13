@@ -1,3 +1,3 @@
 {
-  imports = [ ./logitech.nix ];
+  imports = [./logitech.nix];
 }

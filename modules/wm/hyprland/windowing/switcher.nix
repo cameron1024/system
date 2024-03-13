@@ -1,6 +1,9 @@
-{ username, pkgs, naersk, ... }:
-
-let 
+{
+  username,
+  pkgs,
+  naersk,
+  ...
+}: let
   window-switcher = naersk.buildPackage {
     pname = "window_switcher";
     version = "0.2.1";
@@ -13,8 +16,7 @@ let
   };
 
   switch = "${window-switcher}/bin/window_switcher";
-in
-{
+in {
   home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
       bind = [

@@ -1,7 +1,5 @@
-{ username, ... }:
-
-{
-  imports = [ 
+{username, ...}: {
+  imports = [
     ./switcher.nix
   ];
 
@@ -21,7 +19,7 @@
       binde=SHIFT,k,resizeactive,0 -40
       binde=SHIFT,j,resizeactive,0 40
 
-      bind=,escape,submap,reset 
+      bind=,escape,submap,reset
 
       submap=reset
     '';
@@ -79,7 +77,7 @@
       };
 
       exec-once = [
-        "[workspace special silent; opacity 0.5, size 100% 40% ] wezterm" 
+        "[workspace special silent; opacity 0.5, size 100% 40% ] wezterm"
       ];
 
       animations = {

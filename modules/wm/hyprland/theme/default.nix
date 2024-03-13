@@ -1,32 +1,29 @@
-{ lib, pkgs, config, username, inputs, ... }:
-
-let
-      
+{
+  lib,
+  pkgs,
+  config,
+  username,
+  inputs,
+  ...
+}: let
   cli = inputs.catppuccinifier.packages.${pkgs.system}.cli;
 
-  makeWallpaper = { url }: 
-    let
-      wallpaperFile = pkgs.fetchurl url;
-    in
-
+  makeWallpaper = {url}: let
+    wallpaperFile = pkgs.fetchurl url;
+  in
     pkgs.stdenv.mkDerivation {
-      buildInputs = [ cli ];
+      buildInputs = [cli];
       buildPhase = ''
         ${cli}/bin/catppuccinifier-cli --image ${wallpaperFile}
       '';
     };
-
-
 
   wallpapers = map (pkgs.fetchurl) config.wallpapers;
   wallpaperList = lib.concatStrings (map toString (lib.strings.intersperse " " wallpapers));
   randomWallpaper = pkgs.writeShellScriptBin "random-wallpaper" ''
     cams-home-utilities random-wallpaper ${wallpaperList}
   '';
-in
-
-{
-
+in {
   # GTK needs dconf
   programs.dconf.enable = true;
 
@@ -43,9 +40,9 @@ in
       theme = {
         name = "Catppuccin-Mocha-Compact-Pink-Dark";
         package = pkgs.catppuccin-gtk.override {
-          accents = [ "pink" ];
+          accents = ["pink"];
           size = "compact";
-          tweaks = [ "rimless" ];
+          tweaks = ["rimless"];
           variant = "mocha";
         };
       };
@@ -56,18 +53,16 @@ in
       };
     };
 
-
     home.packages = with pkgs; [
-      swww 
+      swww
       brightnessctl
     ];
 
     wayland.windowManager.hyprland.settings = {
-
       misc = {
         disable_hyprland_logo = true;
       };
-  
+
       exec-once = [
         "swww init && sleep 2 && random-wallpaper"
       ];
@@ -94,14 +89,11 @@ in
           "myBezier, 0.10, 0.9, 0.1, 1.05"
         ];
 
-        animation = 
-        let
+        animation = let
           enabled = "1";
           duration = "1.5";
           curve = "myBezier";
-        in 
-
-        [
+        in [
           "windows, ${enabled}, ${duration}, ${curve}, popin 80%"
           "windowsOut, ${enabled}, ${duration}, ${curve}, popin 80%"
           "border, ${enabled}, ${duration}, ${curve}"

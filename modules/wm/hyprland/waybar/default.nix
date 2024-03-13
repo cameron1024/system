@@ -1,11 +1,14 @@
-{ pkgs, username, displays, laptop, ... }:
-let 
+{
+  pkgs,
+  username,
+  displays,
+  laptop,
+  ...
+}: let
   # save battery if we're on a laptop
   defaultInterval = 0.5;
   launchBtm = "wezterm start btm";
-in
-
-{
+in {
   environment.systemPackages = with pkgs; [
     pavucontrol
   ];
@@ -18,14 +21,13 @@ in
 
   home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {
-      exec-once = [ "waybar" ];
+      exec-once = ["waybar"];
 
       bind = [
         "SUPER, b, exec, killall -SIGUSR1 .waybar-wrapped"
       ];
     };
 
-  
     programs.waybar = {
       enable = true;
       style = ./style;
@@ -41,11 +43,11 @@ in
           margin-top = 0;
           margin-left = 10;
           margin-right = 10;
-          modules-left = [ 
+          modules-left = [
             "hyprland/workspaces"
             "hyprland/window"
           ];
-          modules-center = [ 
+          modules-center = [
             "clock"
           ];
           modules-right = [
@@ -138,7 +140,7 @@ in
             interval = defaultInterval;
             on-click = launchBtm;
             format = "{temperatureC}°C ";
-            format-icons = [ "" "" "" "" "" ];
+            format-icons = ["" "" "" "" ""];
           };
 
           "disk" = {
@@ -177,7 +179,7 @@ in
               phone = "";
               portable = "";
               car = "";
-              default = [ "" "" "" ];
+              default = ["" "" ""];
             };
             on-click = "pavucontrol";
           };
@@ -201,12 +203,7 @@ in
             # on-click-right = "swaync-client -d -sw";
             # escape = true;
           };
-
         };
-
-
-
-
       };
     };
   };

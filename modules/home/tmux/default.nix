@@ -1,9 +1,14 @@
-{ pkgs, laptop, ... }:
-
-let 
+{
+  pkgs,
+  laptop,
+  ...
+}: let
   shell = "${pkgs.fish}/bin/fish";
 
-  batteryString = if laptop then "battery " else "";
+  batteryString =
+    if laptop
+    then "battery "
+    else "";
   modules = "${batteryString}date_time session";
 
   laptopModules = with pkgs.tmuxPlugins; [
@@ -16,14 +21,12 @@ let
   tmuxWithSixel = pkgs.tmux.overrideAttrs (final: prev: {
     configureFlags = prev.configureFlags ++ ["--enable-sixel"];
   });
-in
-
-{
+in {
   imports = [
     ./tmate.nix
     ./twm.nix
   ];
-  
+
   config = {
     programs.tmux = {
       enable = true;
@@ -31,51 +34,56 @@ in
       prefix = "C-a";
       inherit shell;
       escapeTime = 0;
-      clock24 = true; mouse = true;
+      clock24 = true;
+      mouse = true;
       resizeAmount = 5;
       sensibleOnTop = true;
       historyLimit = 50000;
       keyMode = "vi";
-      plugins = with pkgs.tmuxPlugins; [
+      plugins = with pkgs.tmuxPlugins;
+        [
+          {
+            plugin = sessionist;
+            extraConfig = "set -g @plugin 'tmux-plugins/tmux-sessionist'";
+          }
 
-        {
-          plugin = sessionist;
-          extraConfig = "set -g @plugin 'tmux-plugins/tmux-sessionist'";
-        }
+          {
+            plugin = catppuccin;
+            extraConfig = ''
+              set -g @plugin 'catppuccin/tmux'
+              set -g @catppuccin_flavour 'mocha'
 
-        {
-          plugin = catppuccin;
-          extraConfig = ''
-            set -g @plugin 'catppuccin/tmux'
-            set -g @catppuccin_flavour 'mocha'
+              set -g @catppuccin_date_time_text "%H:%M %d/%m"
 
-            set -g @catppuccin_date_time_text "%H:%M %d/%m"
+              set -g @catppuccin_window_left_separator "█"
+              set -g @catppuccin_window_right_separator "█ "
+              set -g @catppuccin_window_number_position "right"
+              set -g @catppuccin_window_middle_separator "  █"
 
-            set -g @catppuccin_window_left_separator "█"
-            set -g @catppuccin_window_right_separator "█ "
-            set -g @catppuccin_window_number_position "right"
-            set -g @catppuccin_window_middle_separator "  █"
+              set -g @catppuccin_window_default_fill "number"
 
-            set -g @catppuccin_window_default_fill "number"
+              set -g @catppuccin_window_current_fill "number"
 
-            set -g @catppuccin_window_current_fill "number"
+              set -g @catppuccin_status_modules "${modules}"
+              set -g @catppuccin_status_left_separator  ""
+              set -g @catppuccin_status_right_separator " "
+              set -g @catppuccin_status_right_separator_inverse "yes"
+              set -g @catppuccin_status_fill "all"
+              set -g @catppuccin_status_connect_separator "no"
+            '';
+          }
 
-            set -g @catppuccin_status_modules "${modules}"
-            set -g @catppuccin_status_left_separator  ""
-            set -g @catppuccin_status_right_separator " "
-            set -g @catppuccin_status_right_separator_inverse "yes"
-            set -g @catppuccin_status_fill "all"
-            set -g @catppuccin_status_connect_separator "no"
-          '';
-        }
-
-        vim-tmux-navigator
-
-      ] ++ (if laptop then laptopModules else []);
+          vim-tmux-navigator
+        ]
+        ++ (
+          if laptop
+          then laptopModules
+          else []
+        );
       extraConfig = ''
 
         set -g default-terminal "tmux-256color"
-        set -ag terminal-overrides ",xterm-256color:RGB" 
+        set -ag terminal-overrides ",xterm-256color:RGB"
 
         # set -as terminal-features ",xterm-256color:RGB:Sxl"
         set -g default-command ${shell}

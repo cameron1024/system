@@ -1,12 +1,12 @@
-{ pkgs, username, ... }:
-
 {
+  pkgs,
+  username,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     blueman
-    networkmanagerapplet  
+    networkmanagerapplet
   ];
-
-
 
   home-manager.users.${username} = {
     wayland.windowManager.hyprland.settings = {

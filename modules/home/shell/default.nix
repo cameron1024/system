@@ -1,5 +1,5 @@
 {
-  imports = [ 
+  imports = [
     ./bat
     ./fish
     ./tools
@@ -32,7 +32,5 @@
       configFile.source = ./config.nu;
       envFile.source = ./env.nu;
     };
-
   };
-
 }

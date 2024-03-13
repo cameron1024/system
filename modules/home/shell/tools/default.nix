@@ -1,6 +1,4 @@
-{ pkgs, ...}:
-
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     wiki-tui
     mprocs
@@ -47,7 +45,10 @@
     settings = {
       opener = {
         text = [
-          { exec = ''nvim "$@"''; block = true; }
+          {
+            exec = ''nvim "$@"'';
+            block = true;
+          }
         ];
       };
     };
@@ -81,7 +82,6 @@
         format = "$symbol ";
         symbol = "[󰜗]($style)";
       };
-
     };
   };
 }

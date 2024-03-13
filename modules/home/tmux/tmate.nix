@@ -1,6 +1,8 @@
-{ lib, isDarwin, ... }:
-
 {
+  lib,
+  isDarwin,
+  ...
+}: {
   programs.tmate = {
     enable = true;
   };

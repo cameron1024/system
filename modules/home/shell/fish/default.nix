@@ -26,5 +26,4 @@
   # programs.direnv.enableFishIntegration = true;
   # programs.carapace.enableFishIntegration = true;
   # programs.starship.enableFishIntegration = true;
-
 }

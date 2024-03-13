@@ -1,10 +1,9 @@
-{ linuxArgs, macArgs }:
-
-let
+{
+  linuxArgs,
+  macArgs,
+}: let
   allDisplays = import ./displays.nix;
-in
-
-rec {
+in rec {
   shared = {
     username = "cameron";
     realName = "Cameron";
@@ -16,50 +15,57 @@ rec {
     };
   };
 
-  macos = shared // {
-    naersk = macArgs.naersk;
-    isDarwin = true;
-    headless = false;
-    laptop = true;
-  };
+  macos =
+    shared
+    // {
+      naersk = macArgs.naersk;
+      isDarwin = true;
+      headless = false;
+      laptop = true;
+    };
 
-  mini = shared // {
-    hardware = import ./hardware/mini.nix;
-    naersk = linuxArgs.naersk;
-    isDarwin = false;
-    headless = false;
-    laptop = false; 
-    hyprland = true;
-    hostname = "teeny";
-    boot = "/boot";
-    displays = with allDisplays; [ benq lg ];
-    swapDevices = [ 
-      {
-        device = "/var/swap";
-        size = 32 * 1024;
-      } 
-    ];
-  };
+  mini =
+    shared
+    // {
+      hardware = import ./hardware/mini.nix;
+      naersk = linuxArgs.naersk;
+      isDarwin = false;
+      headless = false;
+      laptop = false;
+      hyprland = true;
+      hostname = "teeny";
+      boot = "/boot";
+      displays = with allDisplays; [benq lg];
+      swapDevices = [
+        {
+          device = "/var/swap";
+          size = 32 * 1024;
+        }
+      ];
+    };
 
-  thinkpad = shared // {
-    hardware = import ./hardware/thinkpad.nix;
-    naersk = linuxArgs.naersk;
-    isDarwin = false;
-    headless = false;
-    laptop = true;
-    hyprland = true;
-    hostname = "thinkchad";
-    boot = "/boot/efi";
-    displays = with allDisplays; [ thinkpadBuiltin ];
-    swapDevices = [];
-  };
+  thinkpad =
+    shared
+    // {
+      hardware = import ./hardware/thinkpad.nix;
+      naersk = linuxArgs.naersk;
+      isDarwin = false;
+      headless = false;
+      laptop = true;
+      hyprland = true;
+      hostname = "thinkchad";
+      boot = "/boot/efi";
+      displays = with allDisplays; [thinkpadBuiltin];
+      swapDevices = [];
+    };
 
-  server = shared // {
-    naersk = linuxArgs.naersk;
-    isDarwin = false;
-    headless = true;
-    laptop = false; 
-    hyprland = false;
-  };
-
+  server =
+    shared
+    // {
+      naersk = linuxArgs.naersk;
+      isDarwin = false;
+      headless = true;
+      laptop = false;
+      hyprland = false;
+    };
 }

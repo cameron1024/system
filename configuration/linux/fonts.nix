@@ -1,13 +1,11 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   fonts = {
     enableDefaultPackages = true;
 
     fontDir.enable = true;
-    
+
     packages = with pkgs; [
- # icon fonts
+      # icon fonts
       material-symbols
       # normal fonts
       noto-fonts
@@ -32,10 +30,10 @@
           "FiraCode Nerd Font"
         ];
 
-        emoji = [ 
+        emoji = [
           "Noto Color Emoji"
-          "Font Awesome 6 Free" 
-          "Font Awesome 6 Brands" 
+          "Font Awesome 6 Free"
+          "Font Awesome 6 Brands"
         ];
 
         sansSerif = [
@@ -44,7 +42,7 @@
 
         serif = [
           "Noto Serif"
-        ];  
+        ];
       };
     };
   };
