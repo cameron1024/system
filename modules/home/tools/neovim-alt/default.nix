@@ -9,7 +9,10 @@
     neovide
   ];
 
-  macosPackages = [];
+  macosPackages = with pkgs; [
+    gnome-epub-thumbnailer
+
+  ];
 in {
   imports = [
     ./lsps.nix
@@ -25,7 +28,6 @@ in {
         imagemagick
         ffmpegthumbnailer
         poppler
-        gnome-epub-thumbnailer
         fontpreview
 
         tree-sitter
