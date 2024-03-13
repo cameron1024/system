@@ -1,3 +1,8 @@
+if vim.g.started_by_firenvim == true then
+  vim.o.laststatus = 0
+  return
+end
+
 return {
   'nvim-lualine/lualine.nvim',
   dependencies = {
@@ -7,11 +12,6 @@ return {
   event = "VeryLazy",
   enabled = vim.g.started_by_firenvim == nil,
   config = function()
-    if vim.g.started_by_firenvim == true then
-      vim.o.laststatus = 0
-      return
-    end
-
     vim.o.laststatus = 3
 
     require 'lualine'.setup {
