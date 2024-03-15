@@ -52,7 +52,6 @@
 
     sharedModules = [
       ./configuration
-      ./tools
     ];
 
     makeLinux = {args}:
@@ -64,6 +63,8 @@
           sharedModules
           ++ [
             home-manager.nixosModules.home-manager
+
+            ./tools
 
             {
               nixpkgs.overlays = overlays;
@@ -88,10 +89,12 @@
         ++ [
           home-manager.darwinModules.home-manager
           {
+            nixpkgs.overlays = overlays;
             home-manager.extraSpecialArgs = specialArgs;
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
-              imports = [./modules/home];
+              home.stateVersion = "22.05";
+              imports = [ ./modules/home ];
             };
           }
 
@@ -131,7 +134,8 @@
         packages = [
           (pkgs.writeShellScriptBin "s" ''
             git add -A
-            nix run nix-darwin --extra-experimental-features flakes --extra-experimental-features nix-command -- switch --flake .
+            export NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
+            nix run nix-darwin --extra-experimental-features flakes --extra-experimental-features nix-command --impure -- switch --flake .
           '')
         ];
       };

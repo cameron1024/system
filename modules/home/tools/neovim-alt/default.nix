@@ -7,9 +7,16 @@
 
   linuxPackages = with pkgs; [
     neovide
+
+    chafa
+    imagemagick
+    ffmpegthumbnailer
+    poppler
+    fontpreview
+    gnome-epub-thumbnailer
   ];
 
-  macosPackages = [];
+  macosPackages = with pkgs; [];
 in {
   imports = [
     ./lsps.nix
@@ -19,15 +26,6 @@ in {
     home.packages = with pkgs;
       [
         neovim-nightly
-
-        # Terminal graphics
-        chafa
-        imagemagick
-        ffmpegthumbnailer
-        poppler
-        gnome-epub-thumbnailer
-        fontpreview
-
         tree-sitter
       ]
       ++ (
