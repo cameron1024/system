@@ -19,6 +19,7 @@ in rec {
     shared
     // {
       naersk = macArgs.naersk;
+      crane = macArgs.crane;
       isDarwin = true;
       headless = false;
       laptop = true;
@@ -29,6 +30,7 @@ in rec {
     // {
       hardware = import ./hardware/mini.nix;
       naersk = linuxArgs.naersk;
+      crane = linuxArgs.crane;
       isDarwin = false;
       headless = false;
       laptop = false;
@@ -49,6 +51,7 @@ in rec {
     // {
       hardware = import ./hardware/thinkpad.nix;
       naersk = linuxArgs.naersk;
+      crane = linuxArgs.crane;
       isDarwin = false;
       headless = false;
       laptop = true;
@@ -63,6 +66,7 @@ in rec {
     shared
     // {
       naersk = linuxArgs.naersk;
+      crane = linuxArgs.crane;
       isDarwin = false;
       headless = true;
       laptop = false;

@@ -19,6 +19,7 @@ return {
     lspconfig.biome.setup { capabilities = capabilities }
     lspconfig.markdown_oxide.setup { capabilities = capabilities }
     lspconfig.nickel_ls.setup { capabilities = capabilities }
+    lspconfig.wgsl_analyzer.setup { capabilities = capabilities }
 
     lspconfig.yamlls.setup {
       capabilities = capabilities,
@@ -90,7 +91,3 @@ return {
   },
 }
 
--- map('n', '<C-n>', vim.diagnostic.goto_next)
--- map('n', '<C-b>', vim.diagnostic.goto_prev)
--- map('n', 'E', vim.diagnostic.open_float)
--- map('n', 'Q', vim.diagnostic.setloclist)

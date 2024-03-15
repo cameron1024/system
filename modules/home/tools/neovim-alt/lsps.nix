@@ -1,6 +1,7 @@
 {
   pkgs,
   naersk,
+  inputs,
   ...
 }: let
   markdown-oxide = naersk.buildPackage {
@@ -14,6 +15,7 @@
 in {
   home.packages = with pkgs; [
     markdown-oxide
+    inputs.wgsl-analyzer.packages.${pkgs.system}.default
 
     nil
     lua-language-server

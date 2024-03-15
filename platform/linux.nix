@@ -10,4 +10,5 @@
   };
 
   naersk = pkgs.callPackage inputs.naersk {};
+  crane = inputs.crane.lib.${system};
 }

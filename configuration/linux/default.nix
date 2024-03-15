@@ -149,4 +149,9 @@ in {
     dhcpcd.wait = "background";
     dhcpcd.extraConfig = "noarp";
   };
+
+  hardware.opengl.enable = true;
+  hardware.opengl.extraPackages = [
+    pkgs.intel-compute-runtime
+  ];
 }

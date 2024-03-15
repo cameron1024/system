@@ -8,6 +8,9 @@
     naersk.url = "github:nix-community/naersk";
     naersk.inputs.nixpkgs.follows = "nixpkgs";
 
+    crane.url = "github:ipetkov/crane";
+    crane.inputs.nixpkgs.follows = "nixpkgs";
+
     hyprland-contrib.url = "github:hyprwm/contrib";
     hyprland-contrib.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -24,6 +27,9 @@
 
     catppuccinifier.url = "github:lighttigerXIV/catppuccinifier";
     catppuccinifier.inputs.nixpkgs.follows = "nixpkgs";
+
+    wgsl-analyzer.url = "github:wgsl-analyzer/wgsl-analyzer";
+    wgsl-analyzer.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -31,6 +37,7 @@
     home-manager,
     nix-darwin,
     naersk,
+    crane,
     mac-app-util,
     anyrun,
     ...
