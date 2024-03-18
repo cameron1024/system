@@ -12,18 +12,15 @@
       da = "direnv allow";
       rs = "rust-script";
       t = "cd /tmp";
-      pub = "flutter pub";
-      fr = "flutter run";
-      f = "flutter";
       g = "z";
       q = "exit";
 
       cpd = "cp ~/Downloads/";
+
+      pub = "flutter pub";
+      fr = "flutter run";
+      f = "flutter";
+      fpg = "flutter pub get";
     };
   };
-
-  # programs.zoxide.enableFishIntegration = true;
-  # programs.direnv.enableFishIntegration = true;
-  # programs.carapace.enableFishIntegration = true;
-  # programs.starship.enableFishIntegration = true;
 }
