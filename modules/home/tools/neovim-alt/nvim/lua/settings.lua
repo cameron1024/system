@@ -33,6 +33,7 @@ local options = {
   updatetime = 50,
   background = "dark",
   laststatus = 3,
+  conceallevel = 3,
 }
 
 for key, value in pairs(options) do
@@ -46,8 +47,3 @@ vim.cmd [[
   augroup END
 ]]
 
-vim.filetype.add {
-  extension = {
-    wgsl = "wgsl",
-  },
-}

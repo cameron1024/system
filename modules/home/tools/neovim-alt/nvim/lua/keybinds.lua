@@ -59,3 +59,10 @@ map('v', '<C-d>', [[y'>pgv]])
 
 -- make * stay on the same entry
 map('n', '*', '*N')
+
+-- ctrl + enter to toggle fold
+map({ 'n', 'v' }, '<C-CR>', 'za')
+
+map('i', '<C-CR>', '<C-o>o')
+
+

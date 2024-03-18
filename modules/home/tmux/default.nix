@@ -82,11 +82,14 @@ in {
         );
       extraConfig = ''
 
-        set -g default-terminal "tmux-256color"
-        set -ag terminal-overrides ",xterm-256color:RGB"
+        set -g default-terminal "xterm-256color"
+        set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
         # set -as terminal-features ",xterm-256color:RGB:Sxl"
         set -g default-command ${shell}
+
+        set -s extended-keys on
+        set -as terminal-features 'xterm*:extkeys'
 
         bind-key -n M-\; command-prompt
 

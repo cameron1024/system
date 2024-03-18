@@ -11,6 +11,7 @@ return {
     'windwp/nvim-autopairs',
     'Saecki/crates.nvim',
     'petertriho/cmp-git',
+    'nvim-neorg/neorg',
   },
   -- event = "InsertEnter",
   config = function()
@@ -78,6 +79,7 @@ return {
         { name = "git" },
         { name = 'buffer' },
         { name = 'crates' },
+        { name = 'neorg' },
         { name = 'emoji',                  insert = true },
       },
     }

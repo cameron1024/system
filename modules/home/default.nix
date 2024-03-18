@@ -39,6 +39,7 @@ in {
 
   home.packages = with pkgs;
     [
+      firefox
       ripgrep
       eza
       fd
@@ -53,8 +54,6 @@ in {
       du-dust
 
       lynx
-
-      silicon
     ]
     ++ (
       if isDarwin
