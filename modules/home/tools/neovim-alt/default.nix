@@ -14,6 +14,8 @@
     poppler
     fontpreview
     gnome-epub-thumbnailer
+
+    silicon
   ];
 
   macosPackages = with pkgs; [];

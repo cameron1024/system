@@ -1,11 +1,12 @@
 local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
-  require 'plugins.editing.flash',
+  -- require 'plugins.editing.flash',
   require 'plugins.editing.image-view',
   -- require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.surround',
+  require 'plugins.editing.silicon',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
 
@@ -27,6 +28,8 @@ local plugins = {
   require 'plugins.lualine',
 
   require 'plugins.neotree',
+
+  require 'plugins.notes.neorg',
 
   require 'plugins.telescope',
 

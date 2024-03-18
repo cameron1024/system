@@ -18,6 +18,7 @@ with lib; {
       cargo-bloat
       cargo-duplicates
       cargo-info
+      cargo-outdated
 
       evcxr
     ]
