@@ -6,8 +6,6 @@
   lldbAdapter = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
 
   linuxPackages = with pkgs; [
-    neovide
-
     chafa
     imagemagick
     ffmpegthumbnailer
@@ -26,6 +24,7 @@ in {
     home.packages = with pkgs;
       [
         neovim-nightly
+        neovide
         tree-sitter
       ]
       ++ (
