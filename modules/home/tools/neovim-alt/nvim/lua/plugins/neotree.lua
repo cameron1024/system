@@ -28,6 +28,7 @@ return {
       end,
     },
   },
+  cmd = { "Neotree" },
   keys = {
     { "<leader>p", ":Neotree toggle reveal_force_cwd<CR>", desc = "Open Neotree" },
   },

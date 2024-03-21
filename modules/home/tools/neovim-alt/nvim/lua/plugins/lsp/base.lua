@@ -75,19 +75,18 @@ return {
     }
   end,
   keys = {
-    { "K",         ":lua vim.lsp.buf.hover()<cr>",           desc = "LSP Hover" },
-    { "gd",        ":lua vim.lsp.buf.definition()<cr>",      desc = "LSP Goto Definition" },
-    { "gc",        ":lua vim.lsp.buf.declaration()<cr>",     desc = "LSP Goto Declaration" },
-    { "gi",        ":lua vim.lsp.buf.implementation()<cr>",  desc = "LSP Goto Implementation" },
-    { "gt",        ":lua vim.lsp.buf.type_definition()<cr>", desc = "LSP Goto Type Definition" },
-    { "gr",        ":lua vim.lsp.buf.references()<cr>",      desc = "LSP References" },
-    { "<C-e>",     ":lua vim.diagnostic.open_float()<cr>",   desc = "Show Diagnostic" },
-    { "Q",         ":lua vim.diagnostic.setloclist()<cr>",   desc = "Open Diagnostic Loclist" },
-    { "<C-n>",     ":lua vim.diagnostic.goto_next()<cr>",    desc = "Goto Next Diagnostic" },
-    { "<C-b>",     ":lua vim.diagnostic.goto_prev()<cr>",    desc = "Goto Next Diagnostic" },
-    { "<leader>r", ":lua vim.lsp.buf.rename()<cr>",          desc = "Rename" },
-    { "<leader>a", ":lua vim.lsp.buf.code_action()<cr>",     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
+    { "K",         vim.lsp.buf.hover,           desc = "LSP Hover" },
+    { "gd",        vim.lsp.buf.definition,      desc = "LSP Goto Definition" },
+    { "gc",        vim.lsp.buf.declaration,     desc = "LSP Goto Declaration" },
+    { "gi",        vim.lsp.buf.implementation,  desc = "LSP Goto Implementation" },
+    { "gt",        vim.lsp.buf.type_definition, desc = "LSP Goto Type Definition" },
+    { "gr",        vim.lsp.buf.references,      desc = "LSP References" },
+    { "<C-e>",     vim.diagnostic.open_float,   desc = "Show Diagnostic" },
+    { "Q",         vim.diagnostic.setloclist,   desc = "Open Diagnostic Loclist" },
+    { "<C-n>",     vim.diagnostic.goto_next,    desc = "Goto Next Diagnostic" },
+    { "<C-b>",     vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
+    { "<leader>r", vim.lsp.buf.rename,          desc = "Rename" },
+    { "<leader>a", vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
 
   },
 }
-

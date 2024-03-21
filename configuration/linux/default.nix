@@ -66,6 +66,7 @@ in {
     git
     vim
     linux.perf
+    cachix
 
     killall
 
