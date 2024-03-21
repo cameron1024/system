@@ -8,6 +8,7 @@
     sad
     ripdrag
     fzf-make
+    license-cli
 
     comma
   ];
