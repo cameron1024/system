@@ -9,6 +9,7 @@ return {
   opts = {
     messages = {
       enabled = false,
+      view_search = "virtualtext",
     },
     lsp = {
       override = {

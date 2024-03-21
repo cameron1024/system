@@ -3,7 +3,7 @@ local plugins = {
   require 'plugins.editing.comment',
   -- require 'plugins.editing.flash',
   require 'plugins.editing.image-view',
-  -- require 'plugins.editing.oil',
+  require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.surround',
   require 'plugins.editing.silicon',
