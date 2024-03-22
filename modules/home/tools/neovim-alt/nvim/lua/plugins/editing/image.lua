@@ -3,6 +3,6 @@ return {
   lazy = true,
   ft = { "md", "norg" },
   opts = {
-    auto_displat = true,
+    auto_display = true,
   },
 }

@@ -17,6 +17,7 @@ in {
     markdown-oxide
     inputs.wgsl-analyzer.packages.${pkgs.system}.default
 
+    marksman
     nil
     lua-language-server
     taplo
