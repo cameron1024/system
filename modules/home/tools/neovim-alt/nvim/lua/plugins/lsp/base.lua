@@ -82,7 +82,7 @@ return {
     { "gi",        vim.lsp.buf.implementation,  desc = "LSP Goto Implementation" },
     { "gt",        vim.lsp.buf.type_definition, desc = "LSP Goto Type Definition" },
     { "gr",        vim.lsp.buf.references,      desc = "LSP References" },
-    { "<C-e>",     vim.diagnostic.open_float,   desc = "Show Diagnostic" },
+    { "<leader>e", vim.diagnostic.open_float,   desc = "Show Diagnostic" },
     { "Q",         vim.diagnostic.setloclist,   desc = "Open Diagnostic Loclist" },
     { "<C-n>",     vim.diagnostic.goto_next,    desc = "Goto Next Diagnostic" },
     { "<C-b>",     vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },

@@ -1,14 +1,17 @@
 local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
+  require 'plugins.editing.dial',
   -- require 'plugins.editing.flash',
   require 'plugins.editing.image-view',
+  require 'plugins.editing.hardtime',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.surround',
   require 'plugins.editing.silicon',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
+  require 'plugins.editing.undo-highlight',
 
   require 'plugins.firenvim',
 
@@ -58,7 +61,6 @@ require 'lazy'.setup {
         "netrwPlugin",
         "tarPlugin",
         "tohtml",
-        "tutor",
         "zipPlugin",
       },
     },

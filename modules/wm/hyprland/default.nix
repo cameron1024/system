@@ -80,7 +80,11 @@ in {
       hyprpicker
 
       nwg-look
+
+      iwgtk
     ];
+
+    networking.wireless.iwd.enable = true;
 
     home-manager.users.${username} = {
       wayland.windowManager.hyprland = {
