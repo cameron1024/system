@@ -3,7 +3,9 @@
   isDarwin,
   ...
 }: let
-  lldbAdapter = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
+  neovim = pkgs.wrapNeovim pkgs.neovim-nightly {
+    extraMakeWrapperArgs = "--prefix LD_LIBRARY_PATH: \"${pkgs.lib.makeLibraryPath [pkgs.libgit2]}\"";
+  };
 
   linuxPackages = with pkgs; [
     chafa
@@ -16,7 +18,7 @@
     silicon
   ];
 
-  macosPackages = with pkgs; [];
+  macosPackages = [];
 in {
   imports = [
     ./lsps.nix
@@ -25,9 +27,12 @@ in {
   config = {
     home.packages = with pkgs;
       [
-        neovim-nightly
+        neovim
+
         neovide
         tree-sitter
+
+        libgit2
       ]
       ++ (
         if isDarwin

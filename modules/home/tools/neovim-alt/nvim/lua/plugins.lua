@@ -18,6 +18,7 @@ local plugins = {
   require 'plugins.git.diffview',
   require 'plugins.git.octo',
   require 'plugins.git.gitsigns',
+  require 'plugins.git.fugit',
 
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
