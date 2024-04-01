@@ -33,7 +33,6 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     home-manager,
     nix-darwin,
@@ -95,7 +94,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
               home.stateVersion = "22.05";
-              imports = [./modules/home];
+              imports = [ ./modules/home ];
             };
           }
 
