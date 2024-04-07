@@ -25,6 +25,7 @@ in {
     nodePackages_latest.vscode-json-languageserver
     biome # JS
     nls # nickel
+    typescript
 
     alejandra # nix formatter
   ];

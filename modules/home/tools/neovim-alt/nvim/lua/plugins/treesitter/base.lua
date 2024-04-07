@@ -5,13 +5,23 @@ return {
     "nvim-treesitter/nvim-treesitter-textobjects",
   },
   config = function()
-    require 'nvim-treesitter.parsers'.get_parser_configs().just = {
+    local parsers = require 'nvim-treesitter.parsers'.get_parser_configs()
+
+    parsers.just = {
       install_info = {
         url = "https://github.com/IndianBoy42/tree-sitter-just",
         files = { "src/parser.c", "src/scanner.c" },
         branch = "main",
       },
       maintainers = { "@IndianBoy42" },
+    }
+
+    parsers.firebase = {
+      install_info = {
+        url = "https://github.com/ishowta/tree-sitter-firebase-rules",
+        files = { "src/parser.c" },
+        branch = "main",
+      }
     }
 
     require 'nvim-treesitter.configs'.setup {

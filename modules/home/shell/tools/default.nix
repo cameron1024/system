@@ -11,6 +11,8 @@
     license-cli
 
     comma
+
+    nix-tree
   ];
 
   programs.zoxide = {
@@ -47,7 +49,7 @@
       opener = {
         text = [
           {
-            exec = ''nvim "$@"'';
+            run = ''nvim "$@"'';
             block = true;
           }
         ];

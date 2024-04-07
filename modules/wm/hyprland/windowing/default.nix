@@ -1,6 +1,7 @@
 {username, ...}: {
   imports = [
     ./switcher.nix
+    ./expo.nix
   ];
 
   config.home-manager.users.${username} = {
@@ -74,16 +75,6 @@
 
       gestures = {
         workspace_swipe = true;
-      };
-
-      exec-once = [
-        "[workspace special silent; opacity 0.5, size 100% 40% ] wezterm"
-      ];
-
-      animations = {
-        animation = [
-          "specialWorkspace, 1, 4, default, slidevert"
-        ];
       };
 
       dwindle.no_gaps_when_only = false;

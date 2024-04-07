@@ -53,6 +53,8 @@ in {
       du-dust
 
       lynx
+
+      ollama
     ]
     ++ (
       if isDarwin

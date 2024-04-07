@@ -89,11 +89,21 @@ in {
     home-manager.users.${username} = {
       wayland.windowManager.hyprland = {
         enable = true;
+        package = inputs.hyprland.packages.${pkgs.system}.default;
         settings = {
           exec-once = [
             "pcmanfm --daemon-mode"
           ];
+
+
+          plugin = {
+            hyprexpo = {
+              colums = 3;
+              gap_size = 5;
+            };
+          };
         };
+
       };
     };
   };
