@@ -4,6 +4,8 @@
     gps = "git push";
     gpl = "git fetch && git pull";
     grst = "git reset --hard HEAD";
+    gpv = "gh pr view --web";
+    gb = "gh browse";
   };
 in {
   programs.git = {
