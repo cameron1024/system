@@ -486,6 +486,33 @@
         "type": "github"
       }
     },
+    "hyprlandPlugins": {
+      "inputs": {
+        "hyprland": [
+          "hyprspace",
+          "hyprland"
+        ],
+        "systems": [
+          "hyprspace",
+          "hyprlandPlugins",
+          "hyprland",
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1712836056,
+        "narHash": "sha256-qf6yev9OlJuQv557ApLQ/5V8pQj0YOO9tyh5j3It1mY=",
+        "owner": "hyprwm",
+        "repo": "hyprland-plugins",
+        "rev": "e9457e08ca3ff16dc5a815be62baf9e18b539197",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hyprwm",
+        "repo": "hyprland-plugins",
+        "type": "github"
+      }
+    },
     "hyprlang": {
       "inputs": {
         "nixpkgs": [
@@ -531,6 +558,32 @@
       "original": {
         "owner": "hyprwm",
         "repo": "hyprlang",
+        "type": "github"
+      }
+    },
+    "hyprspace": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ],
+        "hyprlandPlugins": "hyprlandPlugins",
+        "nixpkgs": [
+          "hyprspace",
+          "hyprland",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1712965876,
+        "narHash": "sha256-HRHSO3AZSZAkCXXoCmDbLYUn97WydzIed+EksIoatWo=",
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
+        "rev": "7dd5d777b103dfb62576bd1fd6f47342598d368f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
         "type": "github"
       }
     },
@@ -701,6 +754,7 @@
         "hyprland": "hyprland",
         "hyprland-contrib": "hyprland-contrib",
         "hyprland-plugins": "hyprland-plugins",
+        "hyprspace": "hyprspace",
         "mac-app-util": "mac-app-util",
         "naersk": "naersk",
         "neovim-nightly-overlay": "neovim-nightly-overlay",

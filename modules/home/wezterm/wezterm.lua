@@ -20,6 +20,8 @@ return {
 
   enable_kitty_keyboard = true,
 
+  -- :(
+  enable_wayland = false,
 
   keys = {
     {

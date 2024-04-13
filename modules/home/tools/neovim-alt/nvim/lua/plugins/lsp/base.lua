@@ -21,6 +21,7 @@ return {
     lspconfig.marksman.setup { capabilities = capabilities }
     lspconfig.nickel_ls.setup { capabilities = capabilities }
     lspconfig.wgsl_analyzer.setup { capabilities = capabilities }
+    lspconfig.lemminx.setup { capabilities = capabilities }
 
     lspconfig.yamlls.setup {
       capabilities = capabilities,

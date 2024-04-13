@@ -42,7 +42,6 @@ return {
             ["ic"] = { query = "@class.inner", desc = "In Class" },
             ["aa"] = { query = "@parameter.outer", desc = "Around Argument" },
             ["ia"] = { query = "@parameter.inner", desc = "In Argument" },
-            ["gc"] = { query = "@comment.outer", desc = "In Comment" },
           },
         },
       },

@@ -26,6 +26,7 @@ in {
     biome # JS
     nls # nickel
     typescript
+    lemminx
 
     alejandra # nix formatter
   ];

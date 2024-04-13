@@ -19,6 +19,9 @@
     hyprland-plugins.url = "github:hyprwm/hyprland-plugins";
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
 
+    hyprspace.url = "github:KZDKM/Hyprspace";
+    hyprspace.inputs.hyprland.follows = "hyprland";
+
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 

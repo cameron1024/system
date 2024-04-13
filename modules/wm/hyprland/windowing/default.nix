@@ -1,7 +1,7 @@
 {username, ...}: {
   imports = [
     ./switcher.nix
-    ./expo.nix
+    ./overview.nix
   ];
 
   config.home-manager.users.${username} = {

@@ -14,6 +14,7 @@
       t = "cd /tmp";
       g = "z";
       q = "exit";
+      n = "cd ~/notes && nvim";
 
       cpd = "cp ~/Downloads/";
 

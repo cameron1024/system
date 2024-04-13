@@ -96,12 +96,6 @@ in {
           ];
 
 
-          plugin = {
-            hyprexpo = {
-              colums = 3;
-              gap_size = 5;
-            };
-          };
         };
 
       };
