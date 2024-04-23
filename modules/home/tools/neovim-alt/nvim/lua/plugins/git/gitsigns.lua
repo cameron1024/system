@@ -4,6 +4,7 @@ return {
   event = "BufEnter",
   opts = {},
   keys = {
-    { "gb", "<cmd>Gitsigns blame_line<cr>", desc = "Git Blame Line" },
+    { "<C-g><C-b>", "<cmd>Gitsigns blame_line<cr>", desc = "Git Blame Line" },
+    { "<C-g><C-d>", "<cmd>Gitsigns preview_hunk<cr>", desc = "Git Preview Hunk" },
   }
 }

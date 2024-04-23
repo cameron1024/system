@@ -29,7 +29,7 @@ return {
       sync_install = false,
       auto_install = true,
       incremental_selection = { enable = false },
-      ignore_install = { "tlaplus", "liquidsoap", "norg" },
+      ignore_install = { "tlaplus", "liquidsoap", "norg", "dart" },
 
       textobjects = {
         select = {
