@@ -31,6 +31,7 @@ in {
 
   nixpkgs.config.allowUnfree = true;
 
+
   home.username = lib.mkIf (!isDarwin) username;
   home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
 

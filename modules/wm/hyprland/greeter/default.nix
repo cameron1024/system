@@ -4,13 +4,6 @@
   ...
 }: let
   tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet --asterisks --time --cmd Hyprland";
-
-  grubTheme = pkgs.fetchFromGitHub {
-    owner = "catppuccin";
-    repo = "grub";
-    rev = "88f6124757331fd3a37c8a69473021389b7663ad";
-    hash = "";
-  };
 in {
   console.colors = [
     "1e1e2e" # base
@@ -31,7 +24,10 @@ in {
     "f2cdcd" # flamingo
   ];
 
-  boot.loader.grub.theme = grubTheme;
+  catppuccin.flavour = true;
+  boot.loader.grub.catppuccin = {
+    enable = true;
+  };
 
   services.greetd = {
     enable = true;

@@ -47,6 +47,8 @@
 
     wgsl-analyzer.url = "github:wgsl-analyzer/wgsl-analyzer";
     wgsl-analyzer.inputs.nixpkgs.follows = "nixpkgs";
+
+    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs = {
@@ -80,6 +82,7 @@
           sharedModules
           ++ [
             home-manager.nixosModules.home-manager
+            inputs.catppuccin.nixosModules.catppuccin
 
             ./tools
 
@@ -92,6 +95,7 @@
                 imports = [
                   ./modules/home
                   inputs.hyprlock.homeManagerModules.default
+                  inputs.catppuccin.homeManagerModules.catppuccin
                 ];
               };
             }
@@ -115,7 +119,10 @@
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
               home.stateVersion = "22.05";
-              imports = [./modules/home];
+              imports = [
+                ./modules/home
+                inputs.catppuccin.homeManagerModules.catppuccin
+              ];
             };
           }
 

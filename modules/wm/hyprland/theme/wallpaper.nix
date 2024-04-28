@@ -10,13 +10,16 @@
   wallpaperDir = pkgs.stdenv.mkDerivation {
     name = "all-wallpapers";
     version = "0.0.0";
-    installPhase = ''
+    dontUnpack = true;
+    buildPhase = ''
+      mkdir $out
       ${lib.concatStrings (map (wp: "cp ${wp} $out\n") wallpapers)}
     '';
   };
 
   defaultConfig = {
     path = wallpaperDir;
+    duration = "3m";
   };
 
   mapDisplay = display: {
@@ -28,9 +31,9 @@ in {
   home-manager.users.${username} = {
     home.packages = with pkgs; [swww];
 
-    # programs.wpaperd = {
-    #   enable = true;
-    #   inherit settings;
-    # };
+    programs.wpaperd = {
+      enable = true;
+      inherit settings;
+    };
   };
 }

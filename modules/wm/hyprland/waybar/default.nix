@@ -54,9 +54,9 @@ in {
             "clock"
           ];
           modules-right = [
+            "tray"
             "hyprland/language"
             "pulseaudio"
-            "network"
             "custom/power"
           ];
 
