@@ -28,7 +28,6 @@
   ];
 in {
   imports = [
-    ./anyrun
     ./greeter
     ./lock
     ./theme

@@ -39,9 +39,6 @@
 
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
-    anyrun.url = "github:Kirottu/anyrun";
-    anyrun.inputs.nixpkgs.follows = "nixpkgs";
-
     catppuccinifier.url = "github:lighttigerXIV/catppuccinifier";
     catppuccinifier.inputs.nixpkgs.follows = "nixpkgs";
 
