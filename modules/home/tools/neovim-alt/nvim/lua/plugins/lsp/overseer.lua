@@ -3,10 +3,10 @@ return {
   dependencies = {
     "akinsho/toggleterm.nvim",
   },
-  event = "VeryLazy",
+  lazy = true,
   keys = {
-    { "<C-d>", "<cmd>OverseerToggle<cr>", desc = "Toggle Overseer" },
-    { "<leader>d", "<cmd>OverseerRun<cr>", desc = "Toggle Overseer" },
+    { "<C-d>",     "<cmd>OverseerToggle<cr>", desc = "Toggle Overseer" },
+    { "<leader>d", "<cmd>OverseerRun<cr>",    desc = "Overseer Run" },
   },
   opts = {
     strategy = {

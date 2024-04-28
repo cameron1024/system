@@ -7,6 +7,14 @@
     scale = 1;
   };
 
+  thinkpad2Builtin = {
+    name = "eDP-1";
+    resolution = "2880x1800";
+    position = "0x0";
+    refreshRate = 120;
+    scale = 1;
+  };
+
   benq = {
     name = "HDMI-A-1";
     resolution = "3840x2160";

@@ -1,5 +1,6 @@
 return {
   'stevearc/oil.nvim',
+  lazy = true,
   opts = {
     keymaps = {
       ["<C-t>"] = false,

@@ -5,6 +5,7 @@ return {
     require 'plugins.lsp.cmp',
     "b0o/schemastore.nvim",
   },
+  lazy = true,
   event = { "BufReadPost", "BufNewFile" },
   cmd = { "LspInfo" },
   config = function()

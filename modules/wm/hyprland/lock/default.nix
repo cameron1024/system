@@ -1,51 +1,118 @@
 {
   pkgs,
-  config,
+  inputs,
+  username,
   ...
-}: let
-  wallpapers = map (pkgs.fetchurl) config.wallpapers;
-  wallpaper = builtins.elemAt wallpapers 0;
-  swaylock = pkgs.swaylock-effects;
-  screenOff = "hyprctl dispatch dpms off";
-  screenOn = "hyprctl dispatch dpms on";
-in {
-  config = {
-    # actually allow swaylock to unlock the screen
-    security.pam.services.swaylock = {};
+}: {
+  services.fprintd.enable = true;
 
-    home-manager.users.cameron = {
-      programs.swaylock = {
-        enable = true;
-        package = swaylock;
-        settings = {
-          image = "${wallpaper}";
-          effect-blur = "10x10";
-          clock = true;
-          ring-color = "#b4befe";
-          ring-clear-color = "#f5e0dc";
-          ring-wrong-color = "#eba0ac";
-          separator-color = "#eba0ac";
-          text-color = "#cdd6f4";
-          text-clear-color = "#f5e0dc";
-          text-wrong-color = "#eba0ac";
-          key-hl-color = "#a6e3a1";
-        };
+  environment.systemPackages = [
+    inputs.hypridle.packages.${pkgs.system}.default
+  ];
+
+  security.pam.services.hyprlock = {};
+
+  home-manager.users.${username} = {
+    programs.hyprlock = let
+      base = "rgb(1e1e2e)";
+      text = "rgb(cdd6f4)";
+      accent = "rgb(cba6f7)";
+      surface0 = "rgb(313244)";
+      red = "rgb(f38ba8)";
+      yellow = "rgb(f9e2af)";
+      font = "FiraCode Nerd Font";
+    in {
+      enable = true;
+
+      general = {
+        disable_loading_bar = false;
+        hide_cursor = true;
+        no_fade_in = true;
+        no_fade_out = true;
       };
 
-      services.swayidle = {
-        enable = false;
-        timeouts = [
-          {
-            timeout = 300;
-            command = "${swaylock}/bin/swaylock";
-          }
-          {
-            timeout = 600;
-            command = screenOff;
-            resumeCommand = screenOn;
-          }
-        ];
-      };
+      backgrounds = [
+        {
+          monitor = "";
+          path = "";
+          color = base;
+        }
+      ];
+
+      labels = [
+        {
+          monitor = "";
+          text = ''cmd[update:30000] echo "$(date +"%R")"'';
+          color = text;
+          font_size = 90;
+          font_family = font;
+          position = {
+            x = -30;
+            y = 0;
+          };
+          halign = "right";
+          valign = "top";
+        }
+
+        {
+          monitor = "";
+          text = ''cmd[update:43200000] echo "$(date +"%A, %d %B %Y")"'';
+          color = text;
+          font_size = 25;
+          font_family = font;
+          position = {
+            x = -30;
+            y = -150;
+          };
+          halign = "right";
+          valign = "top";
+        }
+      ];
+
+      input-fields = [
+        {
+          monitor = "";
+          size = {
+            width = 300;
+            height = 60;
+          };
+          outline_thickness = 4;
+          dots_size = 0.2;
+          dots_spacing = 0.2;
+          dots_center = true;
+          outer_color = accent;
+          inner_color = surface0;
+          font_color = text;
+          fade_on_empty = false;
+          placeholder_text = "Password";
+          hide_input = false;
+          check_color = accent;
+          fail_color = red;
+          fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>";
+          capslock_color = yellow;
+          position = {
+            x = 0;
+            y = -35;
+          };
+          halign = "center";
+          valign = "center";
+        }
+      ];
+
+      # extraConfig = builtins.readFile ./hyprlock.conf;
     };
+
+    wayland.windowManager.hyprland.settings = {
+      exec-once = [
+        "hypridle"
+      ];
+
+      bind = [
+        "SUPER, escape, exec, hyprlock"
+      ];
+    };
+
+    # xdg.configFile."hypr/hyprlock.conf".source = ./hyprlock.conf;
+    xdg.configFile."hypr/hypridle.conf".source = ./hypridle.conf;
   };
 }

@@ -22,6 +22,15 @@
     hyprspace.url = "github:KZDKM/Hyprspace";
     hyprspace.inputs.hyprland.follows = "hyprland";
 
+    hyprlock.url = "github:hyprwm/hyprlock";
+    hyprlock.inputs.nixpkgs.follows = "nixpkgs";
+
+    hypridle.url = "github:hyprwm/hypridle";
+    hypridle.inputs.nixpkgs.follows = "nixpkgs";
+
+    hyprpicker.url = "github:hyprwm/hyprpicker";
+    hyprpicker.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -80,7 +89,10 @@
               home-manager.useGlobalPkgs = true;
               home-manager.users.${allSpecialArgs.shared.username} = {
                 home.stateVersion = "22.05";
-                imports = [./modules/home];
+                imports = [
+                  ./modules/home
+                  inputs.hyprlock.homeManagerModules.default
+                ];
               };
             }
           ];
@@ -88,6 +100,7 @@
 
     miniSystem = makeLinux {args = allSpecialArgs.mini;};
     thinkpadSystem = makeLinux {args = allSpecialArgs.thinkpad;};
+    thinkpad2System = makeLinux {args = allSpecialArgs.thinkpad2;};
 
     macosSystem = nix-darwin.lib.darwinSystem rec {
       specialArgs = allSpecialArgs.macos // {inherit inputs;};
@@ -114,6 +127,7 @@
 
     nixosConfigurations.mini = miniSystem;
     nixosConfigurations.thinkpad = thinkpadSystem;
+    nixosConfigurations.thinkpad2 = thinkpad2System;
 
     darwinConfigurations."DGQ204V94P" = macosSystem;
 

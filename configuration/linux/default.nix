@@ -7,7 +7,7 @@
   swapDevices,
   ...
 }: let
-  linux = pkgs.linuxPackages_6_6;
+  linux = pkgs.linuxPackages_6_8;
 in {
   imports = [
     hardware
@@ -29,6 +29,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
+  boot.kernelParams = [ "i915.force_probe=7d45" ];
 
   services.system76-scheduler.enable = true;
 

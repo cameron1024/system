@@ -30,8 +30,7 @@ in {
 
     programs.waybar = {
       enable = true;
-      style = ./style;
-      # systemd.enable = true;
+      style = ./style.css;
 
       settings = {
         mainBar = {
@@ -44,18 +43,17 @@ in {
           margin-left = 10;
           margin-right = 10;
           modules-left = [
-            "hyprland/workspaces"
-            "hyprland/window"
+            "cpu"
+            "memory"
+            "network"
+            "disk"
+            # "hyprland/workspaces"
+            # "hyprland/window"
           ];
           modules-center = [
             "clock"
           ];
           modules-right = [
-            "custom/terminal"
-            "custom/files"
-            "custom/browser"
-            "custom/apps"
-            "tray"
             "hyprland/language"
             "pulseaudio"
             "network"
@@ -112,13 +110,6 @@ in {
           "clock" = {
             format = "{:%H:%M}";
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          };
-
-          "custom/launcher" = {
-            format = "{}";
-            tooltip = true;
-            interval = defaultInterval;
-            on-click = "wofi";
           };
 
           "cpu" = {
@@ -186,6 +177,12 @@ in {
 
           "backlight" = {
             format = "󰃠 {percent}%";
+          };
+
+          "custom/launcher" = {
+            format = " ";
+            on-click = "pkill rofi || ~/.config/rofi/launcher.sh";
+            tooltip = false;
           };
 
           "custom/notifications" = {

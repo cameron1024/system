@@ -33,6 +33,7 @@ in {
         tree-sitter
 
         libgit2
+        lua5_1
       ]
       ++ (
         if isDarwin

@@ -13,7 +13,8 @@ return {
     'petertriho/cmp-git',
     'nvim-neorg/neorg',
   },
-  -- event = "InsertEnter",
+  lazy = true,
+  event = "InsertEnter",
   config = function()
     local cmp = require 'cmp'
     local luasnip = require 'luasnip'

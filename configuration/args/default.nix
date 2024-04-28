@@ -62,6 +62,22 @@ in rec {
       swapDevices = [];
     };
 
+  thinkpad2 =
+    shared
+    // {
+      hardware = import ./hardware/thinkpad2.nix;
+      naersk = linuxArgs.naersk;
+      crane = linuxArgs.crane;
+      isDarwin = false;
+      headless = false;
+      laptop = true;
+      hyprland = true;
+      hostname = "thinkchad";
+      boot = "/boot";
+      displays = with allDisplays; [thinkpad2Builtin];
+      swapDevices = [];
+    };
+
   server =
     shared
     // {

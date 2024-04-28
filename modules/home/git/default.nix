@@ -8,54 +8,60 @@
     gb = "gh browse";
   };
 in {
-  programs.git = {
-    enable = true;
-    userName = "Cameron";
-    userEmail = "cameron.studdstreet@gmail.com";
+  imports = [
+    ./sync.nix
+  ];
 
-    delta = {
+  config = {
+    programs.git = {
       enable = true;
-    };
+      userName = "Cameron";
+      userEmail = "cameron.studdstreet@gmail.com";
 
-    aliases = {
-      "default-branch" = "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4";
-      "co" = "checkout";
-      "cod" = "checkout '!git default-branch'";
-    };
-
-    extraConfig = {
-      core.editor = "nvim";
-      init.defaultBranch = "master";
-
-      push = {
-        default = "current";
-        autoSetupRemote = true;
+      delta = {
+        enable = true;
       };
 
-      pull.rebase = "false";
+      aliases = {
+        "default-branch" = "!git symbolic-ref refs/remotes/origin/HEAD | cut -d'/' -f4";
+        "co" = "checkout";
+        "cod" = "checkout '!git default-branch'";
+      };
+
+      extraConfig = {
+        core.editor = "nvim";
+        init.defaultBranch = "master";
+
+        push = {
+          default = "current";
+          autoSetupRemote = true;
+        };
+
+        pull.rebase = "false";
+      };
+
+      lfs.enable = true;
     };
 
-    lfs.enable = true;
-  };
-
-  programs.gh = {
-    enable = true;
-    settings = {
-      version = 1;
-      extensions = with pkgs; [
-        gh-dash
-      ];
+    programs.gh = {
+      enable = true;
+      settings = {
+        version = 1;
+        extensions = with pkgs; [
+          gh-dash
+        ];
+      };
     };
+
+    programs.nushell.shellAliases = abbrs;
+    programs.fish.shellAbbrs = abbrs // {gc = "git add -A && git commit -m";};
+
+    programs.nushell.extraConfig = ''
+      def gc [message] {
+        git add -A;
+        git commit -m $message;
+        null
+      }
+    '';
   };
-
-  programs.nushell.shellAliases = abbrs;
-  programs.fish.shellAbbrs = abbrs // {gc = "git add -A && git commit -m";};
-
-  programs.nushell.extraConfig = ''
-    def gc [message] {
-      git add -A;
-      git commit -m $message;
-      null
-    }
-  '';
 }

@@ -33,6 +33,7 @@ fn main() -> ExitCode {
                 DeviceSpec::Macos => "sudo nix run nix-darwin -- switch --flake .",
                 DeviceSpec::Mini => "sudo nixos-rebuild switch --flake .#mini",
                 DeviceSpec::Thinkpad => "sudo nixos-rebuild switch --flake .#thinkpad",
+                DeviceSpec::Thinkpad2 => "sudo nixos-rebuild switch --flake .#thinkpad2",
             }
             .to_string();
 
@@ -83,6 +84,7 @@ enum DeviceSpec {
     Macos,
     Mini,
     Thinkpad,
+    Thinkpad2,
 }
 
 fn get_device_spec() -> DeviceSpec {
@@ -101,6 +103,7 @@ fn get_linux_spec() -> DeviceSpec {
     match text.as_ref() {
         "mini" => DeviceSpec::Mini,
         "thinkpad" => DeviceSpec::Thinkpad,
+        "thinkpad2" => DeviceSpec::Thinkpad2,
         other => panic!("unknown device: {other}"),
     }
 }

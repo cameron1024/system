@@ -2,8 +2,6 @@ local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
   require 'plugins.editing.dial',
-  -- require 'plugins.editing.flash',
-  require 'plugins.editing.image-view',
   require 'plugins.editing.hardtime',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
@@ -11,14 +9,13 @@ local plugins = {
   require 'plugins.editing.silicon',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
-  require 'plugins.editing.undo-highlight',
 
   require 'plugins.firenvim',
 
   require 'plugins.git.diffview',
   require 'plugins.git.octo',
   require 'plugins.git.gitsigns',
-  require 'plugins.git.fugit',
+  -- require 'plugins.git.fugit',
 
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
@@ -31,6 +28,8 @@ local plugins = {
   -- require 'plugins.lsp.ui',
 
   require 'plugins.lualine',
+
+  require 'plugins.luarocks',
 
   require 'plugins.neotree',
 

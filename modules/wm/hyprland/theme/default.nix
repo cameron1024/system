@@ -24,85 +24,87 @@
     cams-home-utilities random-wallpaper ${wallpaperList}
   '';
 in {
-  # GTK needs dconf
-  programs.dconf.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    dracula-icon-theme
-    cli
-    randomWallpaper
+  imports = [
+    ./wallpaper.nix
   ];
 
-  home-manager.users.${username} = {
-    gtk = {
-      enable = true;
+  config = {
+    # GTK needs dconf
+    programs.dconf.enable = true;
 
-      theme = {
-        name = "Catppuccin-Mocha-Compact-Pink-Dark";
-        package = pkgs.catppuccin-gtk.override {
-          accents = ["pink"];
-          size = "compact";
-          tweaks = ["rimless"];
-          variant = "mocha";
+    environment.systemPackages = with pkgs; [
+      dracula-icon-theme
+      cli
+      randomWallpaper
+    ];
+
+    home-manager.users.${username} = {
+      gtk = {
+        enable = true;
+
+        theme = {
+          name = "Catppuccin-Mocha-Compact-Pink-Dark";
+          package = pkgs.catppuccin-gtk.override {
+            accents = ["pink"];
+            size = "compact";
+            tweaks = ["rimless"];
+            variant = "mocha";
+          };
+        };
+
+        cursorTheme = {
+          name = "Catppuccin-Mocha-Lavender-Cursors";
+          package = pkgs.catppuccin-cursors.mochaLavender;
+          size = 12;
         };
       };
 
-      cursorTheme = {
-        name = "Catppuccin-Mocha-Lavender-Cursors";
-        package = pkgs.catppuccin-cursors.mochaLavender;
-        size = 12;
-      };
-    };
-
-    home.packages = with pkgs; [
-      swww
-      brightnessctl
-    ];
-
-    wayland.windowManager.hyprland.settings = {
-      misc = {
-        disable_hyprland_logo = true;
-      };
-
-      exec-once = [
-        "swww init && sleep 2 && random-wallpaper"
+      home.packages = with pkgs; [
+        brightnessctl
       ];
 
-      general = {
-        gaps_in = 10;
-        gaps_out = 20;
-        border_size = 2;
-        "col.inactive_border" = "rgb(1e1e2e)";
-        "col.active_border" = "rgb(f5c2e7)";
-      };
+      wayland.windowManager.hyprland.settings = {
+        misc = {
+          disable_hyprland_logo = true;
+        };
 
-      decoration = {
-        rounding = 20;
 
-        drop_shadow = true;
-        shadow_range = 30;
-      };
+        general = {
+          gaps_in = 10;
+          gaps_out = 20;
+          border_size = 2;
+          "col.inactive_border" = "rgb(1e1e2e)";
+          "col.active_border" = "rgb(f5c2e7)";
+        };
 
-      animations = {
-        enabled = true;
+        decoration = {
+          rounding = 20;
 
-        bezier = [
-          "myBezier, 0.10, 0.9, 0.1, 1.05"
-        ];
+          drop_shadow = true;
+          shadow_range = 30;
+        };
 
-        animation = let
-          enabled = "1";
-          duration = "1.5";
-          curve = "myBezier";
-        in [
-          "windows, ${enabled}, ${duration}, ${curve}, popin 80%"
-          "windowsOut, ${enabled}, ${duration}, ${curve}, popin 80%"
-          "border, ${enabled}, ${duration}, ${curve}"
-          "borderangle, ${enabled}, ${duration}, ${curve}"
-          "borderangle, ${enabled}, ${duration}, ${curve}"
-          "fade, ${enabled}, ${duration}, ${curve}"
-          "workspaces, ${enabled}, ${duration}, ${curve}"
-        ];
+        animations = {
+          enabled = true;
+
+          bezier = [
+            "myBezier, 0.10, 0.9, 0.1, 1.05"
+          ];
+
+          animation = let
+            enabled = "1";
+            duration = "1.5";
+            curve = "myBezier";
+          in [
+            "windows, ${enabled}, ${duration}, ${curve}, popin 80%"
+            "windowsOut, ${enabled}, ${duration}, ${curve}, popin 80%"
+            "border, ${enabled}, ${duration}, ${curve}"
+            "borderangle, ${enabled}, ${duration}, ${curve}"
+            "borderangle, ${enabled}, ${duration}, ${curve}"
+            "fade, ${enabled}, ${duration}, ${curve}"
+            "workspaces, ${enabled}, ${duration}, ${curve}"
+          ];
+        };
       };
     };
   };
