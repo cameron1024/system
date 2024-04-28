@@ -47,8 +47,8 @@ in {
             "memory"
             "network"
             "disk"
-            # "hyprland/workspaces"
-            # "hyprland/window"
+            "hyprland/workspaces"
+            "hyprland/window"
           ];
           modules-center = [
             "clock"

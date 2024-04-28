@@ -10,7 +10,9 @@
     inputs.hypridle.packages.${pkgs.system}.default
   ];
 
-  security.pam.services.hyprlock = {};
+  security.pam.services.hyprlock = {
+    fprintAuth = true;
+  };
 
   home-manager.users.${username} = {
     programs.hyprlock = let
