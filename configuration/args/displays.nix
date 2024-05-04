@@ -5,6 +5,7 @@
     position = "0x0";
     refreshRate = 60;
     scale = 1;
+    oled = false;
   };
 
   thinkpad2Builtin = {
@@ -13,6 +14,7 @@
     position = "0x0";
     refreshRate = 120;
     scale = 1;
+    oled = true;
   };
 
   benq = {
@@ -21,6 +23,7 @@
     position = "0x0";
     refreshRate = 60;
     scale = 1;
+    oled = false;
   };
 
   lg = {
@@ -29,5 +32,6 @@
     position = "3840x0";
     refreshRate = 60;
     scale = 1;
+    oled = false;
   };
 }

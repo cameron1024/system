@@ -19,12 +19,16 @@
 
   defaultConfig = {
     path = wallpaperDir;
-    duration = "3m";
+    duration = "200s";
+  };
+
+  oledConfig = {
+    color = "#000000";
   };
 
   mapDisplay = display: {
     name = display.name;
-    value = defaultConfig;
+    value = if display.oled then oledConfig else defaultConfig;
   };
   settings = builtins.listToAttrs (map mapDisplay displays);
 in {

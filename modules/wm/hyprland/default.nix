@@ -86,6 +86,8 @@ in {
       nwg-look
 
       iwgtk
+
+      modem-manager-gui
     ];
 
     networking.wireless.iwd.enable = true;

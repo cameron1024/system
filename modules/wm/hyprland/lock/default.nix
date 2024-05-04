@@ -29,7 +29,7 @@
       general = {
         disable_loading_bar = false;
         hide_cursor = true;
-        no_fade_in = true;
+        no_fade_in = false;
         no_fade_out = true;
       };
 
@@ -69,6 +69,20 @@
           halign = "right";
           valign = "top";
         }
+
+        {
+          monitor = "";
+          text = ''cmd[update:1000] battery | cams-home-utilities battery'';
+          color = text;
+          font_size = 18;
+          font_family = font;
+          position = {
+            x = -30;
+            y = -190;
+          };
+          halign = "right";
+          valign = "top";
+        }
       ];
 
       input-fields = [
@@ -100,8 +114,18 @@
           valign = "center";
         }
       ];
+    };
 
-      # extraConfig = builtins.readFile ./hyprlock.conf;
+    services.hypridle = {
+      enable = true;
+      lockCmd = "hyprlock";
+      beforeSleepCmd = "hyprlock";
+      listeners = [
+        {
+          timeout = 300;
+          onTimeout = "systemctl suspend";
+        }
+      ];
     };
 
     wayland.windowManager.hyprland.settings = {
@@ -113,8 +137,5 @@
         "SUPER, escape, exec, hyprlock"
       ];
     };
-
-    # xdg.configFile."hypr/hyprlock.conf".source = ./hyprlock.conf;
-    xdg.configFile."hypr/hypridle.conf".source = ./hypridle.conf;
   };
 }
