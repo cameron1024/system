@@ -17,6 +17,14 @@ in {
     ../../modules/wm
   ];
 
+  programs.nix-index = {
+    enableFishIntegration = true;
+  };
+
+  programs.nix-ld = {
+    enable = true;
+  };
+
   nixpkgs.config.permittedInsecurePackages = [
     "python-2.7.18.6"
   ];
@@ -29,7 +37,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
-  boot.kernelParams = [ "i915.force_probe=7d45" ];
+  boot.kernelParams = ["i915.force_probe=7d45"];
 
   services.system76-scheduler.enable = true;
 

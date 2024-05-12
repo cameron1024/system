@@ -13,6 +13,9 @@
     comma
 
     nix-tree
+
+    slides
+    obsidian
   ];
 
   programs.zoxide = {

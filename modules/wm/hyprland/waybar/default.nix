@@ -8,6 +8,39 @@
   # save battery if we're on a laptop
   defaultInterval = 0.5;
   launchBtm = "wezterm start btm";
+
+  transition = "all 0.3s cubic-bezier(.55,-0.68,.48,1.682)";
+
+  base = "1e1e2e";
+  mantle = "181825";
+  crust = "11111b";
+
+  text = "cdd6f4";
+  subtext0 = "a6adc8";
+  subtext1 = "bac2de";
+
+  surface0 = "313244";
+  surface1 = "45475a";
+  surface2 = "585b70";
+
+  overlay0 = "6c7086";
+  overlay1 = "7f849c";
+  overlay2 = "9399b2";
+
+  blue = "89b4fa";
+  lavender = "b4befe";
+  sapphire = "74c7ec";
+  sky = "89dceb";
+  teal = "94e2d5";
+  green = "a6e3a1";
+  yellow = "f9e2af";
+  peach = "fab387";
+  maroon = "eba0ac";
+  red = "f38ba8";
+  mauve = "cba6f7";
+  pink = "f5c2e7";
+  flamingo = "f2cdcd";
+  rosewater = "f5e0dc";
 in {
   environment.systemPackages = with pkgs; [
     pavucontrol
@@ -30,7 +63,136 @@ in {
 
     programs.waybar = {
       enable = true;
-      style = ./style.css;
+      style = ''
+          * {
+            font-size: 16px;
+            font-family: FiraCode Nerd Font, Font Awesome, sans-serif;
+            font-weight: bold;
+          }
+
+          window#waybar {
+            background-color: #${base};
+            border-radius: 0px;
+            color: #${text};
+          }
+
+          #workspaces {
+            background: #${mantle};
+            margin: 2px;
+            padding: 0px 1px;
+            border-radius: 15px;
+            border: 0px;
+            font-style: normal;
+            color: #${base};
+          }
+
+          #workspaces button {
+            padding: 0px 5px;
+            margin: 4px 3px;
+            border-radius: 10px;
+            border: 0px;
+            color: #${base};
+            background: linear-gradient(45deg, #${mauve}, #${flamingo}, #${blue}, #${peach});
+            background-size: 300% 300%;
+            animation: gradient_horizontal 15s ease infinite;
+            opacity: 0.5;
+            transition: ${transition};
+          }
+
+          #workspaces button.active {
+            padding: 0px 5px;
+            margin: 4px 3px;
+            border-radius: 10px;
+            border: 0px;
+            color: #${base};
+            background: linear-gradient(45deg, #${mauve}, #${flamingo}, #${blue}, #${peach});
+            background-size: 300% 300%;
+            animation: gradient_horizontal 15s ease infinite;
+            transition: ${transition};
+            opacity: 1.0;
+            min-width: 40px;
+        }
+
+
+
+        #workspaces button:hover {
+            border-radius: 10px;
+            color: #${base};
+            background: linear-gradient(45deg, #${mauve}, #${flamingo}, #${blue}, #${peach});
+            background-size: 300% 300%;
+            animation: gradient_horizontal 15s ease infinite;
+            opacity: 0.8;
+            transition: ${transition};
+        }
+
+        @keyframes gradient_horizontal {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+              }
+              @keyframes swiping {
+                0% {
+            background-position: 0% 200%;
+          }
+          100% {
+            background-position: 200% 200%;
+          }
+        }
+
+        tooltip {
+          background: #${base};
+          border: 1px solid #${mauve};
+          border-radius: 10px;
+        }
+
+        tooltip label {
+          color: #${lavender};
+        }
+
+        #window {
+          margin: 4px;
+          padding: 2px 10px;
+          color: #${text};
+          background: #${mantle};
+          border-radius: 10px;
+        }
+
+        #memory {
+          color: #${flamingo};
+          background: ${mantle};
+          margin: 4px;
+          padding: 2px 10px;
+          border-radius: 10px;
+        }
+
+        #clock {
+          color: #${mantle};
+          background: linear-gradient(45deg, #${teal}, #${flamingo}, #${green}, #${peach});
+          background-size: 300% 300£;
+          animation: gradient_horizontal 15s ease infinite;
+          margin: 4px;
+          padding: 2px 10px;
+          border-radius: 10px;
+        }
+
+        #memory {
+          color: #${flamingo};
+          background: ${mantle};
+          margin: 4px;
+          padding: 2px 10px;
+          border-radius: 10px;
+        }
+
+
+
+
+      '';
 
       settings = {
         mainBar = {
@@ -42,23 +204,21 @@ in {
           margin-top = 0;
           margin-left = 10;
           margin-right = 10;
-          modules-left = [
-            "cpu"
-            "memory"
-            "network"
-            "disk"
-            "hyprland/workspaces"
-            "hyprland/window"
-          ];
-          modules-center = [
-            "clock"
-          ];
-          modules-right = [
-            "tray"
-            "hyprland/language"
-            "pulseaudio"
-            "custom/power"
-          ];
+
+          modules-center = ["hyprland/workspaces"];
+          modules-left = ["custom/startmenu" "hyprland/window" "pulseaudio" "cpu" "memory"];
+          modules-right = ["custom/hyprbindings" "custom/exit" "idle_inhibitor" "custom/themeselector" "custom/notification" "battery" "clock" "tray"];
+
+          "hyprland/workspaces" = {
+            format = "{icon}";
+            format-icons = {
+              default = " ";
+              active = " ";
+              urgent = " ";
+            };
+            on-scroll-up = "hyprctl dispatch workspace e+1";
+            on-scroll-down = "hyprctl dispatch workspace e-1";
+          };
 
           "custom/browser" = {
             format = "󰖟";
@@ -78,18 +238,6 @@ in {
           "custom/power" = {
             format = "";
             on-click = "wlogout";
-          };
-
-          "hyprland/workspaces" = {
-            disable-scroll = false;
-            all-outputs = true;
-            warp-on-scroll = true;
-            on-scroll-up = "hyprctl disatch workspace e+1";
-            on-scroll-down = "hyprctl dispatch workspace e-1";
-            format = " {icon} ";
-            format-icons = {
-              "10" = "0";
-            };
           };
 
           "hyprland/language" = {
