@@ -23,7 +23,7 @@
 
     {
       url = "https://github.com/Gingeh/wallpapers/blob/main/landscapes/evening-sky.png";
-      hash = "sha256-YwPVgcm6calF6gORx8L0FQTSIWdDlvNUApFQ9w5uGh4=";
+      hash = "sha256-QasvHEx1Zc0zmwxcFVzCe1lTX4AzJe3EcHekh+/as0Y=";
     }
   ];
 in {

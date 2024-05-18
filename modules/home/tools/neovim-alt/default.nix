@@ -3,10 +3,6 @@
   isDarwin,
   ...
 }: let
-  neovim = pkgs.wrapNeovim pkgs.neovim-nightly {
-    extraMakeWrapperArgs = "--prefix LD_LIBRARY_PATH: \"${pkgs.lib.makeLibraryPath [pkgs.libgit2]}\"";
-  };
-
   linuxPackages = with pkgs; [
     chafa
     imagemagick
@@ -44,6 +40,10 @@ in {
     home.file."./.config/nvim/" = {
       source = ./nvim;
       recursive = true;
+    };
+
+    home.sessionVariables = {
+      LIBGIT2_PATH = "${pkgs.libgit2}";
     };
   };
 }
