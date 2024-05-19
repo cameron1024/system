@@ -20,11 +20,6 @@
       url = "https://i.redd.it/n4futnleiuia1.png";
       hash = "sha256-2CMsp3bltiABLTkUEwj9hQ+ovBPXcnkp5POtOd10OfA=";
     }
-
-    {
-      url = "https://github.com/Gingeh/wallpapers/blob/main/landscapes/evening-sky.png";
-      hash = "sha256-QasvHEx1Zc0zmwxcFVzCe1lTX4AzJe3EcHekh+/as0Y=";
-    }
   ];
 in {
   imports = [

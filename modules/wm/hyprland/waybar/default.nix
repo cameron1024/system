@@ -108,17 +108,9 @@ in {
         }
 
         window#waybar {
-          background-color: ${crust};
+          background-color: transparent;
           border-radius: 0px;
           color: ${text};
-        }
-
-        #cava.left {
-          border-radius: ${left-border};
-        }
-
-        #cava.right {
-          border-radius: ${right-border};
         }
 
         #workspaces {
@@ -155,13 +147,13 @@ in {
           background-size: 400% 400%;
         }
 
-        #tray, #pulseaudio, #network, #battery, #cpu, #memory, #disk, #custom-playerctl.backward #custom-playerctl.play #custom-playerctl.forward {
+        #tray, #pulseaudio, #network, #battery, #cpu, #backlight, #memory, #disk, #custom-playerctl.backward, #custom-playerctl.play #custom-playerctl.forward {
           background: ${base};
           font-weight: bold;
           margin: 5px 0px;
         }
 
-        #tray, #pulseaudio, #network, #battery, #cpu, #memory, #disk {
+        #tray, #pulseaudio, #network, #battery, #cpu, #backlight, #memory, #disk {
           border-radius: ${right-border};
           padding: 0 20px;
           margin-left: 7px;
@@ -191,6 +183,11 @@ in {
           color: ${teal}
         }
 
+        #backlight {
+          color: ${peach}
+        }
+
+
         #clock {
           color: ${flamingo};
           background: ${base};
@@ -204,10 +201,13 @@ in {
           background: ${base};
           border-radius: 0px 0px 40px 0px;
           padding: 0px 15px 0px 15px;
+          font-size: 18px;
         }
 
         #custom-playerctl.backward, #custom-playerctl.play, #custom-playerctl.forward {
             font-size: 22px;
+            background: ${base};
+            border-radius: ${left-border};
         }
 
         #custom-playerctl.backward:hover, #custom-playerctl.play:hover, #custom-playerctl.forward:hover{
@@ -232,6 +232,7 @@ in {
             padding-right: 12px;
             margin-right: 7px
         }
+
 
         #custom-playerlabel {
             background: ${base};
@@ -273,9 +274,7 @@ in {
             "custom/playerlabel"
           ];
           modules-center = [
-            "cava#left"
             "hyprland/workspaces"
-            "cava#right"
           ];
           modules-right = [
             "network"
@@ -290,11 +289,11 @@ in {
           ];
 
           "battery" = {
-            format = "{icon} {capacity}%";
-            format-alt = "{icon} {time}";
-            format-charging = "  {capacity}%";
+            format = "{icon}  {capacity}%";
+            format-alt = "{icon}  {time}";
+            format-charging = "   {capacity}%";
             format-icons = ["" "" "" "" ""];
-            format-plugged = "  {capacity}% ";
+            format-plugged = "   {capacity}% ";
           };
 
           "cava#left" = cava;
@@ -418,7 +417,7 @@ in {
           };
 
           "backlight" = {
-            format = "󰃠 {percent}%";
+            format = "󰃠  {percent}%";
           };
 
           "tray" = {
