@@ -17,6 +17,7 @@ local plugins = {
   require 'plugins.git.gitsigns',
   -- require 'plugins.git.fugit',
 
+  require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
   require 'plugins.lsp.conform',

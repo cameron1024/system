@@ -8,7 +8,7 @@
   defaultInterval = 0.5;
   launchBtm = "wezterm start btm";
 
-  transition = "all 0.2s ease-in-out";
+  transition = "all 0.2s cubic-bezier(0.87, 0, 0.13, 1)";
 
   left-border = "24px 10px 24px 10px";
   right-border = "10px 24px 10px 24px";
@@ -294,7 +294,7 @@ in {
             format-alt = "{icon} {time}";
             format-charging = "  {capacity}%";
             format-icons = ["" "" "" "" ""];
-            format-plugged = " {capacity}% ";
+            format-plugged = "  {capacity}% ";
           };
 
           "cava#left" = cava;
@@ -302,14 +302,14 @@ in {
 
           "clock" = {
             # format = "{%h:%M}";
-            format-alt = " {:%d/%m}";
+            format-alt = "  {:%d/%m}";
             tooltip = "true";
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
           };
 
           "cpu" = {
             interval = defaultInterval;
-            format = "󰍛 {usage}%";
+            format = "󰍛  {usage}%";
             on-click = launchBtm;
           };
 
@@ -361,7 +361,7 @@ in {
 
           "memory" = {
             interval = defaultInterval;
-            format = " {percentage}%";
+            format = "  {percentage}%";
             max-length = 30;
             tooltip = true;
             # tooltip-format = " {used:0.1f}GB/{total:0.1f}GB";
@@ -376,8 +376,8 @@ in {
           };
 
           "disk" = {
-            format = " {free}";
-            format-alt = " {percentage_used}% ({free})";
+            format = "  {free}";
+            format-alt = "  {percentage_used}% ({free})";
             tooltip = true;
             on-click-right = "kitty --start-as=fullscreen --title all_is_kitty sh -c 'ncdu'";
             interval = 10;
@@ -400,8 +400,8 @@ in {
           "pulseaudio" = {
             format = "{icon} {volume}";
             format-bluetooth = "{icon}  {volume}%";
-            format-bluetooth-muted = "󰝟 {icon}";
-            format-muted = "󰝟 {volume}";
+            format-bluetooth-muted = "󰝟  {icon}";
+            format-muted = "󰝟  {volume}";
             tooltip-format = "{icon} {desc} // {volume}%";
             scroll-step = 5;
             format-icons = {
@@ -414,7 +414,7 @@ in {
               default = ["" "" ""];
             };
             on-click = "pavucontrol";
-            on-right-click = "pactl set-sink-mute 0 toggle";
+            on-click-right = "pactl set-sink-mute 0 toggle";
           };
 
           "backlight" = {
