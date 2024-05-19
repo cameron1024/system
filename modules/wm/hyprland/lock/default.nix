@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   username,
+  laptop,
   ...
 }: {
   services.fprintd.enable = true;
@@ -117,7 +118,7 @@
     };
 
     services.hypridle = {
-      enable = true;
+      enable = laptop;
       lockCmd = "hyprlock";
       beforeSleepCmd = "hyprlock";
       listeners = [

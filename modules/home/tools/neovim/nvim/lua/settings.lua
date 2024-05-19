@@ -1,3 +1,6 @@
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 local options = {
   timeoutlen = 300,
   number = true,
@@ -30,6 +33,7 @@ local options = {
   updatetime = 50,
   background = "dark",
   laststatus = 3,
+  conceallevel = 3,
 }
 
 for key, value in pairs(options) do
@@ -41,6 +45,5 @@ vim.cmd [[
       autocmd!
       au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
   augroup END
-
-  autocmd FileType markdown,rust,dart setlocal spell
 ]]
+

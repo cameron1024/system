@@ -2,7 +2,6 @@
   pkgs,
   username,
   displays,
-  laptop,
   ...
 }: let
   # save battery if we're on a laptop
@@ -104,7 +103,7 @@ in {
           border: none;
           border-radius: 0px;
           font-size: 16px;
-          font-family: FiraCode Nerd Font;
+          font-family: Fira Sans;
           min-height: 0;
         }
 
@@ -201,7 +200,7 @@ in {
         }
 
         #custom-launcher {
-          color: ${mauve};
+          color: ${blue};
           background: ${base};
           border-radius: 0px 0px 40px 0px;
           padding: 0px 15px 0px 15px;

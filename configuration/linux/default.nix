@@ -13,6 +13,8 @@ in {
     hardware
 
     ./fonts.nix
+    ./opengl.nix
+
     ../devices
     ../../modules/wm
   ];
@@ -158,10 +160,6 @@ in {
   networking = {
     dhcpcd.wait = "background";
     dhcpcd.extraConfig = "noarp";
-  };
+  }; 
 
-  hardware.opengl.enable = true;
-  hardware.opengl.extraPackages = [
-    pkgs.intel-compute-runtime
-  ];
 }

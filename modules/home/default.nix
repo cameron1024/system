@@ -7,7 +7,16 @@
   ...
 }: let
   linuxPackages = with pkgs; [
-    google-chrome
+    (google-chrome.override {
+      commandLineArgs = [
+        "--ozone-platform=wayland"
+        "--enable-features=VaapiVideoDecoder"
+        "--use-gl=egl"
+        "--ignore-gpu-blocklist"
+        "--enable-gpu-rasterization"
+        "--enable-zero-copy"
+      ];
+    })
   ];
 
   darwinPackages = [];
@@ -30,7 +39,6 @@ in {
     ];
 
   nixpkgs.config.allowUnfree = true;
-
 
   home.username = lib.mkIf (!isDarwin) username;
   home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";

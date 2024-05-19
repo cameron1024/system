@@ -1,5 +1,3 @@
-vim.g.mapleader = " "
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   -- bootstrap lazy.nvim
@@ -9,21 +7,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
-if vim.g.neovide then
-  vim.o.guifont = "FiraCode Nerd Font:h14"
-end
-
-
-vim.g.firenvim_config = {
-  localSettings = {
-    ['.*'] = { takeover = 'never', priority = 0 },
-  }
-}
--- if vim.g.started_from_firenvim == true then
---   vim.g.firenvim_config.localSettings['.*'] = { takeover = 'never' }
--- end
-
-
 require 'settings'
 require 'plugins'
 require 'keybinds'
+
+
