@@ -13,5 +13,5 @@ return {
         ['.*'] = { takeover = 'never', priority = 0 },
       }
     }
-  end
+  end,
 }

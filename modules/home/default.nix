@@ -8,14 +8,13 @@
 }: let
   linuxPackages = with pkgs; [
     (google-chrome.override {
-      commandLineArgs = [
-        "--ozone-platform=wayland"
-        "--enable-features=VaapiVideoDecoder"
-        "--use-gl=egl"
-        "--ignore-gpu-blocklist"
-        "--enable-gpu-rasterization"
-        "--enable-zero-copy"
-      ];
+      # commandLineArgs = [
+      #   "--enable-features=VaapiVideoDecodeLinuxGL"
+      #   "--ozone-platform=wayland"
+      #   "--enable-features=VaapiVideoDecoder"
+      #   "--ignore-gpu-blocklist"
+      #   "--enable-gpu-rasterization"
+      # ];
     })
   ];
 
@@ -42,6 +41,8 @@ in {
 
   home.username = lib.mkIf (!isDarwin) username;
   home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
+
+  xdg.dataHome = lib.mkIf (!isDarwin) "/home/${username}/.local/share";
 
   # override cursor theme
   home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
@@ -70,4 +71,5 @@ in {
       then darwinPackages
       else linuxPackages
     );
+
 }

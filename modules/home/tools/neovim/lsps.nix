@@ -27,6 +27,7 @@ in {
     nls # nickel
     typescript
     lemminx
+    nixd
 
     alejandra # nix formatter
   ];

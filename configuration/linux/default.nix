@@ -39,7 +39,7 @@ in {
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = boot;
   boot.kernelPackages = linux;
-  boot.kernelParams = ["i915.force_probe=7d45"];
+  # boot.kernelParams = ["i915.force_probe=7d45"];
 
   services.system76-scheduler.enable = true;
 
@@ -86,25 +86,6 @@ in {
 
   virtualisation.docker.enable = true;
   virtualisation.libvirtd.enable = true;
-
-  /*
-  boot.extraModprobeConfig = pkgs.lib.mkMerge [
-  */
-  /*
-  # idle audio card after one second
-  */
-  /*
-  "options snd_hda_intel power_save=1"
-  */
-  /*
-  # enable wifi power saving (keep uapsd off to maintain low latencies)
-  */
-  /*
-  "options iwlwifi power_save=1 uapsd_disable=1"
-  */
-  /*
-  ];
-  */
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
