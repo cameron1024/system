@@ -3,39 +3,47 @@
   isDarwin,
   ...
 }: let
-  lldbAdapter = pkgs.vscode-extensions.vadimcn.vscode-lldb.adapter;
-
   linuxPackages = with pkgs; [
-    neovide
+    chafa
+    imagemagick
+    ffmpegthumbnailer
+    poppler
+    fontpreview
+    gnome-epub-thumbnailer
+
+    silicon
   ];
 
   macosPackages = [];
 in {
-  home.packages = with pkgs;
-    [
-      neovim-nightly
+  imports = [
+    ./lsps.nix
+    ./inlyne.nix
+  ];
+  config = {
+    home.packages = with pkgs;
+      [
+        neovim
 
-      nil # nix lsp
-      lua-language-server
-      # lldb
-      # lldbAdapter
+        neovide
+        tree-sitter
 
-      taplo
-      yamlfmt
-    ]
-    ++ (
-      if isDarwin
-      then macosPackages
-      else linuxPackages
-    );
+        libgit2
+        lua5_1
+      ]
+      ++ (
+        if isDarwin
+        then macosPackages
+        else linuxPackages
+      );
 
-  home.file."./.config/nvim/" = {
-    source = ./nvim;
-    recursive = true;
+    home.file."./.config/nvim/" = {
+      source = ./nvim;
+      recursive = true;
+    };
+
+    home.sessionVariables = {
+      LIBGIT2_PATH = "${pkgs.libgit2}";
+    };
   };
-
-  # home.sessionVariables = {
-  #   LIBLLDB_PATH = "${lldbAdapter}/lib/libcodelldb.so";
-  #   CODELLDB_PATH = "${lldbAdapter}/bin/codelldb";
-  # };
 }

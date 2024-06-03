@@ -1,22 +1,22 @@
+vim.g.rustaceanvim = {
+  tools = {
+    enable_clippy = true,
+    enable_nextest = true,
+    reload_workspace_from_cargo_toml = true,
+  },
+  server = {
+    cmd = { "nix", "run", "nixpkgs#rust-analyzer" },
+  },
+}
+
 return {
   'mrcjkb/rustaceanvim',
   version = '^4',
+  lazy = true,
   ft = { 'rust' },
-  -- dependencies = { 'vxpm/ferris.nvim' },
-  config = function()
-    -- require 'ferris'.setup {}
-
-    vim.g.rustaceanvim = {
-      settings = {
-        ['rust-analyzer'] = {
-          checkOnSave = {
-            command = "clippy",
-          },
-          check = {
-            command = "clippy",
-          },
-        },
-      },
-    }
-  end
+  keys = {
+    { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },
+    { "<leader>rm", "<cmd>RustLsp expandMacro<cr>",  desc = "Rust Expand Macro" },
+  },
+  command = "RustLsp",
 }

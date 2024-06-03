@@ -34,9 +34,6 @@
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    mac-app-util.url = "github:hraban/mac-app-util";
-    mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
-
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     anyrun.url = "github:Kirottu/anyrun";
@@ -47,6 +44,8 @@
 
     wgsl-analyzer.url = "github:wgsl-analyzer/wgsl-analyzer";
     wgsl-analyzer.inputs.nixpkgs.follows = "nixpkgs";
+
+    catppuccin.url = "github:catppuccin/nix";
   };
 
   outputs = {
@@ -55,7 +54,6 @@
     nix-darwin,
     naersk,
     crane,
-    mac-app-util,
     anyrun,
     ...
   } @ inputs: let
@@ -80,6 +78,7 @@
           sharedModules
           ++ [
             home-manager.nixosModules.home-manager
+            inputs.catppuccin.nixosModules.catppuccin
 
             ./tools
 
@@ -92,6 +91,8 @@
                 imports = [
                   ./modules/home
                   inputs.hyprlock.homeManagerModules.default
+                  inputs.hypridle.homeManagerModules.default
+                  inputs.catppuccin.homeManagerModules.catppuccin
                 ];
               };
             }
@@ -115,11 +116,13 @@
             home-manager.useGlobalPkgs = true;
             home-manager.users.${allSpecialArgs.shared.username} = {
               home.stateVersion = "22.05";
-              imports = [./modules/home];
+              imports = [
+                ./modules/home
+                inputs.catppuccin.homeManagerModules.catppuccin
+              ];
             };
           }
 
-          mac-app-util.darwinModules.default
         ];
     };
   in {

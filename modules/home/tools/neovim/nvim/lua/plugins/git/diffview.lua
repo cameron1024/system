@@ -1,5 +1,6 @@
 return {
-  'sindrets/diffview.nvim',
-  event = "VeryLazy",
+  "sindrets/diffview.nvim",
+  lazy = true,
   opts = {},
+  cmd = { "DiffviewOpen", "DiffviewFileHistory" },
 }

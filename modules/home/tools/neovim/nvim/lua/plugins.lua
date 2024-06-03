@@ -1,43 +1,55 @@
 local plugins = {
-  require 'plugins.telescope',
-
-  require 'plugins.theme.color',
-  require 'plugins.theme.dressing',
-  require 'plugins.theme.greeter',
-  require 'plugins.theme.colorizer',
-  require 'plugins.theme.reactive',
-
-  require 'plugins.editing.surround',
-  require 'plugins.editing.comment',
-  require 'plugins.editing.completion',
   require 'plugins.editing.autosave',
-
-  require 'plugins.extras.crates',
-
-  require 'plugins.treesitter.base',
-
-  require 'plugins.lsp.action-preview',
-  require 'plugins.lsp.aerial',
-  require 'plugins.lsp.base',
-  require 'plugins.lsp.conform',
-  require 'plugins.lsp.fidget',
-  require 'plugins.lsp.trouble',
-  require 'plugins.lsp.rust',
-
-  -- require 'plugins.test.neotest',
-
-  require 'plugins.git.diffview',
-  require 'plugins.git.gitsigns',
-
-  require 'plugins.terminal.toggleterm',
-  require 'plugins.terminal.termedit',
-  require 'plugins.terminal.test',
-
-  require 'plugins.lualine',
+  require 'plugins.editing.comment',
+  require 'plugins.editing.dial',
+  require 'plugins.editing.hardtime',
+  require 'plugins.editing.oil',
+  require 'plugins.editing.maximize',
+  require 'plugins.editing.surround',
+  require 'plugins.editing.silicon',
+  require 'plugins.editing.tmux-nagivator',
+  require 'plugins.editing.todo-comments',
 
   require 'plugins.firenvim',
 
+  require 'plugins.git.diffview',
+  require 'plugins.git.octo',
+  require 'plugins.git.gitsigns',
+  require 'plugins.git.fugit',
+
+  require 'plugins.lsp.actions-preview',
+  require 'plugins.lsp.base',
+  require 'plugins.lsp.cmp',
+  require 'plugins.lsp.conform',
+  require 'plugins.lsp.crates',
+  require 'plugins.lsp.overseer',
+  require 'plugins.lsp.rust',
+  require 'plugins.lsp.trouble',
+  require 'plugins.lsp.typescript',
+  -- require 'plugins.lsp.ui',
+
+  require 'plugins.lualine',
+
+  require 'plugins.luarocks',
+
   require 'plugins.neotree',
+
+  require 'plugins.notes.neorg',
+
+  require 'plugins.telescope',
+
+  require 'plugins.terminal.toggleterm',
+  require 'plugins.terminal.termedit',
+
+  require 'plugins.theme.base',
+  require 'plugins.theme.noice',
+  require 'plugins.theme.greeter',
+  require 'plugins.theme.twilight',
+
+  require 'plugins.treesitter.aerial',
+  require 'plugins.treesitter.base',
+  require 'plugins.treesitter.wildfire',
+  require 'plugins.treesitter.context',
 }
 
 require 'lazy'.setup {
@@ -51,7 +63,6 @@ require 'lazy'.setup {
         "netrwPlugin",
         "tarPlugin",
         "tohtml",
-        "tutor",
         "zipPlugin",
       },
     },

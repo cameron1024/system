@@ -1,5 +1,6 @@
 return {
   'kylechui/nvim-surround',
-  event = 'VeryLazy',
+  lazy = true,
+  event = 'BufEnter',
   opts = {},
 }

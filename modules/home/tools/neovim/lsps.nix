@@ -27,6 +27,8 @@ in {
     nls # nickel
     typescript
     lemminx
+    nixd
+    nodePackages.bash-language-server
 
     alejandra # nix formatter
   ];

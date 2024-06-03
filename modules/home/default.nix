@@ -7,14 +7,22 @@
   ...
 }: let
   linuxPackages = with pkgs; [
-    google-chrome
+    (google-chrome.override {
+      # commandLineArgs = [
+      #   "--enable-features=VaapiVideoDecodeLinuxGL"
+      #   "--ozone-platform=wayland"
+      #   "--enable-features=VaapiVideoDecoder"
+      #   "--ignore-gpu-blocklist"
+      #   "--enable-gpu-rasterization"
+      # ];
+    })
   ];
 
   darwinPackages = [];
 
   extraModules =
     if isDarwin
-    then [inputs.mac-app-util.homeManagerModules.default]
+    then []
     else [inputs.anyrun.homeManagerModules.default];
 in {
   imports =
@@ -33,6 +41,8 @@ in {
 
   home.username = lib.mkIf (!isDarwin) username;
   home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
+
+  xdg.dataHome = lib.mkIf (!isDarwin) "/home/${username}/.local/share";
 
   # override cursor theme
   home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
@@ -63,4 +73,5 @@ in {
       then darwinPackages
       else linuxPackages
     );
+
 }

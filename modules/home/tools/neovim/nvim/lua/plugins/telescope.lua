@@ -1,14 +1,15 @@
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.4',
+  tag = '0.1.5',
+  lazy = true,
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-tree/nvim-web-devicons',
     'nvim-telescope/telescope-frecency.nvim',
     'nvim-telescope/telescope-ui-select.nvim',
+    'nvim-telescope/telescope-media-files.nvim',
     'fdschmidt93/telescope-egrepify.nvim',
   },
-  event = "VeryLazy",
   config = function()
     local telescope = require 'telescope'
     local actions = require 'telescope.actions'
@@ -21,7 +22,9 @@ return {
       defaults = {
         mappings = {
           i = {
-            ["<ESC>"] = actions.close
+            ["<ESC>"] = actions.close,
+            ["<C-j>"] = actions.move_selection_next,
+            ["<C-k>"] = actions.move_selection_previous,
           },
         },
       },
@@ -39,31 +42,35 @@ return {
 
       extensions = {
         ["ui-select"] = {
-          require 'telescope.themes'.get_dropdown {},
+          require 'telescope.themes'.get_ivy {},
         },
-        frecency = {},
+        frecency = {
+          db_safe_mode = false,
+        },
+        media_files = {
+          find_cmd = "rg",
+        },
       },
     }
 
     telescope.load_extension "frecency"
     telescope.load_extension "ui-select"
     telescope.load_extension "egrepify"
+    telescope.load_extension "media_files"
+  end,
 
+  cmd = { "Telescope" },
 
-    local map = function(key, action)
-      vim.keymap.set('n', key, action, { noremap = true, silent = true })
-    end
-
-    local builtin = require 'telescope.builtin'
-
-    map('<leader>n', builtin.find_files)
-    map('<leader>b', builtin.buffers)
-    map('<leader>m', builtin.lsp_workspace_symbols)
-    map('<leader>g', builtin.grep_string)
-    map('<leader>f', builtin.live_grep)
-    map('<leader>sh', builtin.search_history)
-    map('<leader>ch', builtin.command_history)
-    map('<leader>"', builtin.registers)
-  end
+  keys = {
+    { "<leader>n",        function() require 'telescope.builtin'.find_files { hidden = true } end, desc = "Telescope Find Files" },
+    { "<leader>b",        function() require 'telescope.builtin'.buffers() end,                    desc = "Telescope Buffers" },
+    { "<leader>m",        function() require 'telescope.builtin'.lsp_workspace_symbols() end,      desc = "Telescope LSP Symbols" },
+    { "<leader>g",        function() require 'telescope.builtin'.grep_string() end,                desc = "Telescope Grep String" },
+    { "<leader>f",        function() require 'telescope.builtin'.live_grep() end,                  desc = "Telescope Live Grep" },
+    { "<leader>sh",       function() require 'telescope.builtin'.search_history() end,             desc = "Telescope Search History" },
+    { "<leader>ch",       function() require 'telescope.builtin'.command_history() end,            desc = "Telescope Command History" },
+    { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
+    { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
+  },
 
 }

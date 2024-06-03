@@ -23,7 +23,6 @@
   ];
 in {
   imports = [
-    ./anyrun
     ./greeter
     ./lock
     ./theme
@@ -82,6 +81,8 @@ in {
       nwg-look
 
       iwgtk
+
+      modem-manager-gui
     ];
 
     networking.wireless.iwd.enable = true;

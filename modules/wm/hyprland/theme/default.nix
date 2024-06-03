@@ -59,10 +59,6 @@ in {
         };
       };
 
-      home.packages = with pkgs; [
-        brightnessctl
-      ];
-
       wayland.windowManager.hyprland.settings = {
         misc = {
           disable_hyprland_logo = true;

@@ -1,13 +1,7 @@
-vim.g.mapleader = " "
-
 local opts = { noremap = true, silent = true }
 local map = function(mode, key, action)
   vim.keymap.set(mode, key, action, opts)
 end
-
--- neotree
-map('n', '<leader>p', ':Neotree toggle reveal_force_cwd<CR>')
-map('n', '<leader>o', ':AerialToggle<CR>')
 
 -- saving and closing
 map('n', '<leader>q', ':x<CR>')
@@ -29,93 +23,44 @@ map('n', '<leader>v', '<C-v>')
 -- map('n', '<C-l>', '<C-w><Right>')
 
 -- ctrl + hjkl to move in insert mode
-map('i', '<C-k>', '<Up>')
-map('i', '<C-j>', '<Down>')
-map('i', '<C-h>', '<Left>')
-map('i', '<C-l>', '<Right>')
+map({ 'i', 'v' }, '<C-k>', '<Up>')
+map({ 'i', 'v' }, '<C-j>', '<Down>')
+map({ 'i', 'v' }, '<C-h>', '<Left>')
+map({ 'i', 'v' }, '<C-l>', '<Right>')
 
-map('v', '<C-k>', '<Up>')
-map('v', '<C-j>', '<Down>')
-map('v', '<C-h>', '<Left>')
-map('v', '<C-l>', '<Right>')
+-- when pasting, don't update the register
+map("x", "p", [["_dP]])
 
--- shift + hl to move far in normal mode
-map('n', 'H', '0')
-map('n', 'L', '$')
+-- move to start/end of line
+map({ "n", "o", "x", "v" }, "H", "^")
+map({ "n", "o", "x", "v" }, "L", "g_")
 
-map('v', '<C-H>', '0')
-map('v', '<C-L>', '$')
+map("n", "<C-w>", ":lua vim.wo.wrap = not vim.wo.wrap<cr>")
 
--- indenting selections without deselecting
-map('v', '<', '<gv')
-map('v', '>', '>gv')
+map("n", "<esc>", ":nohl<cr>")
 
--- duplicate
-map('v', '<C-w>', [[y'>pgv]])
-
--- deselect
-map('n', '<C-d>', ':nohl<CR>')
-map('i', '<C-d>', '<C-o>:nohl<CR>')
-
--- make * stay on the same entry
-map('n', '*', '*N')
-
--- why is escape not the default "get out of terminal" bind...
+-- terminal sanity
 map('t', '<ESC>', '<C-\\><C-n>')
 map('t', '<C-h>', [[<Cmd>wincmd h<CR>]])
 map('t', '<C-j>', [[<Cmd>wincmd j<CR>]])
 map('t', '<C-k>', [[<Cmd>wincmd k<CR>]])
 map('t', '<C-l>', [[<Cmd>wincmd l<CR>]])
 
+-- indenting selections without deselecting
+map('v', '<', '<gv')
+map('v', '>', '>gv')
+
 -- yank current file path
 map('n', '<leader>cf', ':let @+ = expand("%")<CR>')
 map('n', '<leader>cp', ':let @+ = expand("%:p")<CR>')
 
--- ; -> :
-map('n', ';', ':')
+--duplicate selection
+map('v', '<C-d>', [[y'>pgv]])
 
--- lsp
-map('n', '<F2>', vim.lsp.buf.rename)
+-- make * stay on the same entry
+map('n', '*', '*N')
 
--- diagnostics
-map('n', '<C-n>', vim.diagnostic.goto_next)
-map('n', '<C-b>', vim.diagnostic.goto_prev)
-map('n', 'E', vim.diagnostic.open_float)
-map('n', 'Q', vim.diagnostic.setloclist)
-map('n', '<leader>e', ':TroubleToggle workspace_diagnostics<CR>')
+-- ctrl + enter to toggle fold
+map({ 'n', 'v' }, '<C-CR>', 'za')
 
--- goto
-map('n', 'gd', vim.lsp.buf.definition)
-map('n', 'gc', vim.lsp.buf.declaration)
-map('n', 'gi', vim.lsp.buf.implementation)
-map('n', 'gt', vim.lsp.buf.type_definition)
-map('n', 'gr', vim.lsp.buf.references)
-
-map('n', 'gD', ':lua require "goto-preview".goto_preview_definition()<CR>')
-map('n', 'gT', ':lua require "goto-preview".goto_preview_type_definition()<CR>')
-map('n', 'gI', ':lua require "goto-preview".goto_preview_implementation()<CR>')
--- actions
--- map('n', '<F2>', vim.lsp.buf.rename)
-map('n', '<leader>a', vim.lsp.buf.code_action)
-map('n', '<MS-f>', function() require 'conform'.format { lsp_fallback = true, } end)
-map('n', 'K', vim.lsp.buf.hover)
-
-map('n', '<C-p>', ':RustLsp parentModule<CR>')
-map('n', '<leader>rm', ':RustLsp expandMacro<CR>')
--- map('n', '<leader>rl', require 'ferris.methods.view_memory_layout')
-
--- editor settings
-map('n', '#', ':set relativenumber!<CR>')
-
-
--- regex and find/replace stuff
-map('n', 'R', [[:%s/\<<C-r><C-w>\>/]])
-map('n', 'q', ':%s/')
-
--- test
-map('n', '<leader>tf', ':TestFile<CR>')
-
-map('n', '<leader>c', ':lua require "treesitter-context".go_to_context()<CR>')
-
--- git
-map('n', 'gb', ':Gitsigns blame_line<CR>')
+map('i', '<C-CR>', '<C-o>o')

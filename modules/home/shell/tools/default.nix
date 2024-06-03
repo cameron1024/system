@@ -15,6 +15,10 @@
     comma
 
     nix-tree
+
+    slides
+    mdcat
+    obsidian
   ];
 
   programs.zoxide = {

@@ -1,6 +1,6 @@
 {
   imports = [
-    ./neovim-alt
+    ./neovim
     ./rust
   ];
 }
