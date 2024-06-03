@@ -55,6 +55,8 @@ in {
       lynx
 
       ollama
+      vscode
+
     ]
     ++ (
       if isDarwin

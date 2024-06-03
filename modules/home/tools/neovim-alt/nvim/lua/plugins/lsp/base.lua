@@ -50,7 +50,7 @@ return {
 
     lspconfig.dartls.setup {
       capabilities = capabilities,
-      cmd = { "nix", "run", "nixpkgs#dart", "--", "language-server", "--protocol=lsp" },
+      -- cmd = { "nix", "run", "nixpkgs#dart", "--", "language-server", "--protocol=lsp" },
     }
 
     lspconfig.lua_ls.setup {

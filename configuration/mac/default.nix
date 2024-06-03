@@ -32,6 +32,9 @@
     };
 
     home-manager.users.${username} = {
+      programs.fish.interactiveShellInit = ''
+        set PATH $PATH ~/fvm/default/bin
+      '';
       programs.nushell = {
         shellAliases = {
           brew = "/opt/homebrew/bin/brew";
