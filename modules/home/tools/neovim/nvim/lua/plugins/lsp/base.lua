@@ -18,6 +18,7 @@ return {
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.taplo.setup { capabilities = capabilities }
     lspconfig.biome.setup { capabilities = capabilities }
+    lspconfig.bashls.setup { capabilities = capabilities }
     -- lspconfig.markdown_oxide.setup { capabilities = capabilities }
     lspconfig.marksman.setup { capabilities = capabilities }
     lspconfig.nickel_ls.setup { capabilities = capabilities }
@@ -50,7 +51,7 @@ return {
 
     lspconfig.dartls.setup {
       capabilities = capabilities,
-      cmd = { "nix", "run", "nixpkgs#dart", "--offline", "--", "language-server", "--protocol=lsp" },
+      cmd = { "nix", "run", "nixpkgs#dart", "--", "language-server", "--protocol=lsp" },
     }
 
     lspconfig.lua_ls.setup {

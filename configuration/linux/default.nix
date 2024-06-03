@@ -7,7 +7,7 @@
   swapDevices,
   ...
 }: let
-  linux = pkgs.linuxPackages_6_8;
+  linux = pkgs.linuxPackages_6_9;
 in {
   imports = [
     hardware

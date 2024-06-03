@@ -24,14 +24,14 @@
 in {
   programs.tmux = {
     enable = true;
-    # package = tmuxWithSixel;
+    package = tmuxWithSixel;
     prefix = "C-a";
     inherit shell;
     escapeTime = 0;
     clock24 = true;
     mouse = true;
     resizeAmount = 5;
-    sensibleOnTop = true;
+    sensibleOnTop = false;
     historyLimit = 50000;
     keyMode = "vi";
     plugins = with pkgs.tmuxPlugins;

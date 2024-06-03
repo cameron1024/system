@@ -15,6 +15,7 @@
     nix-tree
 
     slides
+    mdcat
     obsidian
   ];
 
