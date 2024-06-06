@@ -34,11 +34,6 @@
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-
-    anyrun.url = "github:Kirottu/anyrun";
-    anyrun.inputs.nixpkgs.follows = "nixpkgs";
-
     catppuccinifier.url = "github:lighttigerXIV/catppuccinifier";
     catppuccinifier.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -54,12 +49,9 @@
     nix-darwin,
     naersk,
     crane,
-    anyrun,
     ...
   } @ inputs: let
-    overlays = [
-      inputs.neovim-nightly-overlay.overlay
-    ];
+    overlays = [];
 
     macArgs = import ./platform/mac.nix {inherit inputs overlays;};
     linuxArgs = import ./platform/linux.nix {inherit inputs overlays;};
@@ -122,7 +114,6 @@
               ];
             };
           }
-
         ];
     };
   in {

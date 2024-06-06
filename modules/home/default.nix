@@ -3,7 +3,6 @@
   lib,
   isDarwin,
   username,
-  inputs,
   ...
 }: let
   linuxPackages = with pkgs; [
@@ -21,23 +20,16 @@
   ];
 
   darwinPackages = [];
-
-  extraModules =
-    if isDarwin
-    then []
-    else [inputs.anyrun.homeManagerModules.default];
 in {
-  imports =
-    extraModules
-    ++ [
-      ./shell
-      ./git
-      ./tmux
-      ./wezterm
-      ./kitty
-      ./social
-      ./tools
-    ];
+  imports = [
+    ./shell
+    ./git
+    ./tmux
+    ./wezterm
+    ./kitty
+    ./social
+    ./tools
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
@@ -51,7 +43,7 @@ in {
 
   home.packages = with pkgs;
     [
-      vscode 
+      vscode
       ripgrep
       eza
       fd
@@ -69,12 +61,10 @@ in {
 
       ollama
       vscode
-
     ]
     ++ (
       if isDarwin
       then darwinPackages
       else linuxPackages
     );
-
 }
