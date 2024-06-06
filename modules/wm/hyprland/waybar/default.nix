@@ -44,31 +44,14 @@
   flamingo = "#f2cdcd";
   rosewater = "#f5e0dc";
 
-  cava = {
-    autosens = 1;
-    bar_delimiter = 0;
-    bars = 18;
-    format-icons = [
-      "<span foreground='${mauve}'>▁</span>"
-      "<span foreground='${mauve}'>▂</span>"
-      "<span foreground='${mauve}'>▃</span>"
-      "<span foreground='${mauve}'>▄</span>"
-      "<span foreground='${blue}'>▅</span>"
-      "<span foreground='${blue}'>▆</span>"
-      "<span foreground='${blue}'>▇</span>"
-      "<span foreground='${blue}'>█</span>"
-    ];
-    framerate = 120;
-    higher_cutoff_freq = 10000;
-    lower_cutoff_freq = 50;
-    # input_delay = 2;
-    method = "pipewire";
-    monstercat = false;
-    reverse = false;
-    source = "auto";
-    stereo = true;
-    waves = false;
-  };
+  githubNotifications = pkgs.writeShellScriptBin "gh-notif" ''
+    COUNT=`${pkgs.gh}/bin/gh api notifications | ${pkgs.jq}/bin/jq '. | length '`
+    
+    if [[ "$COUNT" != "0" ]]; then
+      echo '{ "text": '$COUNT' }'
+    fi
+    
+  '';
 in {
   environment.systemPackages = with pkgs; [
     pavucontrol
@@ -82,7 +65,6 @@ in {
 
   home-manager.users.${username} = {
     services.playerctld.enable = true;
-    programs.cava.enable = true;
 
     home.packages = with pkgs; [
       playerctl
@@ -147,7 +129,7 @@ in {
           background-size: 400% 400%;
         }
 
-        #tray, #pulseaudio, #network, #battery, #cpu, #backlight, #memory, #disk, #custom-playerctl.backward, #custom-playerctl.play #custom-playerctl.forward {
+        #tray, #pulseaudio, #network, #battery, #cpu, #backlight, #memory, #disk, #custom-github {
           background: ${base};
           font-weight: bold;
           margin: 5px 0px;
@@ -204,43 +186,13 @@ in {
           font-size: 18px;
         }
 
-        #custom-playerctl.backward, #custom-playerctl.play, #custom-playerctl.forward {
-            font-size: 22px;
-            background: ${base};
-            border-radius: ${left-border};
-        }
 
-        #custom-playerctl.backward:hover, #custom-playerctl.play:hover, #custom-playerctl.forward:hover{
-            color: ${text};
-        }
 
-        #custom-playerctl.backward {
+        #custom-github {
             color: ${rosewater};
-            border-radius: 24px 0px 0px 10px;
+            border-radius: ${left-border};
             padding-left: 16px;
-            margin-left: 7px;
-        }
-
-        #custom-playerctl.play {
-            color: ${red};
-            padding: 0 5px;
-        }
-
-        #custom-playerctl.forward {
-            color: ${rosewater};
-            border-radius: 0px 10px 24px 0px;
-            padding-right: 12px;
-            margin-right: 7px
-        }
-
-
-        #custom-playerlabel {
-            background: ${base};
-            color: ${text};
-            padding: 0 20px;
-            border-radius: ${left-border};
-            margin: 5px 0;
-            font-weight: bold;
+            padding-right: 16px;
         }
 
         #window{
@@ -268,10 +220,7 @@ in {
 
           modules-left = [
             "custom/launcher"
-            "custom/playerctl#backward"
-            "custom/playerctl#play"
-            "custom/playerctl#forward"
-            "custom/playerlabel"
+            "custom/github"
           ];
           modules-center = [
             "hyprland/workspaces"
@@ -295,9 +244,6 @@ in {
             format-icons = ["" "" "" "" ""];
             format-plugged = "   {capacity}% ";
           };
-
-          "cava#left" = cava;
-          "cava#right" = cava;
 
           "clock" = {
             # format = "{%h:%M}";
@@ -423,6 +369,14 @@ in {
           "tray" = {
             icon-size = 20;
             spacing = 8;
+          };
+
+          "custom/github" = {
+            format = "{} ";
+            return-type = "json";
+            interval = 60;
+            exec = "${githubNotifications}/bin/gh-notif";
+            on-click = "xdg-open https://github.com/notifications";
           };
         };
       };

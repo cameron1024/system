@@ -22,12 +22,6 @@
     hyprspace.url = "github:KZDKM/Hyprspace";
     hyprspace.inputs.hyprland.follows = "hyprland";
 
-    hyprlock.url = "github:hyprwm/hyprlock";
-    hyprlock.inputs.nixpkgs.follows = "nixpkgs";
-
-    hypridle.url = "github:hyprwm/hypridle";
-    hypridle.inputs.nixpkgs.follows = "nixpkgs";
-
     hyprpicker.url = "github:hyprwm/hyprpicker";
     hyprpicker.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -82,8 +76,6 @@
                 home.stateVersion = "22.05";
                 imports = [
                   ./modules/home
-                  inputs.hyprlock.homeManagerModules.default
-                  inputs.hypridle.homeManagerModules.default
                   inputs.catppuccin.homeManagerModules.catppuccin
                 ];
               };
