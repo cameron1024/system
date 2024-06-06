@@ -10,6 +10,8 @@
     fzf-make
     license-cli
 
+    slides
+
     comma
 
     nix-tree

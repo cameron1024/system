@@ -24,7 +24,7 @@
 
   extraModules =
     if isDarwin
-    then [inputs.mac-app-util.homeManagerModules.default]
+    then []
     else [inputs.anyrun.homeManagerModules.default];
 in {
   imports =
@@ -68,6 +68,8 @@ in {
       lynx
 
       ollama
+      vscode
+
     ]
     ++ (
       if isDarwin
