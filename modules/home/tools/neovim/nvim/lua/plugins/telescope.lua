@@ -1,6 +1,6 @@
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.5',
+  tag = '0.1.8',
   lazy = true,
   dependencies = {
     'nvim-lua/plenary.nvim',
@@ -9,6 +9,7 @@ return {
     'nvim-telescope/telescope-ui-select.nvim',
     'nvim-telescope/telescope-media-files.nvim',
     'fdschmidt93/telescope-egrepify.nvim',
+    'folke/trouble.nvim',
   },
   config = function()
     local telescope = require 'telescope'
@@ -25,7 +26,8 @@ return {
             ["<ESC>"] = actions.close,
             ["<C-j>"] = actions.move_selection_next,
             ["<C-k>"] = actions.move_selection_previous,
-          },
+            ["<C-t>"] = require 'trouble.sources.telescope'.open
+          }
         },
       },
 

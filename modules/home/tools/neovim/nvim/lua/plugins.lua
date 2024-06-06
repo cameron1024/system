@@ -26,7 +26,6 @@ local plugins = {
   require 'plugins.lsp.rust',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.typescript',
-  -- require 'plugins.lsp.ui',
 
   require 'plugins.lualine',
 
