@@ -16,6 +16,8 @@
       #   "--enable-gpu-rasterization"
       # ];
     })
+
+    remmina
   ];
 
   darwinPackages = [];
@@ -49,6 +51,7 @@ in {
 
   home.packages = with pkgs;
     [
+      vscode 
       ripgrep
       eza
       fd
