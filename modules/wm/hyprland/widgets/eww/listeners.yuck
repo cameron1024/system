@@ -1,1 +1,0 @@
-(deflisten battery `battery -s | cams-home-utilities battery`)
