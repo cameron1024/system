@@ -1,0 +1,4 @@
+{
+  hostname = "thinkchad";
+  boot = "/boot";
+}

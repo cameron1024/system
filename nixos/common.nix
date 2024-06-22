@@ -4,8 +4,11 @@
   config,
   ...
 }: let
+  cfg = config.machine;
   linux = pkgs.linuxPackages_6_9;
+
 in {
+
   options = with lib; {
     machine = {
       hostname = mkOption {
@@ -17,12 +20,17 @@ in {
         default = "/boot";
         description = "The path to the boot dir";
       };
+
+      hardware = mkOption {
+        type = types.path;
+        description = "Path to the hardware-configuration.nix file";
+      };
     };
   };
 
-  config = let
-    cfg = config.machine;
-  in {
+  config =  {
+
+    
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.efi.efiSysMountPoint = cfg.boot;
