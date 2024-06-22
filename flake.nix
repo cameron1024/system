@@ -29,10 +29,7 @@
     home-manager,
     nix-darwin,
     ...
-  } @ inputs: let
-    username = "cameron";
-    overlays = [];
-  in rec {
+  } @ inputs: {
     nixosConfigurations = import ./nixos {
       inherit inputs;
     };
