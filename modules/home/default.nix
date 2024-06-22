@@ -20,7 +20,7 @@
   ];
 
   darwinPackages = [];
-in {
+in with lib; {
   imports = [
     ./shell
     ./git
@@ -31,40 +31,46 @@ in {
     ./tools
   ];
 
-  nixpkgs.config.allowUnfree = true;
+  options = {
+    colorScheme = mkOption {};
+  };
 
-  home.username = lib.mkIf (!isDarwin) username;
-  home.homeDirectory = lib.mkIf (!isDarwin) "/home/${username}";
+  config = {
+    nixpkgs.config.allowUnfree = true;
 
-  xdg.dataHome = lib.mkIf (!isDarwin) "/home/${username}/.local/share";
+    home.username = mkIf (!isDarwin) username;
+    home.homeDirectory = mkIf (!isDarwin) "/home/${username}";
 
-  # override cursor theme
-  home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
+    xdg.dataHome = mkIf (!isDarwin) "/home/${username}/.local/share";
 
-  home.packages = with pkgs;
-    [
-      vscode
-      ripgrep
-      eza
-      fd
-      curl
-      xclip
-      tokei
-      jq
-      bottom
-      tree
-      rust-script
-      unzip
-      du-dust
+    # override cursor theme
+    home.file.".icons/default".source = "${pkgs.vanilla-dmz}/share/icons/Vanilla-DMZ";
 
-      lynx
+    home.packages = with pkgs;
+      [
+        vscode
+        ripgrep
+        eza
+        fd
+        curl
+        xclip
+        tokei
+        jq
+        bottom
+        tree
+        rust-script
+        unzip
+        du-dust
 
-      ollama
-      vscode
-    ]
-    ++ (
-      if isDarwin
-      then darwinPackages
-      else linuxPackages
-    );
+        lynx
+
+        ollama
+        vscode
+      ]
+      ++ (
+        if isDarwin
+        then darwinPackages
+        else linuxPackages
+      );
+  };
 }

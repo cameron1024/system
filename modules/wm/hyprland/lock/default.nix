@@ -1,8 +1,10 @@
 {
+  pkgs,
   username,
   laptop,
   ...
 }: {
+  environment.systemPackages = with pkgs; [ hypridle hyprlock ];
   services.fprintd.enable = true;
 
   security.pam.services.hyprlock = {
@@ -116,12 +118,12 @@
     services.hypridle = {
       enable = laptop;
       settings = {
-        lockCmd = "hyprlock";
-        beforeSleepCmd = "hyprlock";
-        listeners = [
+        lock_cmd = "hyprlock";
+        before_sleep_cmd = "hyprlock";
+        listener = [
           {
             timeout = 300;
-            onTimeout = "systemctl suspend";
+            on-timeout = "systemctl suspend";
           }
         ];
       };
