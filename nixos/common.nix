@@ -6,11 +6,23 @@
 }: let
   cfg = config.machine;
   linux = pkgs.linuxPackages_6_9;
-
 in {
-
-  options = with lib; {
+  imports = [./hyprland];
+  options = with lib; let
+    colorOption = mkOption {
+      type = types.str;
+    };
+  in {
     machine = {
+      user = {
+        name = mkOption {
+          type = types.str;
+        };
+        email = mkOption {
+          type = types.str;
+        };
+      };
+
       hostname = mkOption {
         type = types.str;
       };
@@ -25,12 +37,63 @@ in {
         type = types.path;
         description = "Path to the hardware-configuration.nix file";
       };
+
+      wm = {
+        hyprland = mkEnableOption "Enable hyprland";
+      };
+
+      colorscheme.name = mkOption {
+        type = types.str;
+      };
+      colorscheme.base00 = colorOption;
+      colorscheme.base01 = colorOption;
+      colorscheme.base02 = colorOption;
+      colorscheme.base03 = colorOption;
+      colorscheme.base04 = colorOption;
+      colorscheme.base05 = colorOption;
+      colorscheme.base06 = colorOption;
+      colorscheme.base07 = colorOption;
+      colorscheme.base08 = colorOption;
+      colorscheme.base09 = colorOption;
+      colorscheme.base0A = colorOption;
+      colorscheme.base0B = colorOption;
+      colorscheme.base0C = colorOption;
+      colorscheme.base0D = colorOption;
+      colorscheme.base0E = colorOption;
+      colorscheme.base0F = colorOption;
+
+      displays = mkOption {
+        type = types.listOf {
+          name = mkOption {
+            type = types.str;
+            description = "The name of the display";
+          };
+          resolution = mkOption {
+            type = types.str;
+            example = "1920x1080";
+          };
+          position = mkOption {
+            type = types.str;
+            example = "0x0";
+          };
+          refreshRate = mkOption {
+            type = types.int;
+            example = 60;
+          };
+          scale = mkOption {
+            type = types.int;
+            default = 1;
+          };
+          oled = mkOption {
+            type = types.bool;
+            default = false;
+          };
+        };
+      };
     };
   };
 
-  config =  {
-
-    
+  config = {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.efi.efiSysMountPoint = cfg.boot;
@@ -49,6 +112,12 @@ in {
       extraGroups = ["networkmanager" "wheel" "audio" "video" "sound"];
     };
 
+    fonts.enableDefaultPackages = true;
+    fonts.packages = with pkgs; [
+      nerdfonts
+      fira
+    ];
+
     environment.systemPackages = with pkgs; [
       git
       vim
@@ -56,9 +125,21 @@ in {
       networkmanager
       jq
     ];
+    nixpkgs.config.packageOverrides = pkgs: {
+      intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
+    };
+
+    hardware.graphics.enable = true;
+
+    hardware.graphics.extraPackages = with pkgs; [
+      intel-media-driver
+      intel-vaapi-driver
+      libvdpau-va-gl
+    ];
 
     nix = {
       package = pkgs.nixVersions.stable;
+      # config.allowUnfree = true;
 
       extraOptions = ''
         experimental-features = nix-command flakes

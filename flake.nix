@@ -2,8 +2,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    # home-manager.url = "github:nix-community/home-manager";
-    # home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprland.url = "github:hyprwm/Hyprland";
 
@@ -23,15 +23,25 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    home-manager,
-    nix-darwin,
-    ...
-  } @ inputs: {
+  outputs = inputs: {
     nixosConfigurations = import ./nixos {
       inherit inputs;
+      modules = [
+        {
+          imports = [
+            inputs.home-manager.nixosModules.default
+            ({config, ...}: {
+              nixpkgs.config.allowUnfree = true;
+              home-manager = {
+                users.cameron = import ./home;
+                extraSpecialArgs = {
+                  inherit inputs;
+                };
+              };
+            })
+          ];
+        }
+      ];
     };
   };
 }
