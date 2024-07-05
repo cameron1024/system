@@ -1,3 +1,8 @@
+local toggle_inlay = function ()
+  local lsp = vim.lsp
+  lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
+end
+
 return {
   'neovim/nvim-lspconfig',
   dependencies = {
@@ -58,6 +63,11 @@ return {
       capabilities = capabilities,
       settings = {
         Lua = {
+          hint = {
+            enable = true,
+            arrayIndex = 'Enable',
+            setType = true,
+          },
           format = {
             enable = true,
             defaultConfig = {
@@ -91,6 +101,7 @@ return {
     { "<C-b>",     vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
     { "<leader>r", vim.lsp.buf.rename,          desc = "Rename" },
     { "<leader>a", vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
+    { "<leader>i", toggle_inlay,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
 
   },
 }

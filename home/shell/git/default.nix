@@ -1,6 +1,7 @@
-{machine, ... }: {
+{machine, ...}: {
   home.shellAliases = {
     "gc" = "git commit -am";
+    "gs" = "git switch";
     "gpl" = "git pull";
     "gps" = "git push";
     "gf" = "git fetch";

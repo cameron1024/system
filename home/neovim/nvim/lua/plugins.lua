@@ -1,6 +1,7 @@
 local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
+  require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
   require 'plugins.editing.hardtime',
   require 'plugins.editing.oil',
@@ -40,8 +41,10 @@ local plugins = {
   require 'plugins.terminal.toggleterm',
   require 'plugins.terminal.termedit',
 
-  -- require 'plugins.theme.base',
+  -- require 'plugins.theme.catppuccin',
   require 'plugins.theme.noice',
+  -- require 'plugins.theme.gruvbox',
+  require 'plugins.theme.everforest',
   require 'plugins.theme.greeter',
   require 'plugins.theme.twilight',
 

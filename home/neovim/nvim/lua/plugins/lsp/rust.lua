@@ -6,6 +6,42 @@ vim.g.rustaceanvim = {
   },
   server = {
     cmd = { "nix", "run", "nixpkgs#rust-analyzer" },
+    settings = {
+      -- ["rust-analyzer"] = {
+      --   inlayHints = {
+      --     bindingModeHints = {
+      --       enable = false,
+      --     },
+      --     chainingHints = {
+      --       enable = true,
+      --     },
+      --     closingBraceHints = {
+      --       enable = true,
+      --       minLines = 25,
+      --     },
+      --     closureReturnTypeHints = {
+      --       enable = true,
+      --     },
+      --     lifetimeElisionHints = {
+      --       enable = true,
+      --       useParameterNames = true,
+      --     },
+      --     maxLength = 25,
+      --     parameterHints = {
+      --       enable = true,
+      --     },
+      --     reborrowHints = {
+      --       enable = "never",
+      --     },
+      --     renderColons = true,
+      --     typeHints = {
+      --       enable = true,
+      --       hideClosureInitialization = false,
+      --       hideNamedConstructor = false,
+      --     },
+      --   },
+      -- },
+    },
   },
 }
 

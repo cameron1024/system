@@ -5,6 +5,8 @@
     then "Gruvbox Dark Hard"
     else null;
 
+  programs.kitty.font.name = "Hack NerdFont";
+
   # programs.kitty.extraConfig = ''
   #   source ~/.config/kitty/current-theme.conf
   # '';

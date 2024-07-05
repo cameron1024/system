@@ -2,7 +2,6 @@
   home.packages = with pkgs; [
     brightnessctl
     pulseaudio
-    
   ];
 
   wayland.windowManager.hyprland.settings = {

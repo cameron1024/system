@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   services.hypridle = {
     enable = true;
     settings = {
@@ -12,5 +12,27 @@
         }
       ];
     };
+  };
+
+  programs.hyprlock = {
+    enable = true;
+    settings = {
+      backgrounds = [
+        {
+          monitor = "";
+          path = "";
+          color = "rgb(000000)";
+        }
+      ];
+    };
+  };
+
+  services.caffeine.enable = true;
+  home.packages = with pkgs; [caffeine-ng];
+
+  wayland.windowManager.hyprland.settings = {
+    bind = [
+      "SUPER, escape, exec, hyprlock"
+    ];
   };
 }

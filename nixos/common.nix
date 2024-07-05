@@ -39,7 +39,7 @@ in {
       };
 
       wm = {
-        hyprland = mkEnableOption "Enable hyprland";
+        hyprland.enable = mkEnableOption "Enable hyprland";
       };
 
       colorscheme.name = mkOption {

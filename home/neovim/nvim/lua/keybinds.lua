@@ -23,10 +23,10 @@ map('n', '<leader>v', '<C-v>')
 -- map('n', '<C-l>', '<C-w><Right>')
 
 -- ctrl + hjkl to move in insert mode
-map({ 'i', 'v' }, '<C-k>', '<Up>')
-map({ 'i', 'v' }, '<C-j>', '<Down>')
-map({ 'i', 'v' }, '<C-h>', '<Left>')
-map({ 'i', 'v' }, '<C-l>', '<Right>')
+map({ 'i', 'v', 't' }, '<C-k>', '<Up>')
+map({ 'i', 'v', 't' }, '<C-j>', '<Down>')
+map({ 'i', 'v', 't' }, '<C-h>', '<Left>')
+map({ 'i', 'v', 't' }, '<C-l>', '<Right>')
 
 -- when pasting, don't update the register
 map("x", "p", [["_dP]])
