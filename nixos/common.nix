@@ -109,7 +109,7 @@ in {
     users.users.cameron = {
       isNormalUser = true;
       description = "cameron";
-      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound"];
+      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input"];
     };
 
     fonts.enableDefaultPackages = true;
@@ -120,11 +120,13 @@ in {
 
     environment.systemPackages = with pkgs; [
       git
+      curl
       vim
       firefox
       networkmanager
       jq
     ];
+
     nixpkgs.config.packageOverrides = pkgs: {
       intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
     };

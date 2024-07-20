@@ -10,7 +10,9 @@ in {
     ./sound.nix
   ];
 
+
   config = mkIf cfg.enable {
     programs.hyprland.enable = true;
+    services.blueman.enable = true;
   };
 }

@@ -16,4 +16,8 @@
     cargo-nextest
     cargo-spellcheck
   ];
+
+  home.shellAliases = {
+    "cg" = "cargo";
+  };
 }

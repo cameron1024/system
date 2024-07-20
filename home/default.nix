@@ -1,6 +1,13 @@
 {
-  imports = [./neovim ./hyprland ./shell ./terminal ./languages];
+  imports = [
+    ./neovim
+    ./hyprland
+    ./shell
+    ./terminal
+    ./languages
 
-  nixpkgs.config.allowUnfree = true;
+    ./communication.nix
+  ];
+
   home.stateVersion = "24.05";
 }

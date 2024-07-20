@@ -1,6 +1,10 @@
 {
   programs.starship = {
     enable = true;
+
+    enableFishIntegration = true;
+    enableNushellIntegration = true;
+
     settings = {
       format = "$nix_shell$directory$git_branch$git_metrics$git_state$character";
       right_format = "$time";

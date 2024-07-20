@@ -1,0 +1,16 @@
+* {
+  font-family: FiraSans;
+  font-size: 18px;
+  min-height: 0;
+}
+
+window#waybar {
+  background-color: @transparent;
+}
+
+#clock, #tray {
+  background-color: @bg;
+  color: @fg;
+  padding: 6px;
+}
+

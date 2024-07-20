@@ -9,6 +9,8 @@
     ./fzf.nix
     ./direnv.nix
     ./eza.nix
+    ./yazi.nix
+    ./previewers.nix
   ];
 
   config = {
@@ -16,6 +18,7 @@
       "p" = "cd ~/projects/playground";
       "t" = "cd /tmp";
       "q" = "exit";
+      "ns" = "nix search nixpkgs";
     };
   };
 }

@@ -31,12 +31,6 @@
   outputs = inputs: {
     nixosConfigurations = import ./nixos {
       inherit inputs;
-      modules = [
-        {
-          imports = [
-          ];
-        }
-      ];
     };
 
     devShells."x86_64-linux".default = let

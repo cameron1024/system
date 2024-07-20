@@ -7,7 +7,7 @@
     enableFishIntegration = config.programs.fish.enable;
   };
 
-  home.shellAliases = {
+  programs.fish.shellAbbrs = {
     "ls" = "exa -la";
   };
 }

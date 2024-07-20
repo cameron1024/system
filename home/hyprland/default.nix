@@ -1,25 +1,26 @@
 {pkgs, ...}: {
   imports = [
+    ./bar
     ./animations.nix
     ./displays.nix
     ./hardware.nix
     ./idle.nix
     ./input.nix
+    ./launcher.nix
     ./window.nix
     ./wallpaper.nix
-    ./bar.nix
+    # ./bar.nix
   ];
 
   config = {
     wayland.windowManager.hyprland = {
       enable = true;
       xwayland.enable = true;
-      plugins = [
-      ];
     };
 
     home.packages = with pkgs; [
       xdg-utils
+      acpi
     ];
 
     xdg.enable = true;
