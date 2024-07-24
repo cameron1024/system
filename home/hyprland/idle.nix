@@ -4,6 +4,8 @@
   ...
 }: let
   wallpapers = map (wp: wp pkgs) machine.wallpapers;
+  firstWallpaper = builtins.elemAt wallpapers 0;
+  # wallpapers = map (wp: wp pkgs) machine.wallpapers;
 in {
   services.hypridle = {
     enable = true;
@@ -32,7 +34,7 @@ in {
       background = [
         {
           monitor = "";
-          path = builtins.elemAt wallpapers 0;
+          path = firstWallpaper;
           blur_passes = 3;
           blur_size = 8;
         }

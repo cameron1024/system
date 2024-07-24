@@ -9,7 +9,6 @@
     ./launcher.nix
     ./window.nix
     ./wallpaper.nix
-    # ./bar.nix
   ];
 
   config = {
