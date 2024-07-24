@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  machine,
+  ...
+}: let
+  wallpapers = map (wp: wp pkgs) machine.wallpapers;
+in {
   services.hypridle = {
     enable = true;
     settings = {
@@ -17,11 +23,18 @@
   programs.hyprlock = {
     enable = true;
     settings = {
-      backgrounds = [
+      general = {
+        hide_cursor = true;
+        no_fade_in = false;
+        no_fade_out = false;
+      };
+
+      background = [
         {
           monitor = "";
-          path = "";
-          color = "rgb(000000)";
+          path = builtins.elemAt wallpapers 0;
+          blur_passes = 3;
+          blur_size = 8;
         }
       ];
     };

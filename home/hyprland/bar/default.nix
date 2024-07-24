@@ -1,9 +1,15 @@
-{machine, ...}: let
+{pkgs, machine, ...}: let
   colors = with machine.colorscheme; ''
-    @define-color bg ${base01};
+    @define-color bg ${base00};
     @define-color fg ${base04};
   '';
 in {
+  wayland.windowManager.hyprland.settings = {
+    bind = [
+      "SUPER, b, exec, ${pkgs.killall}/bin/killall -SIGUSR1 .waybar-wrapped"
+    ];
+  };
+  
   programs.waybar = {
     enable = true;
     style = colors + (builtins.readFile ./style.css);
@@ -15,7 +21,7 @@ in {
         height = 30;
         output = map (d: d.name) machine.displays;
 
-        modules-left = [];
+        modules-left = ["cpu" "memory" "disk" "network"];
         modules-center = ["clock"];
         modules-right = ["tray"];
       };

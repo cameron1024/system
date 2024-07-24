@@ -1,15 +1,15 @@
 * {
-  font-family: FiraSans;
+  font-family: FiraCode Nerd Font;
   font-size: 18px;
   min-height: 0;
 }
 
 window#waybar {
-  background-color: @transparent;
+  background-color: @bg;
+  color: @fg;
 }
 
 #clock, #tray {
-  background-color: @bg;
   color: @fg;
   padding: 6px;
 }

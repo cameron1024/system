@@ -8,6 +8,7 @@ with lib; let
 in {
   imports = [
     ./sound.nix
+    ./wifi
   ];
 
 

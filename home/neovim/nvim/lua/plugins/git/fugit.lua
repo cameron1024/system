@@ -1,5 +1,6 @@
 return {
   "SuperBo/fugit2.nvim",
+  tag = "v0.2.1",
   dependencies = {
     'MunifTanjim/nui.nvim',
     'nvim-tree/nvim-web-devicons',

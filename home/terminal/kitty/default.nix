@@ -3,6 +3,8 @@
   programs.kitty.theme =
     if machine.colorscheme.name == "gruvbox"
     then "Gruvbox Dark Hard"
+    else if machine.colorscheme.name == "everforest"
+    then "Everforest Dark Hard"
     else null;
 
   programs.kitty.font.name = "Hack NerdFont";

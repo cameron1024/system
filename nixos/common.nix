@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_9;
+  linux = pkgs.linuxPackages_6_10;
 in {
   imports = [./hyprland];
   options = with lib; let
@@ -62,6 +62,10 @@ in {
       colorscheme.base0E = colorOption;
       colorscheme.base0F = colorOption;
 
+      wallpapers = mkOption {
+        type = types.list;
+      };
+
       displays = mkOption {
         type = types.listOf {
           name = mkOption {
@@ -98,6 +102,9 @@ in {
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.efi.efiSysMountPoint = cfg.boot;
     boot.kernelPackages = linux;
+
+    hardware.enableAllFirmware = true;
+    hardware.enableRedistributableFirmware = true;
 
     networking.hostName = cfg.hostname;
     networking.networkmanager.enable = true;
