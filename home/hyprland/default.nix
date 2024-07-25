@@ -7,6 +7,7 @@
     ./idle.nix
     ./input.nix
     ./launcher.nix
+    ./widgets
     ./window.nix
     ./wallpaper.nix
   ];
@@ -20,14 +21,20 @@
     home.packages = with pkgs; [
       xdg-utils
       acpi
+
+      wl-clipboard
     ];
 
     xdg.enable = true;
 
     gtk = {
       enable = true;
-      theme.name = "gruvbox-dark";
-      theme.package = pkgs.gruvbox-dark-gtk;
+
+      theme.name = "Everforest-Dark-BL";
+      theme.package = pkgs.everforest-gtk;
+
+      font.name = "Fira Sans";
+      font.package = pkgs.fira;
     };
   };
 }

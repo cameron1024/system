@@ -1,10 +1,10 @@
 {pkgs, ...}: let
+
   plugins = with pkgs.tmuxPlugins; [
     {
-      plugin = gruvbox;
+      plugin = fingers;
       extraConfig = ''
-        set -g @plugin 'egel/tmux-gruvbox'
-        set -g @tmux-gruvbox 'dark'
+        set -g @fingers-key M-f 
       '';
     }
   ];
@@ -19,6 +19,8 @@ in {
     shell = "${pkgs.fish}/bin/fish";
 
     extraConfig = ''
+      ${builtins.readFile ./everforest.tmux}
+
       set -g default-terminal "xterm-256color"
       set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
@@ -37,6 +39,9 @@ in {
 
       bind c new-window -c "#{pane_current_path}"
       bind-key C-a command-prompt -p "window name:" "new-window -c #{pane_current_path}; rename-window '%%'"
+
+      set-option -g automatic-rename-format '#{b:pane_current_path}'
+
 
       bind C-a last-window
 

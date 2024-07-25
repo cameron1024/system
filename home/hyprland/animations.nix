@@ -16,8 +16,8 @@
       gaps_in = 10;
       gaps_out = 20;
       border_size = 2;
-      "col.inactive_border" = mkColor machine.colorscheme.base02;
-      "col.active_border" = mkColor machine.colorscheme.base0B;
+      "col.inactive_border" = mkColor machine.colorscheme.base00;
+      "col.active_border" = mkColor machine.colorscheme.base0D;
     };
 
     bezier = [

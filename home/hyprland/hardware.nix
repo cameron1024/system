@@ -5,6 +5,10 @@
   ];
 
   wayland.windowManager.hyprland.settings = {
+    exec-once = [
+      "blueman-applet"
+    ];
+
     bind = [
       ",XF86MonBrightnessDown, exec, brightnessctl set 10%-"
       ",XF86MonBrightnessUp, exec, brightnessctl set 10%+"

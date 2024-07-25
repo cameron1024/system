@@ -7,8 +7,53 @@
 
   programs.wofi = {
     enable = true;
+    settings = {
+      width = 500;
+      height = 400;
+      term = "kitty";
+      normal_window = false;
+    };
     style = with machine.colorscheme; ''
-      
+      window {
+        margin: 0px;
+        border: 2px solid ${base0D};
+        background-color: ${base00};
+        font-size: 18px;
+      }
+
+      #input {
+        margin: 5px;
+        border: none;
+        color: ${base04};
+        background-color: ${base00};
+      }
+
+      #inner-box {
+        margin: 5px;
+        border: none;
+        background-color: ${base00};
+      }
+
+      #outer-box {
+        margin: 5px;
+        border: none;
+        background-color: ${base00};
+      }
+
+      #scroll {
+        margin: 0px;
+        border: none;
+      }
+
+      #text {
+        margin: 5px;
+        border: none;
+        color: ${base05};
+      }
+
+      #entry:selected {
+        background-color: ${base02};
+      }
     '';
   };
 }
