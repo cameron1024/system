@@ -1,4 +1,6 @@
 {pkgs, ...}: {
+  imports = [./expo.nix];
+
   home.packages = with pkgs; [
     google-chrome
   ];

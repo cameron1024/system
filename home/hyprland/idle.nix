@@ -2,10 +2,7 @@
   pkgs,
   machine,
   ...
-}: let
-  wallpapers = map (wp: wp pkgs) machine.wallpapers;
-  firstWallpaper = builtins.elemAt wallpapers 0;
-in {
+}: {
   services.hypridle = {
     enable = true;
     settings = {
@@ -36,7 +33,7 @@ in {
       background = [
         {
           monitor = "";
-          path = "${firstWallpaper}";
+          path = "/home/cameron/.wallpaper";
           blur_passes = 3;
           blur_size = 4;
         }
@@ -44,8 +41,8 @@ in {
 
       input-field = [
         {
-          size = "250, 50";
-          position = "0, -80";
+          size = "300, 50";
+          position = "0, 0";
           monitor = "";
           dots_center = true;
           fade_on_empty = true;
@@ -70,6 +67,7 @@ in {
         dateOffset = weatherOffset + weatherHeight + padding;
         timeOffset = dateOffset + dateHeight + padding;
       in [
+        # time
         {
           monitor = "";
           text = "$TIME";
@@ -82,6 +80,7 @@ in {
           font_family = "Fira Sans";
         }
 
+        # date
         {
           monitor = "";
           text = "cmd[update:10000] date +'%A %d/%m/%Y'";
@@ -94,6 +93,7 @@ in {
           font_family = "Fira Sans";
         }
 
+        # weather
         {
           monitor = "";
           text = "cmd[update:1000] curl wttr.in/London?format=4";
@@ -105,6 +105,19 @@ in {
           position = "-50, ${builtins.toString weatherOffset}";
           font_family = "Fira Sans";
         }
+
+        # battery
+        # {
+        #   monitor = "";
+        #   text = "cmd[update:1000] acpi";
+        #   text_align = "right";
+        #   font_size = 18;
+        #   color = mkColor base05;
+        #   valign = "top";
+        #   halign = "right";
+        #   position = "-50, -50";
+        #   font_family = "Fira Sans";
+        # }
       ];
     };
   };

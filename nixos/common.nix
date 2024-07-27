@@ -123,6 +123,7 @@ in {
     fonts.packages = with pkgs; [
       nerdfonts
       fira
+      monaspace
     ];
 
     environment.systemPackages = with pkgs; [

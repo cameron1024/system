@@ -10,19 +10,19 @@
     hyprland-contrib.url = "github:hyprwm/contrib";
     hyprland-contrib.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprland-plugins.url = "github:hyprwm/hyprland-plugins";
-    hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.41.2";
+    hyprland-plugins.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprspace.url = "github:KZDKM/Hyprspace";
-    hyprspace.inputs.hyprland.follows = "hyprland";
+    # hyprspace.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprpicker.url = "github:hyprwm/hyprpicker";
-    hyprpicker.inputs.nixpkgs.follows = "nixpkgs";
+    # hyprpicker.inputs.nixpkgs.follows = "nixpkgs";
 
     hy3.url = "github:outfoxxed/hy3";
     # or "github:outfoxxed/hy3" to follow the development branch.
     # (you may encounter issues if you dont do the same for hyprland)
-    hy3.inputs.hyprland.follows = "hyprland";
+    # hy3.inputs.hyprland.follows = "hyprland";
 
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";

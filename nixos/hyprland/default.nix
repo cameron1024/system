@@ -1,6 +1,8 @@
 {
+  pkgs,
   config,
   lib,
+  inputs,
   ...
 }:
 with lib; let
@@ -12,9 +14,9 @@ in {
     ./bluetooth
   ];
 
-
   config = mkIf cfg.enable {
     programs.hyprland.enable = true;
+    # programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     services.blueman.enable = true;
     services.power-profiles-daemon.enable = true;
   };

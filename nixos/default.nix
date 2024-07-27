@@ -6,16 +6,23 @@
     overlays = [
       (import ../overlays/utils.nix)
     ];
+
+    machine = spec;
+    specialArgs = {
+      inherit inputs;
+      inherit machine;
+    };
   in
     inputs.nixpkgs.lib.nixosSystem {
       inherit system;
+      inherit specialArgs;
 
       modules = [
         inputs.home-manager.nixosModules.default
         ./common.nix
         ./hardware/thinkpad.nix
-        rec {
-          machine = spec;
+        {
+          inherit machine;
 
           system.stateVersion = "24.11";
           nixpkgs = {
@@ -25,10 +32,7 @@
 
           home-manager.useGlobalPkgs = true;
           home-manager.users.cameron = import ../home;
-          home-manager.extraSpecialArgs = {
-            inherit machine;
-            inherit inputs;
-          };
+          home-manager.extraSpecialArgs = specialArgs;
         }
       ];
     };

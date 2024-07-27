@@ -10,5 +10,8 @@
   ];
   wallpapers = [
     (import ../wallpapers.nix).everforest
+    (import ../wallpapers.nix).leaves
+    (import ../wallpapers.nix).mistForest
+    (import ../wallpapers.nix).forestBridge
   ];
 }

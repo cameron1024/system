@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./bar
     ./animations.nix
@@ -8,14 +12,15 @@
     ./input.nix
     ./launcher.nix
     ./widgets
-    ./window.nix
-    ./wallpaper.nix
+    ./windowing
+    ./wallpaper
   ];
 
   config = {
     wayland.windowManager.hyprland = {
       enable = true;
       xwayland.enable = true;
+      # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 
     home.packages = with pkgs; [

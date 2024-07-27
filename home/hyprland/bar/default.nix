@@ -120,6 +120,7 @@ in {
 
         "custom/powermenu" = {
           format = "󱄅";
+          on-click-right = "randomWallpaper.sh";
         };
       };
     };
