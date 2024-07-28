@@ -1,5 +1,8 @@
 {pkgs, ...}: {
-  imports = [./expo.nix];
+  imports = [
+    ./overview.nix
+    # ./switcher.nix
+  ];
 
   home.packages = with pkgs; [
     google-chrome

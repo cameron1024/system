@@ -16,7 +16,7 @@ in {
 
   config = mkIf cfg.enable {
     programs.hyprland.enable = true;
-    # programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     services.blueman.enable = true;
     services.power-profiles-daemon.enable = true;
   };

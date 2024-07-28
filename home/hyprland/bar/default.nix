@@ -35,7 +35,7 @@ in {
       topBar = {
         layer = "top";
         position = "top";
-        height = 30;
+        height = 43;
         output = map (d: d.name) machine.displays;
 
         modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];

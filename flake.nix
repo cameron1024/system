@@ -5,15 +5,19 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprland.url = "github:hyprwm/Hyprland";
+    # v0.41.2
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=918d8340afd652b011b937d29d5eea0be08467f5";
 
     hyprland-contrib.url = "github:hyprwm/contrib";
     hyprland-contrib.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.41.2";
-    hyprland-plugins.inputs.nixpkgs.follows = "nixpkgs";
-
+    hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    
+    hyprswitch.url = "github:h3rmt/hyprswitch/dev";
+   
     hyprspace.url = "github:KZDKM/Hyprspace";
+    hyprspace.inputs.hyprland.follows = "hyprland";
 
     hyprpicker.url = "github:hyprwm/hyprpicker";
 
