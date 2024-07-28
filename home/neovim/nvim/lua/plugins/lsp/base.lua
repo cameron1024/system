@@ -23,6 +23,7 @@ return {
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.taplo.setup { capabilities = capabilities }
     lspconfig.biome.setup { capabilities = capabilities }
+    lspconfig.tsserver.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
     -- lspconfig.markdown_oxide.setup { capabilities = capabilities }
     lspconfig.marksman.setup { capabilities = capabilities }

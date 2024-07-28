@@ -11,7 +11,7 @@
       width = 500;
       height = 400;
       term = "kitty";
-      normal_window = false;
+      normal_window = true;
     };
     style = with machine.colorscheme; ''
       window {

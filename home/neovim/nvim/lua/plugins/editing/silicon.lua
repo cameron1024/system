@@ -3,9 +3,9 @@ return {
   lazy = true,
   cmd = "Silicon",
   opts = {
-    font = "FiraCode Nerd Font=16",
-    to_clipboard = true,
-    theme = "catppuccin-mocha",
+    -- to_clipboard = true,
+    theme = "gruvbox-dark",
+    font = "FiraCode Nerd Font",
   },
   keys = {
     { "<leader>ss", "<cmd>Silicon<cr>", mode = { "v", "x" }, desc = "Silicon Snippet" },

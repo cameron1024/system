@@ -19,8 +19,9 @@
     yaml-language-server
     nodePackages_latest.vscode-json-languageserver
     biome # JS
+    typescript-language-server
     nls # nickel
-    typescript
+    # typescript
     lemminx
     nixd
     nodePackages.bash-language-server

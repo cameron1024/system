@@ -5,10 +5,10 @@
 }: {
   imports = [
     ./bar
+    ./lock
     ./animations.nix
     ./displays.nix
     ./hardware.nix
-    ./idle.nix
     ./input.nix
     ./launcher.nix
     ./widgets
@@ -24,6 +24,8 @@
     };
 
     home.packages = with pkgs; [
+      inputs.hypr-utils.packages.${pkgs.system}.default
+
       xdg-utils
       acpi
 

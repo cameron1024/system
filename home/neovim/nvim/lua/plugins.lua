@@ -6,6 +6,7 @@ local plugins = {
   require 'plugins.editing.hardtime',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
+  require 'plugins.editing.markdown',
   require 'plugins.editing.surround',
   require 'plugins.editing.silicon',
   require 'plugins.editing.tmux-nagivator',
