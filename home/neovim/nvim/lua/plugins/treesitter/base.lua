@@ -31,9 +31,12 @@ return {
       incremental_selection = { enable = false },
       ignore_install = { "tlaplus", "liquidsoap", "norg", "dart" },
 
+      indent = { enable = false, },
+
       textobjects = {
         select = {
           enable = true,
+          disable = { "dart" },
           lookahead = true,
           keymaps = {
             ["af"] = { query = "@function.outer", desc = "Around Function" },

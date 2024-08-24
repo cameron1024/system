@@ -1,12 +1,13 @@
 {pkgs, ...}: let
-
   plugins = with pkgs.tmuxPlugins; [
     {
       plugin = fingers;
       extraConfig = ''
-        set -g @fingers-key M-f 
+        set -g @fingers-key M-f
       '';
     }
+
+    vim-tmux-navigator
   ];
 in {
   programs.tmux = {
@@ -17,6 +18,7 @@ in {
     prefix = "C-a";
     escapeTime = 0;
     shell = "${pkgs.fish}/bin/fish";
+    mouse = true;
 
     extraConfig = ''
       ${builtins.readFile ./everforest.tmux}
@@ -26,6 +28,8 @@ in {
 
       set -s extended-keys on
       set -as terminal-features 'xterm*:extkeys'
+
+      set -gq allow-passthrough on
 
       bind-key -n M-\; command-prompt
 

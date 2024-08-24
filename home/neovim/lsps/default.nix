@@ -7,13 +7,18 @@
 #     hash = "sha256-TLWvlQ0EXfdBFSMgmA1mkgJ1WYxIfD2Glpvx1n6hZms=";
 #   };
 # };
-{
+let
+  harper = pkgs.callPackage ./harper.nix {};
+in {
   home.packages = with pkgs; [
+    harper
+
     markdown-oxide
     # inputs.wgsl-analyzer.packages.${pkgs.system}.default
 
     marksman
     nil
+    nixd
     lua-language-server
     taplo
     yaml-language-server

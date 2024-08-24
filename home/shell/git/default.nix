@@ -17,6 +17,8 @@
   programs.git = {
     enable = true;
 
+    lfs.enable = true;
+
     userName = machine.user.name;
     userEmail = machine.user.email;
 

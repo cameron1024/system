@@ -4,8 +4,7 @@
   lib,
   inputs,
   ...
-}:
-with lib; let
+}: let
   cfg = config.machine.wm.hyprland;
 in {
   imports = [
@@ -14,10 +13,28 @@ in {
     ./bluetooth
   ];
 
-  config = mkIf cfg.enable {
-    programs.hyprland.enable = true;
-    programs.hyprland.package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    services.blueman.enable = true;
-    services.power-profiles-daemon.enable = true;
+  config = lib.mkIf cfg.enable {
+    programs.hyprland = {
+      enable = true;
+      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    };
+
+    services = {
+      blueman.enable = true;
+      power-profiles-daemon.enable = true;
+    };
+    hardware = {
+      graphics = {
+        enable = true;
+        enable32Bit = true;
+      };
+
+      pulseaudio.support32Bit = true;
+    };
+
+    environment.systemPackages = with pkgs; [
+      vulkan-tools
+      lutris
+    ];
   };
 }

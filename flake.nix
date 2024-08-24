@@ -13,15 +13,16 @@
 
     hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.41.2";
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
-    
+
     hyprswitch.url = "github:h3rmt/hyprswitch/dev";
-   
+
     hyprspace.url = "github:KZDKM/Hyprspace";
     hyprspace.inputs.hyprland.follows = "hyprland";
 
     hyprpicker.url = "github:hyprwm/hyprpicker";
 
-    hy3.url = "github:outfoxxed/hy3";
+    hy3.url = "github:outfoxxed/hy3?ref=hl0.41.2";
+    hy3.inputs.hyprland.follows = "hyprland";
 
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";

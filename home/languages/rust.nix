@@ -15,6 +15,7 @@
     cargo-wizard
     cargo-nextest
     cargo-spellcheck
+    cargo-expand
   ];
 
   home.shellAliases = {

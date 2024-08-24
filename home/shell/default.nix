@@ -11,6 +11,9 @@
     ./eza.nix
     ./yazi.nix
     ./previewers.nix
+    ./nix.nix
+
+    ./system
   ];
 
   config = {

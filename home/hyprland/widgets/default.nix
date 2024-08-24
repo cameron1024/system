@@ -8,7 +8,8 @@
   programs.ags = {
     enable = true;
     configDir = ./ags;
-  };
+    extraPackages = with pkgs; [
 
-  home.packages = with pkgs; [bun];
+    ];
+  };
 }

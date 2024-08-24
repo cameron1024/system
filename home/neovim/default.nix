@@ -13,13 +13,18 @@
   macosPackages = [];
 in {
   imports = [
-    ./lsps.nix
+    ./lsps
     # ./inlyne.nix
   ];
   config = {
     home.shellAliases = {
       "e" = "nvim";
     };
+
+    home.sessionVariables = {
+      "EDITOR" = "nvim";
+    };
+
     home.packages = with pkgs;
       [
         neovim
@@ -29,10 +34,14 @@ in {
 
         libgit2
         lua5_1
+        luajitPackages.magick
 
         gcc
 
         ripgrep
+
+        mermaid-cli
+        imagemagick
       ]
       ++ linuxPackages;
 

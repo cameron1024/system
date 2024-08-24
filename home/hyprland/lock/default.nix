@@ -17,7 +17,7 @@
     with pkgs.cams-utils.hyprland; {
       general = {
         hide_cursor = true;
-        no_fade_in = false;
+        no_fade_in = true;
         no_fade_out = true;
       };
 
@@ -108,6 +108,7 @@
             position = "-50, -50";
           })
       ];
+
     };
   };
 }

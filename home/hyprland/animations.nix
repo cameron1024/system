@@ -8,6 +8,10 @@
     duration = "1.5";
     curve = "easeInOutQuint";
   in {
+    bind = [
+      "SUPER, g, exec, hypr-utils cycle gaps 10 0"
+    ];
+
     misc = {
       disable_hyprland_logo = true;
     };

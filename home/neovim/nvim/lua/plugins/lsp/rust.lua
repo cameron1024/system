@@ -5,7 +5,7 @@ vim.g.rustaceanvim = {
     reload_workspace_from_cargo_toml = true,
   },
   server = {
-    cmd = { "nix", "run", "nixpkgs#rust-analyzer" },
+    -- cmd = { "nix", "run", "nixpkgs#rust-analyzer" },
     settings = {
       -- ["rust-analyzer"] = {
       --   inlayHints = {
@@ -47,9 +47,17 @@ vim.g.rustaceanvim = {
 
 return {
   'mrcjkb/rustaceanvim',
+  dependencies = {
+    "vxpm/ferris.nvim",
+  },
   version = '^4',
   lazy = true,
   ft = { 'rust' },
+  config =function ()
+   require 'ferris'.setup {
+
+   } 
+  end,
   keys = {
     { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },
     { "<leader>rm", "<cmd>RustLsp expandMacro<cr>",  desc = "Rust Expand Macro" },

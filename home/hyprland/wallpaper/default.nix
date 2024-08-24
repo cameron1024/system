@@ -12,8 +12,8 @@
     ${builtins.readFile ./randomWallpaper.sh}
   '';
 in {
-  home.packages = with pkgs; [
-    swww
+  home.packages = [
+    pkgs.swww
     randomWallpaper
   ];
 
@@ -22,5 +22,28 @@ in {
       # set the clear background even if the daemon is running
       "swww-daemon; ${randomWallpaper}/bin/randomWallpaper"
     ];
+  };
+
+  systemd.user.timers."randomize-wallpaper" = {
+    Unit.Description = "Randomize wallpaper";
+    Timer = {
+      Unit = "randomize-wallpaper";
+      OnCalendar = "*:0/15";
+    };
+    Install.WantedBy = ["timers.target"];
+  };
+
+  systemd.user.services."randomize-wallpaper" = {
+    Unit = {
+      Description = "Randomize wallpaper";
+      After = ["multi-user.target"];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = ''
+        ${randomWallpaper}/bin/randomWallpaper.sh
+      '';
+    };
+    Install.WantedBy = ["default.target"];
   };
 }

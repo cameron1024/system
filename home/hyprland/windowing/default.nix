@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./overview.nix
+    ./hy3.nix
     # ./switcher.nix
   ];
 

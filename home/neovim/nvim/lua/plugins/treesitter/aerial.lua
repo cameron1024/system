@@ -9,9 +9,9 @@ return {
 
   },
   keys = {
-    { "<leader>o", "<cmd>AerialToggle right<cr>", desc = "Toggle Overview" },
-    { "{",         "<cmd>AerialNext<cr>",         mode = { "n", "o", "v" } },
-    { "}",         "<cmd>AerialPrev<cr>",         mode = { "n", "o", "v" } },
+    -- { "<leader>o", "<cmd>AerialToggle right<cr>", desc = "Toggle Overview" },
+    { "}",         "<cmd>AerialNext<cr>",         mode = { "n", "o", "v" } },
+    { "{",         "<cmd>AerialPrev<cr>",         mode = { "n", "o", "v" } },
   }
 
 

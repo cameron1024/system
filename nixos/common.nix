@@ -7,7 +7,7 @@
   cfg = config.machine;
   linux = pkgs.linuxPackages_6_10;
 in {
-  imports = [./hyprland];
+  imports = [./hyprland ./dev/android.nix];
   options = with lib; let
     colorOption = mkOption {
       type = types.str;
@@ -120,6 +120,12 @@ in {
     };
 
     fonts.enableDefaultPackages = true;
+    # fonts.packages = with pkgs; [
+    #   nerdfonts
+    #   fira
+    #   monaspace
+    # ];
+
     fonts.packages = with pkgs; [
       nerdfonts
       fira

@@ -79,6 +79,7 @@ in {
           format = "󰃠 {percent:3}%";
           on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 5%+";
           on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
+          on-click = "${pkgs.brightnessctl}/bin/brightnessctl set $(hypr-utils store cycle brightness 20 50 100)%";
         };
 
         "pulseaudio" = {
@@ -97,8 +98,8 @@ in {
             car = "";
             default = ["" "" ""];
           };
-          on-click = "pavucontrol";
-          on-click-right = "pactl set-sink-mute 0 toggle";
+          on-click-right = "pavucontrol";
+          on-click = "pactl set-sink-mute 0 toggle";
         };
 
         "tray" = {

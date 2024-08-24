@@ -1,3 +1,3 @@
 {
-  imports = [./rust.nix ./flutter.nix];
+  imports = [./rust.nix ./flutter.nix ./funky.nix];
 }

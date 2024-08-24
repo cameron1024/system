@@ -7,7 +7,11 @@
     then "Everforest Dark Hard"
     else null;
 
-  programs.kitty.font.name = "Hack NerdFont";
+  programs.kitty.font.name = "Fira Code NerdFont";
+  programs.kitty.settings = {
+    confirm_os_window_close = 0;
+    disable_ligatures = "never";
+  };
 
   # programs.kitty.extraConfig = ''
   #   source ~/.config/kitty/current-theme.conf

@@ -19,12 +19,12 @@ local plugins = {
   require 'plugins.git.gitsigns',
   -- require 'plugins.git.fugit',
 
-  require 'plugins.lsp.actions-preview',
+  -- require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
   require 'plugins.lsp.conform',
   require 'plugins.lsp.crates',
-  require 'plugins.lsp.overseer',
+  -- require 'plugins.lsp.overseer',
   require 'plugins.lsp.rust',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.typescript',
@@ -38,6 +38,8 @@ local plugins = {
   -- require 'plugins.notes.neorg',
 
   require 'plugins.telescope',
+
+  require 'plugins.test.neotest',
 
   require 'plugins.terminal.toggleterm',
   require 'plugins.terminal.termedit',
