@@ -42,6 +42,7 @@ in {
 
         mermaid-cli
         imagemagick
+        unzip
       ]
       ++ linuxPackages;
 

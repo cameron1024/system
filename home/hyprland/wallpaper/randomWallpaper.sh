@@ -6,6 +6,7 @@ RANDOM_WALLPAPER=$(shuf -n1 -e $ALL_WALLPAPERS)
 RANDOM_WALLPAPER=$(echo "$RANDOM_WALLPAPER" | awk '{$1=$1;print}')
 
 swww img "$RANDOM_WALLPAPER" \
+  --resize crop \
   --transition-fps 120 \
   --transition-pos top-left \
   --transition-duration 1 \

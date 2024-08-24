@@ -1,6 +1,13 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  machine,
+  lib,
+  ...
+}: let
+  useIdle = lib.lists.any (display: display.oled) machine.displays;
+in {
   services.hypridle = {
-    enable = true;
+    enable = useIdle;
     settings = {
       general = {
         lock_cmd = "hyprlock";
@@ -18,5 +25,4 @@
 
   services.caffeine.enable = true;
   home.packages = with pkgs; [caffeine-ng];
-
 }
