@@ -2,6 +2,7 @@
   mkSystem = {
     system,
     spec,
+    hardware,
   }: let
     overlays = [
       (import ../overlays/utils.nix)
@@ -20,7 +21,7 @@
       modules = [
         inputs.home-manager.nixosModules.default
         ./common.nix
-        ./hardware/thinkpad.nix
+        hardware
         {
           inherit machine;
 
@@ -33,6 +34,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.users.cameron = import ../home;
           home-manager.extraSpecialArgs = specialArgs;
+          home-manager.backupFileExtension = "backup";
         }
       ];
     };
@@ -40,5 +42,12 @@ in {
   thinkpad = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/thinkpad.nix;
+    hardware = ./hardware/thinkpad.nix;
+  };
+
+  mini = mkSystem {
+    system = "x86_64-linux";
+    spec = import ./machines/specs/mini.nix;
+    hardware = ./hardware/mini.nix;
   };
 }
