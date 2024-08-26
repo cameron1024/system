@@ -34,7 +34,10 @@
       wl-clipboard
     ];
 
+    programs.obs-studio.enable = true;
+
     xdg.enable = true;
+    xdg.terminal-exec
 
     gtk = {
       enable = true;

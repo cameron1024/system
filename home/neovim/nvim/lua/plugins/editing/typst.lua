@@ -14,4 +14,7 @@ return {
       ['typst-preview'] = "tinymist",
     },
   },
+  config = function ()
+    vim.cmd [[autocmd TextChangedI <buffer> write]]
+  end,
 }
