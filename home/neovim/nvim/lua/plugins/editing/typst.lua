@@ -1,5 +1,8 @@
 return {
   "chomosuke/typst-preview.nvim",
+  dependencies = {
+    "kaarmu/typst.vim",
+  },
   lazy = true,
   ft = "typst",
   version = "0.3.*",
