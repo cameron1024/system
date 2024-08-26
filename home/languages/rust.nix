@@ -16,6 +16,10 @@
     cargo-nextest
     cargo-spellcheck
     cargo-expand
+
+    bacon
+
+    hyperfine
   ];
 
   home.shellAliases = {

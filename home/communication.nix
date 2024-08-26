@@ -3,5 +3,7 @@
     whatsapp-for-linux
     zapzap  # PWA whatsapp
     slack
+
+    rquickshare
   ];
 }

@@ -11,9 +11,11 @@
     ./hardware.nix
     ./input.nix
     ./launcher.nix
+    ./notifications.nix
     ./widgets
     ./windowing
     ./wallpaper
+    ./screenshot.nix
   ];
 
   config = {

@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   imports = [
     ./fish
     ./nushell
@@ -23,5 +23,27 @@
       "q" = "exit";
       "ns" = "nix search nixpkgs";
     };
+
+    home.packages = with pkgs; [
+      # general utilities
+      killall
+      tree
+      pcmanfm
+
+      #data stuff
+      sq
+      jq
+      jaq
+
+      # network stuff
+      trippy
+      hurl
+      gping
+
+      # text stuff
+      sad
+
+      ripdrag
+    ];
   };
 }

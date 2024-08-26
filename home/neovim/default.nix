@@ -43,6 +43,9 @@ in {
         mermaid-cli
         imagemagick
         unzip
+
+        typst
+        tinymist
       ]
       ++ linuxPackages;
 

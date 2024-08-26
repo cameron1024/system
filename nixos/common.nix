@@ -7,7 +7,7 @@
   cfg = config.machine;
   linux = pkgs.linuxPackages_6_10;
 in {
-  imports = [./hyprland ./dev/android.nix];
+  imports = [./hyprland ./dev/android.nix ./performance.nix];
   options = with lib; let
     colorOption = mkOption {
       type = types.str;

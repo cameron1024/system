@@ -21,6 +21,7 @@ return {
   keys = {
     { "<leader>tn", function() require 'neotest'.run.run() end,                       mode = "n", desc = "Test Nearest" },
     { "<leader>tf", function() require 'neotest'.run.run(vim.fn.expand("%")) end,     mode = "n", desc = "Test File" },
+    { "<leader>dn", function() require 'neotest'.run.run { strategy = "dap" } end,    mode = "n", desc = "Debug Nearest" },
     { "<leader>o",  function() require 'neotest'.summary.toggle() end,                mode = "n", desc = "Test Overview" },
     { "]f",         function() require 'neotest'.jump.next { status = "failed" } end, mode = "n", desc = "Next Failed Test" },
     { "[f",         function() require 'neotest'.jump.prev { status = "failed" } end, mode = "n", desc = "Prev Failed Test" },

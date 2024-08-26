@@ -1,4 +1,4 @@
-local toggle_inlay = function ()
+local toggle_inlay = function()
   local lsp = vim.lsp
   lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
 end
@@ -25,8 +25,9 @@ return {
     lspconfig.taplo.setup { capabilities = capabilities }
     lspconfig.biome.setup { capabilities = capabilities }
     lspconfig.tsserver.setup { capabilities = capabilities }
+    lspconfig.tinymist.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
-    lspconfig.harper_ls.setup { capabilities = capabilities }
+    -- lspconfig.harper_ls.setup { capabilities = capabilities }
     -- lspconfig.markdown_oxide.setup { capabilities = capabilities }
     lspconfig.marksman.setup { capabilities = capabilities }
     lspconfig.nickel_ls.setup { capabilities = capabilities }
@@ -105,7 +106,7 @@ return {
     { "<C-b>",     vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
     { "<leader>r", vim.lsp.buf.rename,          desc = "Rename" },
     { "<leader>a", vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
-    { "<leader>i", toggle_inlay,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
+    { "<leader>i", toggle_inlay,                mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
 
   },
 }

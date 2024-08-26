@@ -4,6 +4,7 @@ local plugins = {
   require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
   require 'plugins.editing.hardtime',
+  require 'plugins.editing.hlslens',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.markdown',
@@ -11,6 +12,10 @@ local plugins = {
   require 'plugins.editing.silicon',
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
+  require 'plugins.editing.typst',
+
+  require 'plugins.debug.dap',
+  require 'plugins.debug.dap-ui',
 
   require 'plugins.firenvim',
 
