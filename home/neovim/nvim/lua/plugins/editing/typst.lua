@@ -15,6 +15,6 @@ return {
     },
   },
   config = function ()
-    vim.cmd [[autocmd TextChangedI <buffer> write]]
+    vim.cmd [[autocmd FileType typst autocmd TextChangedI <buffer> write]]
   end,
 }
