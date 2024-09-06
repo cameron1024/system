@@ -1,4 +1,8 @@
-{machine, ...}: {
+{machine, pkgs, ...}: {
+  home.packages = with pkgs; [
+    git-cliff
+  ];
+
   home.shellAliases = {
     "gc" = "git add -A && git commit -m";
     "gca" = "git commit --amend";
