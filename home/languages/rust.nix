@@ -16,6 +16,7 @@
     cargo-nextest
     cargo-spellcheck
     cargo-expand
+    cargo-release
 
     bacon
 

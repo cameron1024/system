@@ -17,14 +17,17 @@ local plugins = {
   require 'plugins.debug.dap',
   require 'plugins.debug.dap-ui',
 
-  require 'plugins.firenvim',
+  {
+    "glacambre/firenvim",
+    build = ":call firenvim#install(0)",
+  },
 
   require 'plugins.git.diffview',
   require 'plugins.git.octo',
   require 'plugins.git.gitsigns',
   -- require 'plugins.git.fugit',
 
-  -- require 'plugins.lsp.actions-preview',
+  require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
   require 'plugins.lsp.conform',
@@ -60,6 +63,7 @@ local plugins = {
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.wildfire',
   require 'plugins.treesitter.context',
+  require 'plugins.treesitter.ssr',
 }
 
 require 'lazy'.setup {
