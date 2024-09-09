@@ -34,7 +34,7 @@ local options = {
   background = "dark",
   laststatus = 3,
   conceallevel = 3,
-  shell = "fish";
+  shell = "fish",
 }
 
 for key, value in pairs(options) do
@@ -48,3 +48,10 @@ vim.cmd [[
   augroup END
 ]]
 
+
+if vim.g.neovide then
+  vim.o.guifont = "FiraCode Nerd Font:h14"
+
+  vim.keymap.set("n", "<C-+>", function() vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 1.25 end)
+  vim.keymap.set("n", "<C-_>", function() vim.g.neovide_scale_factor = vim.g.neovide_scale_factor / 1.25 end)
+end

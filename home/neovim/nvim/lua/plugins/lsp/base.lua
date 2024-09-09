@@ -3,6 +3,17 @@ local toggle_inlay = function()
   lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
 end
 
+local function toggle_harper()
+  local buf_clients = vim.lsp.get_clients({ bufnr = 0 })
+  for _, client in pairs(buf_clients) do
+    if client.name == "harper_ls" then
+      client.stop()
+      return
+    end
+  end
+  vim.cmd("LspStart harper_ls")
+end
+
 return {
   'neovim/nvim-lspconfig',
   dependencies = {
@@ -24,10 +35,10 @@ return {
     lspconfig.nixd.setup { capabilities = capabilities }
     lspconfig.taplo.setup { capabilities = capabilities }
     lspconfig.biome.setup { capabilities = capabilities }
-    lspconfig.tsserver.setup { capabilities = capabilities }
+    lspconfig.ts_ls.setup { capabilities = capabilities }
     lspconfig.tinymist.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
-    -- lspconfig.harper_ls.setup { capabilities = capabilities }
+    lspconfig.harper_ls.setup { capabilities = capabilities, autostart = false, }
     -- lspconfig.markdown_oxide.setup { capabilities = capabilities }
     lspconfig.marksman.setup { capabilities = capabilities }
     lspconfig.nickel_ls.setup { capabilities = capabilities }
@@ -84,7 +95,7 @@ return {
             version = "LuaJIT",
           },
           diagnostics = {
-            globals = { "vim", },
+            globals = { "vim" },
           },
           telemetry = {
             enable = false,
@@ -94,19 +105,20 @@ return {
     }
   end,
   keys = {
-    { "K",         vim.lsp.buf.hover,           desc = "LSP Hover" },
-    { "gd",        vim.lsp.buf.definition,      desc = "LSP Goto Definition" },
-    { "gc",        vim.lsp.buf.declaration,     desc = "LSP Goto Declaration" },
-    { "gi",        vim.lsp.buf.implementation,  desc = "LSP Goto Implementation" },
-    { "gt",        vim.lsp.buf.type_definition, desc = "LSP Goto Type Definition" },
-    { "gr",        vim.lsp.buf.references,      desc = "LSP References" },
-    { "<leader>e", vim.diagnostic.open_float,   desc = "Show Diagnostic" },
-    { "Q",         vim.diagnostic.setloclist,   desc = "Open Diagnostic Loclist" },
-    { "<C-n>",     vim.diagnostic.goto_next,    desc = "Goto Next Diagnostic" },
-    { "<C-b>",     vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
-    { "<leader>r", vim.lsp.buf.rename,          desc = "Rename" },
-    { "<leader>a", vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
-    { "<leader>i", toggle_inlay,                mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
+    { "K",          vim.lsp.buf.hover,           desc = "LSP Hover" },
+    { "gd",         vim.lsp.buf.definition,      desc = "LSP Goto Definition" },
+    { "gc",         vim.lsp.buf.declaration,     desc = "LSP Goto Declaration" },
+    { "gi",         vim.lsp.buf.implementation,  desc = "LSP Goto Implementation" },
+    { "gt",         vim.lsp.buf.type_definition, desc = "LSP Goto Type Definition" },
+    { "gr",         vim.lsp.buf.references,      desc = "LSP References" },
+    { "<leader>e",  vim.diagnostic.open_float,   desc = "Show Diagnostic" },
+    { "Q",          vim.diagnostic.setloclist,   desc = "Open Diagnostic Loclist" },
+    { "<C-n>",      vim.diagnostic.goto_next,    desc = "Goto Next Diagnostic" },
+    { "<C-b>",      vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
+    { "<leader>r",  vim.lsp.buf.rename,          desc = "Rename" },
+    { "<leader>a",  vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
+    { "<leader>i",  toggle_inlay,                mode = { "n", "v" },              desc = "Toggle Inlay Hints" },
+    { "<leader>sc", toggle_harper,               mode = { "n", "v" },              desc = "Toggle Spellcheck" },
 
   },
 }
