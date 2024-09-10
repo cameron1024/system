@@ -4,7 +4,7 @@ local plugins = {
   require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
   require 'plugins.editing.hardtime',
-  require 'plugins.editing.hlslens',
+  -- require 'plugins.editing.hlslens',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.markdown',
@@ -23,6 +23,7 @@ local plugins = {
   },
 
   require 'plugins.git.diffview',
+  require 'plugins.git.flog',
   require 'plugins.git.octo',
   require 'plugins.git.gitsigns',
   -- require 'plugins.git.fugit',
