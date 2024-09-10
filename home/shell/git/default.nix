@@ -32,6 +32,8 @@
     extraConfig = {
       core.editor = "nvim";
       init.defaultBranch = "master";
+      
+      pull.rebase = false;
 
       push = {
         default = "current";
