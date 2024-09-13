@@ -7,7 +7,7 @@
   useIdle = lib.lists.any (display: display.oled) machine.displays;
 in {
   services.hypridle = {
-    enable = useIdle;
+    enable = machine.linux && useIdle;
     settings = {
       general = {
         lock_cmd = "hyprlock";
@@ -23,6 +23,9 @@ in {
     };
   };
 
-  services.caffeine.enable = true;
-  home.packages = with pkgs; [caffeine-ng];
+  services.caffeine.enable = machine.linux;
+  home.packages =
+    if machine.linux
+    then [pkgs.caffeine-ng]
+    else [];
 }

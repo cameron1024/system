@@ -1,6 +1,15 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    flutter
-    android-studio
-  ];
+{
+  pkgs,
+  machine,
+  ...
+}: {
+  home.packages = with pkgs;
+    [
+      flutter
+    ]
+    ++ (
+      if machine.linux
+      then [pkgs.android-studio]
+      else []
+    );
 }

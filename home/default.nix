@@ -1,4 +1,5 @@
-{
+{pkgs, ... }: {
+  
   imports = [
     ./neovim
     ./hyprland
@@ -9,7 +10,6 @@
     ./communication.nix
   ];
 
+  nixpkgs.config.allowUnfree = true;
   home.stateVersion = "24.05";
-
-
 }

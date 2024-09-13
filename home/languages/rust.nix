@@ -1,27 +1,39 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    rustup
+{
+  pkgs,
+  machine,
+  ...
+}: let
+  extras =
+    if machine.linux
+    then [
+      pkgs.cargo-rr
+    ]
+    else [];
+in {
+  home.packages =
+    (with pkgs; [
+      rustup
 
-    cargo-info
-    cargo-lambda
-    cargo-rr
-    cargo-wipe
-    cargo-rdme
-    cargo-msrv
-    cargo-fuzz
-    cargo-dist
-    cargo-udeps
-    cargo-bloat
-    cargo-wizard
-    cargo-nextest
-    cargo-spellcheck
-    cargo-expand
-    cargo-release
+      cargo-info
+      cargo-lambda
+      cargo-wipe
+      cargo-rdme
+      cargo-msrv
+      cargo-fuzz
+      cargo-dist
+      cargo-udeps
+      cargo-bloat
+      cargo-wizard
+      cargo-nextest
+      cargo-spellcheck
+      cargo-expand
+      cargo-release
 
-    bacon
+      bacon
 
-    hyperfine
-  ];
+      hyperfine
+    ])
+    ++ extras;
 
   home.shellAliases = {
     "cg" = "cargo";

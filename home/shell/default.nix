@@ -1,4 +1,15 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  machine,
+  ...
+}: let
+  systemPackages = with pkgs;
+    if machine.linux
+    then [
+      pcmanfm
+    ]
+    else [];
+in {
   imports = [
     ./fish
     ./nushell
@@ -24,26 +35,27 @@
       "ns" = "nix search nixpkgs";
     };
 
-    home.packages = with pkgs; [
-      # general utilities
-      killall
-      tree
-      pcmanfm
+    home.packages = with pkgs;
+      [
+        # general utilities
+        killall
+        tree
 
-      #data stuff
-      sq
-      jq
-      jaq
+        #data stuff
+        sq
+        jq
+        jaq
 
-      # network stuff
-      trippy
-      hurl
-      gping
+        # network stuff
+        trippy
+        hurl
+        gping
 
-      # text stuff
-      sad
+        # text stuff
+        sad
 
-      ripdrag
-    ];
+        ripdrag
+      ]
+      ++ systemPackages;
   };
 }

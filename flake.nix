@@ -34,16 +34,35 @@
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs: {
-    nixosConfigurations = import ./nixos {
-      inherit inputs;
-    };
-
-    devShells."x86_64-linux".default = let
-      pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
+  outputs = inputs: let
+    mkDevShell = {system}: let
+      pkgs = import inputs.nixpkgs {inherit system; config.allowUnfree = true; };
     in
       pkgs.mkShell {
         packages = [];
       };
+  in {
+    nixosConfigurations = import ./nixos {
+      inherit inputs;
+    };
+
+    darwinConfigurations."DGQ204V94P" = inputs.nix-darwin.lib.darwinSystem rec {
+      specialArgs = {
+        inherit inputs;
+        machine = import ./nixos/machines/specs/macbook.nix;
+      };
+      modules = [
+        inputs.home-manager.darwinModules.home-manager
+        ./mac
+        {
+          home-manager.users.cameron = import ./home;
+          home-manager.extraSpecialArgs = specialArgs;
+          home-manager.backupFileExtension = "backup";
+        }
+      ];
+    };
+
+    devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};
+    devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
   };
 }

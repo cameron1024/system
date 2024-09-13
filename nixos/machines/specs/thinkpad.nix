@@ -1,6 +1,8 @@
 {
   hostname = "thinkchad";
   boot = "/boot";
+
+  linux = true;
   wm.hyprland.enable = true;
 
   user = (import ../users.nix).cameron;

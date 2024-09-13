@@ -25,10 +25,10 @@ in {
     ];
   };
 
-  services.blueman-applet.enable = true;
+  services.blueman-applet.enable = machine.linux;
 
   programs.waybar = {
-    enable = true;
+    enable = machine.linux;
     style = colors + (builtins.readFile ./style.css);
 
     settings = {

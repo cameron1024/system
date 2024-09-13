@@ -1,8 +1,12 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    brightnessctl
-    pulseaudio
-  ];
+{
+  pkgs,
+  machine,
+  ...
+}: {
+  home.packages =
+    if machine.linux
+    then [pkgs.brightnessctl pkgs.pulseaudio]
+    else [];
 
   wayland.windowManager.hyprland.settings = {
     exec-once = [

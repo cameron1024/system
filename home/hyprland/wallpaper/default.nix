@@ -12,7 +12,7 @@
     ${builtins.readFile ./randomWallpaper.sh}
   '';
 in {
-  home.packages = [
+  home.packages = lib.mkIf machine.linux [
     pkgs.swww
     randomWallpaper
   ];

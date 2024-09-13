@@ -6,7 +6,7 @@
   };
 
   programs.wofi = {
-    enable = true;
+    enable = machine.linux;
     settings = {
       width = 500;
       height = 400;
