@@ -5,11 +5,10 @@
 }: {
   home.packages = with pkgs;
     [
-      flutter
     ]
     ++ (
       if machine.linux
-      then [pkgs.android-studio]
+      then [pkgs.android-studio pkgs.flutter]
       else []
     );
 }

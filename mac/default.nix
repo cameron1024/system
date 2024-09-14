@@ -1,20 +1,25 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./fonts.nix
+    ./yabai.nix
   ];
 
   config = {
+    nix = {
+      package = pkgs.nixVersions.stable;
+      # config.allowUnfree = true;
+
+      extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+    };
 
     nixpkgs = {
-        system = "aarch64-darwin";
-        config = {allowUnfree = true;};
-        overlays = [(import ../overlays/utils.nix)];
+      system = "aarch64-darwin";
+      config = {allowUnfree = true;};
+      overlays = [(import ../overlays/utils.nix)];
     };
-    
+
     environment.systemPackages = with pkgs; [
       karabiner-elements
     ];

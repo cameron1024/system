@@ -1,6 +1,7 @@
 {pkgs, ... }: {
   
   imports = [
+    ./mac 
     ./neovim
     ./hyprland
     ./shell
