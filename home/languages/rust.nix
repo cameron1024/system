@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   home.packages = with pkgs; [
     rustup
 
@@ -21,6 +25,7 @@
     bacon
 
     hyperfine
+    inputs.binsider.packages.${pkgs.system}.default
   ];
 
   home.shellAliases = {

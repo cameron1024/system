@@ -3,6 +3,7 @@ local plugins = {
   require 'plugins.editing.comment',
   require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
+  require 'plugins.editing.firestore-rules',
   require 'plugins.editing.hardtime',
   -- require 'plugins.editing.hlslens',
   require 'plugins.editing.oil',
