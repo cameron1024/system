@@ -1,15 +1,13 @@
 {
   inputs,
-  pkgs,
+  machine,
   ...
 }: {
   imports = [inputs.ags.homeManagerModules.default];
 
   programs.ags = {
-    enable = true;
+    enable = machine.wm.hyprland.enable;
     configDir = ./ags;
-    extraPackages = with pkgs; [
-
-    ];
+    extraPackages = [];
   };
 }

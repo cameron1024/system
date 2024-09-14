@@ -1,10 +1,11 @@
 {
   pkgs,
   machine,
+  lib,
   ...
 }: {
-  home.packages = with pkgs; [
-    swaynotificationcenter
+  home.packages = lib.mkIf machine.linux [
+    pkgs.swaynotificationcenter
   ];
 
   wayland.windowManager.hyprland.settings = {

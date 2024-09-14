@@ -12,7 +12,7 @@
   };
 
   programs.hyprlock = {
-    enable = true;
+    enable = machine.linux;
     settings = with machine.colorscheme;
     with pkgs.cams-utils.hyprland; {
       general = {

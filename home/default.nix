@@ -1,5 +1,7 @@
-{
+{pkgs, ... }: {
+  
   imports = [
+    ./mac 
     ./neovim
     ./hyprland
     ./shell
@@ -9,7 +11,6 @@
     ./communication.nix
   ];
 
+  nixpkgs.config.allowUnfree = true;
   home.stateVersion = "24.05";
-
-
 }

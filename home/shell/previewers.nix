@@ -1,8 +1,17 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    mdcat
-    slides
-    tdf
-    jnv
-  ];
+{
+  pkgs,
+  machine,
+  ...
+}: {
+  home.packages = with pkgs;
+    [
+      mdcat
+      slides
+      jnv
+    ]
+    ++ (
+      if machine.linux
+      then [pkgs.tdf]
+      else []
+    );
 }

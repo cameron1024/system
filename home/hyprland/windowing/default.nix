@@ -1,12 +1,12 @@
-{pkgs, ...}: {
+{pkgs, lib, machine, ...}: {
   imports = [
     ./overview.nix
     ./hy3.nix
     # ./switcher.nix
   ];
 
-  home.packages = with pkgs; [
-    google-chrome
+  home.packages = lib.mkIf machine.linux [
+    pkgs.google-chrome
   ];
 
   wayland.windowManager.hyprland = {

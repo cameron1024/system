@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  machine,
+  ...
+}: let
   linuxPackages = with pkgs; [
     chafa
     imagemagick
@@ -11,6 +15,11 @@
   ];
 
   macosPackages = [];
+
+  extraPackages =
+    if machine.linux
+    then linuxPackages
+    else macosPackages;
 in {
   imports = [
     ./lsps
@@ -47,7 +56,7 @@ in {
         typst
         tinymist
       ]
-      ++ linuxPackages;
+      ++ extraPackages;
 
     home.file."./.config/nvim/" = {
       source = ./nvim;
