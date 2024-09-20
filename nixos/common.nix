@@ -14,6 +14,9 @@ in {
     };
   in {
     machine = {
+      linux = mkOption {
+        type = types.bool;
+      };
       user = {
         name = mkOption {
           type = types.str;

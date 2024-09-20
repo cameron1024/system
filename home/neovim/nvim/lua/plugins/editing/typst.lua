@@ -2,6 +2,7 @@ return {
   "chomosuke/typst-preview.nvim",
   dependencies = {
     "kaarmu/typst.vim",
+    "MrPicklePinosaur/typst-conceal.vim",
   },
   lazy = true,
   ft = "typst",
@@ -14,7 +15,4 @@ return {
       ['typst-preview'] = "tinymist",
     },
   },
-  config = function ()
-    vim.cmd [[autocmd FileType typst autocmd TextChangedI <buffer> write]]
-  end,
 }

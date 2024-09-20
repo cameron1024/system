@@ -14,6 +14,7 @@ local plugins = {
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
   require 'plugins.editing.typst',
+  require 'plugins.editing.zoxide',
 
   require 'plugins.debug.dap',
   require 'plugins.debug.dap-ui',
@@ -34,6 +35,7 @@ local plugins = {
   require 'plugins.lsp.cmp',
   require 'plugins.lsp.conform',
   require 'plugins.lsp.crates',
+  require 'plugins.lsp.flutter',
   -- require 'plugins.lsp.overseer',
   require 'plugins.lsp.rust',
   require 'plugins.lsp.trouble',
@@ -46,6 +48,7 @@ local plugins = {
   require 'plugins.neotree',
 
   -- require 'plugins.notes.neorg',
+  require 'plugins.notes.telekasten',
 
   require 'plugins.telescope',
 

@@ -10,6 +10,7 @@ return {
     'nvim-telescope/telescope-media-files.nvim',
     'fdschmidt93/telescope-egrepify.nvim',
     'folke/trouble.nvim',
+    'debugloop/telescope-undo.nvim',
   },
   config = function()
     local telescope = require 'telescope'
@@ -40,6 +41,7 @@ return {
         search_history = default_picker,
         command_history = default_picker,
         registers = default_picker,
+        undo = default_picker,
       },
 
       extensions = {
@@ -52,6 +54,9 @@ return {
         media_files = {
           find_cmd = "rg",
         },
+        undo = {
+
+        }
       },
     }
 
@@ -59,6 +64,7 @@ return {
     telescope.load_extension "ui-select"
     telescope.load_extension "egrepify"
     telescope.load_extension "media_files"
+    telescope.load_extension "undo"
   end,
 
   cmd = { "Telescope" },
@@ -73,6 +79,7 @@ return {
     { "<leader>ch",       function() require 'telescope.builtin'.command_history() end,            desc = "Telescope Command History" },
     { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
     { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
+    { '<leader>u',        "<cmd>Telescope undo<cr>",                                               desc = "Telescope Undo" },
   },
 
 }

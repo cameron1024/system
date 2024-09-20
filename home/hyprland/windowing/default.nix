@@ -13,6 +13,10 @@
     extraConfig = ''
       bind=SUPER,R,submap,resize
 
+      binde=SUPER,=,resizeactive,20 0
+      binde=SUPER,-,resizeactive,-20 0
+      binde=SUPER SHIFT,=,resizeactive,0 -20
+      binde=SUPER SHIFT,-,resizeactive,0 20
       submap=resize
 
       binde=,h,resizeactive,20 0
