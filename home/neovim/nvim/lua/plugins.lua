@@ -14,6 +14,7 @@ local plugins = {
   require 'plugins.editing.tmux-nagivator',
   require 'plugins.editing.todo-comments',
   require 'plugins.editing.typst',
+  require 'plugins.editing.ufo',
   require 'plugins.editing.zoxide',
 
   require 'plugins.debug.dap',

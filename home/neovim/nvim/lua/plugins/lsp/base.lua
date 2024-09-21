@@ -3,6 +3,13 @@ local toggle_inlay = function()
   lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
 end
 
+local function next_error()
+  vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+end
+local function prev_error()
+  vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+end
+
 local function toggle_harper()
   local buf_clients = vim.lsp.get_clients({ bufnr = 0 })
   for _, client in pairs(buf_clients) do
@@ -30,6 +37,10 @@ return {
 
     local capabilities = require 'cmp_nvim_lsp'.default_capabilities()
     capabilities.textDocument.completion.completionItem.snippetSupport = true
+    capabilities.textDocument.foldingRange = {
+      dynamicRegistration = false,
+      lineFoldingOnly = true,
+    }
 
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.nixd.setup { capabilities = capabilities }
@@ -105,20 +116,18 @@ return {
     }
   end,
   keys = {
-    { "K",          vim.lsp.buf.hover,           desc = "LSP Hover" },
-    { "gd",         vim.lsp.buf.definition,      desc = "LSP Goto Definition" },
-    { "gc",         vim.lsp.buf.declaration,     desc = "LSP Goto Declaration" },
-    { "gi",         vim.lsp.buf.implementation,  desc = "LSP Goto Implementation" },
-    { "gt",         vim.lsp.buf.type_definition, desc = "LSP Goto Type Definition" },
-    { "gr",         vim.lsp.buf.references,      desc = "LSP References" },
-    { "<leader>e",  vim.diagnostic.open_float,   desc = "Show Diagnostic" },
-    { "Q",          vim.diagnostic.setloclist,   desc = "Open Diagnostic Loclist" },
-    { "<C-n>",      vim.diagnostic.goto_next,    desc = "Goto Next Diagnostic" },
-    { "<C-b>",      vim.diagnostic.goto_prev,    desc = "Goto Next Diagnostic" },
-    { "<leader>r",  vim.lsp.buf.rename,          desc = "Rename" },
-    { "<leader>a",  vim.lsp.buf.code_action,     mode = { "n", "v" },              desc = "Goto Next Diagnostic" },
-    { "<leader>i",  toggle_inlay,                mode = { "n", "v" },              desc = "Toggle Inlay Hints" },
-    { "<leader>sc", toggle_harper,               mode = { "n", "v" },              desc = "Toggle Spellcheck" },
+    { "K",          vim.lsp.buf.hover,         desc = "LSP Hover" },
+    { "gd",         vim.lsp.buf.definition,    desc = "LSP Goto Definition" },
+    { "gc",         vim.lsp.buf.declaration,   desc = "LSP Goto Declaration" },
+    { "<leader>e",  vim.diagnostic.open_float, desc = "Show Diagnostic" },
+    { "Q",          vim.diagnostic.setloclist, desc = "Open Diagnostic Loclist" },
+    { "<C-n>",      vim.diagnostic.goto_next,  desc = "Goto Next Diagnostic" },
+    { "<C-b>",      vim.diagnostic.goto_prev,  desc = "Goto Next Diagnostic" },
+    { "<M-n>",      next_error,                desc = "Goto Next Diagnostic" },
+    { "<M-b>",      prev_error,                desc = "Goto Previous Error" },
+    { "<leader>a",  vim.lsp.buf.code_action,   mode = { "n", "v" },             desc = "Code Action" },
+    { "<leader>i",  toggle_inlay,              mode = { "n", "v" },             desc = "Toggle Inlay Hints" },
+    { "<leader>sc", toggle_harper,             mode = { "n", "v" },             desc = "Toggle Spellcheck" },
 
   },
 }

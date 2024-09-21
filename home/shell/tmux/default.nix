@@ -7,7 +7,7 @@
     {
       plugin = fingers;
       extraConfig = ''
-        set -g @fingers-key M-f
+        set -g @fingers-key c-f
       '';
     }
 

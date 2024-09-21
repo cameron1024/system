@@ -13,9 +13,12 @@
     disable_ligatures = "never";
   };
 
-  # programs.kitty.extraConfig = ''
-  #   source ~/.config/kitty/current-theme.conf
-  # '';
+  programs.kitty.extraConfig = ''
+    clear_all_shortcuts yes
+
+    map kitty_mod+equal change_font_size all +2.0
+    map kitty_mod+minus change_font_size all -2.0
+  '';
 
   # xdg.configFile."kitty/themes/current-theme.conf".text = with machine.colorscheme; ''
   #       background ${base00}

@@ -5,6 +5,7 @@ return {
   dependencies = {
     "MunifTanjim/nui.nvim",
     "rcarriga/nvim-notify",
+    "smjonas/inc-rename.nvim",
   },
   opts = {
     messages = {
@@ -24,6 +25,15 @@ return {
     presets = {
       bottom_search = true,
       lsp_doc_border = true,
+      inc_rename = true,
     },
   },
+  config = function(_, opts)
+    require 'inc_rename'.setup()
+    require 'noice'.setup(opts)
+  end,
+  keys = {
+    { "<leader><esc>", "<cmd>NoiceDismiss<cr>", desc = "Dismiss Popups" },
+    { "<leader>r",     ":IncRename ",           desc = "Rename" },
+  }
 }
