@@ -7,7 +7,6 @@ return {
   'nvim-lualine/lualine.nvim',
   dependencies = {
     "stevearc/aerial.nvim",
-    "stevearc/overseer.nvim",
   },
   event = "VeryLazy",
   enabled = vim.g.started_by_firenvim == nil,
@@ -19,7 +18,6 @@ return {
         lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { { 'filename', path = 1 } },
-        lualine_x = { 'overseer' },
         lualine_y = { 'aerial' },
         lualine_z = { 'location' }
       },
