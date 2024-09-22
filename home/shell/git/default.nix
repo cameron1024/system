@@ -1,7 +1,23 @@
-{machine, pkgs, ...}: {
+{
+  machine,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     git-cliff
   ];
+
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      git = {
+        paging = {
+          colorArg = "always";
+          pager = "delta --dark --paging=never";
+        };
+      };
+    };
+  };
 
   home.shellAliases = {
     "gc" = "git add -A && git commit -m";
@@ -32,7 +48,7 @@
     extraConfig = {
       core.editor = "nvim";
       init.defaultBranch = "master";
-      
+
       pull.rebase = false;
 
       push = {
