@@ -8,6 +8,7 @@
     if machine.linux
     then [
       pkgs.cargo-rr
+      inputs.binsider.packages.${pkgs.system}.default
     ]
     else [];
 in {
@@ -33,7 +34,6 @@ in {
       bacon
 
       hyperfine
-      inputs.binsider.packages.${pkgs.system}.default
     ])
     ++ extras;
 

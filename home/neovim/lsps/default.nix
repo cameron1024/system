@@ -30,6 +30,7 @@ in {
     lemminx
     nixd
     nodePackages.bash-language-server
+    kotlin-language-server
 
     alejandra # nix formatter
   ];

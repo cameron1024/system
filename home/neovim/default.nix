@@ -12,6 +12,7 @@
     gnome-epub-thumbnailer
 
     silicon
+    gcc
   ];
 
   macosPackages = [];
@@ -45,7 +46,6 @@ in {
         lua5_1
         luajitPackages.magick
 
-        gcc
 
         ripgrep
 
