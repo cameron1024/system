@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   machine,
+  lib,
   ...
 }: {
   imports = [
@@ -19,31 +20,28 @@
     ./screenshot.nix
   ];
 
-  config = {
+  config = lib.mkIf machine.wm.hyprland.enable {
     wayland.windowManager.hyprland = {
-      enable = pkgs.system != "aarch64-darwin";
+      enable = true;
       xwayland.enable = true;
       package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 
-    home.packages = with pkgs;
-      if machine.wm.hyprland.enable
-      then [
-        inputs.hypr-utils.packages.${pkgs.system}.default
+    home.packages = with pkgs; [
+      inputs.hypr-utils.packages.${pkgs.system}.default
 
-        xdg-utils
-        acpi
+      xdg-utils
+      acpi
 
-        wl-clipboard
-      ]
-      else [];
+      wl-clipboard
+    ];
 
-    programs.obs-studio.enable = machine.linux;
+    programs.obs-studio.enable = true;
 
-    xdg.enable = machine.wm.hyprland.enable;
+    xdg.enable = true;
 
     gtk = {
-      enable = machine.wm.hyprland.enable;
+      enable = true;
 
       theme.name = "Everforest-Dark-BL";
       theme.package = pkgs.everforest-gtk;

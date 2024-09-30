@@ -142,6 +142,7 @@ in {
       firefox
       networkmanager
       jq
+      linux.cpupower
     ];
 
     nixpkgs.config.packageOverrides = pkgs: {
