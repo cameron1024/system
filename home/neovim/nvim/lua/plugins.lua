@@ -6,6 +6,7 @@ local plugins = {
   require 'plugins.editing.firestore-rules',
   require 'plugins.editing.hardtime',
   -- require 'plugins.editing.hlslens',
+  require 'plugins.editing.hlchunk',
   require 'plugins.editing.oil',
   require 'plugins.editing.maximize',
   require 'plugins.editing.markdown',
