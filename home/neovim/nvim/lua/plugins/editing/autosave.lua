@@ -1,11 +1,9 @@
 return {
-  'okuuva/auto-save.nvim',
+  'https://git.sr.ht/~nedia/auto-save.nvim',
   lazy = true,
-  event = "BufEnter",
+  event = "BufReadPre",
   opts = {
-    write_all_buffers = true,
-    debounce_delay = 10,
-    execution_message = {
-    }
+    events = { "InsertLeave", "BufLeave" },
+    silent = true,
   },
 }

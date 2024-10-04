@@ -76,7 +76,6 @@ return {
     { "<leader>g",        function() require 'telescope.builtin'.grep_string() end,                desc = "Telescope Grep String" },
     { "<leader>f",        function() require 'telescope.builtin'.live_grep() end,                  desc = "Telescope Live Grep" },
     { "<leader>sh",       function() require 'telescope.builtin'.search_history() end,             desc = "Telescope Search History" },
-    { "<leader>ch",       function() require 'telescope.builtin'.command_history() end,            desc = "Telescope Command History" },
     { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
     { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
     { '<leader>u',        "<cmd>Telescope undo<cr>",                                               desc = "Telescope Undo" },
