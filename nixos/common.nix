@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_10;
+  linux = pkgs.linuxPackages_6_11;
 in {
   imports = [./hyprland ./dev/android.nix ./performance.nix];
   options = with lib; let

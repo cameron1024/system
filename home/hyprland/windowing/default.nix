@@ -35,6 +35,7 @@
     settings = {
       bind = [
         "SUPER, q, killactive"
+        "SUPER SHIFT, q, exit"
 
         "SUPER, return, exec, kitty"
         "SUPER SHIFT, return, exec, google-chrome-stable"
