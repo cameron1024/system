@@ -2,7 +2,6 @@
   imports = [
     ./overview.nix
     ./hy3.nix
-    # ./switcher.nix
   ];
 
   home.packages = lib.mkIf machine.linux [

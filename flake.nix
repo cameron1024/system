@@ -5,24 +5,14 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # v0.41.2
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=918d8340afd652b011b937d29d5eea0be08467f5";
+    # v0.44.0
+    # hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1&rev=0c7a7e2d569eeed9d6025f3eef4ea0690d90845d";
 
-    hyprland-contrib.url = "github:hyprwm/contrib";
-    hyprland-contrib.inputs.nixpkgs.follows = "nixpkgs";
-
-    hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.41.2";
-    hyprland-plugins.inputs.hyprland.follows = "hyprland";
-
-    hyprswitch.url = "github:h3rmt/hyprswitch/dev";
-
-    hyprspace.url = "github:KZDKM/Hyprspace";
-    hyprspace.inputs.hyprland.follows = "hyprland";
-
-    hyprpicker.url = "github:hyprwm/hyprpicker";
-
-    hy3.url = "github:outfoxxed/hy3?ref=hl0.41.2";
-    hy3.inputs.hyprland.follows = "hyprland";
+    # hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.43.0";
+    # hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    #
+    # hyprspace.url = "github:KZDKM/Hyprspace";
+    # hyprspace.inputs.hyprland.follows = "hyprland";
 
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -39,7 +29,10 @@
 
   outputs = inputs: let
     mkDevShell = {system}: let
-      pkgs = import inputs.nixpkgs {inherit system; config.allowUnfree = true; };
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in
       pkgs.mkShell {
         packages = [];
