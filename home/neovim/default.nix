@@ -29,6 +29,7 @@ in {
   config = {
     home.shellAliases = {
       "e" = "nvim";
+      "ed" = "neovide . &";
     };
 
     home.sessionVariables = {

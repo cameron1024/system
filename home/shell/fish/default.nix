@@ -13,6 +13,8 @@
 
     interactiveShellInit = ''
       fish_vi_key_bindings 
+
+      set -x DIRENV_LOG_FORMAT ""
     '';
   };
   home.packages = with pkgs.fishPlugins; [
