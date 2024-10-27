@@ -56,4 +56,8 @@
       }
     '';
   };
+
+  programs.rofi = {
+    enable = true;
+  };
 }
