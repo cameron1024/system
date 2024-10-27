@@ -36,6 +36,7 @@ local plugins = {
   require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.base',
   require 'plugins.lsp.cmp',
+  -- require 'plugins.lsp.blink',  -- cmp alternative
   require 'plugins.lsp.conform',
   require 'plugins.lsp.crates',
   require 'plugins.lsp.flutter',

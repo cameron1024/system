@@ -49,8 +49,8 @@
       font.name = "Fira Sans";
       font.package = pkgs.fira;
 
-      cursorTheme.name = "Graphite dark Cursors";
-      cursorTheme.package = pkgs.graphite-cursors;
+      # cursorTheme.name = "Graphite dark Cursors";
+      # cursorTheme.package = pkgs.graphite-cursors;
     };
   };
 }
