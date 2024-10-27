@@ -62,3 +62,5 @@
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
   };
 }
+
+#    <F11>

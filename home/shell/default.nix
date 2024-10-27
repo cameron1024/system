@@ -45,6 +45,7 @@ in {
         sq
         jq
         jaq
+        tabiew
 
         # network stuff
         trippy
