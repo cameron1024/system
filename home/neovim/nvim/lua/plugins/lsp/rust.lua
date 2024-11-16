@@ -4,15 +4,16 @@ vim.g.rustaceanvim = {
     enable_nextest = true,
     reload_workspace_from_cargo_toml = true,
   },
-  server = {
-    settings = {
-      ["rust-analyzer"] = {
-        check = {
-          command = "clippy",
-        },
-      },
-    },
-  },
+  -- server = {
+  -- cmd = { "nix", "run", "nixpkgs#rust-analyzer",},
+  -- settings = {
+  --   ["rust-analyzer"] = {
+  --     check = {
+  --       command = "clippy",
+  --     },
+  --   },
+  -- },
+  -- },
 }
 
 return {
@@ -21,10 +22,10 @@ return {
     "vxpm/ferris.nvim",
   },
   version = '^4',
-  lazy = true,
+  lazy = false,
   ft = { 'rust' },
-  config =function ()
-   require 'ferris'.setup {}
+  config = function()
+    require 'ferris'.setup {}
   end,
   keys = {
     { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },

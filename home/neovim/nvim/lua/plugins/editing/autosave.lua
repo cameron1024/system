@@ -1,9 +1,9 @@
 return {
-  'https://git.sr.ht/~nedia/auto-save.nvim',
+  'pocco81/auto-save.nvim',
   lazy = true,
-  event = "BufReadPre",
+  event = "BufEnter",
   opts = {
-    events = { "InsertLeave", "BufLeave" },
-    silent = true,
+    write_all_buffers = true,
+    debounce_delay = 10,
   },
 }
