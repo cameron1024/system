@@ -35,6 +35,7 @@ local options = {
   laststatus = 3,
   conceallevel = 3,
   shell = "fish",
+  autowriteall = true,
 }
 
 for key, value in pairs(options) do

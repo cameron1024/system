@@ -1,5 +1,5 @@
 local plugins = {
-  require 'plugins.editing.autosave',
+  -- require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
   require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
