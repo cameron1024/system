@@ -5,6 +5,7 @@ return {
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
   },
+  build = ":TSUpdate",
   config = function()
     local parsers = require 'nvim-treesitter.parsers'.get_parser_configs()
 
