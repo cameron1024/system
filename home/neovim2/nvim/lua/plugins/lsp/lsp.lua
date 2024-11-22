@@ -8,7 +8,8 @@ return {
   event = { "BufReadPost", "BufNewFile", },
   config = function()
     local lspconfig = require 'lspconfig'
-    local capabilities = require 'blink.cmp'.get_lsp_capabilities(
+    local capabilities = 
+    require 'blink.cmp'.get_lsp_capabilities(
       vim.lsp.protocol.make_client_capabilities()
     )
 

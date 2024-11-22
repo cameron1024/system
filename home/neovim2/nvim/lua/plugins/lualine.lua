@@ -8,7 +8,7 @@ return {
   -- dependencies = {
   --   "stevearc/aerial.nvim",
   -- },
-  event = "VeryLazy",
+  event = "UIEnter",
   enabled = vim.g.started_by_firenvim == nil,
   config = function()
     vim.o.laststatus = 3

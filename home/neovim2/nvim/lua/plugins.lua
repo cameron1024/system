@@ -6,7 +6,7 @@ local plugins = {
   require 'plugins.files.oil',
 
   require 'plugins.lsp.lsp',
-  require 'plugins.lsp.blink',
+  -- require 'plugins.lsp.blink',
 
   require 'plugins.theme.everforest',
 
