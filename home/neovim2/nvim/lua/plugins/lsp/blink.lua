@@ -1,6 +1,6 @@
 return {
   "saghen/blink.cmp",
-  lazy = false, -- handles lazy loading internally
+  lazy = true, 
   event = "InsertEnter",
   dependencies = {
     "rafamadriz/friendly-snippets",

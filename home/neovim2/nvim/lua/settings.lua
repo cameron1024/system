@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 local options = {
-  timeoutlen = 300,
+  timeoutlen = 600,
   number = true,
   relativenumber = true,
   hidden = true,
