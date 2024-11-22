@@ -1,5 +1,4 @@
 local plugins = {
-  -- require 'plugins.editing.autosave',
   require 'plugins.editing.comment',
   require 'plugins.editing.colorizer',
   require 'plugins.editing.dial',
@@ -41,7 +40,7 @@ local plugins = {
   require 'plugins.lsp.crates',
   require 'plugins.lsp.flutter',
   -- require 'plugins.lsp.overseer',
-  require 'plugins.lsp.rust',
+  -- require 'plugins.lsp.rust',
   require 'plugins.lsp.trouble',
   require 'plugins.lsp.typescript',
 

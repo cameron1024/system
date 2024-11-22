@@ -21,9 +21,10 @@ in {
 
     services = {
       blueman.enable = true;
-      power-profiles-daemon.enable = true;
+      # power-profiles-daemon.enable = true;
       upower.enable = true;
       cpupower-gui.enable = true;
+      tlp.enable = true;
     };
     hardware = {
       graphics = {

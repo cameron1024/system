@@ -27,6 +27,8 @@
 
     binsider.url = "github:orhun/binsider";
     binsider.inputs.nixpkgs.follows = "nixpkgs";
+
+
   };
 
   outputs = inputs: let
