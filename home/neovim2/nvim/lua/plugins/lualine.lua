@@ -57,6 +57,7 @@ return {
 
     require 'lualine'.setup {
       options = {
+        theme = require 'lualine.themes.everforest',
         component_separators = { left = "|", right = "|", },
         section_separators = { left = "", right = "", },
       },

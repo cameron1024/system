@@ -1,6 +1,6 @@
 return {
   "saghen/blink.cmp",
-  lazy = true, 
+  lazy = true,
   event = "InsertEnter",
   dependencies = {
     "rafamadriz/friendly-snippets",
@@ -15,6 +15,8 @@ return {
       ['<C-j>'] = { "select_next", "fallback" },
       ['<C-k>'] = { "select_prev", "fallback" },
       ['<C-c>'] = { "hide", "fallback" },
+      ['<CR>'] = { "fallback" },
+      ['<S-CR>'] = { "select_and_accept", "fallback" },
     },
     sources = {
       completion = {

@@ -5,4 +5,4 @@ return {
   keys = {
     { "<C-g><C-g>", ":Git " },
   },
-} 
+}

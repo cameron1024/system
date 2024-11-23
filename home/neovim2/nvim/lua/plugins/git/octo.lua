@@ -7,4 +7,7 @@ return {
   },
   cmd = { "Octo" },
   opts = {},
+  keys = {
+    { "<C-g><C-h>", ":Octo " },
+  }
 }
