@@ -9,17 +9,18 @@ return {
     'nvim-tree/nvim-web-devicons',
     "saghen/blink.cmp",
     "b0o/schemastore.nvim",
+    require 'plugins.lsp.fidget',
   },
   lazy = true,
   event = { "BufReadPost", "BufNewFile", },
   config = function()
     local lspconfig = require 'lspconfig'
     local schemastore = require 'schemastore'
-    local capabilities = require 'blink.cmp'.get_lsp_capabilities(
+    local capabilities =
+    require 'blink.cmp'.get_lsp_capabilities(
       vim.lsp.protocol.make_client_capabilities()
     )
 
-    lspconfig.rust_analyzer.setup { capabilities = capabilities }
     lspconfig.dartls.setup { capabilities = capabilities }
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.nixd.setup { capabilities = capabilities }
@@ -27,7 +28,6 @@ return {
     lspconfig.tinymist.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
     lspconfig.lemminx.setup { capabilities = capabilities }
-
 
     lspconfig.yamlls.setup {
       capabilities = capabilities,

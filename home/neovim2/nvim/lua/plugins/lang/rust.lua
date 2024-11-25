@@ -30,5 +30,5 @@ return {
     { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },
     { "<leader>rm", "<cmd>RustLsp expandMacro<cr>",  desc = "Rust Expand Macro" },
   },
-  command = "RustLsp",
+  command = { "RustLsp" },
 }

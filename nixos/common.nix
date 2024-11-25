@@ -149,6 +149,8 @@ in {
       networkmanager
       jq
       linux.cpupower
+
+      ffmpeg
     ];
 
     nixpkgs.config.packageOverrides = pkgs: {
@@ -161,6 +163,8 @@ in {
       intel-media-driver
       intel-vaapi-driver
       libvdpau-va-gl
+      vpl-gpu-rt
+      intel-gpu-tools
     ];
 
     nix = {

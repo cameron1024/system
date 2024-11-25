@@ -1,7 +1,10 @@
 local plugins = {
+  require 'plugins.debug.dap-ui',
+
   require 'plugins.editing.autosave',
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
+  require 'plugins.editing.paste-image',
   require 'plugins.editing.surround',
   require 'plugins.editing.tmux-navigator',
   require 'plugins.editing.ufo',
@@ -19,12 +22,19 @@ local plugins = {
   require 'plugins.lsp.formatter',
   require 'plugins.lsp.lsp',
 
+  require 'plugins.lang.markdown',
+  require 'plugins.lang.rust',
+  require 'plugins.lang.typst',
+
   require 'plugins.theme.everforest',
+  require 'plugins.theme.twilight',
 
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.wildfire',
 
   require 'plugins.term.toggleterm',
+
+  require 'plugins.neotest',
 
   require 'plugins.lualine',
   require 'plugins.telescope',

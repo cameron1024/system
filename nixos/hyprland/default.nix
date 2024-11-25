@@ -11,6 +11,7 @@ in {
     ./sound.nix
     ./wifi
     ./bluetooth
+    # ./power-management.nix
   ];
 
   config = lib.mkIf cfg.enable {
@@ -24,10 +25,6 @@ in {
       # power-profiles-daemon.enable = true;
       upower.enable = true;
       cpupower-gui.enable = true;
-      tlp = {
-        enable = true;
-
-      };
     };
     hardware = {
       graphics = {

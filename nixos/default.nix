@@ -38,7 +38,7 @@
       ];
     };
 in {
-  thinkpad = mkSystem {
+  thinkchad = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/thinkpad.nix;
     hardware = ./hardware/thinkpad.nix;
