@@ -2,8 +2,17 @@
   pkgs,
   config,
   lib,
+  machine,
   ...
-}: {
+}: 
+
+let
+  macExtras = ''
+    eval (/opt/homebrew/bin/brew shellenv)
+  '';
+in
+
+{
   programs.fish = {
     enable = true;
 
@@ -15,7 +24,9 @@
       fish_vi_key_bindings 
 
       set -x DIRENV_LOG_FORMAT ""
-    '';
+
+      fish_add_path ~/.cargo/bin
+    '' + (if machine.linux  then "" else macExtras);
   };
   home.packages = with pkgs.fishPlugins; [
     gruvbox

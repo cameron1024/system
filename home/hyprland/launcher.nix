@@ -1,4 +1,5 @@
 {machine, ...}: {
+  
   wayland.windowManager.hyprland.settings = {
     bind = [
       "SUPER, space, exec, wofi --show drun"
@@ -58,6 +59,6 @@
   };
 
   programs.rofi = {
-    enable = true;
+    enable = machine.linux;
   };
 }
