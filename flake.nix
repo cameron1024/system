@@ -14,6 +14,8 @@
     # hyprspace.url = "github:KZDKM/Hyprspace";
     # hyprspace.inputs.hyprland.follows = "hyprland";
 
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -25,6 +27,8 @@
 
     binsider.url = "github:orhun/binsider";
     binsider.inputs.nixpkgs.follows = "nixpkgs";
+
+
   };
 
   outputs = inputs: let

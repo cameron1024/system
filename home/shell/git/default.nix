@@ -29,6 +29,7 @@
     "grst" = "git reset --hard HEAD";
 
     "gb" = "gh browse";
+    "gpv" = "gh pr view --web";
   };
 
   programs.fish.shellAbbrs = {

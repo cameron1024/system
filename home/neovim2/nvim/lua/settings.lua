@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 local options = {
-  timeoutlen = 300,
+  timeoutlen = 600,
   number = true,
   relativenumber = true,
   hidden = true,
@@ -33,7 +33,7 @@ local options = {
   updatetime = 50,
   background = "dark",
   laststatus = 3,
-  conceallevel = 3,
+  conceallevel = 2,
   shell = "fish",
   autowriteall = true,
 }

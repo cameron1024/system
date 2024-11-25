@@ -43,6 +43,7 @@ return {
       lineFoldingOnly = true,
     }
 
+    lspconfig.rust_analyzer.setup { capabilities = capabilities }
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.nixd.setup { capabilities = capabilities }
     lspconfig.taplo.setup { capabilities = capabilities }

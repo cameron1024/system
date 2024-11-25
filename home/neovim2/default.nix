@@ -25,7 +25,6 @@
 in {
   imports = [
     ./lsps
-    # ./inlyne.nix
   ];
   config = {
     home.shellAliases = {

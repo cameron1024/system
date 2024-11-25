@@ -1,7 +1,7 @@
 return {
   "nanotee/zoxide.vim",
   lazy = true,
-  command = {
+  cmd = {
     "Z",
   },
   keys = {

@@ -1,3 +1,4 @@
 {
-  imports = [./kitty ./alacritty];
+  imports = [./kitty ./alacritty ./wezterm.nix];
+
 }

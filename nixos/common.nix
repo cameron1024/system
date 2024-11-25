@@ -12,6 +12,7 @@ in {
     ./dev/android.nix
     ./performance.nix
     ./greeter.nix
+    ./games
   ];
   options = with lib; let
     colorOption = mkOption {
