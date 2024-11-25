@@ -7,6 +7,8 @@ return {
     'nvim-tree/nvim-web-devicons',
     'folke/trouble.nvim',
     'debugloop/telescope-undo.nvim',
+    'nvim-telescope/telescope-frecency.nvim',
+    'nvim-telescope/telescope-ui-select.nvim',
   },
   -- dependencies = {
   --   'nvim-lua/plenary.nvim',
@@ -50,24 +52,24 @@ return {
         undo = default_picker,
       },
 
-      -- extensions = {
-      --   ["ui-select"] = {
-      --     require 'telescope.themes'.get_ivy {},
-      --   },
-      --   frecency = {
-      --     db_safe_mode = false,
-      --   },
-      --   media_files = {
-      --     find_cmd = "rg",
-      --   },
-      --   undo = {
-      --
-      --   }
-      -- },
+      extensions = {
+        ["ui-select"] = {
+          require 'telescope.themes'.get_ivy {},
+        },
+        frecency = {
+          db_safe_mode = false,
+        },
+        -- media_files = {
+        --   find_cmd = "rg",
+        -- },
+        -- undo = {
+        --
+        -- }
+      },
     }
 
-    -- telescope.load_extension "frecency"
-    -- telescope.load_extension "ui-select"
+    telescope.load_extension "frecency"
+    telescope.load_extension "ui-select"
     -- telescope.load_extension "egrepify"
     -- telescope.load_extension "media_files"
     -- telescope.load_extension "undo"

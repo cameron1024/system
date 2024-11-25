@@ -4,7 +4,9 @@ return {
   event = 'BufReadPost',
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    "nvim-treesitter/nvim-treesitter-context",
   },
+  build = ":TSUpdate",
   config = function()
     local parsers = require 'nvim-treesitter.parsers'.get_parser_configs()
 
@@ -49,5 +51,7 @@ return {
         },
       },
     }
+
+    require 'treesitter-context'.setup {}
   end,
 }

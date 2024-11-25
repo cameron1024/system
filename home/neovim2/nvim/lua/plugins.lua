@@ -1,23 +1,47 @@
 local plugins = {
+  require 'plugins.debug.dap-ui',
+
   require 'plugins.editing.autosave',
   require 'plugins.editing.autopairs',
+  require 'plugins.editing.debug-print',
+  require 'plugins.editing.paste-image',
   require 'plugins.editing.surround',
   require 'plugins.editing.tmux-navigator',
+  require 'plugins.editing.ufo',
 
   require 'plugins.files.oil',
 
-  require 'plugins.lsp.lsp',
+  require 'plugins.git.diffview',
+  require 'plugins.git.fugitive',
+  require 'plugins.git.gitsigns',
+  require 'plugins.git.gh',
+  require 'plugins.git.octo',
+
+  require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.blink',
+  require 'plugins.lsp.formatter',
+  require 'plugins.lsp.lsp',
+
+  require 'plugins.lang.markdown',
+  require 'plugins.lang.rust',
+  require 'plugins.lang.typst',
 
   require 'plugins.theme.everforest',
+  require 'plugins.theme.twilight',
 
   require 'plugins.treesitter.base',
+  require 'plugins.treesitter.wildfire',
+
+  require 'plugins.term.toggleterm',
+
+  require 'plugins.neotest',
 
   require 'plugins.lualine',
   require 'plugins.telescope',
+  require 'plugins.trouble',
 }
 
-require 'lazy'.setup {
+local config = {
   spec = plugins,
   performance = {
     rtp = {
@@ -33,3 +57,7 @@ require 'lazy'.setup {
     },
   },
 }
+
+local extra = { defaults = { lazy = true } }
+
+require 'lazy'.setup(config, extra)

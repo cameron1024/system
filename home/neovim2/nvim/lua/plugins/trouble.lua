@@ -1,6 +1,9 @@
 return {
   "folke/trouble.nvim",
-  dependencies = { "nvim-tree/nvim-web-devicons" },
+  dependencies = {
+    "nvim-tree/nvim-web-devicons",
+    require 'plugins.editing.todo-comments',
+  },
   version = "v3.6.0",
   lazy = true,
   cmd = "Trouble",
