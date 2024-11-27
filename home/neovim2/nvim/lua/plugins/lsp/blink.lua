@@ -4,6 +4,7 @@ return {
   event = "InsertEnter",
   dependencies = {
     "rafamadriz/friendly-snippets",
+    "mikavilpas/blink-ripgrep.nvim",
   },
   -- version = "v0.5.1",
   build = "cargo build --release",
@@ -19,13 +20,23 @@ return {
     },
     sources = {
       completion = {
-        enabled_providers = { 'lsp', 'path', 'snippets', },
+        enabled_providers = {
+          'lsp',
+          'path',
+          'snippets',
+          'ripgrep',
+        },
       },
-    },
-    providers = {
-      snippets = {
-        enabled = function() return vim.bo.ft == "dart" end,
-        should_show_items = function() return vim.bo.ft == "dart" end,
+
+      providers = {
+        ripgrep = {
+          module = "blink-ripgrep",
+          name = "Ripgrep",
+        },
+        snippets = {
+          enabled = function() return vim.bo.ft == "dart" end,
+          should_show_items = function() return vim.bo.ft == "dart" end,
+        },
       },
     },
     trigger = {

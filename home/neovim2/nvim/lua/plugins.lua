@@ -41,6 +41,7 @@ local plugins = {
   require 'plugins.trouble',
 }
 
+
 local config = {
   spec = plugins,
   performance = {
