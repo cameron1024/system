@@ -5,8 +5,10 @@ local plugins = {
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
   require 'plugins.editing.paste-image',
+  require 'plugins.editing.precognition',
   require 'plugins.editing.surround',
   require 'plugins.editing.tmux-navigator',
+  require 'plugins.editing.quicker',
   require 'plugins.editing.ufo',
 
   require 'plugins.files.oil',
@@ -21,6 +23,8 @@ local plugins = {
   require 'plugins.lsp.blink',
   require 'plugins.lsp.formatter',
   require 'plugins.lsp.lsp',
+  require 'plugins.lsp.refjump',
+  require 'plugins.lsp.rename',
 
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
@@ -28,6 +32,7 @@ local plugins = {
 
   require 'plugins.theme.everforest',
   require 'plugins.theme.twilight',
+  require 'plugins.theme.showkeys',
 
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.wildfire',

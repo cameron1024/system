@@ -29,8 +29,8 @@ return {
     }
 
     telescope.setup {
-      defaults = {
-        mappings = {
+      defaults = require 'telescope.themes'.get_ivy {
+        mappings =  {
           i = {
             ["<ESC>"] = actions.close,
             ["<C-j>"] = actions.move_selection_next,
