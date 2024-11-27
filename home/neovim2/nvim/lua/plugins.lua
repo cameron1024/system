@@ -10,6 +10,7 @@ local plugins = {
   require 'plugins.editing.tmux-navigator',
   require 'plugins.editing.quicker',
   require 'plugins.editing.ufo',
+  require 'plugins.editing.zen',
 
   require 'plugins.files.oil',
 
