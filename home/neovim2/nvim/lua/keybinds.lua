@@ -1,6 +1,6 @@
-local opts = { noremap = true, silent = true }
-local map = function(mode, key, action)
-  vim.keymap.set(mode, key, action, opts)
+local map = function(mode, key, action, options)
+  options = options or { noremap = true, silent = true };
+  vim.keymap.set(mode, key, action, options)
 end
 
 -- saving and closing
@@ -64,3 +64,9 @@ map('n', '*', '*N')
 map({ 'n', 'v' }, '<C-CR>', 'za')
 
 map('i', '<C-CR>', '<C-o>o')
+
+-- stop any in-progress snippet when exiting insert mode
+map({'i', 's'}, '<Esc>', function ()
+  vim.snippet.stop();
+  return '<Esc>'
+end, { expr = true})

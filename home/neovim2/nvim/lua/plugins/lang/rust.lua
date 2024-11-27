@@ -27,8 +27,8 @@ return {
     require 'ferris'.setup {}
   end,
   keys = {
-    { "<C-p>",      "<cmd>RustLsp parentModule<cr>", desc = "Rust Parent Module" },
-    { "<leader>rm", "<cmd>RustLsp expandMacro<cr>",  desc = "Rust Expand Macro" },
+    { "<C-p>",      "<cmd>RustLsp parentModule<cr>", ft = { "rust" }, },
+    -- { "<leader>rm", "<cmd>RustLsp expandMacro<cr>",  desc = "Rust Expand Macro" },
   },
   command = { "RustLsp" },
 }
