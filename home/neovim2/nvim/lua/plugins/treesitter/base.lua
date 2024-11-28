@@ -5,7 +5,6 @@ return {
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
     "nvim-treesitter/nvim-treesitter-context",
-    "theHamsta/crazy-node-movement",
   },
   build = ":TSUpdate",
   config = function()
@@ -51,22 +50,6 @@ return {
           },
         },
       },
-
-      node_movement = {
-        enable = true,
-        keymaps = {
-          move_up = "<a-k>",
-          move_down = "<a-j>",
-          move_left = "<a-h>",
-          move_right = "<a-l>",
-          swap_left = "<s-a-h>", -- will only swap when one of "swappable_textobjects" is selected
-          swap_right = "<s-a-l>",
-          select_current_node = "<leader><Cr>",
-        },
-        swappable_textobjects = { '@function.outer', '@parameter.inner', '@statement.outer' },
-        allow_switch_parents = true,
-        allow_next_parent = true,
-      }
     }
 
     require 'treesitter-context'.setup {}

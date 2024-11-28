@@ -36,6 +36,7 @@ local plugins = {
   require 'plugins.theme.showkeys',
 
   require 'plugins.treesitter.base',
+  require 'plugins.treesitter.treeclimber',
   require 'plugins.treesitter.wildfire',
 
   require 'plugins.term.toggleterm',

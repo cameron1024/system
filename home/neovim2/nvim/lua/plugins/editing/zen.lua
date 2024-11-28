@@ -1,13 +1,7 @@
-return {
-  "pocco81/true-zen.nvim",
+return-- Lua
+{
+  "folke/zen-mode.nvim",
   lazy = true,
-  opts = {
-    integrations = {
-      lualine = true,
-    },
-  },
-  keys = {
-    { "<C-z>", "<cmd>TZAtaraxis<cr>", mode = "n" },
-    { "<C-z>", ":'<,'>TZNarrow<cr>", mode = "v" },
-  }
+  opts = {},
+  cmd = "ZenMode",
 }
