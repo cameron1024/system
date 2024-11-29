@@ -1,5 +1,7 @@
 return {
   "3rd/diagram.nvim",
+  lazy = true,
+  ft = { "markdown", },
   dependencies = {
     "3rd/image.nvim",
   },

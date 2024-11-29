@@ -2,7 +2,7 @@ return {
   "3rd/image.nvim",
   lazy = true,
   build = false,
-  event = "BufReadPost",
+  ft = { "markdown", "typst", },
   opts = {
     processor = "magick_cli",
     backend = "kitty",
