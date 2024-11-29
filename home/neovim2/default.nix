@@ -46,15 +46,19 @@ in {
         libgit2
         lua5_1
         luajitPackages.magick
+        imagemagick
 
         ripgrep
 
         mermaid-cli
-        imagemagick
+        d2
         unzip
 
         typst
         tinymist
+
+        pandoc  # required for feed.nvim
+        w3m    
       ]
       ++ extraPackages;
 
