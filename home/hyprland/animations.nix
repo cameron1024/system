@@ -24,10 +24,10 @@
       "col.active_border" = mkColor machine.colorscheme.base0D;
     };
 
-    decoration = {
-      drop_shadow = true; 
-      shadow_range = 50;
-      shadow_render_power = 4;
+    decoration.shadow = {
+      enabled = true;
+      # range = 50;
+      # render_power = 1;
     };
 
 
