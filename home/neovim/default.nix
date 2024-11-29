@@ -1,6 +1,7 @@
 {
   pkgs,
   machine,
+  inputs,
   ...
 }: let
   linuxPackages = with pkgs; [
@@ -38,7 +39,7 @@ in {
 
     home.packages = with pkgs;
       [
-        neovim
+        inputs.neovim-nightly-overlay.packages.${pkgs.system}.default
 
         neovide
         tree-sitter
@@ -46,7 +47,6 @@ in {
         libgit2
         lua5_1
         luajitPackages.magick
-
 
         ripgrep
 

@@ -11,17 +11,19 @@ in {
     ./sound.nix
     ./wifi
     ./bluetooth
+    # ./power-management.nix
   ];
 
   config = lib.mkIf cfg.enable {
     programs.hyprland = {
       enable = true;
+      # withUWSM = true;
       # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 
     services = {
       blueman.enable = true;
-      power-profiles-daemon.enable = true;
+      # power-profiles-daemon.enable = true;
       upower.enable = true;
       cpupower-gui.enable = true;
     };

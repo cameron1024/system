@@ -85,8 +85,6 @@
       gestures = {
         workspace_swipe = true;
       };
-
-      dwindle.no_gaps_when_only = false;
     };
   };
 }

@@ -4,7 +4,8 @@ return {
   event = "BufEnter",
   opts = {},
   keys = {
-    { "<C-g><C-b>", "<cmd>Gitsigns blame_line<cr>", desc = "Git Blame Line" },
-    { "<C-g><C-d>", "<cmd>Gitsigns preview_hunk<cr>", desc = "Git Preview Hunk" },
+    { "<C-g><C-b>", "<cmd>Gitsigns blame_line<cr>",    desc = "Git Blame Line" },
+    { "<C-g><C-d>", "<cmd>Gitsigns preview_hunk<cr>",  desc = "Git Preview Hunk" },
+    { "<C-g><C-l>", "<cmd>Gitsigns toggle_linehl<cr>", desc = "Git Toggle Line Highlight" },
   }
 }

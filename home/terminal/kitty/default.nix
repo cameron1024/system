@@ -18,6 +18,9 @@
 
     map kitty_mod+equal change_font_size all +2.0
     map kitty_mod+minus change_font_size all -2.0
+
+    cursor_trail 3
+    cursor_trail_decay 0.1 0.25
   '';
 
   # xdg.configFile."kitty/themes/current-theme.conf".text = with machine.colorscheme; ''

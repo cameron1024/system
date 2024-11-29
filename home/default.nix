@@ -2,7 +2,7 @@
   
   imports = [
     ./mac 
-    ./neovim
+    ./neovim2
     ./hyprland
     ./shell
     ./terminal

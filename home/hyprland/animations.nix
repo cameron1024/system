@@ -24,6 +24,13 @@
       "col.active_border" = mkColor machine.colorscheme.base0D;
     };
 
+    decoration.shadow = {
+      enabled = true;
+      # range = 50;
+      # render_power = 1;
+    };
+
+
     bezier = [
       "${curve}, 0.83, 0, 0.17, 1"
     ];
