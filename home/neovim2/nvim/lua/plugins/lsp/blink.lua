@@ -34,8 +34,8 @@ return {
         --   name = "Ripgrep",
         -- },
         snippets = {
-          enabled = function() return vim.bo.ft == "dart" end,
-          should_show_items = function() return vim.bo.ft == "dart" end,
+          -- enabled = function() return vim.bo.ft == "dart" end,
+          -- should_show_items = function() return vim.bo.ft == "dart" end,
         },
       },
     },

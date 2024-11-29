@@ -4,6 +4,7 @@ local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
+  require 'plugins.editing.diagram',
   require 'plugins.editing.paste-image',
   require 'plugins.editing.precognition',
   require 'plugins.editing.surround',
@@ -12,6 +13,7 @@ local plugins = {
   require 'plugins.editing.ufo',
   require 'plugins.editing.zen',
 
+  require 'plugins.files.image',
   require 'plugins.files.oil',
 
   require 'plugins.git.diffview',
@@ -35,7 +37,10 @@ local plugins = {
   require 'plugins.theme.twilight',
   require 'plugins.theme.showkeys',
 
+  require 'plugins.toys.feed',
+
   require 'plugins.treesitter.base',
+  require 'plugins.treesitter.treeclimber',
   require 'plugins.treesitter.wildfire',
 
   require 'plugins.term.toggleterm',
@@ -45,6 +50,7 @@ local plugins = {
   require 'plugins.lualine',
   require 'plugins.telescope',
   require 'plugins.trouble',
+
 }
 
 
@@ -65,6 +71,8 @@ local config = {
   },
 }
 
-local extra = { defaults = { lazy = true } }
+local extra = {
+  defaults = { lazy = true },
+}
 
 require 'lazy'.setup(config, extra)

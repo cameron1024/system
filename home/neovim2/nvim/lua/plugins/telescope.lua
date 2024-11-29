@@ -9,6 +9,8 @@ return {
     'debugloop/telescope-undo.nvim',
     'nvim-telescope/telescope-frecency.nvim',
     'nvim-telescope/telescope-ui-select.nvim',
+    'fdschmidt93/telescope-egrepify.nvim',
+    '3rd/image.nvim',
   },
   -- dependencies = {
   --   'nvim-lua/plenary.nvim',
@@ -30,12 +32,13 @@ return {
 
     telescope.setup {
       defaults = require 'telescope.themes'.get_ivy {
-        mappings =  {
+        mappings = {
           i = {
             ["<ESC>"] = actions.close,
             ["<C-j>"] = actions.move_selection_next,
             ["<C-k>"] = actions.move_selection_previous,
-            ["<C-t>"] = require 'trouble.sources.telescope'.open
+            ["<C-t>"] = require 'trouble.sources.telescope'.open,
+            ["<C-space>"] = actions.to_fuzzy_refine,
           }
         },
       },
@@ -70,7 +73,7 @@ return {
 
     telescope.load_extension "frecency"
     telescope.load_extension "ui-select"
-    -- telescope.load_extension "egrepify"
+    telescope.load_extension "egrepify"
     -- telescope.load_extension "media_files"
     -- telescope.load_extension "undo"
   end,
@@ -81,12 +84,12 @@ return {
     { "<leader>n",        function() require 'telescope.builtin'.find_files { hidden = true } end, desc = "Telescope Find Files" },
     { "<leader>b",        function() require 'telescope.builtin'.buffers() end,                    desc = "Telescope Buffers" },
     { "<leader>m",        function() require 'telescope.builtin'.lsp_workspace_symbols() end,      desc = "Telescope LSP Symbols" },
-    { "<leader>g",        function() require 'telescope.builtin'.grep_string() end,                desc = "Telescope Grep String" },
-    { "<leader>f",        function() require 'telescope.builtin'.live_grep() end,                  desc = "Telescope Live Grep" },
+    { "<leader>f",        "<CMD>Telescope egrepify<cr>",                                           desc = "Telescope Live Grep" },
     { "<leader>sh",       function() require 'telescope.builtin'.search_history() end,             desc = "Telescope Search History" },
     { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
     { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
     { '<leader>u',        "<cmd>Telescope undo<cr>",                                               desc = "Telescope Undo" },
+    { "<leader>gc",       function() require 'telescope.builtin'.git_commits() end,                desc = "Telescope Git Commits" },
   },
 
 }

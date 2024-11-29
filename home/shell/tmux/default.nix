@@ -36,6 +36,7 @@ in {
         set -as terminal-features 'xterm*:extkeys'
 
         set -gq allow-passthrough on
+        set -g visual-activity off
 
         bind-key -n M-\; command-prompt
 
