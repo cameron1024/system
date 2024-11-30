@@ -29,18 +29,18 @@ return {
     lspconfig.bashls.setup { capabilities = capabilities }
     lspconfig.lemminx.setup { capabilities = capabilities }
 
-    lspconfig.yamlls.setup {
-      capabilities = capabilities,
-      settings = {
-        yaml = {
-          schemas = schemastore.yaml.schemas(),
-          schemaStore = {
-            enable = false,
-            url = "",
-          },
-        },
-      },
-    }
+    -- lspconfig.yamlls.setup {
+    --   capabilities = capabilities,
+    --   settings = {
+    --     yaml = {
+    --       schemas = schemastore.yaml.schemas(),
+    --       schemaStore = {
+    --         enable = false,
+    --         url = "",
+    --       },
+    --     },
+    --   },
+    -- }
 
     lspconfig.jsonls.setup {
       capabilities = capabilities,

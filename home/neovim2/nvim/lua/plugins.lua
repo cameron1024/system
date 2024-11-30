@@ -37,6 +37,7 @@ local plugins = {
   require 'plugins.theme.twilight',
   require 'plugins.theme.showkeys',
 
+  require 'plugins.toys.doing',
   require 'plugins.toys.feed',
 
   require 'plugins.treesitter.base',

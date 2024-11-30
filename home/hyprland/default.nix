@@ -29,6 +29,9 @@
 
       settings = {
         env = ["XCURSOR_SIZE, 24"];
+        exec-once = [
+          "tmux"
+        ];
       };
     };
 

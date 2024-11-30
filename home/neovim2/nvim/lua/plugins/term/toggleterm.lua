@@ -7,7 +7,8 @@ return {
     open_mapping = false,
   },
   keys = {
-    { "<C-t>", "<cmd>ToggleTerm<cr>", mode = { "n", "t", "i", "v", "x"} },
+    { "<C-t>",     "<cmd>ToggleTerm<cr>",                    mode = { "n", "t", "i", "v", "x" } },
+    { "<leader>t", "<cmd>ToggleTermSendCurrentLine<cr>",     mode = { "n" } },
+    { "<leader>t", "<cmd>ToggleTermSendVisualSelection<cr>", mode = { "v" } },
   }
 }
-
