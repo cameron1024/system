@@ -8,6 +8,5 @@ return {
   opts = {},
   keys = {
     { "<C-d><C-d>", function() require 'dapui'.toggle() end, },
-    { "<C-d><C-b>", function() require 'dap'.toggle_breakpoint() end, },
   }
 }

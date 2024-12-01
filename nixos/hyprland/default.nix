@@ -26,6 +26,10 @@ in {
       # power-profiles-daemon.enable = true;
       upower.enable = true;
       cpupower-gui.enable = true;
+
+      fprintd = {
+        enable = true;
+      };
     };
     hardware = {
       graphics = {

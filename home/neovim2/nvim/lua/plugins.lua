@@ -29,6 +29,8 @@ local plugins = {
   require 'plugins.lsp.refjump',
   require 'plugins.lsp.rename',
 
+  require 'plugins.lang.csv',
+  require 'plugins.lang.flutter',
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',

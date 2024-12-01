@@ -70,3 +70,13 @@ map({'i', 's'}, '<Esc>', function ()
   vim.snippet.stop();
   return '<Esc>'
 end, { expr = true})
+
+local function toggle_conceal()
+  if vim.o.conceallevel == 0 then
+    vim.o.conceallevel = 2
+  else
+    vim.o.conceallevel = 0
+  end
+end
+
+map("n", "<leader>cc", toggle_conceal)
