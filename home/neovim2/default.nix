@@ -18,6 +18,7 @@
 
   macosPackages = [];
 
+
   extraPackages =
     if machine.linux
     then linuxPackages
@@ -57,8 +58,8 @@ in {
         typst
         tinymist
 
-        pandoc  # required for feed.nvim
-        w3m    
+        pandoc # required for feed.nvim
+        w3m
       ]
       ++ extraPackages;
 

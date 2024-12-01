@@ -31,6 +31,8 @@ local plugins = {
 
   require 'plugins.lang.csv',
   require 'plugins.lang.flutter',
+  require 'plugins.lang.fstar',
+  require 'plugins.lang.lean',
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',

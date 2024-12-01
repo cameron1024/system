@@ -28,6 +28,7 @@ return {
     lspconfig.tinymist.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
     lspconfig.lemminx.setup { capabilities = capabilities }
+    lspconfig.fstar.setup { capabilities = capabilities }
 
     -- lspconfig.yamlls.setup {
     --   capabilities = capabilities,
