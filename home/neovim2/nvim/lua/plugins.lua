@@ -32,6 +32,7 @@ local plugins = {
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',
+  require 'plugins.lang.typst-conceal',
 
   require 'plugins.theme.everforest',
   require 'plugins.theme.twilight',
