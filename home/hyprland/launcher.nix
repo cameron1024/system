@@ -59,5 +59,8 @@
 
   programs.rofi = {
     enable = true;
+    cycle = true;
+    font = "Fira Code NerdFont";
+    
   };
 }
