@@ -26,6 +26,7 @@
 in {
   imports = [
     ./lsps
+    ./symbols.nix
   ];
   config = {
     home.shellAliases = {

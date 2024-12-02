@@ -38,10 +38,15 @@ local plugins = {
   require 'plugins.lang.typst',
   require 'plugins.lang.typst-conceal',
 
+  require 'plugins.telescope.emoji',
+  require 'plugins.telescope.base',
+  require 'plugins.telescope.symbols',
+
   require 'plugins.theme.everforest',
   require 'plugins.theme.twilight',
   require 'plugins.theme.showkeys',
 
+  require 'plugins.toys.apm',
   require 'plugins.toys.doing',
   require 'plugins.toys.feed',
 
@@ -54,7 +59,6 @@ local plugins = {
   require 'plugins.neotest',
 
   require 'plugins.lualine',
-  require 'plugins.telescope',
   require 'plugins.trouble',
 
 }

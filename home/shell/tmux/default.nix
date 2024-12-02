@@ -43,6 +43,9 @@ in {
         bind -n M-x split-window -v -c "#{pane_current_path}"
         bind -n M-v split-window -h -c "#{pane_current_path}"
 
+        bind -n M-n next-window
+        bind -n M-p previous-window
+
         bind -n M-z resize-pane -Z
 
         unbind '"'

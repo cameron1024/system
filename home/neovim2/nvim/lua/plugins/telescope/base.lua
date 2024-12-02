@@ -12,16 +12,6 @@ return {
     'fdschmidt93/telescope-egrepify.nvim',
     '3rd/image.nvim',
   },
-  -- dependencies = {
-  --   'nvim-lua/plenary.nvim',
-  --   'nvim-tree/nvim-web-devicons',
-  --   'nvim-telescope/telescope-frecency.nvim',
-  --   'nvim-telescope/telescope-ui-select.nvim',
-  --   'nvim-telescope/telescope-media-files.nvim',
-  --   'fdschmidt93/telescope-egrepify.nvim',
-  --   'folke/trouble.nvim',
-  --   'debugloop/telescope-undo.nvim',
-  -- },
   config = function()
     local telescope = require 'telescope'
     local actions = require 'telescope.actions'
@@ -69,13 +59,17 @@ return {
         --
         -- }
       },
+      emoji = {
+        action = function(emoji)
+          vim.api.nvim_put({ emoji.value }, 'c', false, true)
+        end,
+      }
     }
 
     telescope.load_extension "frecency"
     telescope.load_extension "ui-select"
     telescope.load_extension "egrepify"
-    -- telescope.load_extension "media_files"
-    -- telescope.load_extension "undo"
+    telescope.load_extension "undo"
   end,
 
   cmd = { "Telescope" },
@@ -85,11 +79,12 @@ return {
     { "<leader>b",        function() require 'telescope.builtin'.buffers() end,                    desc = "Telescope Buffers" },
     { "<leader>m",        function() require 'telescope.builtin'.lsp_workspace_symbols() end,      desc = "Telescope LSP Symbols" },
     { "<leader>f",        "<CMD>Telescope egrepify<cr>",                                           desc = "Telescope Live Grep" },
-    { "<leader>sh",       function() require 'telescope.builtin'.search_history() end,             desc = "Telescope Search History" },
     { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
     { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
     { '<leader>u',        "<cmd>Telescope undo<cr>",                                               desc = "Telescope Undo" },
     { "<leader>gc",       function() require 'telescope.builtin'.git_commits() end,                desc = "Telescope Git Commits" },
   },
+
+
 
 }

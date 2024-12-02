@@ -34,6 +34,8 @@ in {
       bacon
 
       hyperfine
+
+      evcxr
     ])
     ++ extras;
 

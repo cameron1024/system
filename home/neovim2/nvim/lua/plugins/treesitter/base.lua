@@ -26,6 +26,13 @@ return {
         branch = "main",
       }
     }
+    parsers.lean = {
+      install_info = {
+        url = "https://github.com/Julian/tree-sitter-lean",
+        files = { "src/parser.c", "src/scanner.c" },
+        branch = "main",
+      }
+    }
 
     require 'nvim-treesitter.configs'.setup {
       ensure_installed = "all",
