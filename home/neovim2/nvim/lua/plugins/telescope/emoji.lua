@@ -7,8 +7,8 @@ return {
   config = function()
     require "telescope".load_extension "emoji"
   end,
-  keys = {
-    { "<leader>.", "<cmd>Telescope emoji<cr>", mode = "n" },
-    { "<C-.>",     "<cmd>Telescope emoji<cr>", mode = "i" },
-  },
+  -- keys = {
+  --   { "<leader>.", "<cmd>Telescope emoji<cr>", mode = "n" },
+  --   { "<C-.>",     "<cmd>Telescope emoji<cr>", mode = "i" },
+  -- },
 }

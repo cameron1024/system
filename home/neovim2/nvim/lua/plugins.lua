@@ -40,6 +40,7 @@ local plugins = {
 
   require 'plugins.telescope.emoji',
   require 'plugins.telescope.base',
+  require 'plugins.telescope.glyph',
   require 'plugins.telescope.symbols',
 
   require 'plugins.theme.everforest',

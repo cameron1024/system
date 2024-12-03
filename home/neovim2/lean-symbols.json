@@ -3,5 +3,14 @@
   ["β", "beta"],
 
   ["×", "cross"],
-  ["⊕", "sum"]
+  ["⊕", "sum"],
+  ["Σ", "sigma"],
+
+  ["·", "dot center"],
+  ["∧", "and"],
+  ["∨", "or"],
+  ["→", "implies"],
+
+  ["∀", "forall"],
+  ["∃", "exists"]
 ]
