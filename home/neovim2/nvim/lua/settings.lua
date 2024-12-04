@@ -32,7 +32,6 @@ local options = {
   undofile = true,
   updatetime = 50,
   background = "dark",
-  laststatus = 3,
   conceallevel = 2,
   shell = "fish",
   autowriteall = true,

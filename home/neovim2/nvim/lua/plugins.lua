@@ -62,6 +62,8 @@ local plugins = {
   require 'plugins.lualine',
   require 'plugins.trouble',
 
+  require 'plugins.firenvim',
+
 }
 
 
