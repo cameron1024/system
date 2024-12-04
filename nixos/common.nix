@@ -136,7 +136,8 @@ in {
     # ];
 
     fonts.packages = with pkgs; [
-      # nerdfonts
+      nerd-fonts.fira-code
+      nerd-fonts.fira-mono
       fira
       monaspace
     ];

@@ -12,6 +12,7 @@ in {
     ./wifi
     ./bluetooth
     # ./power-management.nix
+    ./fingerprint.nix
   ];
 
   config = lib.mkIf cfg.enable {
@@ -26,10 +27,6 @@ in {
       # power-profiles-daemon.enable = true;
       upower.enable = true;
       cpupower-gui.enable = true;
-
-      fprintd = {
-        enable = true;
-      };
     };
     hardware = {
       graphics = {
