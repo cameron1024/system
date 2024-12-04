@@ -10,5 +10,8 @@ return {
   opts = {
     lsp = {},
     mappings = true,
+    abbreviations = {
+      enable = false,
+    },
   }
 }
