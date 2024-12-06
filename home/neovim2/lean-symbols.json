@@ -12,5 +12,7 @@
   ["→", "implies"],
 
   ["∀", "forall"],
-  ["∃", "exists"]
+  ["∃", "exists"],
+
+  ["ℕ", "nat"]
 ]

@@ -57,13 +57,11 @@ local plugins = {
 
   require 'plugins.term.toggleterm',
 
-  require 'plugins.neotest',
-
-  require 'plugins.lualine',
-  require 'plugins.trouble',
-
   require 'plugins.firenvim',
-
+  require 'plugins.lualine',
+  require 'plugins.neotest',
+  require 'plugins.neotree',
+  require 'plugins.trouble',
 }
 
 
