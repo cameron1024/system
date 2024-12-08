@@ -6,12 +6,18 @@ return {
     'nvim-tree/nvim-web-devicons',
     'MunifTanjim/nui.nvim',
     { 's1n7ax/nvim-window-picker', lazy = true, opts = { hint = "floating-big-letter" } },
+    "image.nvim"
   },
   opts = {
     close_if_last_window = true,
     filesystem = {
       filtered_items = {
         visible = true,
+      },
+    },
+    window = {
+      mappings = {
+        ["P"] = { "toggle_preview", config = { use_float = true, use_image_nvim = true } },
       },
     },
   },

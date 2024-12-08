@@ -51,6 +51,7 @@ in {
         trippy
         hurl
         gping
+        xh 
 
         # text stuff
         sad

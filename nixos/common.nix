@@ -13,6 +13,8 @@ in {
     ./performance.nix
     ./greeter.nix
     ./games
+    ./containers.nix
+    ./postgres.nix
   ];
   options = with lib; let
     colorOption = mkOption {
