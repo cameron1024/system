@@ -35,7 +35,8 @@ map("x", "p", [["_dP]])
 map({ "n", "o", "x", "v" }, "H", "^")
 map({ "n", "o", "x", "v" }, "L", "g_")
 
-map("n", "<C-w>", ":lua vim.wo.wrap = not vim.wo.wrap<cr>")
+-- map("n", "<C-w>", ":lua vim.wo.wrap = not vim.wo.wrap<cr>")
+map("n", "<C-w>", function() vim.wo.wrap = not vim.wo.wrap end)
 
 map("n", "<esc>", ":nohl<cr>")
 
@@ -60,7 +61,4 @@ map('v', '<C-d>', [[y'>pgv]])
 -- make * stay on the same entry
 map('n', '*', '*N')
 
--- ctrl + enter to toggle fold
-map({ 'n', 'v' }, '<C-CR>', 'za')
-
-map('i', '<C-CR>', '<C-o>o')
+map('n', '<C-f>', ":%s//g<Left><Left><Left>")

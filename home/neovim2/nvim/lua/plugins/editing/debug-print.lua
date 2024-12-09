@@ -1,9 +1,7 @@
 return {
   "andrewferrier/debugprint.nvim",
   lazy = true,
-  event = "BufEnter",
+  event = "BufReadPost",
   version = "*",
   opts = {},
-
-
 }

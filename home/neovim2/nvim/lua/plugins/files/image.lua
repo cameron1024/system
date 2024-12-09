@@ -1,6 +1,7 @@
 return {
   "3rd/image.nvim",
   lazy = true,
+  enabled = vim.g.started_by_firenvim == nil,
   build = false,
   ft = { "markdown", "typst", },
   opts = {

@@ -12,11 +12,13 @@ in {
     ./wifi
     ./bluetooth
     # ./power-management.nix
+    ./fingerprint.nix
   ];
 
   config = lib.mkIf cfg.enable {
     programs.hyprland = {
       enable = true;
+      # withUWSM = true;
       # package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     };
 

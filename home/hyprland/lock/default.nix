@@ -19,6 +19,8 @@
         hide_cursor = true;
         no_fade_in = true;
         no_fade_out = true;
+
+        enable_fingerprint = true;
       };
 
       background = [
@@ -108,7 +110,6 @@
             position = "-50, -50";
           })
       ];
-
     };
   };
 }

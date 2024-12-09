@@ -13,6 +13,8 @@ in {
     ./performance.nix
     ./greeter.nix
     ./games
+    ./containers.nix
+    ./postgres.nix
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -136,7 +138,8 @@ in {
     # ];
 
     fonts.packages = with pkgs; [
-      nerdfonts
+      nerd-fonts.fira-code
+      nerd-fonts.fira-mono
       fira
       monaspace
     ];

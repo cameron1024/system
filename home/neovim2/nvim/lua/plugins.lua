@@ -29,15 +29,28 @@ local plugins = {
   require 'plugins.lsp.refjump',
   require 'plugins.lsp.rename',
 
+  require 'plugins.lang.csv',
+  require 'plugins.lang.flutter',
+  require 'plugins.lang.fstar',
+  require 'plugins.lang.lean',
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',
+  require 'plugins.lang.typst-conceal',
+
+  require 'plugins.telescope.emoji',
+  require 'plugins.telescope.base',
+  require 'plugins.telescope.glyph',
+  require 'plugins.telescope.symbols',
 
   require 'plugins.theme.everforest',
   require 'plugins.theme.twilight',
   require 'plugins.theme.showkeys',
 
+  require 'plugins.toys.apm',
+  require 'plugins.toys.doing',
   require 'plugins.toys.feed',
+  require 'plugins.toys.hardtime',
 
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.treeclimber',
@@ -45,12 +58,11 @@ local plugins = {
 
   require 'plugins.term.toggleterm',
 
-  require 'plugins.neotest',
-
+  require 'plugins.firenvim',
   require 'plugins.lualine',
-  require 'plugins.telescope',
+  require 'plugins.neotest',
+  require 'plugins.neotree',
   require 'plugins.trouble',
-
 }
 
 

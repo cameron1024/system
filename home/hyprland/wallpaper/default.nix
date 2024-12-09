@@ -13,7 +13,7 @@
   '';
 in {
   home.packages = lib.mkIf machine.linux [
-    pkgs.swww
+    (pkgs.callPackage ./swww.nix {}) 
     randomWallpaper
   ];
 

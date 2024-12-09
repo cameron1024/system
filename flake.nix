@@ -16,10 +16,6 @@
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
-    binsider.url = "github:orhun/binsider";
-    binsider.inputs.nixpkgs.follows = "nixpkgs";
-
-
   };
 
   outputs = inputs: let
@@ -64,3 +60,5 @@
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
   };
 }
+
+#    <F11>

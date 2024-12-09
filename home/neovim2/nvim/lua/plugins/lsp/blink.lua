@@ -23,7 +23,7 @@ return {
         enabled_providers = {
           'lsp',
           'path',
-          'snippets',
+          -- 'snippets',
           -- 'ripgrep',
         },
       },
@@ -55,3 +55,6 @@ return {
     }
   },
 }
+
+
+

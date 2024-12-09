@@ -37,6 +37,7 @@ in {
         position = "top";
         height = 43;
         output = map (d: d.name) machine.displays;
+        start_hidden = true;
 
         modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];
         modules-center = ["hyprland/workspaces"];

@@ -1,6 +1,6 @@
 return {
   "j-hui/fidget.nvim",
   lazy = true,
-  event = "BufEnter",
+  event = "BufReadPost",
   opts = {},
 }

@@ -8,26 +8,15 @@
     duration = "1.5";
     curve = "easeInOutQuint";
   in {
-    bind = [
-      "SUPER, g, exec, hypr-utils cycle gaps 10 0"
-    ];
-
     misc = {
       disable_hyprland_logo = true;
     };
 
-    general = with pkgs.cams-utils.hyprland; {
-      gaps_in = 10;
-      gaps_out = 20;
-      border_size = 2;
-      "col.inactive_border" = mkColor machine.colorscheme.base00;
-      "col.active_border" = mkColor machine.colorscheme.base0D;
-    };
 
-    decoration = {
-      drop_shadow = true; 
-      shadow_range = 50;
-      shadow_render_power = 4;
+    decoration.shadow = {
+      enabled = true;
+      # range = 50;
+      # render_power = 1;
     };
 
 

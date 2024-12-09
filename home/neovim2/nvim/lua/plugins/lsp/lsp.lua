@@ -21,26 +21,26 @@ return {
       vim.lsp.protocol.make_client_capabilities()
     )
 
-    lspconfig.dartls.setup { capabilities = capabilities }
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.nixd.setup { capabilities = capabilities }
     lspconfig.ts_ls.setup { capabilities = capabilities }
     lspconfig.tinymist.setup { capabilities = capabilities }
     lspconfig.bashls.setup { capabilities = capabilities }
     lspconfig.lemminx.setup { capabilities = capabilities }
+    lspconfig.fstar.setup { capabilities = capabilities }
 
-    lspconfig.yamlls.setup {
-      capabilities = capabilities,
-      settings = {
-        yaml = {
-          schemas = schemastore.yaml.schemas(),
-          schemaStore = {
-            enable = false,
-            url = "",
-          },
-        },
-      },
-    }
+    -- lspconfig.yamlls.setup {
+    --   capabilities = capabilities,
+    --   settings = {
+    --     yaml = {
+    --       schemas = schemastore.yaml.schemas(),
+    --       schemaStore = {
+    --         enable = false,
+    --         url = "",
+    --       },
+    --     },
+    --   },
+    -- }
 
     lspconfig.jsonls.setup {
       capabilities = capabilities,

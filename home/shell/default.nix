@@ -46,11 +46,13 @@ in {
         sq
         jq
         jaq
+        tabiew
 
         # network stuff
         trippy
         hurl
         gping
+        xh 
 
         # text stuff
         sad

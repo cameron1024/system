@@ -60,5 +60,8 @@
 
   programs.rofi = {
     enable = machine.linux;
+    cycle = true;
+    font = "Fira Code NerdFont";
+    
   };
 }

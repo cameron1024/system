@@ -19,6 +19,7 @@
 
   macosPackages = [];
 
+
   extraPackages =
     if machine.linux
     then linuxPackages
@@ -26,6 +27,7 @@
 in {
   imports = [
     ./lsps
+    ./symbols.nix
   ];
   config = {
     home.shellAliases = {
@@ -57,8 +59,8 @@ in {
         typst
         tinymist
 
-        pandoc  # required for feed.nvim
-        w3m    
+        pandoc # required for feed.nvim
+        w3m
       ]
       ++ extraPackages;
 
