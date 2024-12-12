@@ -8,7 +8,7 @@
       noto-fonts-emoji
       font-awesome
       open-sans
-      nerdfonts
+      # nerdfonts
       monaspace
     ];
   };

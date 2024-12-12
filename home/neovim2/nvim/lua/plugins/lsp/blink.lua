@@ -19,14 +19,7 @@ return {
       ['<S-CR>'] = { "fallback" },
     },
     sources = {
-      completion = {
-        enabled_providers = {
-          'lsp',
-          'path',
-          -- 'snippets',
-          -- 'ripgrep',
-        },
-      },
+      default = { "lsp", "path" },
 
       providers = {
         -- ripgrep = {
@@ -50,11 +43,9 @@ return {
         enabled = true,
       },
     },
-    windows = {
+
+    completion = {
       ghost_text = { enabled = true, },
-    }
+    },
   },
 }
-
-
-
