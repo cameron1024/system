@@ -33,19 +33,21 @@ return {
       },
     },
     trigger = {
-      completion = {
-        show_on_accept_on_trigger_character = true,
-        show_on_insert_on_trigger_character = false,
-        blocked_trigger_characters = { ' ', '\n', '\t', '.', ',' },
-      },
 
       signature_help = {
         enabled = true,
       },
     },
 
+    signature = { enabled = true },
+
     completion = {
       ghost_text = { enabled = true, },
+      trigger = {
+        show_on_accept_on_trigger_character = true,
+        show_on_insert_on_trigger_character = false,
+        blocked_trigger_characters = { ' ', '\n', '\t', '.', ',' },
+      },
     },
   },
 }
