@@ -8,6 +8,7 @@
       mdcat
       slides
       jnv
+      presenterm
     ]
     ++ (
       if machine.linux

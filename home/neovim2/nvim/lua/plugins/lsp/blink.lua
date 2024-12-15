@@ -3,8 +3,7 @@ return {
   lazy = true,
   event = "InsertEnter",
   dependencies = {
-    "rafamadriz/friendly-snippets",
-    -- "mikavilpas/blink-ripgrep.nvim",
+    "L3MON4D3/LuaSnip",
   },
   -- version = "v0.5.1",
   build = "cargo build --release",
@@ -19,42 +18,35 @@ return {
       ['<S-CR>'] = { "fallback" },
     },
     sources = {
-      completion = {
-        enabled_providers = {
-          'lsp',
-          'path',
-          -- 'snippets',
-          -- 'ripgrep',
-        },
-      },
-
-      providers = {
-        -- ripgrep = {
-        --   module = "blink-ripgrep",
-        --   name = "Ripgrep",
-        -- },
-        snippets = {
-          -- enabled = function() return vim.bo.ft == "dart" end,
-          -- should_show_items = function() return vim.bo.ft == "dart" end,
-        },
-      },
+      default = { "lsp", "path", "luasnip" },
     },
     trigger = {
-      completion = {
-        show_on_accept_on_trigger_character = true,
-        show_on_insert_on_trigger_character = false,
-        blocked_trigger_characters = { ' ', '\n', '\t', '.', ',' },
-      },
 
       signature_help = {
         enabled = true,
       },
     },
-    windows = {
+
+    snippets = {
+      expand = function(snippet) require 'luasnip'.lsp_expand(snippet) end,
+      active = function(filter)
+        if filter and filter.direction then
+          return require 'luasnip'.jumpable(filter.direction)
+        end
+        return require 'luasnip'.in_snippet()
+      end,
+      jump = function(direction) require 'luasnip'.jump(direction) end,
+    },
+
+    signature = { enabled = true },
+
+    completion = {
       ghost_text = { enabled = true, },
-    }
+      trigger = {
+        show_on_accept_on_trigger_character = true,
+        show_on_insert_on_trigger_character = false,
+        blocked_trigger_characters = { ' ', '\n', '\t', '.', ',' },
+      },
+    },
   },
 }
-
-
-

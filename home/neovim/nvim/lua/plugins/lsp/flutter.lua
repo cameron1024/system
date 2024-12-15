@@ -11,6 +11,9 @@ return {
       color = {
         enabled = true,
       },
+      settings = {
+        showTodos = false,
+      },
     },
     closing_tags = {
       enabled = true,

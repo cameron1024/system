@@ -40,6 +40,7 @@ in {
         # general utilities
         killall
         tree
+        fd
 
         #data stuff
         sq

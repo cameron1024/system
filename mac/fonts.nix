@@ -4,11 +4,11 @@
       fira
       noto-fonts
       noto-fonts-extra
-      noto-fonts-cjk
+      noto-fonts-cjk-sans
       noto-fonts-emoji
       font-awesome
       open-sans
-      nerdfonts
+      # nerdfonts
       monaspace
     ];
   };

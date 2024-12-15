@@ -79,6 +79,7 @@ return {
     { "<leader>b",        function() require 'telescope.builtin'.buffers() end,                    desc = "Telescope Buffers" },
     { "<leader>m",        function() require 'telescope.builtin'.lsp_workspace_symbols() end,      desc = "Telescope LSP Symbols" },
     { "<leader>f",        "<CMD>Telescope egrepify<cr>",                                           desc = "Telescope Live Grep" },
+    { "<leader>F",        function() require 'telescope.builtin'.grep_string() end,                desc = "Telescope Grep String" },
     { '<leader>"',        function() require 'telescope.builtin'.registers() end,                  desc = "Telescope Registers" },
     { '<leader><leader>', function() require 'telescope.builtin'.resume() end,                     desc = "Telescope Resume" },
     { '<leader>u',        "<cmd>Telescope undo<cr>",                                               desc = "Telescope Undo" },

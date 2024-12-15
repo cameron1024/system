@@ -14,6 +14,7 @@
 
     silicon
     gcc
+        neovide
   ];
 
   macosPackages = [];
@@ -42,7 +43,6 @@ in {
       [
         inputs.neovim-nightly-overlay.packages.${pkgs.system}.default
 
-        neovide
         tree-sitter
 
         libgit2

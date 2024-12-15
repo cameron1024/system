@@ -5,7 +5,10 @@
   ];
 
   config = {
+    system.stateVersion = 5;
+
     nix = {
+      # configureBuildUsers = true;
       package = pkgs.nixVersions.stable;
       # config.allowUnfree = true;
 
@@ -22,6 +25,7 @@
 
     environment.systemPackages = with pkgs; [
       karabiner-elements
+      nodejs_20
     ];
 
     system.keyboard.enableKeyMapping = true;
