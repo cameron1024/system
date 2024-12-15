@@ -36,6 +36,8 @@ in {
       hyperfine
 
       evcxr
+
+      python3  # needed for cargo-kani
     ])
     ++ extras;
 
