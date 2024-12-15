@@ -17,6 +17,7 @@ in {
       rustup
 
       cargo-info
+      cargo-insta
       cargo-wipe
       cargo-rdme
       cargo-msrv

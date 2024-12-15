@@ -7,11 +7,12 @@
     then "Everforest Dark Hard"
     else null;
 
-  programs.kitty.font.name = "Fira Code NerdFont";
+  programs.kitty.font.name = "FiraCode Nerd Font";
   programs.kitty.settings = {
     confirm_os_window_close = 0;
     disable_ligatures = "never";
   };
+
 
   programs.kitty.extraConfig = ''
     clear_all_shortcuts yes
