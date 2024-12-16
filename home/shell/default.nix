@@ -58,6 +58,8 @@ in {
         sad
 
         ripdrag
+
+        awscli
       ]
       ++ systemPackages;
   };
