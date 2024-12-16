@@ -10,7 +10,7 @@ return {
     'nvim-telescope/telescope-frecency.nvim',
     'nvim-telescope/telescope-ui-select.nvim',
     'fdschmidt93/telescope-egrepify.nvim',
-    '3rd/image.nvim',
+    -- '3rd/image.nvim',
   },
   config = function()
     local telescope = require 'telescope'

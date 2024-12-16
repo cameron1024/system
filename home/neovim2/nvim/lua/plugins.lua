@@ -4,7 +4,7 @@ local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
-  require 'plugins.editing.diagram',
+  -- require 'plugins.editing.diagram',
   require 'plugins.editing.paste-image',
   require 'plugins.editing.precognition',
   require 'plugins.editing.surround',
@@ -13,7 +13,7 @@ local plugins = {
   require 'plugins.editing.ufo',
   require 'plugins.editing.zen',
 
-  require 'plugins.files.image',
+  -- require 'plugins.files.image',
   require 'plugins.files.oil',
 
   require 'plugins.git.diffview',
