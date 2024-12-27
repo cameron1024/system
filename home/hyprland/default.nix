@@ -19,6 +19,7 @@
     ./windowing
     ./wallpaper
     ./screenshot.nix
+    ./quake-term.nix
   ];
 
   config = lib.mkIf machine.wm.hyprland.enable {

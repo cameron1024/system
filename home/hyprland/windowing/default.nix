@@ -99,8 +99,6 @@ in {
         "SUPER, g, exec, ${toggleGaps}/bin/toggleGaps.sh"
         "SUPER SHIFT, f, togglefloating"
         "SUPER, p, pin"
-
-        "SUPER, Backspace, togglespecialworkspace"
       ];
 
       bindm = [

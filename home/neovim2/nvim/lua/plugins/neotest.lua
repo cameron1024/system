@@ -15,7 +15,10 @@ return {
       adapters = {
         require 'neotest-dart' {},
         require 'rustaceanvim.neotest',
-      }
+      },
+      summary = {
+        follow = true,
+      },
     }
   end,
   keys = {
@@ -23,7 +26,8 @@ return {
     { "<leader>tf", function() require 'neotest'.run.run(vim.fn.expand("%")) end,     desc = "Test File" },
     { "<leader>ta", function() require 'neotest'.run.run(vim.fn.getcwd()) end,        desc = "Test All" },
     { "<leader>dn", function() require 'neotest'.run.run { strategy = "dap" } end,    desc = "Debug Nearest" },
-    { "<leader>o",  function() require 'neotest'.summary.toggle() end,                desc = "Test Overview" },
+    { "<leader>tt",  function() require 'neotest'.summary.toggle() end,                desc = "Test Overview" },
+    { "<leader>to",  function() require 'neotest'.output_panel.toggle() end,                desc = "Test Overview" },
     { "]f",         function() require 'neotest'.jump.next { status = "failed" } end, desc = "Next Failed Test" },
     { "[f",         function() require 'neotest'.jump.prev { status = "failed" } end, desc = "Prev Failed Test" },
   },

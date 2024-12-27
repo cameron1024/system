@@ -25,6 +25,7 @@ local plugins = {
   require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.blink',
   require 'plugins.lsp.formatter',
+  require 'plugins.lsp.inline-diagnostic',
   require 'plugins.lsp.lsp',
   require 'plugins.lsp.refjump',
   require 'plugins.lsp.rename',
@@ -54,6 +55,7 @@ local plugins = {
 
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.treeclimber',
+  require 'plugins.treesitter.treesj',
   require 'plugins.treesitter.wildfire',
 
   require 'plugins.term.toggleterm',
@@ -63,6 +65,7 @@ local plugins = {
   require 'plugins.neotest',
   require 'plugins.neotree',
   require 'plugins.trouble',
+  require 'plugins.zettel',
 }
 
 
