@@ -86,7 +86,7 @@ return {
   keys = {
     { "K",          vim.lsp.buf.hover,         desc = "LSP Hover" },
     { "gd",         vim.lsp.buf.definition,    desc = "LSP Goto Definition" },
-    { "<leader>e",  vim.diagnostic.open_float, desc = "Show Diagnostic" },
+    -- { "<leader>e",  vim.diagnostic.open_float, desc = "Show Diagnostic" },
     { "Q",          vim.diagnostic.setloclist, desc = "Open Diagnostic Loclist" },
     { "<C-n>",      vim.diagnostic.goto_next,  desc = "Goto Next Diagnostic" },
     { "<C-b>",      vim.diagnostic.goto_prev,  desc = "Goto Prev Diagnostic" },

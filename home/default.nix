@@ -8,6 +8,7 @@
     ./languages
 
     ./communication.nix
+    ./media.nix
   ];
 
   nixpkgs.config.allowUnfree = true;

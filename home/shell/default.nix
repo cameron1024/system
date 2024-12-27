@@ -31,6 +31,7 @@ in {
     home.shellAliases = {
       "p" = "cd ~/projects/playground";
       "t" = "cd /tmp";
+      "n" = "cd ~/notes";
       "q" = "exit";
       "ns" = "nix search nixpkgs";
     };
@@ -41,6 +42,7 @@ in {
         killall
         tree
         fd
+        coreutils
 
         #data stuff
         sq
@@ -52,12 +54,14 @@ in {
         trippy
         hurl
         gping
-        xh 
+        xh
 
         # text stuff
         sad
 
         ripdrag
+
+        awscli
       ]
       ++ systemPackages;
   };

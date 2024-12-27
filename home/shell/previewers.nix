@@ -15,4 +15,9 @@
       then [pkgs.tdf]
       else []
     );
+
+  xdg.configFile."presenterm/config.yaml".text = ''
+defaults:
+  image_protocol: kitty-local
+  '';
 }

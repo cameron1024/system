@@ -16,6 +16,7 @@
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs = inputs: let
@@ -60,5 +61,5 @@
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
   };
 }
-
 #    <F11>
+

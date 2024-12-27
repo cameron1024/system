@@ -5,7 +5,7 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_11;
+  linux = pkgs.linuxPackages_6_12;
 in {
   imports = [
     ./hyprland
@@ -169,6 +169,8 @@ in {
       vpl-gpu-rt
       intel-gpu-tools
     ];
+
+    services.ollama.enable = true;
 
     nix = {
       package = pkgs.nixVersions.stable;
