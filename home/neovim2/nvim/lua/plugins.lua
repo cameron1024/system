@@ -54,6 +54,8 @@ local plugins = {
   require 'plugins.toys.hardtime',
 
   require 'plugins.treesitter.base',
+  require 'plugins.treesitter.commentstring',
+  require 'plugins.treesitter.language-injection',
   require 'plugins.treesitter.treeclimber',
   require 'plugins.treesitter.treesj',
   require 'plugins.treesitter.wildfire',

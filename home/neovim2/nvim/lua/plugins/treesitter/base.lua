@@ -50,6 +50,11 @@ return {
 
       indent = { enable = true, disable = { "dart" }, },
 
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
+
       textobjects = {
         select = {
           enable = true,
@@ -62,6 +67,8 @@ return {
             ["ic"] = { query = "@class.inner", desc = "In Class" },
             ["aa"] = { query = "@parameter.outer", desc = "Around Argument" },
             ["ia"] = { query = "@parameter.inner", desc = "In Argument" },
+            ["ar"] = { query = "@assignment.rhs", desc = "Assignment RHS" },
+            ["as"] = { query = "@assignment.outer", desc = "Assignment" },
           },
         },
       },

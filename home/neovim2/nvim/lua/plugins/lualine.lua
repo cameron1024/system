@@ -1,3 +1,9 @@
+if vim.g.started_by_firenvim == true then
+  vim.o.laststatus = 0
+else
+  vim.o.laststatus = 3
+end
+
 local mode_map = {
   ["n"] = "N",
   ["no"] = "O·P",
@@ -48,12 +54,6 @@ return {
   event = "UIEnter",
   enabled = vim.g.started_by_firenvim == nil,
   config = function()
-    if vim.g.started_by_firenvim == true then
-      vim.o.laststatus = 0
-    else
-      vim.o.laststatus = 3
-    end
-
     require 'lualine'.setup {
       options = {
         theme = require 'lualine.themes.everforest',

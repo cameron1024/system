@@ -8,5 +8,8 @@ return {
         ['.*'] = { takeover = 'never', priority = 0 },
       }
     }
+    if vim.g.started_by_firenvim then
+      vim.opt.guifont = "FiraCode Nerd Font:12"
+    end
   end,
 }
