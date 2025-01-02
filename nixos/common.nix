@@ -2,12 +2,17 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }: let
   cfg = config.machine;
   linux = pkgs.linuxPackages_6_12;
 in {
   imports = [
+    inputs.nix-snapd.nixosModules.default
+    {
+      services.snap.enable = true;
+    }
     ./hyprland
     ./dev/android.nix
     ./performance.nix

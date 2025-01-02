@@ -17,6 +17,9 @@
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
     ghostty.url = "github:ghostty-org/ghostty";
+
+    nix-snapd.url = "github:nix-community/nix-snapd";
+    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let
