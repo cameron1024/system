@@ -10,6 +10,7 @@
       
       # remarkable desktop is windows app
       wineWowPackages.stable
+      rmapi
     ];
   };
 }

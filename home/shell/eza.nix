@@ -14,6 +14,7 @@
 
   programs.fish.shellAbbrs = {
     "ls" = "exa -la";
+    "l" = "lla";
   };
 
   home.packages = [

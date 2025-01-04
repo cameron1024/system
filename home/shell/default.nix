@@ -43,6 +43,7 @@ in {
         tree
         fd
         coreutils
+        gnumake
 
         #data stuff
         sq
