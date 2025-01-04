@@ -10,7 +10,7 @@
     nix = {
       # configureBuildUsers = true;
       package = pkgs.nixVersions.stable;
-      # config.allowUnfree = true;
+      config.allowUnfree = true;
 
       extraOptions = ''
         experimental-features = nix-command flakes

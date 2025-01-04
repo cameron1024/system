@@ -14,7 +14,7 @@
     ]
     ++ (
       if machine.linux
-      then [pkgs.android-studio pkgs.flutter]
+      then [pkgs.android-studio]
       else []
     );
 }

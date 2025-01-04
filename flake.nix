@@ -20,6 +20,9 @@
 
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
+
+    lla.url = "github:chaqchase/lla";
+    lla.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

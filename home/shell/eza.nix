@@ -1,4 +1,9 @@
-{config, ...}: {
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}: {
   programs.eza = {
     enable = true;
     icons = "auto";
@@ -10,4 +15,8 @@
   programs.fish.shellAbbrs = {
     "ls" = "exa -la";
   };
+
+  home.packages = [
+    inputs.lla.packages.${pkgs.system}.withProtobuf
+  ];
 }

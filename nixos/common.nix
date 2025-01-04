@@ -179,7 +179,7 @@ in {
 
     nix = {
       package = pkgs.nixVersions.stable;
-      # config.allowUnfree = true;
+      registry.nixpkgs.flake = inputs.nixpkgs;
 
       extraOptions = ''
         experimental-features = nix-command flakes

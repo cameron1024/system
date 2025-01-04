@@ -1,10 +1,10 @@
 {machine, ...}: {
   programs.kitty.enable = true;
-  programs.kitty.theme =
+  programs.kitty.themeFile =
     if machine.colorscheme.name == "gruvbox"
     then "Gruvbox Dark Hard"
     else if machine.colorscheme.name == "everforest"
-    then "Everforest Dark Hard"
+    then "everforest_dark_hard"
     else null;
 
   programs.kitty.font.name = "FiraCode Nerd Font";
