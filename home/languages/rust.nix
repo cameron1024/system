@@ -37,9 +37,13 @@ in {
 
       evcxr
 
-      python3  # needed for cargo-kani
+      python3 # needed for cargo-kani
     ])
     ++ extras;
+
+  home.sessionVariables = {
+    "RUST_BACKTRACE" = 1;
+  };
 
   home.shellAliases = {
     "cg" = "cargo";

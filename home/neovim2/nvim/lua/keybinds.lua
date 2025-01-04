@@ -66,10 +66,10 @@ map({ 'n', 'v' }, '<C-CR>', 'za')
 map('i', '<C-CR>', '<C-o>o')
 
 -- stop any in-progress snippet when exiting insert mode
-map({'i', 's'}, '<Esc>', function ()
+map({ 'i', 's' }, '<Esc>', function()
   vim.snippet.stop();
   return '<Esc>'
-end, { expr = true})
+end, { expr = true })
 
 local function toggle_conceal()
   if vim.o.conceallevel == 0 then
@@ -80,3 +80,6 @@ local function toggle_conceal()
 end
 
 map("n", "<leader>cc", toggle_conceal)
+
+-- format a comment
+map("n", "<C-f>", "gwgc")

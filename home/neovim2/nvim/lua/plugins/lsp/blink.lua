@@ -10,16 +10,16 @@ return {
   opts = {
     keymap = {
       preset = "enter",
-      ['<Tab>'] = { "select_next", "fallback" },
-      ['<S-Tab>'] = { "select_prev", "fallback" },
+      ['<Tab>'] = { "select_next", "snippet_forward", "fallback" },
+      ['<S-Tab>'] = { "select_prev", "snippet_backward", "fallback" },
       ['<C-j>'] = { "select_next", "fallback" },
       ['<C-k>'] = { "select_prev", "fallback" },
       ['<C-c>'] = { "hide", "fallback" },
-      ['<S-CR>'] = { "fallback" },
+      ['<C-space>'] = { "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
       default = { "lsp", "path", "luasnip" },
-      cmdline = {},
+      -- cmdline = {},
     },
 
     snippets = {
@@ -36,7 +36,10 @@ return {
     signature = { enabled = true },
 
     completion = {
+      list = { selection = "manual" },
+      menu = { border = "single" },
       ghost_text = { enabled = true, },
+      documentation = { auto_show = true },
       trigger = {
         show_on_accept_on_trigger_character = true,
         show_on_insert_on_trigger_character = false,

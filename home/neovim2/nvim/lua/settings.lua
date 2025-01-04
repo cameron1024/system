@@ -35,6 +35,7 @@ local options = {
   conceallevel = 2,
   shell = "fish",
   autowriteall = true,
+  textwidth = 80,
 }
 
 for key, value in pairs(options) do
