@@ -40,7 +40,6 @@ return {
       list = { selection = "manual" },
       menu = {
         border = "single",
-
         draw = {
           components = {
             label = {
@@ -59,12 +58,22 @@ return {
                     require("colorful-menu").highlights(ctx.item, vim.bo.filetype)
                 local highlights = {}
                 if highlights_info ~= nil then
-                  for _, info in ipairs(highlights_info.highlights) do
-                    table.insert(highlights, {
-                      info.range[1],
-                      info.range[2],
-                      group = ctx.deprecated and "BlinkCmpLabelDeprecated" or info[1],
-                    })
+                  if highlights_info.highlights == nil then
+                    return {{
+                      0,
+                      #ctx.label,
+                      group = ctx.deprecated
+                          and "BlinkCmpLabelDeprecated"
+                          or "BlinkCmpLabel",
+                    }}
+                  else
+                    for _, info in ipairs(highlights_info.highlights) do
+                      table.insert(highlights, {
+                        info.range[1],
+                        info.range[2],
+                        group = ctx.deprecated and "BlinkCmpLabelDeprecated" or info[1],
+                      })
+                    end
                   end
                 end
                 for _, idx in ipairs(ctx.label_matched_indices) do
