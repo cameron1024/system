@@ -13,11 +13,12 @@
     ./hardware.nix
     ./touchscreen.nix
     ./input.nix
-    ./launcher.nix
+    # ./launcher.nix
     ./notifications.nix
     ./widgets
     ./windowing
     ./wallpaper
+    ./walker.nix
     ./screenshot.nix
     ./quake-term.nix
   ];

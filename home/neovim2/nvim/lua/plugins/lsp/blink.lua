@@ -16,7 +16,7 @@ return {
       ['<C-j>'] = { "select_next", "fallback" },
       ['<C-k>'] = { "select_prev", "fallback" },
       ['<C-c>'] = { "hide", "fallback" },
-      ['<C-space>'] = { "show_documentation", "hide_documentation", "fallback" },
+      ['<C-space>'] = { "show", "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
       default = { "lsp", "path", "luasnip" },

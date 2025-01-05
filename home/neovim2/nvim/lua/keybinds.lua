@@ -83,3 +83,7 @@ map("n", "<leader>cc", toggle_conceal)
 
 -- format a comment
 map("n", "<C-f>", "gwgc")
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+  callback = function() vim.snippet.stop() end
+})

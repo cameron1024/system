@@ -44,6 +44,7 @@ local plugins = {
   require 'plugins.telescope.glyph',
   require 'plugins.telescope.symbols',
 
+  require 'plugins.theme.colorizer',
   require 'plugins.theme.everforest',
   require 'plugins.theme.twilight',
   require 'plugins.theme.showkeys',
