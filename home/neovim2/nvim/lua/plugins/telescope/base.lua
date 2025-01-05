@@ -10,7 +10,7 @@ return {
     'nvim-telescope/telescope-frecency.nvim',
     'nvim-telescope/telescope-ui-select.nvim',
     'fdschmidt93/telescope-egrepify.nvim',
-    -- '3rd/image.nvim',
+    { "nvim-telescope/telescope-fzf-native.nvim", build = "make", lazy = true },
   },
   config = function()
     local telescope = require 'telescope'
@@ -46,6 +46,9 @@ return {
       },
 
       extensions = {
+        fzf = {
+          fuzzy = true,
+        },
         ["ui-select"] = {
           require 'telescope.themes'.get_ivy {},
         },
@@ -66,6 +69,7 @@ return {
       }
     }
 
+    telescope.load_extension "fzf"
     telescope.load_extension "frecency"
     telescope.load_extension "ui-select"
     telescope.load_extension "egrepify"
