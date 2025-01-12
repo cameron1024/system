@@ -4,6 +4,7 @@ local plugins = {
   require 'plugins.editing.autosave',
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
+  require 'plugins.editing.hlslens',
   -- require 'plugins.editing.diagram',
   require 'plugins.editing.paste-image',
   require 'plugins.editing.precognition',
