@@ -54,6 +54,7 @@ return {
   },
   -- version = "v0.5.1",
   build = "cargo build --release",
+
   opts = {
     keymap = {
       preset = "enter",
@@ -66,7 +67,6 @@ return {
     },
     sources = {
       default = { "lsp", "path", "snippets" },
-      -- cmdline = {},
     },
 
     snippets = { preset = "luasnip" },
@@ -82,7 +82,7 @@ return {
       },
       menu = {
         border = "single",
-        draw = menu_draw,
+        draw = { treesitter = { "lsp" } },
       },
       ghost_text = { enabled = true, },
       documentation = { auto_show = true },

@@ -54,6 +54,7 @@ local plugins = {
   require 'plugins.toys.doing',
   require 'plugins.toys.feed',
   require 'plugins.toys.hardtime',
+  require 'plugins.toys.typr',
 
   require 'plugins.treesitter.base',
   require 'plugins.treesitter.commentstring',

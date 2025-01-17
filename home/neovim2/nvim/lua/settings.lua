@@ -35,7 +35,7 @@ local options = {
   conceallevel = 2,
   shell = "fish",
   autowriteall = true,
-  textwidth = 80,
+  textwidth = vim.g.started_by_firenvim and 0 or 80,
 }
 
 for key, value in pairs(options) do

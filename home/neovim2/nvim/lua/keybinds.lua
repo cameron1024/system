@@ -35,7 +35,7 @@ map("x", "p", [["_dP]])
 map({ "n", "o", "x", "v" }, "H", "^")
 map({ "n", "o", "x", "v" }, "L", "g_")
 
-map("n", "<C-w>", ":lua vim.wo.wrap = not vim.wo.wrap<cr>")
+map("n", "<leader>ww", function() vim.wo.wrap = not vim.wo.wrap end)
 
 map("n", "<esc>", ":nohl<cr>")
 

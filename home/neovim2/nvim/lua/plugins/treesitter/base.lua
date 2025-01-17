@@ -48,7 +48,7 @@ return {
       auto_install = true,
       incremental_selection = { enable = false },
 
-      indent = { enable = true, disable = { "dart" }, },
+      indent = { enable = false, disable = { "dart" }, },
 
       highlight = {
         enable = true,
@@ -69,6 +69,27 @@ return {
             ["ia"] = { query = "@parameter.inner", desc = "In Argument" },
             ["ar"] = { query = "@assignment.rhs", desc = "Assignment RHS" },
             ["as"] = { query = "@assignment.outer", desc = "Assignment" },
+          },
+        },
+
+        move = {
+          enable = true,
+          set_jumps = true,
+          goto_next_start = {
+            [']m'] = '@function.outer',
+            [']]'] = '@class.outer',
+          },
+          goto_next_end = {
+            [']M'] = '@function.outer',
+            [']['] = '@class.outer',
+          },
+          goto_previous_start = {
+            ['[m'] = '@function.outer',
+            ['[['] = '@class.outer',
+          },
+          goto_previous_end = {
+            ['[M'] = '@function.outer',
+            ['[]'] = '@class.outer',
           },
         },
       },
