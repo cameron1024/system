@@ -5,6 +5,7 @@ local plugins = {
   require 'plugins.editing.autopairs',
   require 'plugins.editing.debug-print',
   require 'plugins.editing.hlslens',
+  require 'plugins.editing.hover',
   -- require 'plugins.editing.diagram',
   require 'plugins.editing.paste-image',
   require 'plugins.editing.precognition',
@@ -23,6 +24,7 @@ local plugins = {
   require 'plugins.git.gh',
   require 'plugins.git.octo',
 
+  require 'plugins.lsp.ai',
   require 'plugins.lsp.actions-preview',
   require 'plugins.lsp.blink',
   require 'plugins.lsp.formatter',
