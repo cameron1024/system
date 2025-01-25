@@ -1,8 +1,8 @@
 return {
   "OXY2DEV/markview.nvim",
-  ft = "markdown",
-  lazy = true,
-  -- tag = "v24.0.0",
+  -- ft = { "markdown", "typst", "latex", "html", "markdown_inline", "yaml" },
+  lazy = false,
+  tag = "v25.0.0",
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
     "nvim-tree/nvim-web-devicons",
@@ -10,8 +10,5 @@ return {
       'Kicamon/markdown-table-mode.nvim',
       opts = {},
     },
-  },
-  opts = {
-    filetypes = { "markdown", "Avante" },
   },
 }

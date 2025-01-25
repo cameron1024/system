@@ -40,7 +40,7 @@ local plugins = {
   require 'plugins.lang.markdown',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',
-  require 'plugins.lang.typst-conceal',
+  -- require 'plugins.lang.typst-conceal',
 
   require 'plugins.telescope.emoji',
   require 'plugins.telescope.base',
