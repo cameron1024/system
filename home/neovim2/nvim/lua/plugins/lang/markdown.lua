@@ -1,7 +1,7 @@
 return {
   "OXY2DEV/markview.nvim",
-  -- ft = { "markdown", "typst", "latex", "html", "markdown_inline", "yaml" },
-  lazy = false,
+  ft = { "markdown", "typst", "latex", "html", "markdown_inline", "yaml" },
+  lazy = true,
   tag = "v25.0.0",
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
