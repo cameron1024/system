@@ -39,6 +39,10 @@ in {
         };
       };
 
+      extraFirmware = mkOption {
+        default = null;
+      };
+
       hostname = mkOption {
         type = types.str;
       };
@@ -121,6 +125,10 @@ in {
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
+    hardware.firmware =
+      if cfg.extraFirmware != null
+      then cfg.extraFirmware pkgs
+      else [];
 
     networking.hostName = cfg.hostname;
     networking.networkmanager.enable = true;
@@ -157,6 +165,7 @@ in {
       networkmanager
       jq
       linux.cpupower
+      intel-gpu-tools
 
       ffmpeg
     ];

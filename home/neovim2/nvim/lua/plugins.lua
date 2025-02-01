@@ -23,6 +23,7 @@ local plugins = {
   require 'plugins.git.gitsigns',
   require 'plugins.git.gh',
   require 'plugins.git.octo',
+  -- require 'plugins.git.vgit',
 
   require 'plugins.lsp.ai',
   require 'plugins.lsp.actions-preview',
@@ -73,6 +74,7 @@ local plugins = {
   require 'plugins.neotree',
   require 'plugins.trouble',
   require 'plugins.zettel',
+  -- require 'plugins.snacks',
 }
 
 

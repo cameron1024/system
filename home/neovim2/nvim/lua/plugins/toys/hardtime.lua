@@ -6,7 +6,18 @@ return {
     "nvim-lua/plenary.nvim",
   },
   cmd = "Hardtime",
-  opts = {
-    disabled_filetypes = { "qf", "netrw", "neo-tree", "lazy", "mason", "oil" },
-  },
+  -- event = "BufReadPost",
+  config = function()
+    require 'hardtime'.setup {
+      disabled_filetypes = {
+        "help",
+        "qf",
+        "netrw",
+        "neo-tree",
+        "lazy",
+        "mason",
+        "oil",
+      },
+    }
+  end
 }

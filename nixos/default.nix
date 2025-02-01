@@ -8,7 +8,9 @@
       (import ../overlays/utils.nix)
     ];
 
-    machine = spec; specialArgs = {
+    machine = spec;
+
+    specialArgs = {
       inherit inputs;
       inherit machine;
     };
