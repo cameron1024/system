@@ -23,5 +23,8 @@
     kotlin-language-server
 
     alejandra # nix formatter
+  
+    (pkgs.callPackage ./iwe.nix {})
+
   ];
 }

@@ -23,7 +23,7 @@ return {
       default = { "lsp", "path", "snippets" },
       providers = {
         lsp = {
-          async = false,
+          async = true,
         },
       },
     },
