@@ -33,14 +33,28 @@
       };
     in
       pkgs.mkShell {
-        packages = [
-          (pkgs.writeShellScriptBin "s" ''
-            cd $(git rev-parse --show-toplevel)
+        packages =
+          if system == "aarch64-darwin"
+          then [
+            (pkgs.writeShellScriptBin "s" ''
+              cd $(git rev-parse --show-toplevel)
 
-            git add -A
-            sudo nixos-rebuild switch --flake .#$(hostname)
-          '')
-        ];
+              git add -A
+              sudo rm /etc/nix/nix.conf
+              nix run nix-darwin \
+                --extra-experimental-features flakes \
+                --extra-experimental-features nix-command \
+                -- switch --flake .
+            '')
+          ]
+          else [
+            (pkgs.writeShellScriptBin "s" ''
+              cd $(git rev-parse --show-toplevel)
+
+              git add -A
+              sudo nixos-rebuild switch --flake .#$(hostname)
+            '')
+          ];
       };
   in {
     nixosConfigurations = import ./nixos {
