@@ -8,6 +8,7 @@
   imports = [
     ./bar
     ./lock
+    ./otter-launcher
     ./animations.nix
     ./displays.nix
     ./hardware.nix

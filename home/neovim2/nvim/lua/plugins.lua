@@ -32,6 +32,7 @@ local plugins = {
   require 'plugins.lsp.formatter',
   require 'plugins.lsp.inline-diagnostic',
   require 'plugins.lsp.lsp',
+  require 'plugins.lsp.namu',
   require 'plugins.lsp.refjump',
   require 'plugins.lsp.rename',
 
@@ -74,6 +75,7 @@ local plugins = {
   require 'plugins.neotest',
   require 'plugins.neotree',
   require 'plugins.trouble',
+  require 'plugins.patterns',
   require 'plugins.zettel',
   -- require 'plugins.snacks',
 }
