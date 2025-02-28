@@ -6,10 +6,7 @@ return {
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
     "nvim-tree/nvim-web-devicons",
-    {
-      'Kicamon/markdown-table-mode.nvim',
-      opts = {},
-    },
+    {'Kicamon/markdown-table-mode.nvim', opts = {}},
   },
   config = function()
     vim.api.nvim_create_autocmd('FileType', {
@@ -20,7 +17,7 @@ return {
           cmd = { 'iwes' },
           root_dir = vim.fs.root(args.buf, { '.iwe' }),
           flags = {
-            debounce_text_changes = 300
+            debounce_text_changes = 300,
           }
         })
       end,

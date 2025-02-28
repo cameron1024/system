@@ -48,7 +48,10 @@ return {
       auto_install = true,
       incremental_selection = { enable = false },
 
-      indent = { enable = false, disable = { "dart" }, },
+      indent = {
+        enable = false,
+        disable = { "dart" },
+      },
 
       highlight = {
         enable = true,
@@ -67,8 +70,8 @@ return {
             ["ic"] = { query = "@class.inner", desc = "In Class" },
             ["aa"] = { query = "@parameter.outer", desc = "Around Argument" },
             ["ia"] = { query = "@parameter.inner", desc = "In Argument" },
-            ["ar"] = { query = "@assignment.rhs", desc = "Assignment RHS" },
-            ["as"] = { query = "@assignment.outer", desc = "Assignment" },
+            ["as"] = { query = "@assignment.rhs", desc = "Assignment RHS" },
+            ["art"] = { query = "@function_ret_ty", desc = "Return Type" },
           },
         },
 
