@@ -30,6 +30,7 @@ in {
       cargo-spellcheck
       cargo-expand
       cargo-release
+      cargo-flamegraph
 
       bacon
 

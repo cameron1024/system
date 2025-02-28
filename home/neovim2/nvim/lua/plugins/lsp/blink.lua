@@ -20,7 +20,7 @@ return {
       ['<C-space>'] = { "show", "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
-      default = { "lsp", "path", "snippets" },
+      default = { "lsp", "path", "snippets", "cmdline" },
       providers = {
         lsp = {
           async = true,
