@@ -61,7 +61,7 @@
       inherit inputs;
     };
 
-    darwinConfigurations."LFL406JLJY" = inputs.nix-darwin.lib.darwinSystem rec {
+    darwinConfigurations."DTO-A032" = inputs.nix-darwin.lib.darwinSystem rec {
       specialArgs = {
         inherit inputs;
         machine = import ./nixos/machines/specs/macbook.nix;
