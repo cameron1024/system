@@ -165,6 +165,7 @@ in {
       networkmanager
       jq
       linux.cpupower
+      linux.perf
       intel-gpu-tools
 
       ffmpeg

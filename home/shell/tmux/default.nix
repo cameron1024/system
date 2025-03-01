@@ -32,8 +32,8 @@ in {
         set -g default-terminal "xterm-256color"
         set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
-        set -s extended-keys on
-        set -as terminal-features 'xterm*:extkeys'
+        set -s extended-keys always
+        set -as terminal-features 'xterm-kitty*:extkeys'
 
         set -gq allow-passthrough on
         set -g visual-activity off
