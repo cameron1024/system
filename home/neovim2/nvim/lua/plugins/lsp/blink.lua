@@ -4,6 +4,8 @@ return {
   event = "InsertEnter",
   dependencies = {
     "xzbdmw/colorful-menu.nvim",
+    "moyiz/blink-emoji.nvim",
+    "bydlw98/blink-cmp-env",
     { 'L3MON4D3/LuaSnip', version = 'v2.*' },
   },
   -- version = "v0.5.1",
@@ -14,17 +16,30 @@ return {
       preset = "enter",
       ['<Tab>'] = { "select_next", "fallback" },
       ['<S-Tab>'] = { "select_prev", "fallback" },
-      ['<C-j>'] = { "snippet_forward", "fallback" },
-      ['<C-k>'] = { "snippet_backward", "fallback" },
+      ['<C-j>'] = { "select_next", "fallback" },
+      ['<C-k>'] = { "select_prev", "fallback" },
+      ['<C-l>'] = { "snippet_forward", "fallback" },
+      ['<C-h>'] = { "snippet_backward", "fallback" },
       ['<C-c>'] = { "hide", "fallback" },
       ['<C-space>'] = { "show", "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
-      default = { "lsp", "path", "snippets", "cmdline" },
+      default = { "lsp", "path", "snippets", "emoji", "env" },
       providers = {
         lsp = {
           async = true,
         },
+        emoji = {
+          module = "blink-emoji",
+          name = "Emoji",
+          score_offset = 15,
+          opts = { insert = true },
+        },
+        env = {
+          module = "blink-cmp-env",
+          name = "Env",
+          opts = { insert = true },
+        }
       },
     },
 

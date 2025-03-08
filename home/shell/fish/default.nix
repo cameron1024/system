@@ -21,8 +21,6 @@ in
     shellAbbrs = config.home.shellAliases;
 
     interactiveShellInit = ''
-      fish_vi_key_bindings 
-
       set -x DIRENV_LOG_FORMAT ""
 
       fish_add_path ~/.cargo/bin

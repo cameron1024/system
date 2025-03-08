@@ -41,6 +41,7 @@ local plugins = {
   require 'plugins.lang.flutter',
   require 'plugins.lang.lean',
   require 'plugins.lang.markdown',
+  require 'plugins.lang.ron',
   require 'plugins.lang.rust',
   require 'plugins.lang.typst',
 
