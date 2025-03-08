@@ -6,6 +6,7 @@ return {
     "xzbdmw/colorful-menu.nvim",
     "moyiz/blink-emoji.nvim",
     "bydlw98/blink-cmp-env",
+    "Kaiser-Yang/blink-cmp-git",
     { 'L3MON4D3/LuaSnip', version = 'v2.*' },
   },
   -- version = "v0.5.1",
@@ -24,7 +25,7 @@ return {
       ['<C-space>'] = { "show", "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
-      default = { "lsp", "path", "snippets", "emoji", "env" },
+      default = { "lsp", "path", "snippets", "emoji", "env", "git" },
       providers = {
         lsp = {
           async = true,
@@ -33,13 +34,18 @@ return {
           module = "blink-emoji",
           name = "Emoji",
           score_offset = 15,
-          opts = { insert = true },
         },
         env = {
           module = "blink-cmp-env",
           name = "Env",
-          opts = { insert = true },
-        }
+        },
+        git = {
+          module = "blink-cmp-git",
+          name = "Git",
+          enabled = function()
+            return vim.tbl_contains({ 'octo', 'gitcommit', 'markdown' }, vim.bo.filetype)
+          end,
+        },
       },
     },
 

@@ -9,7 +9,7 @@ return {
     'nvim-tree/nvim-web-devicons',
     "saghen/blink.cmp",
     "b0o/schemastore.nvim",
-    require 'plugins.lsp.fidget',
+    { "j-hui/fidget.nvim", opts = {} },
   },
   lazy = true,
   event = { "BufReadPost", "BufNewFile", },
@@ -17,9 +17,9 @@ return {
     local lspconfig = require 'lspconfig'
     local schemastore = require 'schemastore'
     local capabilities =
-    require 'blink.cmp'.get_lsp_capabilities(
-      vim.lsp.protocol.make_client_capabilities()
-    )
+        require 'blink.cmp'.get_lsp_capabilities(
+          vim.lsp.protocol.make_client_capabilities()
+        )
 
     lspconfig.nil_ls.setup { capabilities = capabilities }
     lspconfig.nixd.setup { capabilities = capabilities }
@@ -81,14 +81,13 @@ return {
         },
       },
     }
-
   end,
   keys = {
-    { "gd",         vim.lsp.buf.definition,    desc = "LSP Goto Definition" },
+    { "gd",        vim.lsp.buf.definition,    desc = "LSP Goto Definition" },
     -- { "<leader>e",  vim.diagnostic.open_float, desc = "Show Diagnostic" },
-    { "Q",          vim.diagnostic.setloclist, desc = "Open Diagnostic Loclist" },
-    { "<C-n>",      vim.diagnostic.goto_next,  desc = "Goto Next Diagnostic" },
-    { "<C-b>",      vim.diagnostic.goto_prev,  desc = "Goto Prev Diagnostic" },
-    { "<leader>i",  toggle_inlay,              desc = "Toggle Inlay Hints" },
+    { "Q",         vim.diagnostic.setloclist, desc = "Open Diagnostic Loclist" },
+    { "<C-n>",     vim.diagnostic.goto_next,  desc = "Goto Next Diagnostic" },
+    { "<C-b>",     vim.diagnostic.goto_prev,  desc = "Goto Prev Diagnostic" },
+    { "<leader>i", toggle_inlay,              desc = "Toggle Inlay Hints" },
   },
 }
