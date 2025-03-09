@@ -33,11 +33,12 @@ return {
         emoji = {
           module = "blink-emoji",
           name = "Emoji",
-          score_offset = 15,
+          score_offset = -30,
         },
         env = {
           module = "blink-cmp-env",
           name = "Env",
+          score_offset = -15,
         },
         git = {
           module = "blink-cmp-git",

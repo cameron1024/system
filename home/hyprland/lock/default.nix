@@ -19,9 +19,11 @@
         hide_cursor = true;
         no_fade_in = true;
         no_fade_out = true;
-
-        enable_fingerprint = true;
       };
+
+      animation = "fade, 1, 2, default";
+
+      auth.fingerprint.enabled = true;
 
       background = [
         {
