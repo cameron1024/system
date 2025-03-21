@@ -9,18 +9,8 @@ return {
     {'Kicamon/markdown-table-mode.nvim', opts = {}},
   },
   config = function()
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = 'markdown',
-      callback = function(args)
-        vim.lsp.start({
-          name = 'iwes',
-          cmd = { 'iwes' },
-          root_dir = vim.fs.root(args.buf, { '.iwe' }),
-          flags = {
-            debounce_text_changes = 300,
-          }
-        })
-      end,
-    })
+    vim.cmd [[
+      autocmd FileType markdown map <buffer> <C-m> <cmd>Markview Toggle<cr>
+    ]]
   end
 }

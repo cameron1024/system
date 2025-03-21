@@ -56,13 +56,14 @@ in {
         hurl
         gping
         xh
+        speedtest-rs
 
         # text stuff
         sad
 
         ripdrag
 
-        awscli
+        awscli2
       ]
       ++ systemPackages;
   };

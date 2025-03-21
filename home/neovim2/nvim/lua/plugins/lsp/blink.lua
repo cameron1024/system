@@ -19,13 +19,13 @@ return {
       ['<S-Tab>'] = { "select_prev", "fallback" },
       ['<C-j>'] = { "select_next", "fallback" },
       ['<C-k>'] = { "select_prev", "fallback" },
-      ['<C-l>'] = { "snippet_forward", "fallback" },
-      ['<C-h>'] = { "snippet_backward", "fallback" },
+      -- ['<C-l>'] = { "snippet_forward", "fallback" },
+      -- ['<C-h>'] = { "snippet_backward", "fallback" },
       ['<C-c>'] = { "hide", "fallback" },
       ['<C-space>'] = { "show", "show_documentation", "hide_documentation", "fallback" },
     },
     sources = {
-      default = { "lsp", "path", "snippets", "emoji", "env", "git" },
+      default = { "lsp", "path", "buffer", "snippets", "emoji", "env", "git" },
       providers = {
         lsp = {
           async = true,

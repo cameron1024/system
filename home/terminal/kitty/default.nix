@@ -7,12 +7,14 @@
     then "everforest_dark_hard"
     else null;
 
-  programs.kitty.font.name = "FiraCode Nerd Font";
+  programs.kitty.font.name =
+    if machine.linux
+    then "FiraCode Nerd Font"
+    else "Fira Code";
   programs.kitty.settings = {
     confirm_os_window_close = 0;
     disable_ligatures = "never";
   };
-
 
   programs.kitty.extraConfig = ''
     clear_all_shortcuts yes

@@ -40,23 +40,16 @@
       home = "/Users/cameron";
     };
 
-    # homebrew = {
-    #   enable = true;
-    #   brews = ["fvm"];
-    #   taps = ["leoafarias/fvm"];
-    # };
-
     environment.variables = {
       ANDROID_HOME = "/Users/cameron/Library/Android/sdk";
     };
 
     home-manager.users.cameron = {
       programs.fish.interactiveShellInit = /* fish */ ''
-        # set PATH $PATH ~/fvm/default/bin
 
-        fish_add_path "$HOME/.puro/bin"
-        fish_add_path "$HOME/.puro/shared/pub_cache/bin"
-        fish_add_path "$HOME/.puro/envs/default/flutter/bin"
+        set -gx PATH $PATH "$HOME/.puro/bin"
+        set -gx PATH $PATH "$HOME/.puro/shared/pub_cache/bin"
+        set -gx PATH $PATH "$HOME/.puro/envs/default/flutter/bin"
 
         set -gx PURO_ROOT "/Users/cameron/.puro" 
         set -gx PUB_CACHE "/Users/cameron/.puro/shared/pub_cache" 

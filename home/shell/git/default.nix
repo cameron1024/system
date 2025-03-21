@@ -30,6 +30,9 @@
     "gf" = "git fetch";
     "grst" = "git reset --hard HEAD";
 
+    # "github diff"
+    "ghd" = "git diff origin/main...HEAD";
+
     "gb" = "gh browse";
     "gpv" = "gh pr view --web";
   };
