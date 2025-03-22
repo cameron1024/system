@@ -44,6 +44,7 @@ in {
         fd
         coreutils
         gnumake
+        tokei
 
         #data stuff
         sq

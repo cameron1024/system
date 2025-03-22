@@ -37,6 +37,7 @@ in {
 
     home.sessionVariables = {
       "EDITOR" = "nvim";
+      "MANPAGER" = "nvim +Man!";
     };
 
     home.packages = with pkgs;
