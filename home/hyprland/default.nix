@@ -45,8 +45,6 @@
       acpi
 
       wl-clipboard
-
-      zed-editor
     ];
 
     programs.obs-studio.enable = true;

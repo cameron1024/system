@@ -24,7 +24,7 @@
 
     alejandra # nix formatter
   
-    (pkgs.callPackage ./iwe.nix {})
+    # (pkgs.callPackage ./iwe.nix {})
 
   ];
 }

@@ -63,7 +63,7 @@ in {
         "SUPER SHIFT, q, exit"
 
         "SUPER, return, exec, kitty"
-        "SUPER SHIFT, return, exec, google-chrome-stable"
+        "SUPER SHIFT, return, exec, firefox"
 
         "SUPER, h, movefocus, l"
         "SUPER, j, movefocus, d"
