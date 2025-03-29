@@ -10,6 +10,7 @@
     ./oil.nix
     ./settings
     ./snacks.nix
+    # ./terminal.nix
     ./treesitter.nix
     ./theme.nix
     ./tmux-navigator.nix
@@ -27,6 +28,10 @@
       "MANPAGER" = "nvim +Man!";
     };
 
+    home.packages = with pkgs; [
+        typst
+    ];
+
     programs.nixvim = {
       enable = true;
       package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
@@ -34,6 +39,7 @@
 
       vimdiffAlias = true;
       performance.byteCompileLua.enable = true;
+      performance.byteCompileLua.nvimRuntime = true;
       performance.combinePlugins.enable = true;
       performance.combinePlugins.standalonePlugins = ["firenvim"];
 

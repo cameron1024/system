@@ -21,5 +21,8 @@
         '';
     };
 
+    extraConfigVim = ''
+        autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}
+    '';
   };
 }

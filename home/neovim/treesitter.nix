@@ -49,10 +49,13 @@ in {
     plugins.treesj = {
       inherit enable;
       lazyLoad.enable = true;
+      lazyLoad.settings.before.__raw = ''
+        function() require 'lz.n'.trigger_load 'nvim-treesitter' end
+      '';
       lazyLoad.settings.keys = [
         {
           __unkeyed-1 = "<leader>s";
-          __unkeyed-2.__raw = /* lua */ ''
+          __unkeyed-2.__raw = ''
             function() require 'treesj'.toggle() end
           '';
         }

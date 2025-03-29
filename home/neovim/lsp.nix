@@ -1,9 +1,13 @@
-{pkgs, ... }: {
+{
   programs.nixvim = {
     diagnostics = {
       virtual_lines.current_line = true;
       virtual_text = false;
     };
+
+    plugins.fidget.enable = true;
+    plugins.fidget.lazyLoad.enable = true;
+    plugins.fidget.lazyLoad.settings.event = ["BufReadPost" "BufNewFile"];
 
     plugins.lsp = {
         enable = true;
@@ -16,11 +20,14 @@
         };
         keymaps.lspBuf = {
           "K" = "hover";
+          "gd" = "definition";
+          "gt" = "type_definition";
+          "gi" = "implementation";
         };
         keymaps.extra = [
           { 
             key = "<leader>i"; 
-            action.__raw = /* lua */ ''
+            action.__raw = ''
               function()
                 local lsp = vim.lsp
                 lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
@@ -33,6 +40,7 @@
         servers.dartls.enable = true;
         servers.marksman.enable = true;
         servers.nixd.enable = true;
+        servers.nil_ls.enable = true;
         servers.ts_ls.enable = true;
         servers.tinymist.enable = true;
         servers.bashls.enable = true;
@@ -43,22 +51,4 @@
         servers.rust_analyzer.installRustfmt = false;
     };
   };
-  # programs.nixvim.extraConfigLua = /* lua */ ''
-  #   vim.lsp.config("rust-analyzer", {
-  #     filetypes = { "rust" },
-  #     root_markers = { "Cargo.toml" },
-  #     cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" }
-  #   })
-  #
-  #   vim.lsp.config("dartls", {
-  #     filetypes = { "rust" },
-  #     root_markers = { "Cargo.toml" },
-  #     cmd = { "${pkgs.rust-analyzer}/bin/rust-analyzer" }
-  #   })
-  #
-  #   vim.lsp.enable { "rust-analyzer", "dartls" }
-  #   vim.diagnostic.config {
-  #     virtual_lines = true,
-  #   }
-  # ''; 
 }
