@@ -10,9 +10,9 @@
     ./oil.nix
     ./settings
     ./snacks.nix
-    # ./terminal.nix
-    ./treesitter.nix
     ./theme.nix
+    ./treesitter.nix
+    ./trouble.nix
     ./tmux-navigator.nix
     ./editing.nix
   ];

@@ -39,6 +39,7 @@
             function() 
               Snacks.terminal.toggle(nil, {
                 interactive = true,
+                auto_close = true,
               }) 
             end
           '';
@@ -50,6 +51,7 @@
 
 
     settings = {
+      input.enabled = true;
       picker.layout = "ivy" ;
 
       image.enable = true;

@@ -9,7 +9,6 @@
     { key = "<C-k>"; mode = ["i" "v" "t"]; action = "<Up>"; }
     { key = "<C-l>"; mode = ["i" "v" "t"]; action = "<Right>"; }
 
-
     { key = "H"; mode = ["n" "o" "x" "v"]; action = "^"; }
     { key = "L"; mode = ["n" "o" "x" "v"]; action = "g_"; }
 
@@ -21,6 +20,10 @@
     { key = "<"; mode = ["v"]; action = "<gv"; }
 
     { key = "<leader><tab>"; action = "<C-^>"; }
+    { key = "<C-v>"; action = "<cmd>vs<cr>"; }
+    { key = "<C-x>"; action = "<cmd>sp<cr>"; }
+
+    { key = "<esc>"; action = "<cmd>nohl<cr>"; }
 
   ];
 }
