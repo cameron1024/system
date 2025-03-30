@@ -1,15 +1,19 @@
 {
   programs.nixvim.plugins.oil = {
     enable = true;
-    
+
     lazyLoad = {
       enable = true;
       settings.keys = [
         {
           __unkeyed-1 = "-";
-          __unkeyed-2.__raw = /* lua */ ''
-            function() require 'oil'.open() end
-          '';
+          __unkeyed-2.__raw =
+            /*
+            lua
+            */
+            ''
+              function() require 'oil'.open() end
+            '';
           desc = "Oil";
         }
       ];

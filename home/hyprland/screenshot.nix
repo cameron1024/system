@@ -1,4 +1,9 @@
-{pkgs, lib, machine, ...}: {
+{
+  pkgs,
+  lib,
+  machine,
+  ...
+}: {
   home.packages = lib.mkIf machine.linux (with pkgs; [
     hyprshot
     jq

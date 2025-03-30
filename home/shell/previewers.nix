@@ -17,7 +17,7 @@
     );
 
   xdg.configFile."presenterm/config.yaml".text = ''
-defaults:
-  image_protocol: kitty-local
+    defaults:
+      image_protocol: kitty-local
   '';
 }

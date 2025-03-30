@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     fstar
-    elan  # lean theorem prover
+    elan # lean theorem prover
   ];
 }
-

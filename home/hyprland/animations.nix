@@ -12,13 +12,11 @@
       disable_hyprland_logo = true;
     };
 
-
     decoration.shadow = {
       enabled = true;
       # range = 50;
       # render_power = 1;
     };
-
 
     bezier = [
       "${curve}, 0.83, 0, 0.17, 1"

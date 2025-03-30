@@ -1,12 +1,10 @@
-{pkgs, ...}: 
-let
+{pkgs, ...}: let
   yb = "${pkgs.yabai}/bin/yabai";
-in
-{
+in {
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "yb" ''
       ${pkgs.yabai}/bin/yabai $@
-    '') 
+    '')
   ];
   services.yabai = {
     enable = false;

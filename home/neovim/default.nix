@@ -1,4 +1,8 @@
-{pkgs, inputs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     inputs.nixvim.homeManagerModules.default
     ./lang
@@ -29,7 +33,7 @@
     };
 
     home.packages = with pkgs; [
-        typst
+      typst
     ];
 
     programs.nixvim = {
@@ -42,7 +46,6 @@
       performance.byteCompileLua.nvimRuntime = true;
       performance.combinePlugins.enable = true;
       performance.combinePlugins.standalonePlugins = ["firenvim"];
-
     };
   };
 }

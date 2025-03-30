@@ -1,6 +1,5 @@
 {
   wayland.windowManager.hyprland.settings = {
-
     decoration = {
       dim_special = 0;
     };

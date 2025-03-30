@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   home.packages = with pkgs; [imagemagick mermaid-cli ghostscript];
   programs.nixvim.plugins.snacks = {
     enable = true;
@@ -11,23 +11,35 @@
         {
           desc = "Files";
           __unkeyed-1 = "<leader>n";
-          __unkeyed-2.__raw = /* lua */ ''
-            function() Snacks.picker.files() end
-          '';
+          __unkeyed-2.__raw =
+            /*
+            lua
+            */
+            ''
+              function() Snacks.picker.files() end
+            '';
         }
         {
           desc = "Grep";
           __unkeyed-1 = "<leader>f";
-          __unkeyed-2.__raw = /* lua */ ''
-            function() Snacks.picker.grep() end
-          '';
+          __unkeyed-2.__raw =
+            /*
+            lua
+            */
+            ''
+              function() Snacks.picker.grep() end
+            '';
         }
         {
           desc = "Last Picker";
           __unkeyed-1 = "<leader><leader>";
-          __unkeyed-2.__raw = /* lua */ ''
-            function() Snacks.picker.resume() end
-          '';
+          __unkeyed-2.__raw =
+            /*
+            lua
+            */
+            ''
+              function() Snacks.picker.resume() end
+            '';
         }
 
         # === Terminal ===
@@ -35,24 +47,25 @@
           desc = "Toggle Terminal";
           mode = ["n" "i" "v" "t" "x"];
           __unkeyed-1 = "<C-t>";
-          __unkeyed-2.__raw = /* lua */ ''
-            function() 
-              Snacks.terminal.toggle(nil, {
-                interactive = true,
-                auto_close = true,
-              }) 
-            end
-          '';
+          __unkeyed-2.__raw =
+            /*
+            lua
+            */
+            ''
+              function()
+                Snacks.terminal.toggle(nil, {
+                  interactive = true,
+                  auto_close = true,
+                })
+              end
+            '';
         }
-
-
       ];
     };
 
-
     settings = {
       input.enabled = true;
-      picker.layout = "ivy" ;
+      picker.layout = "ivy";
       notifier.enable = true;
 
       image.enable = true;
@@ -67,5 +80,4 @@
       terminal.win.height = 15;
     };
   };
-
 }

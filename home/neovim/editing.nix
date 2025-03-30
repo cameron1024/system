@@ -1,7 +1,10 @@
 let
   enable = true;
-  lazyLoad = { enable = true; settings.event = "InsertEnter"; };
-in{
+  lazyLoad = {
+    enable = true;
+    settings.event = "InsertEnter";
+  };
+in {
   programs.nixvim = {
     plugins.auto-save = {
       inherit enable;

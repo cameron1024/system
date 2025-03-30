@@ -14,11 +14,10 @@
 
     silicon
     gcc
-        neovide
+    neovide
   ];
 
   macosPackages = [];
-
 
   extraPackages =
     if machine.linux

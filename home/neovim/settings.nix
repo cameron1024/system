@@ -2,8 +2,8 @@
   programs.nixvim = {
     # vim.g.* = ...;
     globals = {
-        mapleader = " ";
-        maplocalleader = "  ";
+      mapleader = " ";
+      maplocalleader = "  ";
     };
 
     # vim.opt.* = ...;
@@ -29,4 +29,3 @@
     ];
   };
 }
-

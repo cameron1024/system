@@ -1,5 +1,4 @@
-{pkgs, ...}:
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     harper
 
@@ -23,8 +22,7 @@
     kotlin-language-server
 
     alejandra # nix formatter
-  
-    # (pkgs.callPackage ./iwe.nix {})
 
+    # (pkgs.callPackage ./iwe.nix {})
   ];
 }

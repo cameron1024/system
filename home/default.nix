@@ -1,6 +1,6 @@
 {
   imports = [
-    ./mac 
+    ./mac
     ./neovim
     ./hyprland
     ./shell

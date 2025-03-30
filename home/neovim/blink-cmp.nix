@@ -1,9 +1,9 @@
-let 
+let
   enable = true;
   lazyLoad = {
     enable = true;
     settings.event = "InsertEnter";
-  }; 
+  };
 in {
   programs.nixvim.plugins.blink-emoji = {
     inherit enable lazyLoad;
@@ -44,5 +44,4 @@ in {
       };
     };
   };
-
 }

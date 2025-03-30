@@ -2,8 +2,8 @@
   programs.nixvim = {
     # vim.g.* = ...;
     globals = {
-        mapleader = " ";
-        maplocalleader = "  ";
+      mapleader = " ";
+      maplocalleader = "  ";
     };
 
     # vim.opt.* = ...;
@@ -23,13 +23,13 @@
       clipboard = "unnamedplus";
 
       shell = "fish";
-      
+
       autowriteall = true;
       backup = false;
       swapfile = false;
       undodir = "/tmp/.nvimdid";
       undofile = true;
-      
+
       hlsearch = true;
       incsearch = true;
       showmode = false;
@@ -40,15 +40,15 @@
       shiftround = true;
       shiftwidth = 2;
       tabstop = 2;
-      textwidth.__raw = /* lua */ ''
-        vim.g.started_by_firenvim and 0 or 80
-      '';
+      textwidth.__raw =
+        /*
+        lua
+        */
+        ''
+          vim.g.started_by_firenvim and 0 or 80
+        '';
 
       guifont = "FiraCode Nerd Font:12";
-
-
     };
   };
 }
-
-

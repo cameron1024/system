@@ -9,7 +9,7 @@
       end
     '';
   };
-  lualineModes = { 
+  lualineModes = {
     __raw = ''
       function()
         local mode_map = {
@@ -54,9 +54,7 @@
       end
     '';
   };
-in
-
-{
+in {
   programs.nixvim = {
     colorscheme = "everforest";
     colorschemes.everforest.enable = true;
@@ -67,10 +65,14 @@ in
     plugins.web-devicons.lazyLoad.enable = true;
     plugins.web-devicons.lazyLoad.settings.events = ["BufReadPost"];
     plugins.lualine = {
-        enable = true;
-        lazyLoad.enable = true;
-        lazyLoad.settings.event = "BufReadPost";
-        luaConfig.post = /* lua */ ''
+      enable = true;
+      lazyLoad.enable = true;
+      lazyLoad.settings.event = "BufReadPost";
+      luaConfig.post =
+        /*
+        lua
+        */
+        ''
           if vim.g.started_by_firenvim == true then
             vim.o.laststatus = 0
           else
@@ -78,25 +80,36 @@ in
           end
         '';
 
-        settings = {
-          options = {
-            component_separators = { left = "|"; right = "|"; };
-            section_separators = { left = ""; right = ""; };
+      settings = {
+        options = {
+          component_separators = {
+            left = "|";
+            right = "|";
           };
-
-          sections = {
-            lualine_a = [lualineModes];
-            lualine_b = ["branch" "diff" "diagnostics"];
-            lualine_c = [ {__unkeyed-1 = "filename"; path = 1;} ];
-            lualine_x = helpers.emptyTable;
-            lualine_y = [lualineMacro];
-            lualine_z = [ "location" ];
+          section_separators = {
+            left = "";
+            right = "";
           };
         };
+
+        sections = {
+          lualine_a = [lualineModes];
+          lualine_b = ["branch" "diff" "diagnostics"];
+          lualine_c = [
+            {
+              __unkeyed-1 = "filename";
+              path = 1;
+            }
+          ];
+          lualine_x = helpers.emptyTable;
+          lualine_y = [lualineMacro];
+          lualine_z = ["location"];
+        };
+      };
     };
 
     extraConfigVim = ''
-        autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}
+      autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}
     '';
   };
 }
