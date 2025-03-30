@@ -3,7 +3,7 @@ let
 in {
   programs.nixvim.plugins.tmux-navigator = {
     enable = true;
-    settings.no_mappings = true;
+    settings.no_mappings = 1;
   };
 
   programs.nixvim.keymaps = [

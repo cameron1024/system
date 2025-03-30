@@ -46,6 +46,7 @@ in {
 
         bind -n M-n next-window
         bind -n M-p previous-window
+        bind -n M-c new-window -c "#{pane_current_path}"
 
         bind -n M-z resize-pane -Z
 
