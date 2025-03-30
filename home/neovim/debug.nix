@@ -12,6 +12,13 @@
           '';
         }
         {
+          desc = "Clear Breakpoints";
+          __unkeyed-1 = "<C-d><C-x>";
+          __unkeyed-2.__raw = ''
+            function() require 'dap'.clear_breakpoints() end
+          '';
+        }
+        {
           desc = "Continue Debugging";
           __unkeyed-1 = "<C-d><C-c>";
           __unkeyed-2.__raw = ''
