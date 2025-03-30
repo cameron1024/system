@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  home.packages = with pkgs; [alejandra];
   programs.nixvim = {
     plugins.conform-nvim = {
       enable = true;
@@ -13,12 +14,13 @@
       ];
       settings = {
         formatters_by_ft = {
-          "nix" = [ "${pkgs.alejandra}/bin/alejandra"];
+          "nix" = [ "alejandra"];
         };
+        default_format_opts.lsp_format = "fallback";
       };
     };
 
-    opts.formatexpr = "v:lua.require'configm'.formatexpr()";
+    opts.formatexpr = "v:lua.require'conform'.formatexpr()";
   };
 
 }

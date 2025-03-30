@@ -39,6 +39,7 @@ in {
     home.packages = with pkgs;
       [
         # general utilities
+        bash
         ripgrep
         killall
         tree

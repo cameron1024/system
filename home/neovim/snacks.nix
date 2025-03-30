@@ -53,6 +53,7 @@
     settings = {
       input.enabled = true;
       picker.layout = "ivy" ;
+      notifier.enable = true;
 
       image.enable = true;
       image.math.enabled = true;
@@ -66,4 +67,5 @@
       terminal.win.height = 15;
     };
   };
+
 }

@@ -23,7 +23,6 @@
     { key = "<C-v>"; action = "<cmd>vs<cr>"; }
     { key = "<C-x>"; action = "<cmd>sp<cr>"; }
 
-    { key = "<esc>"; action = "<cmd>nohl<cr>"; }
 
   ];
 }

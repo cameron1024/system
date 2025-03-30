@@ -1,6 +1,7 @@
 {pkgs, ...}: let
   enable = true;
   lazyLoad = { enable = true; settings.event = "BufReadPost"; };
+  # TODO
   injections = pkgs.vimUtils.buildVimPlugin rec {
     name = "tree-sitter-language-injection.nvim";
     src = pkgs.fetchFromGitHub {
@@ -61,9 +62,34 @@ in {
         }
       ];
       settings = {
+        use_default_keymaps = false;
         dot_repeat = true;
-
       };
+
     };
+
+    plugins.nvim-ufo = {
+      inherit enable;
+        lazyLoad.enable = true;
+        lazyLoad.settings.before.__raw = ''
+          function() require 'lz.n'.trigger_load 'nvim-treesitter' end
+        '';
+        lazyLoad.settings.keys = [
+          {
+            __unkeyed-1 = "zR";
+            __unkeyed-2.__raw = ''
+              function() require 'ufo'.openAllFolds() end
+            '';
+          }
+          {
+            __unkeyed-1 = "zM";
+            __unkeyed-2.__raw = ''
+              function() require 'ufo'.closeAllFolds() end
+            '';
+          }
+        ];
+      };  
   };
+
+  
 }
