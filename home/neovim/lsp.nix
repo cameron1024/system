@@ -36,7 +36,7 @@
         }
       ];
 
-      servers.rust_analyzer.enable = true;
+      # servers.rust_analyzer.enable = true;
       servers.dartls.enable = true;
       servers.marksman.enable = true;
       servers.nixd.enable = true;
@@ -46,9 +46,9 @@
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
 
-      servers.rust_analyzer.installRustc = false;
-      servers.rust_analyzer.installCargo = false;
-      servers.rust_analyzer.installRustfmt = false;
+      # servers.rust_analyzer.installRustc = false;
+      # servers.rust_analyzer.installCargo = false;
+      # servers.rust_analyzer.installRustfmt = false;
     };
   };
 }

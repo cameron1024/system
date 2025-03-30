@@ -7,7 +7,7 @@
   cfg = config.machine.wm.hyprland;
 in {
   config = lib.mkIf cfg.enable {
-    hardware.pulseaudio.enable = false;
+    services.pulseaudio.enable = false;
     security.rtkit.enable = true;
     services.pipewire = {
       enable = true;
