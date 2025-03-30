@@ -71,6 +71,12 @@ in {
       };
     };
 
+    extraConfigLuaPre = ''
+      vim.o.foldlevel = 99
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+    '';
+
     plugins.treesj = {
       inherit enable;
       lazyLoad.enable = true;
@@ -94,6 +100,7 @@ in {
     plugins.nvim-ufo = {
       inherit enable;
       lazyLoad.enable = true;
+      lazyLoad.settings.event = "BufReadPost";
       lazyLoad.settings.before.__raw = ''
         function() require 'lz.n'.trigger_load 'nvim-treesitter' end
       '';

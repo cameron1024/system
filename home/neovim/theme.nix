@@ -54,6 +54,11 @@
       end
     '';
   };
+  simpleConfig = {
+    enable = true;
+    lazyLoad.enable = true;
+    lazyLoad.settings.events = ["BufEnter"];
+  }
 in {
   programs.nixvim = {
     colorscheme = "everforest";
@@ -61,9 +66,8 @@ in {
 
     opts.winborder = "rounded";
 
-    plugins.web-devicons.enable = true;
-    plugins.web-devicons.lazyLoad.enable = true;
-    plugins.web-devicons.lazyLoad.settings.events = ["BufReadPost"];
+    plugins.web-devicons = simpleConfig;
+
     plugins.lualine = {
       enable = true;
       lazyLoad.enable = true;

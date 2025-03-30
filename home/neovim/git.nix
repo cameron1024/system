@@ -15,5 +15,11 @@
         };
       };
     };
+
+    plugins.octo = {
+      enable = true;
+      lazyLoad.enable = true;
+      lazyLoad.settings.cmd = "Octo";
+    };
   };
 }

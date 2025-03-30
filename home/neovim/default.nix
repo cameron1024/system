@@ -42,6 +42,7 @@
       plugins."lz-n".enable = true;
 
       vimdiffAlias = true;
+
       performance.byteCompileLua.enable = true;
       performance.byteCompileLua.nvimRuntime = true;
       performance.combinePlugins.enable = true;
