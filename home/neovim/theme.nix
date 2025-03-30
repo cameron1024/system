@@ -58,7 +58,7 @@
     enable = true;
     lazyLoad.enable = true;
     lazyLoad.settings.events = ["BufEnter"];
-  }
+  };
 in {
   programs.nixvim = {
     colorscheme = "everforest";

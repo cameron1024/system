@@ -16,6 +16,7 @@
     ./snacks.nix
     ./theme.nix
     ./treesitter.nix
+    ./test.nix
     ./trouble.nix
     ./tmux-navigator.nix
     ./editing.nix
