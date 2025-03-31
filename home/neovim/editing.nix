@@ -19,5 +19,15 @@ in {
     plugins.nvim-surround = {
       inherit enable lazyLoad;
     };
+
+    plugins.marks.enable = true;
+    plugins.marks.cyclic = true;
+    plugins.marks.defaultMappings = true;
+    keymaps = [
+      {
+        key = "<leader>m";
+        action.__raw = "function() Snacks.picker.marks() end";
+      }
+    ];
   };
 }

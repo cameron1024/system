@@ -72,5 +72,18 @@
       key = "<C-x>";
       action = "<cmd>sp<cr>";
     }
+    {
+      key = "<leader>v";
+      action = "<C-v>";
+    }
+    {
+      key = "<esc>";
+      action.__raw = ''
+        function()
+          vim.cmd [[nohl]] 
+          return "<esc>"
+        end
+      '';
+    }
   ];
 }

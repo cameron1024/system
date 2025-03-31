@@ -105,9 +105,9 @@ in {
               path = 1;
             }
           ];
-          lualine_x = helpers.emptyTable;
+          lualine_x = ["searchcount"];
           lualine_y = [lualineMacro];
-          lualine_z = ["location"];
+          lualine_z = ["location" "lsp_status"];
         };
       };
     };
