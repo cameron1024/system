@@ -67,6 +67,8 @@ in {
         ripdrag
 
         awscli2
+
+        comma
       ]
       ++ systemPackages;
   };

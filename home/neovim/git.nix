@@ -21,5 +21,7 @@
       lazyLoad.enable = true;
       lazyLoad.settings.cmd = "Octo";
     };
+
+    plugins.fugitive.enable = true;
   };
 }

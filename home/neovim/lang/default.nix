@@ -1,8 +1,10 @@
 {
   imports = [
-    ./markview.nix
-    ./typst.nix
+    ./cedar.nix
     ./lean.nix
+    ./markview.nix
+    ./ron.nix
     ./rust.nix
+    ./typst.nix
   ];
 }
