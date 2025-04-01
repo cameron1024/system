@@ -1,5 +1,4 @@
-{config, ...}: let
-  helpers = config.lib.nixvim;
+let
   lualineMacro = {
     __raw = ''
       function()

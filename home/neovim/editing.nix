@@ -20,6 +20,10 @@ in {
       inherit enable lazyLoad;
     };
 
+    plugins.todo-comments.enable = true;
+    plugins.todo-comments.lazyLoad.enable = true;
+    plugins.todo-comments.lazyLoad.settings.event = "BufEnter";
+
     plugins.marks.enable = true;
     plugins.marks.cyclic = true;
     plugins.marks.defaultMappings = true;

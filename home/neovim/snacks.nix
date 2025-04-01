@@ -69,7 +69,7 @@
       notifier.enable = true;
 
       image.enable = true;
-      image.math.enabled = true;
+      image.math.enabled = false; # typst equations look weird
       image.convert.mermaid.__raw = ''
         function()
           local theme = vim.o.background == "light" and "neutral" or "dark"
