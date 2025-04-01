@@ -32,6 +32,7 @@ in {
         git = {
           module = "blink-cmp-git";
           name = "Git";
+          score_offset = -15;
         };
       };
 

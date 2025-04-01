@@ -7,6 +7,9 @@ vim.g.rustaceanvim = {
   server = {
     settings = {
       ["rust-analyzer"] = {
+        server = {
+          path = "rust-analyzer",
+        },
         check = {
           command = "clippy",
         },
