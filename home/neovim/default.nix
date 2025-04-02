@@ -21,6 +21,7 @@
     ./trouble.nix
     ./tmux-navigator.nix
     ./editing.nix
+    ./neorg.nix
   ];
 
   config = {
