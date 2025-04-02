@@ -82,7 +82,7 @@ in {
           query = "@parameter.inner";
           desc = "In Argument";
         };
-        "ars" = {
+        "ar" = {
           query = "@assignment.rhs";
           desc = "Assignment RHS";
         };
