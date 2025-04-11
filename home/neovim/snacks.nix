@@ -11,54 +11,44 @@
         {
           desc = "Files";
           __unkeyed-1 = "<leader>n";
-          __unkeyed-2.__raw =
-            /*
-            lua
-            */
-            ''
-              function() Snacks.picker.files() end
-            '';
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.files() end
+          '';
         }
         {
           desc = "Grep";
           __unkeyed-1 = "<leader>f";
-          __unkeyed-2.__raw =
-            /*
-            lua
-            */
-            ''
-              function() Snacks.picker.grep() end
-            '';
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.grep() end
+          '';
+        }
+        {
+          desc = "Marks";
+          __unkeyed-1 = "<leader>m";
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.grep() end
+          '';
         }
         {
           desc = "Last Picker";
           __unkeyed-1 = "<leader><leader>";
-          __unkeyed-2.__raw =
-            /*
-            lua
-            */
-            ''
-              function() Snacks.picker.resume() end
-            '';
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.resume() end
+          '';
         }
-
         # === Terminal ===
         {
           desc = "Toggle Terminal";
           mode = ["n" "i" "v" "t" "x"];
           __unkeyed-1 = "<C-t>";
-          __unkeyed-2.__raw =
-            /*
-            lua
-            */
-            ''
-              function()
-                Snacks.terminal.toggle(nil, {
-                  interactive = true,
-                  auto_close = true,
-                })
-              end
-            '';
+          __unkeyed-2.__raw = ''
+            function()
+              Snacks.terminal.toggle(nil, {
+                interactive = true,
+                auto_close = true,
+              })
+            end
+          '';
         }
       ];
     };
