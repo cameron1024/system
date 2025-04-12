@@ -1,4 +1,7 @@
 let
+  lualineTreesitter = {
+    __raw = "function() require 'nvim-treesitter'.statusline() end ";
+  };
   lualineMacro = {
     __raw = ''
       function()
@@ -63,27 +66,29 @@ in {
     colorscheme = "everforest";
     colorschemes.everforest.enable = true;
 
-    opts.winborder = "rounded";
-
     plugins.web-devicons = simpleConfig;
 
     plugins.lualine = {
       enable = true;
       lazyLoad.enable = true;
       lazyLoad.settings.event = "BufReadPost";
-      luaConfig.post =
-        /*
-        lua
-        */
-        ''
-          if vim.g.started_by_firenvim == true then
-            vim.o.laststatus = 0
-          else
-            vim.o.laststatus = 3
-          end
-        '';
+      luaConfig.post = ''
+        if vim.g.started_by_firenvim == true then
+          vim.o.laststatus = 0
+        else
+          vim.o.laststatus = 3
+        end
+      '';
 
       settings = {
+        extensions = [
+          "aerial"
+          "fugitive"
+          "man"
+          "oil"
+          "quickfix"
+          "trouble"
+        ];
         options = {
           component_separators = {
             left = "|";
@@ -104,9 +109,9 @@ in {
               path = 1;
             }
           ];
-          lualine_x = ["searchcount"];
+          lualine_x = ["searchcount" lualineTreesitter];
           lualine_y = [lualineMacro];
-          lualine_z = ["location" "lsp_status"];
+          lualine_z = ["location"];
         };
       };
     };

@@ -7,7 +7,7 @@
 
     plugins.fidget.enable = true;
     plugins.fidget.lazyLoad.enable = true;
-    plugins.fidget.lazyLoad.settings.event = ["BufReadPost" "BufNewFile"];
+    plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
 
     plugins.lsp = {
       enable = true;
@@ -31,6 +31,15 @@
             function()
               local lsp = vim.lsp
               lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
+            end
+          '';
+        }
+        {
+          key = "<leader>d";
+          action.__raw = ''
+            function()
+              local d = vim.diagnostic
+              d.enable(not d.is_enabled())
             end
           '';
         }
