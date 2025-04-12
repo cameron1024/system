@@ -27,10 +27,17 @@ in {
     plugins.marks.enable = true;
     plugins.marks.cyclic = true;
     plugins.marks.defaultMappings = true;
+
+    plugins.undotree.enable = true;
+
     keymaps = [
       {
         key = "<leader>m";
         action.__raw = "function() Snacks.picker.marks() end";
+      }
+      {
+        key = "<C-u>";
+        action = "<cmd>UndotreeToggle<cr>";
       }
     ];
   };
