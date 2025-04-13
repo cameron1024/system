@@ -1,6 +1,7 @@
 {
   machine,
   lib,
+  pkgs,
   ...
 }: {
   config = lib.mkIf machine.linux {
@@ -12,8 +13,8 @@
 
     programs.rofi = {
       enable = true;
+      package = pkgs.rofi-wayland;
       cycle = true;
-      font = "Fira Code NerdFont";
       location = "center";
       terminal = "kitty";
       theme = ./rofi/style.rasi;

@@ -38,8 +38,13 @@
           key = "<leader>d";
           action.__raw = ''
             function()
-              local d = vim.diagnostic
-              d.enable(not d.is_enabled())
+              local cfg = vim.diagnostic.config()
+              if cfg.virtual_lines == false then
+                cfg.virtual_lines = { current_line = true }
+              else
+                cfg.virtual_lines = false
+              end
+              vim.diagnostic.config(cfg)
             end
           '';
         }

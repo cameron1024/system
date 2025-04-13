@@ -1,7 +1,4 @@
 let
-  lualineTreesitter = {
-    __raw = "function() require 'nvim-treesitter'.statusline() end ";
-  };
   lualineMacro = {
     __raw = ''
       function()
@@ -109,7 +106,7 @@ in {
               path = 1;
             }
           ];
-          lualine_x = ["searchcount" lualineTreesitter];
+          lualine_x = ["searchcount"];
           lualine_y = [lualineMacro];
           lualine_z = ["location"];
         };

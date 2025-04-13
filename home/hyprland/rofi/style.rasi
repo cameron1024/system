@@ -1,91 +1,111 @@
-/* MACOS LAUNCHPAD LIKE THEME FOR ROFI */
-/* Author: Newman Sanchez (https://github.com/newmanls) */
+/*******************************************************************************
+ * ROFI SQUARED THEME USING THE EVERFOREST PALETTE 
+ * User                 : LR-Tech               
+ * Theme Repo           : https://github.com/lr-tech/rofi-themes-collection
+ *******************************************************************************/
 
 * {
-    font: "Montserrat 9";
+    font:   "FiraCode Nerd Font 16";
 
-    bg0:  #24242480;
-    bg1:  #363636;
-    bg2:  #f5f5f520;
-    bg3:  #f5f5f540;
-    bg4:  #0860f2E6;
+    bgdark:     #272E33;
+    bgalt:     #3C4841;
+    bggreen:     #56635F;
+    fg0:     #A7C080;
 
-    fg0:  #f5f5f5;
-    fg1:  #f5f5f580;
+    accent-color:     #A7C080;
+    urgent-color:     #DBBC7F;
 
-    background-color: transparent;
-    text-color:       @fg0;
-    padding:          0px;
-    margin:           0px;
+    background-color:   transparent;
+    text-color:         @fg0;
+
+    transparent: rgba(0,0,0,0);
 }
 
 window {
-  fullscreen: true;
-  padding: 1em;
-  background-color: @bg0;
+    location:   center;
+    anchor: center;
+    transparency: "screenshot";
+    padding: 10px;
+    border: 0px;
+    border-radius: 3px;
+
+    background-color:   @transparent;
+    spacing: 0;
+    children: [mainbox];
+    orientation: horizontal;
 }
 
 mainbox {
-  padding:  8px;
+    spacing: 0;
+    children: [ inputbar, message, listview ];
+}
+
+message {
+    color: @bggreen;
+    padding: 5px;
+    border-color: @fg0;
+    border: 0px 2px 2px 2px;
+    background-color: @bgdark;
 }
 
 inputbar {
-  background-color: @bg2;
+    color: @fg0;
+    padding:    11px;
+    background-color:   @bgalt;
 
-  margin:   0px calc( 50% - 120px );
-  padding:  2px 4px;
-  spacing:  4px;
+    border: 1px;
+    border-radius: 3px 3px 0px 0px;
+    border-color: @bggreen;
+}
 
-  border:         1px;
-  border-radius:  2px;
-  border-color:   @bg3;
-
-  children: [icon-search,entry];
+entry, prompt, case-indicator {
+    text-font: inherit;
+    text-color:inherit;
 }
 
 prompt {
-  enabled:  false;
-}
-
-icon-search {
-  expand:   false;
-  filename: "search";
-  vertical-align: 0.5;
-}
-
-entry {
-  placeholder:        "Search";
-  placeholder-color:  @bg2;
+    margin: 0px 1em 0em 0em ;
 }
 
 listview {
-  margin:   48px calc( 50% - 560px );
-  spacing:  48px;
-  columns:  6;
-  fixed-columns: true;
-}
-
-element, element-text, element-icon {
-  cursor: pointer;
+    padding: 8px;
+    border-radius: 0px 0px 3px 3px;
+    border-color: @bggreen;
+    border: 0px 1px 1px 1px;
+    background-color: rgba(46,52,64,0.9);
+    dynamic: false;
 }
 
 element {
-  padding:      8px;
-  spacing:      4px;
-
-  orientation:    vertical;
-  border-radius:  16px;
+    padding: 3px;
+    vertical-align: 0.5;
+    border-radius: 3px;
+    background-color: transparent;
+    color: @fg0;
+    text-color: rgb(216, 222, 233);
 }
 
-element selected {
-  background-color: @bg4;
+element selected.normal {
+	background-color: @accent-color;
+	text-color: #2e3440;
 }
 
-element-icon {
-  size: 4em;
-  horizontal-align: 0.5;
+element-text, element-icon {
+    background-color: inherit;
+    text-color:       inherit;
 }
 
-element-text {
-  horizontal-align: 0.5;
+button {
+    padding: 6px;
+    color: @fg0;
+    horizontal-align: 0.5;
+
+    border: 2px 0px 2px 2px;
+    border-radius: 4px 0px 0px 4px;
+    border-color: @bggreen;
+}
+
+button selected normal {
+    border: 2px 0px 2px 2px;
+    border-color: @fg0;
 }

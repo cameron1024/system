@@ -30,6 +30,13 @@
           '';
         }
         {
+          desc = "File Picker";
+          __unkeyed-1 = "<leader>p";
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.explorer() end
+          '';
+        }
+        {
           desc = "Last Picker";
           __unkeyed-1 = "<leader><leader>";
           __unkeyed-2.__raw = ''
@@ -50,13 +57,32 @@
             end
           '';
         }
+        # === Jumps ===
+        {
+          desc = "Next reference";
+          mode = ["n" "o" "x" "v"];
+          __unkeyed-1 = "]r";
+          __unkeyed-2.__raw = ''
+            function() Snacks.words.jump(1, true) end
+          '';
+        }
+        {
+          desc = "Prev reference";
+          mode = ["n" "o" "x" "v"];
+          __unkeyed-1 = "[r";
+          __unkeyed-2.__raw = ''
+            function() Snacks.words.jump(-1, true) end
+          '';
+        }
       ];
     };
 
     settings = {
+      indent.enabled = true;
       input.enabled = true;
       picker.layout = "ivy";
       notifier.enable = true;
+      words.enabled = true;
 
       image.enable = true;
       image.math.enabled = false; # typst equations look weird
@@ -66,6 +92,7 @@
           return { "-i", "{src}", "-o", "{file}", "-b", "#2d353b", "-t", theme, "-s", "{scale}" }
         end
       '';
+
 
       terminal.win.height = 15;
     };
