@@ -32,8 +32,10 @@
 
     system.defaults.dock.expose-animation-duration = 10.0;
 
+    security.pam.services.sudo_local.touchIdAuth = true;
+    security.pam.services.sudo_local.reattach = true;
+
     # nixpkgs.hostPlatform = "aarch64-darwin";
-    services.nix-daemon.enable = true;
 
     users.users.cameron = {
       description = "cameron";
