@@ -10,6 +10,8 @@
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
+    mac-app-util.url = "github:hraban/mac-app-util";
+
     ags.url = "github:Aylur/ags";
     ags.inputs.nixpkgs.follows = "nixpkgs";
 

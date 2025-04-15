@@ -1,5 +1,6 @@
-{
+{inputs, ...}: {
   imports = [
+    inputs.mac-app-util.homeManagerModules.default
     ./mac
     ./neovim
     ./hyprland

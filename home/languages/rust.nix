@@ -48,5 +48,6 @@ in {
 
   home.shellAliases = {
     "cg" = "cargo";
+    "cnt" = "cargo nextest run";
   };
 }

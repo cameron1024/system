@@ -8,6 +8,7 @@
     system.stateVersion = 5;
 
     nix = {
+      enable = false;
       # configureBuildUsers = true;
       package = pkgs.nixVersions.stable;
 
