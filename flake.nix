@@ -45,7 +45,6 @@
               cd $(git rev-parse --show-toplevel)
 
               git add -A
-              sudo rm /etc/nix/nix.conf
               nix run nix-darwin \
                 --extra-experimental-features flakes \
                 --extra-experimental-features nix-command \

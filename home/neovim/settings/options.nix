@@ -1,4 +1,4 @@
-{
+{machine, ...}: {
   programs.nixvim = {
     # vim.g.* = ...;
     globals = {
@@ -48,7 +48,10 @@
           vim.g.started_by_firenvim and 0 or 80
         '';
 
-      guifont = "FiraCode Nerd Font:12";
+      guifont =
+        if machine.linux
+        then "FiraCode Nerd Font:12"
+        else "Fira Code:12";
     };
   };
 }

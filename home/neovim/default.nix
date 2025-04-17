@@ -12,6 +12,7 @@
     ./formatting.nix
     ./git.nix
     ./lsp.nix
+    ./http
     ./oil.nix
     ./settings
     ./snacks.nix
@@ -28,6 +29,7 @@
     home.shellAliases = {
       "e" = "nvim";
       "ed" = "nvim +DiffviewOpen";
+      "nv" = "neovide";
     };
 
     home.sessionVariables = {
@@ -37,6 +39,7 @@
 
     home.packages = with pkgs; [
       typst
+      neovide
     ];
 
     programs.nixvim = {
