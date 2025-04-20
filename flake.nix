@@ -18,11 +18,6 @@
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
-    ghostty.url = "github:ghostty-org/ghostty";
-
-    nix-snapd.url = "github:nix-community/nix-snapd";
-    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
-
     lla.url = "github:chaqchase/lla";
     lla.inputs.nixpkgs.follows = "nixpkgs";
 
