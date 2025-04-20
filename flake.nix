@@ -28,6 +28,8 @@
 
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
+    
+    sherlock.url = "github:Skxxtz/sherlock";
   };
 
   outputs = inputs: let

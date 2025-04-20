@@ -1,6 +1,10 @@
-{
+{inputs }: {
   hostname = "mini";
-  boot = "/boot";
+  cpuArch = "znver5";
+
+  kernelParams = [
+    "amdgpu.dcdebugmask=0x12"
+  ];
 
   linux = true;
   wm.hyprland.enable = true;

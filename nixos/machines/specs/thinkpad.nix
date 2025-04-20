@@ -1,4 +1,4 @@
-{
+{inputs}: {
   hostname = "thinkchad";
   boot = "/boot";
 
