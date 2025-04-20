@@ -6,13 +6,9 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_12;
+  linux = pkgs.linuxPackages_6_14;
 in {
   imports = [
-    inputs.nix-snapd.nixosModules.default
-    {
-      services.snap.enable = true;
-    }
     ./hyprland
     ./dev/android.nix
     ./performance.nix
@@ -29,6 +25,13 @@ in {
     machine = {
       linux = mkOption {
         type = types.bool;
+      };
+      cpuArch = mkOption {
+        type = types.nullOr types.str;
+      };
+      kernelParams = mkOption {
+        type = types.listOf types.str;
+        default = [];
       };
       user = {
         name = mkOption {
@@ -48,7 +51,7 @@ in {
       };
 
       boot = mkOption {
-        type = types.str;
+        type = types.nullOr types.str;
         default = "/boot";
         description = "The path to the boot dir";
       };
@@ -120,8 +123,9 @@ in {
   config = {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
-    boot.loader.efi.efiSysMountPoint = cfg.boot;
+    boot.loader.efi.efiSysMountPoint = lib.mkIf (cfg.boot != null) cfg.boot;
     boot.kernelPackages = linux;
+    boot.kernelParams = cfg.kernelParams;
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
@@ -157,33 +161,37 @@ in {
       monaspace
     ];
 
-    environment.systemPackages = with pkgs; [
-      git
-      curl
-      vim
-      firefox
-      networkmanager
-      jq
-      linux.cpupower
-      linux.perf
-      intel-gpu-tools
+    environment.systemPackages = with pkgs;
+      [
+        git
+        curl
+        vim
+        firefox
+        networkmanager
+        jq
+        linux.cpupower
+        linux.perf
+        ffmpeg
+      ];
+      # ++ (
+      #   if (cfg.cpuArch != "znver5")
+      #   then []
+      #   else [intel-gpu-tools]
+      # );
 
-      ffmpeg
-    ];
-
-    nixpkgs.config.packageOverrides = pkgs: {
+    nixpkgs.config.packageOverrides = lib.mkIf (cfg.cpuArch != "znver5") (pkgs: {
       intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
-    };
+    });
 
     hardware.graphics.enable = true;
 
-    hardware.graphics.extraPackages = with pkgs; [
+    hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
       intel-media-driver
       intel-vaapi-driver
       libvdpau-va-gl
       vpl-gpu-rt
-      intel-gpu-tools
-    ];
+      # intel-gpu-tools
+    ]);
 
     services.ollama.enable = true;
 
@@ -199,6 +207,7 @@ in {
         trusted-users = ["root" "@wheel"];
         substituters = ["https://hyprland.cachix.org"];
         trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+        system-features = lib.mkIf (cfg.cpuArch == "znver5") ["gccarch-znver5"];
       };
     };
   };
