@@ -72,6 +72,19 @@
             };
             priority = 10;
           }
+          {
+            name = "Github";
+            display_name = "Github";
+            tag_start = "{keyword}";
+            tag_end = "{keyword}";
+            alias = "gh";
+            type = "web_launcher";
+            args = {
+              "search_engine" = "https://github.com/{keyword}";
+              "icon" = "github";
+            };
+            priority = 10;
+          }
         ];
       };
     };

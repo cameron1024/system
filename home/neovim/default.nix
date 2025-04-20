@@ -29,7 +29,7 @@
     home.shellAliases = {
       "e" = "nvim";
       "ed" = "nvim +DiffviewOpen";
-      "nv" = "neovide";
+      "nv" = "neovide --fork";
     };
 
     home.sessionVariables = {
