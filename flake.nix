@@ -23,8 +23,10 @@
 
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
-    
+
     sherlock.url = "github:Skxxtz/sherlock";
+
+    better-control.url = "github:rishabh5321/better-control-flake";
   };
 
   outputs = inputs: let

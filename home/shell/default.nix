@@ -28,6 +28,9 @@ in {
   ];
 
   config = {
+    programs.atuin.enable = true;
+    programs.atuin.enableFishIntegration = true;
+
     home.shellAliases = {
       "p" = "cd ~/projects/playground";
       "t" = "cd /tmp";

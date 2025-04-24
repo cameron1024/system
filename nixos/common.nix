@@ -16,6 +16,7 @@ in {
     ./games
     ./containers.nix
     ./postgres.nix
+    ./ai.nix
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -161,23 +162,22 @@ in {
       monaspace
     ];
 
-    environment.systemPackages = with pkgs;
-      [
-        git
-        curl
-        vim
-        firefox
-        networkmanager
-        jq
-        linux.cpupower
-        linux.perf
-        ffmpeg
-      ];
-      # ++ (
-      #   if (cfg.cpuArch != "znver5")
-      #   then []
-      #   else [intel-gpu-tools]
-      # );
+    environment.systemPackages = with pkgs; [
+      git
+      curl
+      vim
+      firefox
+      networkmanager
+      jq
+      linux.cpupower
+      linux.perf
+      ffmpeg
+    ];
+    # ++ (
+    #   if (cfg.cpuArch != "znver5")
+    #   then []
+    #   else [intel-gpu-tools]
+    # );
 
     nixpkgs.config.packageOverrides = lib.mkIf (cfg.cpuArch != "znver5") (pkgs: {
       intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
@@ -192,8 +192,6 @@ in {
       vpl-gpu-rt
       # intel-gpu-tools
     ]);
-
-    services.ollama.enable = true;
 
     nix = {
       package = pkgs.nixVersions.stable;
