@@ -15,6 +15,8 @@
       number = true;
       relativenumber = true;
       hidden = true;
+
+      cursorline = true;
     };
 
     keymaps = [

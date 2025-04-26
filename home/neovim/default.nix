@@ -6,12 +6,12 @@
   imports = [
     inputs.nixvim.homeManagerModules.default
     ./lang
+    ./lsp
     ./blink-cmp.nix
     ./debug.nix
     ./firenvim.nix
     ./formatting.nix
     ./git.nix
-    ./lsp.nix
     ./http
     ./oil.nix
     ./settings

@@ -12,22 +12,22 @@
     # move while in insert mode
     {
       key = "<C-h>";
-      mode = ["i" "v" "t"];
+      mode = "i";
       action = "<Left>";
     }
     {
       key = "<C-j>";
-      mode = ["i" "v" "t"];
+      mode = "i";
       action = "<Down>";
     }
     {
       key = "<C-k>";
-      mode = ["i" "v" "t"];
+      mode = "i";
       action = "<Up>";
     }
     {
       key = "<C-l>";
-      mode = ["i" "v" "t"];
+      mode = "i";
       action = "<Right>";
     }
 

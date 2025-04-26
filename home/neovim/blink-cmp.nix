@@ -16,6 +16,7 @@ in {
     inherit enable lazyLoad;
     settings = {
       keymap.preset = "enter";
+      keymap."<C-k>" = ["fallback"];
       keymap."<Tab>" = ["select_next" "snippet_forward" "fallback"];
       keymap."<S-Tab>" = ["select_prev" "snippet_backward" "fallback"];
       keymap."<C-c>" = ["hide" "fallback"];

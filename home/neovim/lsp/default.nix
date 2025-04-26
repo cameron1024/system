@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   programs.nixvim = {
     diagnostics = {
       virtual_lines.current_line = true;
@@ -50,7 +50,6 @@
         }
       ];
 
-      # servers.rust_analyzer.enable = true;
       servers.dartls.enable = true;
       servers.marksman.enable = true;
       servers.nixd.enable = true;
@@ -59,10 +58,29 @@
       servers.tinymist.enable = true;
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
-
-      # servers.rust_analyzer.installRustc = false;
-      # servers.rust_analyzer.installCargo = false;
-      # servers.rust_analyzer.installRustfmt = false;
     };
+
+    extraPlugins = [
+      (pkgs.callPackage ./lsp-tiny-code-action.nix {})
+    ];
+
+    extraConfigLua = ''
+      require 'lz.n'.load {
+        {
+          "tiny-code-action",
+          lazy = true,
+          keys = {
+            { "gra", function() require 'tiny-code-action'.code_action() end }
+          },
+          after = function()
+            require 'tiny-code-action'.setup {
+              backend = "difftastic",
+              picker = "snacks",
+            }
+          end,
+
+        }
+      }
+    '';
   };
 }
