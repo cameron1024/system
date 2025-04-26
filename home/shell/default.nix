@@ -30,6 +30,8 @@ in {
   config = {
     programs.atuin.enable = true;
     programs.atuin.enableFishIntegration = true;
+    programs.atuin.settings.daemon.enabled = true;
+    programs.atuin.settings.filter_mode_shell_up_key_binding = "session";
 
     home.shellAliases = {
       "p" = "cd ~/projects/playground";
