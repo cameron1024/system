@@ -125,6 +125,7 @@ in {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.efi.efiSysMountPoint = lib.mkIf (cfg.boot != null) cfg.boot;
+    boot.loader.grub.memtest86.enable = true;
     boot.kernelPackages = linux;
     boot.kernelParams = cfg.kernelParams;
 
@@ -192,6 +193,8 @@ in {
       vpl-gpu-rt
       # intel-gpu-tools
     ]);
+
+    security.sudo.package = pkgs.sudo.override {withInsults = true;};
 
     nix = {
       package = pkgs.nixVersions.stable;
