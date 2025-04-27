@@ -29,6 +29,7 @@ in {
       };
       cpuArch = mkOption {
         type = types.nullOr types.str;
+        default = null;
       };
       kernelParams = mkOption {
         type = types.listOf types.str;
