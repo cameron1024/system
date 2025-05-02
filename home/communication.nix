@@ -9,7 +9,6 @@
     zapzap # PWA whatsapp
     slack
     discord
-    zoom-us
 
     rquickshare
   ]);
