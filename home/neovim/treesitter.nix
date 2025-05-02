@@ -5,31 +5,31 @@
     settings.event = "BufReadPost";
   };
   # TODO
-  tree-climber = pkgs.vimUtils.buildVimPlugin {
-    name = "tree-climber";
-    src = pkgs.fetchFromGitHub {
-      owner = "drybalka";
-      repo = "tree-climber.nvim";
-      rev = "9b0c8c8358f575f924008945c74fd4f40d814cd7";
-      hash = "sha256-iivP8g8aSeEnS/dBcb0sg583ijzhWFA7w430xWPmjF0=";
-    };
-    nvimRequireCheck = "tree-climber";
-  };
+  # tree-climber = pkgs.vimUtils.buildVimPlugin {
+  #   name = "tree-climber";
+  #   src = pkgs.fetchFromGitHub {
+  #     owner = "drybalka";
+  #     repo = "tree-climber.nvim";
+  #     rev = "9b0c8c8358f575f924008945c74fd4f40d814cd7";
+  #     hash = "sha256-iivP8g8aSeEnS/dBcb0sg583ijzhWFA7w430xWPmjF0=";
+  #   };
+  #   nvimRequireCheck = "tree-climber";
+  # };
 in {
   programs.nixvim = {
-    extraPlugins = [tree-climber];
-    extraConfigLuaPost = ''
-      local tree_climber_keymap = require 'lz.n'.keymap {
-        "tree-climber",
-      }
-      tree_climber_keymap.set({"n", "v", "o"}, "<M-l>", function() require 'lz.n'.load 'tree-climber'.goto_next() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<M-h>", function() require 'lz.n'.load 'tree-climber'.goto_prev() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<M-k>", function() require 'lz.n'.load 'tree-climber'.goto_parent() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<M-j>", function() require 'lz.n'.load 'tree-climber'.goto_child() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<SM-l>", function() require 'lz.n'.load 'tree-climber'.swap_next() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<SM-h>", function() require 'lz.n'.load 'tree-climber'.swap_prev() end)
-      tree_climber_keymap.set({"n", "v", "o"}, "<leader>`", function() require 'lz.n'.load 'tree-climber'.highlight_node() end)
-    '';
+    # extraPlugins = [tree-climber];
+    # extraConfigLuaPost = ''
+    #   local tree_climber_keymap = require 'lz.n'.keymap {
+    #     "tree-climber",
+    #   }
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<M-l>", function() require 'lz.n'.load 'tree-climber'.goto_next() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<M-h>", function() require 'lz.n'.load 'tree-climber'.goto_prev() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<M-k>", function() require 'lz.n'.load 'tree-climber'.goto_parent() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<M-j>", function() require 'lz.n'.load 'tree-climber'.goto_child() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<SM-l>", function() require 'lz.n'.load 'tree-climber'.swap_next() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<SM-h>", function() require 'lz.n'.load 'tree-climber'.swap_prev() end)
+    #   tree_climber_keymap.set({"n", "v", "o"}, "<leader>`", function() require 'lz.n'.load 'tree-climber'.highlight_node() end)
+    # '';
     plugins.treesitter = {
       inherit enable;
       lazyLoad.enable = true;
