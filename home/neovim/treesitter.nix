@@ -58,7 +58,6 @@ in {
     #     function() require 'lz.n'.load 'tree-climber'.highlight_node() end
     #   )
     # '';
->>>>>>> f2b3a018724415f9049cdb15aef5df735c0a4e67
     plugins.treesitter = {
       inherit enable;
       lazyLoad.enable = true;
