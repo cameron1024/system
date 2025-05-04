@@ -25,7 +25,7 @@ in {
     prefix = "C-a";
     escapeTime = 0;
     shell = "${pkgs.fish}/bin/fish";
-    mouse = true;
+    # mouse = true;
 
     extraConfig =
       ''

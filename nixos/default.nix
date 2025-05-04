@@ -8,9 +8,7 @@
       (import ../overlays/utils.nix)
     ];
 
-    machine = spec // {
-      
-    };
+    machine = spec;
 
     specialArgs = {
       inherit inputs;
@@ -25,7 +23,7 @@
         inputs.home-manager.nixosModules.default
         ./common.nix
         hardware
-        ({lib, ...}: {
+        {
           inherit machine;
 
           system.stateVersion = "24.11";
@@ -39,23 +37,25 @@
             # };
           };
 
+          nix.registry.nixpkgs.flake = inputs.nixpkgs;
+
           home-manager.useGlobalPkgs = true;
           home-manager.users.cameron = import ../home;
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.backupFileExtension = "backup";
-        })
+        }
       ];
     };
 in {
   thinkchad = mkSystem {
     system = "x86_64-linux";
-    spec = import ./machines/specs/thinkpad.nix { inherit inputs; };
+    spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
     hardware = ./hardware/thinkpad.nix;
   };
 
   mini = mkSystem {
     system = "x86_64-linux";
-    spec = import ./machines/specs/mini.nix{ inherit inputs; };
+    spec = import ./machines/specs/mini.nix {inherit inputs;};
     hardware = ./hardware/mini2.nix;
   };
 }

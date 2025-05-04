@@ -26,7 +26,7 @@
           desc = "Marks";
           __unkeyed-1 = "<leader>m";
           __unkeyed-2.__raw = ''
-            function() Snacks.picker.grep() end
+            function() Snacks.picker.marks() end
           '';
         }
         {
@@ -34,6 +34,13 @@
           __unkeyed-1 = "<leader>p";
           __unkeyed-2.__raw = ''
             function() Snacks.picker.explorer() end
+          '';
+        }
+        {
+          desc = "Undo";
+          __unkeyed-1 = "<leader>u";
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.undo() end
           '';
         }
         {

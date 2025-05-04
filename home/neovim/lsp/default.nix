@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   programs.nixvim = {
-    diagnostics = {
+    diagnostic.config = {
       virtual_lines.current_line = true;
       virtual_text = false;
     };
@@ -59,28 +59,5 @@
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
     };
-
-    extraPlugins = [
-      (pkgs.callPackage ./lsp-tiny-code-action.nix {})
-    ];
-
-    extraConfigLua = ''
-      require 'lz.n'.load {
-        {
-          "tiny-code-action",
-          lazy = true,
-          keys = {
-            { "gra", function() require 'tiny-code-action'.code_action() end }
-          },
-          after = function()
-            require 'tiny-code-action'.setup {
-              backend = "difftastic",
-              picker = "snacks",
-            }
-          end,
-
-        }
-      }
-    '';
   };
 }
