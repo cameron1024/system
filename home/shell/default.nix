@@ -28,9 +28,14 @@ in {
   ];
 
   config = {
-    programs.atuin.enable = true;
-    programs.atuin.enableFishIntegration = true;
-    programs.atuin.settings.filter_mode_shell_up_key_binding = "session";
+    programs.atuin = {
+      enable = true;
+      # enableFishIntegration = true;
+      settings = {
+        filter_mode_shell_up_key_binding = "session";
+        enter_accept = true;
+      };
+    };
 
     home.shellAliases = {
       "p" = "cd ~/projects/playground";
@@ -51,6 +56,7 @@ in {
         coreutils
         gnumake
         tokei
+        gcc
 
         #data stuff
         sq
