@@ -25,6 +25,11 @@
   ];
 
   config = lib.mkIf machine.wm.hyprland.enable {
+    home.pointerCursor = {
+      gtk.enable = true;
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+    };
     wayland.windowManager.hyprland = {
       enable = true;
       xwayland.enable = true;
@@ -32,9 +37,7 @@
 
       settings = {
         env = ["XCURSOR_SIZE, 24"];
-        exec-once = [
-          "tmux"
-        ];
+        exec-once = [ "tmux" ];
       };
     };
 
@@ -55,7 +58,7 @@
       enable = true;
 
       theme.name = "Everforest-Dark-BL";
-      theme.package = pkgs.everforest-gtk;
+      theme.package = pkgs.everforest-gtk-theme;
 
       font.name = "Fira Sans";
       font.package = pkgs.fira;
