@@ -5,5 +5,5 @@ final: prev: {
     };
   };
 
-  everforest-gtk = prev.callPackage ./packages/everforest-gtk.nix {};
+  # everforest-gtk = prev.callPackage ./packages/everforest-gtk.nix {};
 }

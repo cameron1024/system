@@ -4,15 +4,17 @@
   ...
 }: let
   plugins = with pkgs.tmuxPlugins; [
-    {
-      plugin = fingers;
-      extraConfig = ''
-        set -g @fingers-key c-f
-        set -g @fingers-pattern-0 'sha256-\\w*'
-      '';
-    }
+
+    # {
+    #   plugin = fingers;
+    #   extraConfig = ''
+    #     set -g @fingers-key c-f
+    #     set -g @fingers-pattern-0 'sha256-\\w*'
+    #   '';
+    # }
 
     vim-tmux-navigator
+    extrakto
   ];
 in {
   programs.tmux = {
@@ -23,7 +25,7 @@ in {
     prefix = "C-a";
     escapeTime = 0;
     shell = "${pkgs.fish}/bin/fish";
-    mouse = true;
+    # mouse = true;
 
     extraConfig =
       ''

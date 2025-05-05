@@ -1,7 +1,7 @@
 {
   programs.nixvim = {
     plugins.kulala = {
-      enable = true;
+      enable = false;
       lazyLoad.enable = true;
       lazyLoad.settings.event = "BufEnter";
 

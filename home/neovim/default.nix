@@ -49,11 +49,11 @@
 
       vimdiffAlias = true;
 
-      performance.byteCompileLua.enable = true;
-      performance.byteCompileLua.nvimRuntime = true;
-      performance.byteCompileLua.plugins = true;
-      performance.combinePlugins.enable = true;
-      performance.combinePlugins.standalonePlugins = ["firenvim"];
+      # performance.byteCompileLua.enable = true;
+      # performance.byteCompileLua.nvimRuntime = true;
+      # performance.byteCompileLua.plugins = true;
+      # performance.combinePlugins.enable = true;
+      # performance.combinePlugins.standalonePlugins = ["firenvim"];
     };
   };
 }
