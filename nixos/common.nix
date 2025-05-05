@@ -17,6 +17,7 @@ in {
     ./containers.nix
     ./postgres.nix
     ./ai.nix
+    ./virtualization.nix
   ];
   options = with lib; let
     colorOption = mkOption {
