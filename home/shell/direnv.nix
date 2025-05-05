@@ -2,8 +2,7 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-
-    # silent = true;
+    silent = true;
 
     # enableBashIntegration = false;
     # enableNushellIntegration = config.programs.nushell.enable;
