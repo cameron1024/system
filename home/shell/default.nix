@@ -7,6 +7,7 @@
     if machine.linux
     then [
       pcmanfm
+      gcc
     ]
     else [];
 in {
@@ -56,7 +57,6 @@ in {
         coreutils
         gnumake
         tokei
-        gcc
 
         #data stuff
         sq
