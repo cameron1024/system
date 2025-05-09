@@ -56,7 +56,7 @@ let
   simpleConfig = {
     enable = true;
     lazyLoad.enable = true;
-    lazyLoad.settings.events = ["BufEnter"];
+    lazyLoad.settings.event = "BufEnter";
   };
 in {
   programs.nixvim = {

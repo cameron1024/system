@@ -53,20 +53,20 @@ in {
           module = "blink-cmp-git";
           name = "Git";
           score_offset = -15;
-          enabled.__raw = ''
-            function()
-              if vim.tbl_contains({ 'octo', 'gitcommit', 'markdown' }, vim.bo.filetype) then
-                return true
-              end
-
-              local node = vim.treesitter.get_node()
-              if node then
-                 return not (string.find(node:type(), "comment") == nil)
-              else
-                return true
-              end
-            end
-          '';
+          # enabled.__raw = ''
+          #   function()
+          #     if vim.tbl_contains({ 'octo', 'gitcommit', 'markdown' }, vim.bo.filetype) then
+          #       return true
+          #     end
+          #
+          #     local node = vim.treesitter.get_node()
+          #     if node then
+          #        return not (string.find(node:type(), "comment") == nil)
+          #     else
+          #       return true
+          #     end
+          #   end
+          # '';
         };
       };
 

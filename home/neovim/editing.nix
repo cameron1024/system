@@ -22,7 +22,7 @@ in {
 
     plugins.todo-comments.enable = true;
     plugins.todo-comments.lazyLoad.enable = true;
-    plugins.todo-comments.lazyLoad.settings.event = "BufEnter";
+    plugins.todo-comments.lazyLoad.settings.event = "BufReadPost";
 
     plugins.marks.enable = true;
     plugins.marks.cyclic = true;

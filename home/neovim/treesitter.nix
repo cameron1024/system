@@ -61,7 +61,7 @@ in {
     plugins.treesitter = {
       inherit enable;
       lazyLoad.enable = true;
-      lazyLoad.settings.event = "BufReadPost";
+      lazyLoad.settings.event = "BufReadPre";
 
       settings = {
         highlight.enable = true;
@@ -143,7 +143,7 @@ in {
     plugins.nvim-ufo = {
       inherit enable;
       lazyLoad.enable = true;
-      lazyLoad.settings.event = "BufReadPost";
+      lazyLoad.settings.event = "BufReadPre";
       lazyLoad.settings.before.__raw = ''
         function() require 'lz.n'.trigger_load 'nvim-treesitter' end
       '';
