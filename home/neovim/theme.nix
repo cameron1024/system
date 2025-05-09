@@ -79,7 +79,6 @@ in {
 
       settings = {
         extensions = [
-          "aerial"
           "fugitive"
           "man"
           "oil"
@@ -99,8 +98,10 @@ in {
 
         sections = {
           lualine_a = [lualineModes];
-          lualine_b = ["branch" "diff" "diagnostics"];
+          lualine_b = ["branch" "diff"];
           lualine_c = [
+            "diagnostics"
+
             {
               __unkeyed-1 = "filename";
               path = 1;

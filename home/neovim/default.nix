@@ -7,6 +7,7 @@
     inputs.nixvim.homeManagerModules.default
     ./lang
     ./lsp
+    ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
     ./firenvim.nix

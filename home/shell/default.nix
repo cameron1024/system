@@ -29,6 +29,16 @@ in {
   ];
 
   config = {
+
+    programs.bat = {
+      enable = true;
+      themes = {
+        everforest = {
+          src = pkgs.everforest-collection; 
+          file = "bat/everforest-soft.tmTheme";
+        };
+      };
+    };
     programs.atuin = {
       enable = true;
       # enableFishIntegration = true;
@@ -36,6 +46,8 @@ in {
         filter_mode_shell_up_key_binding = "session";
         enter_accept = true;
       };
+
+      flags = ["--disable-up-arrow"];
     };
 
     home.shellAliases = {

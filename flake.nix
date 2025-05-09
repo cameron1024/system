@@ -27,6 +27,8 @@
     sherlock.url = "github:Skxxtz/sherlock";
 
     better-control.url = "github:rishabh5321/better-control-flake";
+
+    television.url = "github:alexpasmantier/television";
   };
 
   outputs = inputs: let

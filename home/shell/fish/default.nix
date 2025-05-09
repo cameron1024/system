@@ -33,6 +33,5 @@ in {
     gruvbox
     autopair
     forgit
-    fzf
   ];
 }

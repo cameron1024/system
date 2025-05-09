@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{config, ...}: {
   programs.nixvim = {
     diagnostic.config = {
       virtual_lines.current_line = true;
@@ -8,6 +8,24 @@
     plugins.fidget.enable = true;
     plugins.fidget.lazyLoad.enable = true;
     plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
+
+    plugins.actions-preview.enable = true;
+    plugins.actions-preview.lazyLoad.enable = true;
+    plugins.actions-preview.lazyLoad.settings.keys = [
+      {
+        __unkeyed-1 = "gra";
+        __unkeyed-2.__raw = ''
+          function()
+            require "actions-preview".code_actions()
+          end
+        '';
+        mode = ["n" "v"];
+      }
+    ];
+    plugins.actions-preview.settings = {
+      backend = ["snacks"];
+      snacks.layout.preset = "ivy";
+    };
 
     plugins.lsp = {
       enable = true;
