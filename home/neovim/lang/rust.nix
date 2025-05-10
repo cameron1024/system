@@ -1,4 +1,4 @@
-{pkgs, ... }: {
+{pkgs, ...}: {
   home.packages = with pkgs; [lldb];
 
   programs.nixvim = {
@@ -13,7 +13,7 @@
         {
           __unkeyed-1 = "<C-p>";
           __unkeyed-2 = "<cmd>RustLsp parentModule<cr>";
-        } 
+        }
       ];
 
       settings.dap.autoload_configurations = true;
@@ -22,6 +22,11 @@
       settings.tools.enable_nextest = true;
       settings.tools.enable_clippy = true;
     };
-  };
 
+    plugins.crates = {
+      enable = true;
+      lazyLoad.enable = true;
+      lazyLoad.settings.ft = "toml";
+    };
+  };
 }

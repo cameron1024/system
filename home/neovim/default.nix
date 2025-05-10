@@ -7,7 +7,7 @@
     inputs.nixvim.homeManagerModules.default
     ./lang
     ./lsp
-    ./ai.nix
+    # ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
     ./firenvim.nix
@@ -54,7 +54,10 @@
       performance.byteCompileLua.nvimRuntime = true;
       performance.byteCompileLua.plugins = true;
       performance.combinePlugins.enable = true;
-      performance.combinePlugins.standalonePlugins = ["firenvim"];
+      performance.combinePlugins.standalonePlugins = [
+        "firenvim"
+        "codecompanion.nvim"
+      ];
     };
   };
 }
