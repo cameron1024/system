@@ -22,6 +22,7 @@
     # ./walker.nix
     ./screenshot.nix
     ./quake-term.nix
+    ./ai.nix
   ];
 
   config = lib.mkIf machine.wm.hyprland.enable {
