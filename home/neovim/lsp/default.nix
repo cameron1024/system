@@ -68,16 +68,9 @@
         }
       ];
 
-      servers.marksman.enable = true;
-      servers.nixd.enable = true;
       servers.nil_ls.enable = true;
-      servers.ts_ls.enable = true;
-      servers.tinymist.enable = true;
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
-
-      servers.dartls.enable = true;
-      servers.dartls.settings.showTodos = false;
     };
   };
 }

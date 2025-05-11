@@ -56,7 +56,6 @@
       performance.combinePlugins.enable = true;
       performance.combinePlugins.standalonePlugins = [
         "firenvim"
-        "codecompanion.nvim"
       ];
     };
   };
