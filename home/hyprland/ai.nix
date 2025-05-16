@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  machine,
+  ...
+}: let
   storeKey = "voice-typing-pid";
   toggleVoiceTyping = pkgs.writeShellScriptBin "toggle-voice-typing" ''
     BASE_DIR="$XDG_CACHE_HOME/voice-typing"
@@ -31,6 +36,7 @@
     fi
   '';
 in {
+  config = lib.mkIf machine.linux {
   home.packages = with pkgs; [
     toggleVoiceTyping
     whisper
