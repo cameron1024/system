@@ -37,14 +37,15 @@
   '';
 in {
   config = lib.mkIf machine.linux {
-  home.packages = with pkgs; [
-    toggleVoiceTyping
-    whisper
-    alsa-utils
-  ];
-  wayland.windowManager.hyprland.settings = {
-    bind = [
-      "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
+    home.packages = with pkgs; [
+      toggleVoiceTyping
+      whisper
+      alsa-utils
     ];
+    wayland.windowManager.hyprland.settings = {
+      bind = [
+        "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
+      ];
+    };
   };
 }
