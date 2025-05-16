@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   machine,
   ...
 }: let
@@ -29,12 +30,11 @@ in {
   ];
 
   config = {
-
-    programs.bat = {
+    programs.bat = lib.mkIf machine.linux {
       enable = true;
       themes = {
         everforest = {
-          src = pkgs.everforest-collection; 
+          src = pkgs.everforest-collection;
           file = "bat/everforest-soft.tmTheme";
         };
       };
@@ -88,6 +88,7 @@ in {
         ripdrag
 
         awscli2
+        google-cloud-sdk
 
         comma
       ]
