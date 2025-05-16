@@ -1,6 +1,6 @@
 {pkgs, ...}: let
   storeKey = "voice-typing-pid";
-  script = pkgs.writeShellScriptBin "toggle-voice-typing" ''
+  toggleVoiceTyping = pkgs.writeShellScriptBin "toggle-voice-typing" ''
     BASE_DIR="$XDG_CACHE_HOME/voice-typing"
     AUDIO_LOCATION="$BASE_DIR/output.wav"
 
@@ -31,10 +31,14 @@
     fi
   '';
 in {
-  home.packages = [script];
+  home.packages = with pkgs; [
+    toggleVoiceTyping
+    whisper
+    alsa-utils
+  ];
   wayland.windowManager.hyprland.settings = {
     bind = [
-      "SUPER, z, exec, ${script}/bin/toggle-voice-typing"
+      "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
     ];
   };
 }
