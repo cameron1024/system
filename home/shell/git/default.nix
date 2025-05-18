@@ -22,7 +22,6 @@
   };
 
   home.shellAliases = {
-    "gc" = "git add -A && git commit -m";
     "gca" = "git commit --amend";
     "gs" = "git switch";
     "gpl" = "git pull";
@@ -37,8 +36,10 @@
     "gpv" = "gh pr view --web";
   };
 
+  # these don't work in nushell
   programs.fish.shellAbbrs = {
     "gr" = "cd $(git rev-parse --show-toplevel)";
+    "gc" = "git add -A && git commit -m";
   };
 
   programs.git = {

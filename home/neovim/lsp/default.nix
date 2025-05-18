@@ -72,6 +72,7 @@
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
       servers.sourcekit.enable = true;
+      servers.nushell.enable = true;
     };
   };
 }

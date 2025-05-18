@@ -1,6 +1,7 @@
 {inputs}: {
   hostname = "thinkchad";
   boot = "/boot";
+  cpuArch = "alderlake";
 
   linux = true;
   wm.hyprland.enable = true;
