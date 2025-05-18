@@ -1,13 +1,23 @@
 {
+  pkgs,
   inputs,
   machine,
+  lib,
   ...
-}: {
-  imports = [inputs.ags.homeManagerModules.default];
-
-  programs.ags = {
-    enable = machine.wm.hyprland.enable;
-    configDir = ./ags;
-    extraPackages = [];
+}: let
+  astal = inputs.astal;
+  package = astal.lib.mkLuaPackage {
+    inherit pkgs;
+    name = "my-shell";
+    src = ./my-shell;
   };
+in {
+  config =
+    lib.mkIf machine.linux {
+      home.packages = [
+        inputs.astal.packages.${pkgs.system}.default
+        package
+      ];
+
+    };
 }
