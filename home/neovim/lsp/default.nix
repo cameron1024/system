@@ -1,6 +1,6 @@
 {config, ...}: {
   programs.nixvim = {
-    diagnostic.config = {
+    diagnostic.settings = {
       virtual_lines.current_line = true;
       virtual_text = false;
     };
@@ -72,6 +72,7 @@
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
       servers.sourcekit.enable = true;
+      servers.nushell.enable = true;
     };
   };
 }

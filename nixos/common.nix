@@ -210,7 +210,21 @@ in {
         trusted-users = ["root" "@wheel"];
         substituters = ["https://hyprland.cachix.org"];
         trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-        system-features = lib.mkIf (cfg.cpuArch == "znver5") ["gccarch-znver5"];
+        system-features = let
+          arch = cfg.cpuArch;
+        in (
+          []
+          ++ (
+            if arch == "znver5"
+            then ["gccarch-znver5"]
+            else []
+          )
+          ++ (
+            if arch == "alderlake"
+            then ["gccarch-alderlake"]
+            else []
+          )
+        );
       };
     };
   };

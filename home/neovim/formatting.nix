@@ -17,10 +17,18 @@
         }
       ];
       settings = {
+        default_format_opts.lsp_format = "fallback";
+        # formatters = {
+        #   ronfmt = {
+        #     command = "ronfmt";
+        #     args = ["-t" "2" "$FILENAME"];
+        #     stdin = false;
+        #   };
+        # };
         formatters_by_ft = {
           "nix" = ["alejandra"];
+          # "ron" = ["ronfmt"];
         };
-        default_format_opts.lsp_format = "fallback";
       };
     };
 
