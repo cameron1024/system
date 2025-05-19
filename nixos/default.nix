@@ -5,11 +5,20 @@
     hardware,
   }: let
     overlays = [
-      (import ../overlays/optimizations.nix {
+      (import ../overlays/gcc_optimizations.nix {
         inherit inputs;
         arch = machine.cpuArch;
         packageList = [
-          # "neovim"
+          "neovim"
+        ];
+      })
+      (import ../overlays/rust_optimizations.nix {
+        inherit inputs;
+        arch = machine.cpuArch;
+        packageList = [
+          "rust-analyzer"
+          "starship"
+          "ripgrep"
         ];
       })
       (import ../overlays/utils.nix)

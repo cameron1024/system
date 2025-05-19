@@ -15,7 +15,17 @@ final: prev: {
   vimPlugins =
     prev.vimPlugins
     // {
-      obsidian-nvim = prev.buildVimPlugin {
+      goose = prev.vimUtils.buildVimPlugin {
+        pname = "goose";
+        version = "0.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "azorng";
+          repo = "goose.nvim";
+          rev = "5a72d3b3f7a2a01d174100c8c294da8cd3a2aeeb";
+          hash = "sha256-jVWggPmdINFNVHJSCpbTZq8wKwGjldu6PNSkb7naiQE=";
+        };
+      };
+      obsidian-nvim = prev.vimUtils.buildVimPlugin {
         pname = "obsidian.nvim";
         version = "3.11.0";
         src = prev.fetchFromGitHub {

@@ -25,6 +25,7 @@ in {
     ./yazi.nix
     ./previewers.nix
     ./nix.nix
+    ./bat.nix
 
     ./system
   ];
