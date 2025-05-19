@@ -5,6 +5,22 @@
     hardware,
   }: let
     overlays = [
+      (import ../overlays/gcc_optimizations.nix {
+        inherit inputs;
+        arch = machine.cpuArch;
+        packageList = [
+          "neovim"
+        ];
+      })
+      (import ../overlays/rust_optimizations.nix {
+        inherit inputs;
+        arch = machine.cpuArch;
+        packageList = [
+          "rust-analyzer"
+          "starship"
+          "ripgrep"
+        ];
+      })
       (import ../overlays/utils.nix)
     ];
 
@@ -30,11 +46,6 @@
           nixpkgs = {
             config.allowUnfree = true;
             overlays = overlays;
-            # hostPlatform = lib.mkIf (machine.cpuArch != null) {
-            #   gcc.arch = machine.cpuArch;
-            #   gcc.tune = machine.cpuArch;
-            #   system = "x86_64-linux";
-            # };
           };
 
           nix.registry.nixpkgs.flake = inputs.nixpkgs;

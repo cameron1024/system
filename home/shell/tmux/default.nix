@@ -24,7 +24,8 @@ in {
 
     prefix = "C-a";
     escapeTime = 0;
-    shell = "${pkgs.fish}/bin/fish";
+    # shell = "${pkgs.fish}/bin/fish";
+    shell = "${pkgs.nushell}/bin/nu";
     mouse = true;
 
     extraConfig =

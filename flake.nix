@@ -12,8 +12,8 @@
 
     mac-app-util.url = "github:hraban/mac-app-util";
 
-    ags.url = "github:Aylur/ags";
-    ags.inputs.nixpkgs.follows = "nixpkgs";
+    astal.url = "github:Aylur/astal";
+    astal.inputs.nixpkgs.follows = "nixpkgs";
 
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";

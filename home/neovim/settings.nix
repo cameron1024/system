@@ -11,6 +11,7 @@
       timeoutlen = 600;
       cmdheight = 0;
       tabstop = 2;
+      shiftwidth = 2;
 
       number = true;
       relativenumber = true;
