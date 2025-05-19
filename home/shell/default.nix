@@ -32,12 +32,12 @@ in {
 
     programs.bat = {
       enable = true;
-      themes = {
-        everforest = {
-          src = pkgs.everforest-collection; 
-          file = "bat/everforest-soft.tmTheme";
-        };
-      };
+      # themes = {
+      #   everforest = {
+      #     src = pkgs.everforest-collection; 
+      #     file = "bat/everforest-soft.tmTheme";
+      #   };
+      # };
     };
     programs.atuin = {
       enable = true;
