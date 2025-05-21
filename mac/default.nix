@@ -31,7 +31,7 @@
     system.keyboard.enableKeyMapping = true;
     system.keyboard.remapCapsLockToControl = true;
 
-    system.defaults.dock.expose-animation-duration = 10.0;
+    # system.defaults.dock.expose-animation-duration = 10.0;
 
     security.pam.services.sudo_local.touchIdAuth = true;
     security.pam.services.sudo_local.reattach = true;
