@@ -37,10 +37,10 @@
   '';
 in {
   config = lib.mkIf machine.linux {
-    home.packages = [script];
+    home.packages = [toggleVoiceTyping];
     wayland.windowManager.hyprland.settings = {
       bind = [
-        "SUPER, z, exec, ${script}/bin/toggle-voice-typing"
+        "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
       ];
     };
   };

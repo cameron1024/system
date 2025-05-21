@@ -14,7 +14,7 @@
     ./hardware.nix
     ./touchscreen.nix
     ./input.nix
-    ./launcher.nix
+    # ./launcher.nix
     ./notifications.nix
     ./widgets
     ./windowing

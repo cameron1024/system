@@ -45,7 +45,7 @@
               cd $(git rev-parse --show-toplevel)
 
               git add -A
-              nix run nix-darwin \
+              sudo nix run nix-darwin \
                 --extra-experimental-features flakes \
                 --extra-experimental-features nix-command \
                 -- switch --flake .
