@@ -4,16 +4,21 @@
   packageList,
 }: let
   pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
-  optimizePackage = name:
+  optimizePackage = {
+    name,
+    prev,
+  }:
     inputs.nixpkgs.lib.customisation.overrideDerivation pkgs.${name} (oldAttrs: {
+      cargo = prev.rust-bin.nightly.latest.default;
+      rustc = prev.rust-bin.nightly.latest.default;
       "RUSTFLAGS" = "-Ctarget-cpu=${arch}";
     });
-  f = name: {
+  f = prev: name: {
     inherit name;
-    value = optimizePackage name;
+    value = optimizePackage {inherit name prev;};
   };
-  optimizedPackages = map f packageList;
+  optimizedPackages = prev: map (f prev) packageList;
 in
   if arch == null
   then (prev: final: prev)
-  else (prev: final: builtins.listToAttrs optimizedPackages)
+  else (prev: final: builtins.listToAttrs (optimizedPackages prev))

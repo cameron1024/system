@@ -24,8 +24,8 @@ in {
 
     prefix = "C-a";
     escapeTime = 0;
-    # shell = "${pkgs.fish}/bin/fish";
-    shell = "${pkgs.nushell}/bin/nu";
+    shell = "${pkgs.fish}/bin/fish";
+    # shell = "${pkgs.nushell}/bin/nu";
     mouse = true;
 
     extraConfig =
@@ -33,11 +33,11 @@ in {
         ${builtins.readFile ./everforest.tmux}
 
 
-        set -g default-terminal "xterm-256color"
+        set -g default-terminal "kitty"
         set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
-        set -s extended-keys always
-        set -as terminal-features 'xterm-kitty*:extkeys'
+        set -s extended-keys on
+        set -as terminal-features 'extkeys'
 
         set -gq allow-passthrough on
         set -g visual-activity off

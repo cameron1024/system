@@ -13,7 +13,7 @@
     ./firenvim.nix
     ./formatting.nix
     ./git.nix
-    ./http
+    # ./http
     ./oil.nix
     ./settings
     ./snacks.nix
