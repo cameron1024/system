@@ -76,5 +76,10 @@
       key = "<leader>v";
       action = "<C-v>";
     }
+    {
+      key = "<C-S-CR>";
+      action.__raw = "function() vim.print(123) end";
+    }
+    
   ];
 }

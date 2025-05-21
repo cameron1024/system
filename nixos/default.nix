@@ -5,6 +5,7 @@
     hardware,
   }: let
     overlays = [
+      (import inputs.rust-overlay)
       (import ../overlays/gcc_optimizations.nix {
         inherit inputs;
         arch = machine.cpuArch;
@@ -19,6 +20,10 @@
           "rust-analyzer"
           "starship"
           "ripgrep"
+          "eza"
+          "nushell"
+          "fish"
+          "television"
         ];
       })
       (import ../overlays/utils.nix)

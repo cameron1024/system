@@ -836,6 +836,7 @@
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs_5",
         "nixvim": "nixvim",
+        "rust-overlay": "rust-overlay_2",
         "sherlock": "sherlock",
         "television": "television"
       }
@@ -864,6 +865,26 @@
     "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747622321,
+        "narHash": "sha256-W0dYIWgsUu6rvOJRtKLhKskkv0VhQhJYGNIq+gGUc8g=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "bd030fd9983f7fddf87be1c64aa3064c8afa24c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
+      "inputs": {
+        "nixpkgs": [
           "sherlock",
           "nixpkgs"
         ]
@@ -888,7 +909,7 @@
         "flake-parts": "flake-parts_4",
         "home-manager": "home-manager_2",
         "nixpkgs": "nixpkgs_7",
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay_3"
       },
       "locked": {
         "lastModified": 1746716156,
