@@ -10,7 +10,7 @@
         inherit inputs;
         arch = machine.cpuArch;
         packageList = [
-          "neovim"
+          # "neovim"
         ];
       })
       (import ../overlays/rust_optimizations.nix {
