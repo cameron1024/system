@@ -15,14 +15,14 @@
             desc = "Files";
             __unkeyed-1 = "<leader>n";
             __unkeyed-2.__raw = ''
-              function() Snacks.picker.files() end
+              function() Snacks.picker.files { hidden = true, } end
             '';
           }
           {
             desc = "Grep";
             __unkeyed-1 = "<leader>f";
             __unkeyed-2.__raw = ''
-              function() Snacks.picker.grep() end
+              function() Snacks.picker.grep { hidden = true } end
             '';
           }
           {
@@ -44,6 +44,13 @@
             __unkeyed-1 = "<leader>u";
             __unkeyed-2.__raw = ''
               function() Snacks.picker.undo() end
+            '';
+          }
+          {
+            desc = "Search history";
+            __unkeyed-1 = "<leader>/";
+            __unkeyed-2.__raw = ''
+              function() Snacks.picker.search_history() end
             '';
           }
           {

@@ -18,6 +18,7 @@ in {
     ./postgres.nix
     ./ai.nix
     ./virtualization.nix
+    ./home-assistant
   ];
   options = with lib; let
     colorOption = mkOption {
