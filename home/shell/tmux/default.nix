@@ -17,6 +17,7 @@
     extrakto
   ];
 in {
+  home.packages = [pkgs.fzf];
   programs.tmux = {
     enable = true;
 
