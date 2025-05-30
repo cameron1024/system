@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_14;
+  linux = pkgs.linuxPackages_6_15;
 in {
   imports = [
     ./hyprland
