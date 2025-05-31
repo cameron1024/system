@@ -170,7 +170,7 @@ in {
       git
       curl
       vim
-      firefox
+      (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {})
       networkmanager
       jq
       linux.cpupower
