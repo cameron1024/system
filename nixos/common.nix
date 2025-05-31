@@ -6,7 +6,7 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_14;
+  linux = pkgs.linuxPackages_6_15;
 in {
   imports = [
     ./hyprland
@@ -18,6 +18,7 @@ in {
     ./postgres.nix
     ./ai.nix
     ./virtualization.nix
+    ./home-assistant
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -169,7 +170,7 @@ in {
       git
       curl
       vim
-      firefox
+      (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {})
       networkmanager
       jq
       linux.cpupower

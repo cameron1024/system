@@ -22,7 +22,7 @@
 
       clipboard = "unnamedplus";
 
-      shell = "nu";
+      shell = "fish";
 
       autowriteall = true;
       backup = false;

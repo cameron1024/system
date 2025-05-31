@@ -3,7 +3,8 @@
   cpuArch = "znver5";
 
   kernelParams = [
-    "amdgpu.dcdebugmask=0x12"
+    # "amdgpu.dcdebugmask=0x12"
+    # "amdgpu.noretry=1"
   ];
 
   linux = true;

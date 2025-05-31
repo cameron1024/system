@@ -21,5 +21,6 @@ in {
         "OFFLINE_MODE" = "true";
       };
     };
+    networking.firewall.allowedTCPPorts = [11111];
   };
 }
