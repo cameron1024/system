@@ -9,7 +9,8 @@
     ./lsp
     # ./ai.nix
     ./blink-cmp.nix
-    ./debug.nix ./firenvim.nix
+    ./debug.nix
+    ./firenvim.nix
     ./formatting.nix
     ./git.nix
     # ./http

@@ -115,9 +115,6 @@ in {
     };
 
     plugins.nvim-bqf.enable = true;
-    plugins.visual-whitespace.enable = true;
-    plugins.visual-whitespace.lazyLoad.enable = true;
-    plugins.visual-whitespace.lazyLoad.settings.event = "BufReadPost";
 
     extraConfigVim = ''
       autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}

@@ -40,13 +40,8 @@
       shiftround = true;
       shiftwidth = 2;
       tabstop = 2;
-      textwidth.__raw =
-        /*
-        lua
-        */
-        ''
-          vim.g.started_by_firenvim and 0 or 80
-        '';
+      textwidth = 0;
+      # textwidth.__raw = "vim.g.started_by_firenvim and 0 or 80";
 
       guifont =
         if machine.linux

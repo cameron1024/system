@@ -12,6 +12,10 @@ in {
     inherit enable lazyLoad;
   };
 
+  programs.nixvim.plugins.colorful-menu = {
+    inherit enable lazyLoad;
+  };
+
   programs.nixvim.plugins.blink-cmp = {
     inherit enable lazyLoad;
     settings = {
@@ -27,11 +31,13 @@ in {
         lsp.async = true;
         emoji = {
           module = "blink-emoji";
+
           name = "Emoji";
           score_offset = -30;
           enabled.__raw = ''
             function()
               local node = vim.treesitter.get_node()
+
               if node then
                   if string.find(node:type(), "comment") == nil then
                     return true
@@ -72,7 +78,9 @@ in {
 
       signature.enabled = true;
       completion.documentation.auto_show = true;
-      completion.ghost_text.enabled = true;
+      # completion.ghost_text.enabled = true;
+      completion.accept.auto_brackets.enabled = false;
+      completion.menu.draw.treesitter = ["lsp"];
       completion.list.selection = {
         preselect = false;
         auto_insert = true;
