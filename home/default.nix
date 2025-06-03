@@ -3,7 +3,8 @@
     inputs.mac-app-util.homeManagerModules.default
     ./mac
     ./neovim
-    ./hyprland
+    # ./hyprland
+    ./niri
     ./shell
     ./terminal
     ./languages
