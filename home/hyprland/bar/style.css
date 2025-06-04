@@ -6,16 +6,17 @@
 }
 
 window#waybar {
-  background-color: @bg;
+  background-color: rgba(0, 0, 0, 0.5);
   color: @fg;
 }
 
 #custom-powermenu, #clock, #tray, #cpu, #memory,  #disk, #network, #tray, #battery, #backlight, #pulseaudio, #custom-weather, #clock {
+  background-color: rgba(0, 0, 0, 0.0);
   padding: 10px;
 }
 
 #custom-powermenu:hover, #clock:hover, #tray:hover, #cpu:hover, #memory:hover,  #disk:hover, #network:hover, #tray:hover, #battery:hover, #backlight:hover, #pulseaudio:hover, #custom-weather:hover #clock:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.7);
   transition: all 0.2s cubic-bezier(0.87, 0, 0.13, 1);
 }
 

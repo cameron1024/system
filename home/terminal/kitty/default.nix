@@ -21,11 +21,14 @@
 
     map kitty_mod+equal change_font_size all +2.0
     map kitty_mod+minus change_font_size all -2.0
+    map f11 toggle_fullscreen
 
     map ctrl+shift+c copy_to_clipboard
     map ctrl+shift+v paste_from_clipboard
 
     cursor_trail 1
     cursor_trail_decay 0.1 0.2
+
+    hide_window_decorations yes
   '';
 }

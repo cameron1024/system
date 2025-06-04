@@ -17,9 +17,10 @@
     lg
   ];
   wallpapers = with (import ../wallpapers.nix); [
-    everforest
-    leaves
-    mistForest
-    forestBridge
+    # everforest
+    # leaves
+    # mistForest
+    # forestBridge
+    forestFromSky  
   ];
 }

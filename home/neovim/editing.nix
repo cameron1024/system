@@ -30,6 +30,10 @@ in {
 
     plugins.undotree.enable = true;
 
+    plugins.colorizer.enable = true;
+    plugins.colorizer.lazyLoad.enable = true;
+    plugins.colorizer.lazyLoad.settings.cmd = "ColorizerToggle";
+
     keymaps = [
       {
         key = "<leader>m";

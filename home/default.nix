@@ -1,6 +1,7 @@
 {inputs, ...}: {
   imports = [
     inputs.mac-app-util.homeManagerModules.default
+    ./firefox
     ./mac
     ./neovim
     # ./hyprland

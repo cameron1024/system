@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  imports = [../hyprland/fingerprint.nix];
   programs.niri.enable = true;
 
   services = {
