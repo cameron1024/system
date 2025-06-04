@@ -189,6 +189,8 @@ in {
 
     hardware.graphics.enable = true;
 
+    hardware.ipu6.platform = "ipu6ep";
+
     hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
       intel-media-driver
       intel-vaapi-driver

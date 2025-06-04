@@ -10,11 +10,13 @@
     ../hyprland/wallpaper
     ../hyprland/lock
     ../hyprland/notifications.nix
+    ../hyprland/hardware.nix
   ];
 
 
   home.packages = with pkgs; [
     wl-clipboard
+    xwayland-satellite
   ];
 
 
