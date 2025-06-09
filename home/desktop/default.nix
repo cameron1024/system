@@ -1,4 +1,4 @@
 {
-  imports = [./power-menu.nix ./gtk.nix];
-  programs.obs-studio.enable = true;  
+  imports = [./quickshell ./power-menu.nix ./gtk.nix];
+  programs.obs-studio.enable = true;
 }

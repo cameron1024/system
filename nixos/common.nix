@@ -197,6 +197,7 @@ in {
     ]);
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
+    qt.enable = true;
 
     nix = {
       package = pkgs.nixVersions.stable;
