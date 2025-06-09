@@ -154,17 +154,13 @@ in {
     };
 
     fonts.enableDefaultPackages = true;
-    # fonts.packages = with pkgs; [
-    #   nerdfonts
-    #   fira
-    #   monaspace
-    # ];
-
     fonts.packages = with pkgs; [
       nerd-fonts.fira-code
       nerd-fonts.fira-mono
       fira
       monaspace
+      noto-fonts
+      noto-fonts-monochrome-emoji
     ];
 
     environment.systemPackages = with pkgs; [
@@ -189,6 +185,7 @@ in {
 
     hardware.graphics.enable = true;
 
+    hardware.ipu6.enable = true;
     hardware.ipu6.platform = "ipu6ep";
 
     hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [

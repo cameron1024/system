@@ -11,14 +11,13 @@
     ../hyprland/lock
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
+    ../desktop
   ];
-
 
   home.packages = with pkgs; [
     wl-clipboard
     xwayland-satellite
   ];
-
 
   home.pointerCursor = {
     gtk.enable = true;

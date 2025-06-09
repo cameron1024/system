@@ -15,8 +15,5 @@ in {
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
 
-    environment.systemPackages = [
-      inputs.better-control.packages.${pkgs.system}.better-control
-    ];
   };
 }

@@ -24,7 +24,7 @@ in {
 
   home.packages = lib.mkIf machine.linux [
     toggleGaps
-    pkgs.google-chrome
+    pkgs.google-chrome-stable
   ];
 
   wayland.windowManager.hyprland = {

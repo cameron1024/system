@@ -16,6 +16,5 @@ end
 App:start {
   main = function()
     bar(0)
-    bar(1)
   end,
 }
