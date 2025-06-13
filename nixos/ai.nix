@@ -7,6 +7,8 @@
 in {
   config = {
     services.ollama.enable = true;
+    services.ollama.host = "0.0.0.0";
+    services.ollama.openFirewall = true;
     services.ollama.environmentVariables = {
       "OLLAMA_KEEP_ALIVE" = "2h";
       "OLLAMA_NUM_PARALLEL" = "5";
@@ -15,6 +17,7 @@ in {
     };
     services.open-webui = lib.mkIf isServer {
       enable = true;
+      host = "0.0.0.0";
       port = 11111;
       openFirewall = true;
       environment = {

@@ -11,6 +11,7 @@ in {
 
     services.static-web-server = {
       enable = true;
+      listen = "0.0.0.0:8787";
       root = "/home/cameron/Public";
       configuration.general.directory-listing = true;
     };

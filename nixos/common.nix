@@ -19,8 +19,9 @@ in {
     ./postgres.nix
     ./ai.nix
     ./virtualization.nix
-    # ./home-assistant
+    ./home-assistant
     ./ssh.nix
+    ./server
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -173,6 +174,8 @@ in {
       linux.cpupower
       linux.perf
       ffmpeg
+      vulkan-tools
+      clinfo
     ];
     # ++ (
     #   if (cfg.cpuArch != "znver5")
@@ -184,21 +187,42 @@ in {
       intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
     });
 
-    hardware.graphics.enable = true;
-
     hardware.ipu6.enable = true;
     hardware.ipu6.platform = "ipu6ep";
 
-    hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
-      intel-media-driver
-      intel-vaapi-driver
-      libvdpau-va-gl
-      vpl-gpu-rt
-      # intel-gpu-tools
-    ]);
+    environment.variables = {
+      RUSTICL_ENABLE = "radeonsi";
+      ROC_ENABLE_PRE_VEGA = "1";
+    };
+
+    hardware.graphics.enable = true;
+    hardware.graphics.extraPackages = with pkgs; (
+      []
+      ++ (lib.optionals (cfg.cpuArch == "alderlake") [
+        intel-media-driver
+        intel-vaapi-driver
+        libvdpau-va-gl
+        vpl-gpu-rt
+      ])
+      ++ (lib.optionals (cfg.cpuArch == "znver5") [
+        mesa
+        libva
+        libvdpau-va-gl
+        vulkan-loader
+        vulkan-validation-layers
+        amdvlk
+        mesa.opencl
+      ])
+    );
+    # hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
+    #   intel-media-driver
+    #   intel-vaapi-driver
+    #   libvdpau-va-gl
+    #   vpl-gpu-rt
+    #   # intel-gpu-tools
+    # ]);
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
-    qt.enable = true;
 
     nix = {
       package = pkgs.nixVersions.stable;
