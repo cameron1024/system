@@ -1,5 +1,6 @@
 {
   programs.nixvim = {
+    filetype.extension."mdx" = "markdown";
     plugins.lsp.servers.marksman.enable = true;
 
     plugins.render-markdown = {

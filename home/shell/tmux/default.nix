@@ -4,7 +4,6 @@
   ...
 }: let
   plugins = with pkgs.tmuxPlugins; [
-
     # {
     #   plugin = fingers;
     #   extraConfig = ''
@@ -13,6 +12,7 @@
     #   '';
     # }
 
+    tmux-fzf
     vim-tmux-navigator
     extrakto
   ];
@@ -34,7 +34,7 @@ in {
         ${builtins.readFile ./everforest.tmux}
 
 
-        set -g default-terminal "kitty"
+        set -g default-terminal "xterm-256color"
         set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
         set -s extended-keys on
