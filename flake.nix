@@ -18,6 +18,12 @@
     astal.url = "github:Aylur/astal";
     astal.inputs.nixpkgs.follows = "nixpkgs";
 
+    ags.url = "github:aylur/ags";
+    ags.inputs.nixpkgs.follows = "nixpkgs";
+
+    quickshell.url = "github:quickshell-mirror/quickshell";
+    quickshell.inputs.nixpkgs.follows = "nixpkgs";
+
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -27,8 +33,6 @@
     nixvim.url = "github:nix-community/nixvim";
 
     sherlock.url = "github:Skxxtz/sherlock";
-
-    better-control.url = "github:rishabh5321/better-control-flake";
 
     television.url = "github:alexpasmantier/television";
   };

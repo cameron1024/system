@@ -1,4 +1,4 @@
-{inputs }: {
+{inputs}: {
   hostname = "mini";
   cpuArch = "znver5";
 
@@ -13,13 +13,15 @@
   user = (import ../users.nix).cameron;
   colorscheme = (import ../colors.nix).everforest;
   displays = with (import ../displays.nix); [
-    benq
+    alien
+    # benq
     lg
   ];
   wallpapers = with (import ../wallpapers.nix); [
-    everforest
-    leaves
-    mistForest
-    forestBridge
+    # everforest
+    # leaves
+    # mistForest
+    # forestBridge
+    forestFromSky
   ];
 }

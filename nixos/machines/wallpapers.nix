@@ -27,4 +27,9 @@ in {
     id = "1bl8PtQwYkg6HxlIr0Oxd-iz-FkwgFPmH";
     hash = "sha256-GfvwQYDOqnDgztgf0p80CS3Sc93xphdyuXajrG8gnB0=";
   };
+
+  forestFromSky = fetchDrive {
+    id = "1w1c20wUZv9b5O7yqGvAtIdFOxgIBQxTV";
+    hash = "sha256-v4Jr7cTzqpa63pnbOzG9yx5iWGUJEMooJ2B6upBcaRA=";
+  };
 }

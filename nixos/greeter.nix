@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet --asterisks --time --cmd Hyprland";
+  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet --asterisks --time --cmd niri-session";
 in {
   console.colors = [
     "343F44"

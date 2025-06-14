@@ -9,7 +9,8 @@
   linux = pkgs.linuxPackages_6_15;
 in {
   imports = [
-    ./hyprland
+    # ./hyprland
+    ./niri
     ./dev/android.nix
     ./performance.nix
     ./greeter.nix
@@ -17,8 +18,11 @@ in {
     ./containers.nix
     ./postgres.nix
     ./ai.nix
+    ./gpu.nix
     ./virtualization.nix
     ./home-assistant
+    ./ssh.nix
+    ./server
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -153,29 +157,26 @@ in {
     };
 
     fonts.enableDefaultPackages = true;
-    # fonts.packages = with pkgs; [
-    #   nerdfonts
-    #   fira
-    #   monaspace
-    # ];
-
     fonts.packages = with pkgs; [
       nerd-fonts.fira-code
       nerd-fonts.fira-mono
       fira
       monaspace
+      noto-fonts
+      noto-fonts-monochrome-emoji
     ];
 
     environment.systemPackages = with pkgs; [
       git
       curl
       vim
-      (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {})
       networkmanager
       jq
       linux.cpupower
       linux.perf
       ffmpeg
+      vulkan-tools
+      clinfo
     ];
     # ++ (
     #   if (cfg.cpuArch != "znver5")
@@ -187,15 +188,40 @@ in {
       intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
     });
 
-    hardware.graphics.enable = true;
+    hardware.ipu6.enable = true;
+    hardware.ipu6.platform = "ipu6ep";
 
-    hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
-      intel-media-driver
-      intel-vaapi-driver
-      libvdpau-va-gl
-      vpl-gpu-rt
-      # intel-gpu-tools
-    ]);
+    environment.variables = {
+      RUSTICL_ENABLE = "radeonsi";
+      ROC_ENABLE_PRE_VEGA = "1";
+    };
+
+    hardware.graphics.enable = true;
+    hardware.graphics.extraPackages = with pkgs; (
+      []
+      ++ (lib.optionals (cfg.cpuArch == "alderlake") [
+        intel-media-driver
+        intel-vaapi-driver
+        libvdpau-va-gl
+        vpl-gpu-rt
+      ])
+      ++ (lib.optionals (cfg.cpuArch == "znver5") [
+        mesa
+        libva
+        libvdpau-va-gl
+        vulkan-loader
+        vulkan-validation-layers
+        amdvlk
+        mesa.opencl
+      ])
+    );
+    # hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
+    #   intel-media-driver
+    #   intel-vaapi-driver
+    #   libvdpau-va-gl
+    #   vpl-gpu-rt
+    #   # intel-gpu-tools
+    # ]);
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
 

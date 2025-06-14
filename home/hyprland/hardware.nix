@@ -42,7 +42,7 @@
           border-radius: inherit;
           border: none;
           /* Use Everforest Dark Medium foreground with 50% opacity for the trough */
-          background: rgba(211, 198, 170, 0.5); /* #d3c6aa with 0.5 opacity */
+          background: rgba(211, 198, 170, 1); /* #d3c6aa with 0.5 opacity */
         }
 
         progress {

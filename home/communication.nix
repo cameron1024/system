@@ -11,5 +11,6 @@
     discord
 
     rquickshare
+    deluge
   ]);
 }

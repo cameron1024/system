@@ -40,7 +40,7 @@ in {
         start_hidden = true;
 
         modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];
-        modules-center = ["hyprland/workspaces"];
+        # modules-center = ["hyprland/workspaces"];
         modules-right = ["tray" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
 
         "cpu" = {
