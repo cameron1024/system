@@ -18,6 +18,7 @@ in {
     ./containers.nix
     ./postgres.nix
     ./ai.nix
+    ./gpu.nix
     ./virtualization.nix
     ./home-assistant
     ./ssh.nix
