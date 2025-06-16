@@ -11,7 +11,7 @@ in {
     services.ollama.enable = true;
     services.ollama.host = "0.0.0.0";
     services.ollama.openFirewall = true;
-    services.ollama.acceleration = lib.mkIf isAmd "rocm";
+    # services.ollama.acceleration = lib.mkIf isAmd "rocm";
     services.ollama.environmentVariables = {
       "OLLAMA_KEEP_ALIVE" = "2h";
       "OLLAMA_NUM_PARALLEL" = "5";

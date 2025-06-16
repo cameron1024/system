@@ -205,15 +205,15 @@ in {
         libvdpau-va-gl
         vpl-gpu-rt
       ])
-      ++ (lib.optionals (cfg.cpuArch == "znver5") [
-        mesa
-        libva
-        libvdpau-va-gl
-        vulkan-loader
-        vulkan-validation-layers
-        amdvlk
-        mesa.opencl
-      ])
+      # ++ (lib.optionals (cfg.cpuArch == "znver5") [
+      #   mesa
+      #   libva
+      #   libvdpau-va-gl
+      #   vulkan-loader
+      #   vulkan-validation-layers
+      #   amdvlk
+      #   mesa.opencl
+      # ])
     );
     # hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
     #   intel-media-driver
