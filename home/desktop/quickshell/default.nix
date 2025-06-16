@@ -1,7 +1,11 @@
 {
   inputs,
+  machine,
+  lib,
   pkgs,
   ...
 }: {
-  home.packages = [inputs.quickshell.packages.${pkgs.system}.default pkgs.cmake];
+  config = lib.mkIf machine.linux {
+    home.packages = [inputs.quickshell.packages.${pkgs.system}.default pkgs.cmake];
+  };
 }

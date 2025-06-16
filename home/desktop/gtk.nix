@@ -1,17 +1,24 @@
-{pkgs, ...}: {
-  gtk = {
-    enable = true;
+{
+  pkgs,
+  machine,
+  lib,
+  ...
+}: {
+  config = lib.mkIf machine.linux {
+    gtk = {
+      enable = true;
 
-    theme.name = "Everforest-Dark-BL";
-    theme.package = pkgs.everforest-gtk-theme;
+      theme.name = "Everforest-Dark-BL";
+      theme.package = pkgs.everforest-gtk-theme;
 
-    font.name = "Fira Sans";
-    font.package = pkgs.fira;
+      font.name = "Fira Sans";
+      font.package = pkgs.fira;
 
-    cursorTheme.name = "Graphite dark Cursors";
-    cursorTheme.package = pkgs.graphite-cursors;
+      cursorTheme.name = "Graphite dark Cursors";
+      cursorTheme.package = pkgs.graphite-cursors;
 
-    iconTheme.name = "Adwaita";
-    iconTheme.package = pkgs.adwaita-icon-theme;
+      iconTheme.name = "Adwaita";
+      iconTheme.package = pkgs.adwaita-icon-theme;
+    };
   };
 }
