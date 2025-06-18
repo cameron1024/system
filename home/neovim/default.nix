@@ -27,22 +27,6 @@
   ];
 
   config = {
-    home.shellAliases = {
-      "e" = "nvim";
-      "ed" = "nvim +DiffviewOpen";
-      "nv" = "neovide --fork";
-    };
-
-    home.sessionVariables = {
-      "EDITOR" = "nvim";
-      "MANPAGER" = "nvim +Man!";
-    };
-
-    home.packages = with pkgs; [
-      typst
-      neovide
-    ];
-
     programs.nixvim = {
       enable = true;
       package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
@@ -53,7 +37,8 @@
       performance.byteCompileLua.enable = true;
       performance.byteCompileLua.nvimRuntime = true;
       performance.byteCompileLua.plugins = true;
-      performance.combinePlugins.enable = false;
+
+      performance.combinePlugins.enable = true;
       performance.combinePlugins.standalonePlugins = [
         "firenvim"
         "avante.nvim"

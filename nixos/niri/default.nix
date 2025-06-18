@@ -2,12 +2,18 @@
   imports = [../hyprland/fingerprint.nix];
   programs.niri.enable = true;
 
-  services = {
-    blueman.enable = true;
-    # power-profiles-daemon.enable = true;
-    upower.enable = true;
-    cpupower-gui.enable = true;
+  services.blueman.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.upower.enable = true;
+  services.cpupower-gui.enable = true;
+
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
   };
+
   hardware = {
     graphics = {
       enable = true;
@@ -20,7 +26,6 @@
   environment.systemPackages = with pkgs; [
     vulkan-tools
     lutris
+    pavucontrol
   ];
-
-  
 }

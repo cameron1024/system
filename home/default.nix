@@ -4,6 +4,7 @@
     ./firefox
     ./mac
     ./neovim
+    ./neovim-env.nix
     # ./hyprland
     ./niri
     ./shell
