@@ -5,5 +5,6 @@
   home.packages = with pkgs; [
     plover.dev
     libnotify
+    wl-clipboard
   ];
 }

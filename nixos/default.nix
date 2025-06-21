@@ -50,6 +50,7 @@
           system.stateVersion = "24.11";
           nixpkgs = {
             config.allowUnfree = true;
+            config.rocmSupport = machine.cpuArch == "znver5";
             overlays = overlays;
           };
 

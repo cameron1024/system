@@ -5,6 +5,7 @@
 }: let
   isServer = config.networking.hostName == "mini";
 in {
+  imports = [./home-assistant.nix];
   config = lib.mkIf isServer {
     services.jellyfin = {
       enable = true;
@@ -35,6 +36,13 @@ in {
       enable = true;
       openFirewall = true;
       port = 5050;
+    };
+
+    services.wiki-js = {
+      enable = true;
+      settings.db.host = "/run/postgresql";
+      settings.port = 59248;
+      settings.offline = true;
     };
   };
 }

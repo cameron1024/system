@@ -20,7 +20,6 @@ in {
     ./ai.nix
     ./gpu.nix
     ./virtualization.nix
-    ./home-assistant
     ./ssh.nix
     ./server
   ];
@@ -32,6 +31,10 @@ in {
     machine = {
       linux = mkOption {
         type = types.bool;
+      };
+      server = mkOption {
+        type = types.bool;
+        default = false;
       };
       cpuArch = mkOption {
         type = types.nullOr types.str;

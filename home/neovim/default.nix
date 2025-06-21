@@ -24,6 +24,7 @@
     ./tmux-navigator.nix
     ./editing.nix
     ./neorg.nix
+    ./0x0.nix
   ];
 
   config = {

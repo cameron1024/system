@@ -1,11 +1,9 @@
 {
   config,
-  machine,
   lib,
   ...
 }: let
   isServer = config.networking.hostName == "mini";
-  isAmd = machine.cpuArch == "znver5";
 in {
   config = {
     services.ollama.enable = true;

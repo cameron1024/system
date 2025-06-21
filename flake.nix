@@ -67,26 +67,7 @@
             '')
           ];
       };
-
-    systems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
-
-    forAllSystems = inputs.nixpkgs.lib.genAttrs systems;
   in {
-    packages = forAllSystems (system: let
-      nixvimLib = inputs.nixvim.lib.${system};
-      nixvim = inputs.nixvim.legacyPackages.${system};
-      nixvimModule = {
-        inherit system; # or alternatively, set `pkgs`
-        module = import ./home/neovim;
-        extraSpecialArgs = {inherit inputs;};
-      };
-      nvim = nixvim.makeNixvimWithModule nixvimModule;
-    in {inherit nvim;});
     nixosConfigurations = import ./nixos {
       inherit inputs;
     };
