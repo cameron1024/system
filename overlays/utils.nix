@@ -1,4 +1,13 @@
 final: prev: {
+  fetchDrive = {
+    id,
+    hash,
+  }: pkgs:
+    pkgs.fetchurl {
+      inherit hash;
+      url = "https://drive.usercontent.google.com/download?id=${id}";
+    };
+
   cams-utils = {
     hyprland = {
       mkColor = hex: "rgb(${prev.lib.strings.removePrefix "#" hex})";
