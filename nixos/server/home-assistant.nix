@@ -8,18 +8,19 @@ in {
   config = lib.mkIf isServer {
     services.home-assistant = {
       enable = true;
+      openFirewall = true;
       extraComponents = [
-        # Components required to complete the onboarding
         "analytics"
         "google_translate"
         "met"
         "radio_browser"
         "shopping_list"
-        # Recommended for fast zlib compression
-        # https://www.home-assistant.io/integrations/isal
-        "isal"
+        "isal"  # fast zlib
         "hue"
+        "mobile_app"
+        "jellyfin"
       ];
+
       config = {
         defaultConfig = {};
       };
