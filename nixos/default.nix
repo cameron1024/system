@@ -3,6 +3,7 @@
     system,
     spec,
     hardware,
+    config ? {},
   }: let
     overlays = [
       (import inputs.rust-overlay)
@@ -61,6 +62,7 @@
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.backupFileExtension = "backup";
         }
+        config
       ];
     };
 in {
@@ -74,5 +76,9 @@ in {
     system = "x86_64-linux";
     spec = import ./machines/specs/mini.nix {inherit inputs;};
     hardware = ./hardware/mini2.nix;
+    config = {
+      services'.jellyfin.enable = true;
+      services'.immich.enable = true;
+    };
   };
 }

@@ -10,8 +10,8 @@ in {
     services.ollama.rocmOverrideGfx = "11.0.2";
     services.ollama.acceleration = "rocm";
 
-    hardware.opengl.enable = true;
-    hardware.opengl.extraPackages = with pkgs.rocmPackages; [clr clr.icd];
+    hardware.graphics.enable = true;
+    hardware.graphics.extraPackages = with pkgs.rocmPackages; [clr clr.icd];
 
     environment.systemPackages = with pkgs; [
       rocmPackages.rocminfo

@@ -6,7 +6,7 @@
       provider = "ollama" ;
       providers.ollama = {
         endpoint = "http://mini:11434";
-        model = "qwen2.5";
+        model = "devstral";
       };
     };
   };
