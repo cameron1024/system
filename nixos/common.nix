@@ -12,14 +12,12 @@ in {
     # ./hyprland
     ./niri
     ./dev/android.nix
-    ./performance.nix
     ./greeter.nix
     ./games
     ./containers.nix
     ./postgres.nix
     ./ai.nix
     ./gpu.nix
-    ./virtualization.nix
     ./ssh.nix
     ./server
   ];

@@ -1,8 +1,18 @@
 {
-  services.fprintd.enable = true;
-  systemd.services.fprintd = {
-    wantedBy = ["multi-user.target"];
-    serviceConfig.Type = "simple";
+  config,
+  lib,
+  ...
+}:
+with lib; {
+  options = {
+    services'.fingerprint.enable = mkEnableOption "fingerprint services";
+  };
+  config = mkIf (config.services'.fingerprint.enable) {
+    services.fprintd.enable = true;
+    systemd.services.fprintd = {
+      wantedBy = ["multi-user.target"];
+      serviceConfig.Type = "simple";
+    };
   };
   # systemd.services.fingerprintResumeFix = let
   #   targets = [

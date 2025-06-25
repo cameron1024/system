@@ -70,15 +70,26 @@ in {
     system = "x86_64-linux";
     spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
     hardware = ./hardware/thinkpad.nix;
+
+    config = {
+      gpu'.arch = "intel";
+
+      programs'.niri.enable = true;
+    };
   };
 
   mini = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/mini.nix {inherit inputs;};
     hardware = ./hardware/mini2.nix;
+
     config = {
+      gpu'.arch = "zen5";
+
       services'.jellyfin.enable = true;
       services'.immich.enable = true;
+
+      programs'.niri.enable = true;
     };
   };
 }

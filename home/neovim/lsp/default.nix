@@ -1,4 +1,4 @@
-{config, ...}: {
+{
   programs.nixvim = {
     diagnostic.settings = {
       virtual_lines.current_line = true;
@@ -68,7 +68,7 @@
         }
       ];
 
-      servers.nil_ls.enable = true;
+      servers.nixd.enable = true;
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
       servers.sourcekit.enable = true;

@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+with lib; {
   imports = [
     ../hyprland/launcher.nix
     ../hyprland/bar
@@ -14,7 +15,8 @@
     ../desktop
   ];
 
-  config = lib.mkIf machine.linux {
+
+  config = mkIf machine.linux {
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite
