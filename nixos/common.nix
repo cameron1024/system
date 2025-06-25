@@ -10,10 +10,7 @@
 in {
   imports = [
     ./desktop
-    ./dev/android.nix
     ./greeter.nix
-    ./games
-    ./containers.nix
     ./postgres.nix
     ./ai.nix
     ./gpu.nix

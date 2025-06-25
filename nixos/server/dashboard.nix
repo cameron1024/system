@@ -3,10 +3,22 @@
   config,
   lib,
   ...
-}: let
-  isServer = config.networking.hostName == "mini";
+}:
+with lib; let
+  jellyfin = config.services'.jellyfin.enable;
+  immich = config.services'.immich.enable;
+  home-assistant = config.services'.home-assistant.enable;
 in {
-  config = lib.mkIf isServer {
+  options.services'.dashboard.enable = mkOption {
+    type = types.bool;
+    default = any id [
+      jellyfin
+      immich
+      home-assistant
+    ];
+  };
+
+  config = lib.mkIf config.services'.dashboard.enable {
     # host background image for dashboard
     services.static-web-server = {
       enable = true;
@@ -44,75 +56,64 @@ in {
       };
 
       # Keys are stored in a non-declarative file `/etc/homepage-dashboard/.env`
-      services = [
-        {
-          "Smart Home" = [
-            {
-              "Home Assistant" = {
-                href = "http://mini:8123";
-                description = "Control Smart Home Devices";
-                widgets = [
-                  {
-                    type = "homeassistant";
-                    url = "http://mini:8123";
-                    key = "{{HOMEPAGE_VAR_HOME_ASSISTANT_KEY}}";
-                  }
-                ];
-              };
-            }
-            # {
-            #   "Ad Blocker" = {
-            #     href = "http://mini:4909";
-            #     description = "Block Adverts Network-wide";
-            #     widgets = [
-            #       {
-            #         type = "adguard";
-            #         url = "http://mini:4909";
-            #         key = "{{HOMEPAGE_VAR_JELLYFIN_KEY}}";
-            #       }
-            #     ];
-            #   };
-            # }
-          ];
-        }
-
-        {
-          "Media" = [
-            {
-              "Jellyfin" = {
-                href = "http://mini:8096";
-                description = "Watch Films and TV Shows";
-                widgets = [
-                  {
-                    type = "jellyfin";
-                    url = "http://mini:8096";
-                    key = "{{HOMEPAGE_VAR_JELLYFIN_KEY}}";
-                  }
-                ];
-              };
-            }
-            {
-              "Immich" = {
-                href = "http://mini:2283";
-                description = "Photo Management";
-                widgets = [
-                  {
-                    type = "immich";
-                    url = "http://mini:2283";
-                    key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
-                    version = 2;
-                  }
-                ];
-              };
-            }
-          ];
-        }
-
-        {
-          "Ad Blocker" = [
-          ];
-        }
-      ];
+      services =
+        []
+        ++ (optionals home-assistant [
+          {
+            "Smart Home" = [
+              {
+                "Home Assistant" = {
+                  href = "http://mini:8123";
+                  description = "Control Smart Home Devices";
+                  widgets = [
+                    {
+                      type = "homeassistant";
+                      url = "http://mini:8123";
+                      key = "{{HOMEPAGE_VAR_HOME_ASSISTANT_KEY}}";
+                    }
+                  ];
+                };
+              }
+            ];
+          }
+        ])
+        ++ (optionals (jellyfin || immich) [
+          {
+            "Media" =
+              []
+              ++ (optionals jellyfin [
+                {
+                  "Jellyfin" = {
+                    href = "http://mini:8096";
+                    description = "Watch Films and TV Shows";
+                    widgets = [
+                      {
+                        type = "jellyfin";
+                        url = "http://mini:8096";
+                        key = "{{HOMEPAGE_VAR_JELLYFIN_KEY}}";
+                      }
+                    ];
+                  };
+                }
+              ])
+              ++ (optionals immich [
+                {
+                  "Immich" = {
+                    href = "http://mini:2283";
+                    description = "Photo Management";
+                    widgets = [
+                      {
+                        type = "immich";
+                        url = "http://mini:2283";
+                        key = "{{HOMEPAGE_VAR_IMMICH_KEY}}";
+                        version = 2;
+                      }
+                    ];
+                  };
+                }
+              ]);
+          }
+        ]);
 
       widgets = [
         {

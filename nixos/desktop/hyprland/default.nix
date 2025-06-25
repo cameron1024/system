@@ -3,10 +3,6 @@
   lib,
   ...
 }: {
-  imports = [
-    ./sound.nix
-    ./bluetooth
-  ];
 
   config = lib.mkIf false {
     programs.hyprland = {

@@ -2,10 +2,12 @@
   config,
   lib,
   ...
-}: let
-  hostname = config.networking.hostName;
-in {
-  config = lib.mkIf (hostname == "mini") {
+}:
+with lib; {
+  options = {
+    services'.openssh.enable = mkEnableOption "openssh";
+  };
+  config = lib.mkIf config.services'.openssh.enable {
     services.openssh.enable = true;
     services.openssh.openFirewall = true;
   };

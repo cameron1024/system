@@ -75,11 +75,11 @@ in {
       gpu'.arch = "intel";
 
       programs'.niri.enable = true;
-
-      services'.desktop.enable = true; 
       services'.desktop.displays = with import ./machines/displays.nix; [
-        thinkpadBuiltin  
+        thinkpadBuiltin
       ];
+
+      programs.steam.enable = true;
     };
   };
 
@@ -95,14 +95,12 @@ in {
       services'.immich.enable = true;
       services'.home-assistant.enable = true;
 
-      services'.desktop.enable = true; 
+      programs'.niri.enable = true;
       services'.desktop.displays = with import ./machines/displays.nix; [
-        alien  
+        alien
       ];
 
-      programs'.niri.enable = true;
-
-
+      programs.steam.enable = true;
     };
   };
 }
