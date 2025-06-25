@@ -69,6 +69,7 @@
       ];
 
       servers.nixd.enable = true;
+      servers.nil_ls.enable = true;
       servers.bashls.enable = true;
       servers.lemminx.enable = true;
       servers.sourcekit.enable = true;

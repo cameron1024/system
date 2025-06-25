@@ -1,31 +1,39 @@
 {
   pkgs,
-  machine,
   lib,
+  osConfig,
   ...
 }: let
-  useIdle = lib.lists.any (display: display.oled) machine.displays;
+  desktopEnabled = osConfig.services'.desktop.enable;
+  isLaptop = osConfig.services'.desktop.isLaptop;
+  oledMitigations = osConfig.services'.desktop.oledMitigations;
+
+  useIdle = desktopEnabled && (isLaptop || oledMitigations.enable);
+  # If it's a laptop, we always want to suspend to save power. On a desktop, we
+  # don't care as much. Safe because suspending turns the screen off anyways
+  on-timeout =
+    if isLaptop
+    then "systemctl suspend"
+    else oledMitigations.powerOffDisplayCommand;
 in {
-  services.hypridle = {
-    enable = machine.linux && useIdle;
-    settings = {
-      general = {
-        lock_cmd = "hyprlock";
-        before_sleep_cmd = "hyprlock";
+  config = lib.mkIf (pkgs.stdenv.isLinux && useIdle) {
+    services.hypridle = {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd = "hyprlock";
+          before_sleep_cmd = "hyprlock";
+        };
+
+        listener = [
+          {
+            timeout = 300;
+            inherit on-timeout;
+          }
+        ];
       };
-
-      listener = [
-        {
-          timeout = 300;
-          on-timeout = "systemctl suspend";
-        }
-      ];
     };
+    services.caffeine.enable = true;
+    home.packages = [pkgs.caffeine-ng];
   };
-
-  services.caffeine.enable = machine.linux;
-  home.packages =
-    if machine.linux
-    then [pkgs.caffeine-ng]
-    else [];
 }

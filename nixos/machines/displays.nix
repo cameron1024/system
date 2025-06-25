@@ -1,7 +1,8 @@
 {
   thinkpadBuiltin = {
     name = "eDP-1";
-    resolution = "2880x1800";
+    resolution.width = 2880;
+    resolution.height = 1800;
 
     position.x = 0;
     position.y = 0;
@@ -13,7 +14,8 @@
 
   benq = {
     name = "HDMI-A-1";
-    resolution = "3840x2160";
+    resolution.width = 3840;
+    resolution.height = 2160;
 
     position.x = 0;
     position.y = 0;
@@ -25,7 +27,8 @@
 
   lg = {
     name = "HDMI-A-1";
-    resolution = "2560x2880";
+    resolution.width = 2560;
+    resolution.height = 2880;
 
     position.x = 2560;
     position.y = 0;
@@ -37,7 +40,8 @@
 
   alien = {
     name = "DP-1";
-    resolution = "2560x1440";
+    resolution.width = 2560;
+    resolution.height = 1440;
 
     position.x = 0;
     position.y = 500;

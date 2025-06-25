@@ -1,29 +1,40 @@
 {
+  pkgs,
   config,
   lib,
   ...
 }: let
-  isServer = config.networking.hostName == "mini";
-in {
-  config = lib.mkIf isServer {
-    services.home-assistant = {
-      enable = true;
-      openFirewall = true;
-      extraComponents = [
-        "analytics"
-        "google_translate"
-        "met"
-        "radio_browser"
-        "shopping_list"
-        "isal"  # fast zlib
-        "hue"
-        "mobile_app"
-        "jellyfin"
-      ];
+  extraComponents = [
+    "analytics"
+    "google_translate"
+    "met"
+    "radio_browser"
+    "shopping_list"
+    "isal" # fast zlib
+    "hue"
+    "mobile_app"
+    "jellyfin"
+    "default_config"
+  ];
+in
+  with lib; {
+    options = {
+      services'.home-assistant.enable = mkEnableOption "home assistant";
+    };
 
-      config = {
-        defaultConfig = {};
+    config = lib.mkIf config.services'.home-assistant.enable {
+      services.home-assistant = {
+        enable = true;
+        package = pkgs.home-assistant.override {
+          inherit extraComponents;
+        };
+        openFirewall = true;
+        inherit extraComponents;
+
+        config = {
+          defaultConfig = {};
+          logger.default = "info";
+        };
       };
     };
-  };
-}
+  }

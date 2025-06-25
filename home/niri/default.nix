@@ -1,7 +1,7 @@
 {
-  machine,
   pkgs,
   lib,
+  osConfig,
   ...
 }:
 with lib; {
@@ -15,8 +15,7 @@ with lib; {
     ../desktop
   ];
 
-
-  config = mkIf machine.linux {
+  config = mkIf (pkgs.stdenv.isLinux && osConfig.services'.desktop.enable) {
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite
@@ -42,13 +41,13 @@ with lib; {
       */
       ''
         output "${name}" {
-            mode "${resolution}@${toString refreshRate}"
+            mode "${toString resolution.width}x${toString resolution.height}@${toString refreshRate}"
             scale ${toString scale}
             transform "normal"
             position x=${toString position.x} y=${toString position.y}
         }
       '';
-      displays = map formatDisplay machine.displays;
+      displays = map formatDisplay osConfig.services'.desktop.displays;
     in ''
       ${builtins.readFile ./config.kdl}
       ${lib.strings.concatMapStrings (x: x + "\n") displays}

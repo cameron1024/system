@@ -9,8 +9,7 @@
   linux = pkgs.linuxPackages_6_15;
 in {
   imports = [
-    # ./hyprland
-    ./niri
+    ./desktop
     ./dev/android.nix
     ./greeter.nix
     ./games

@@ -1,21 +1,14 @@
 {
   pkgs,
-  config,
   lib,
-  inputs,
   ...
-}: let
-  cfg = config.machine.wm.hyprland;
-in {
+}: {
   imports = [
     ./sound.nix
-    ./wifi
     ./bluetooth
-    # ./power-management.nix
-    ./fingerprint.nix
   ];
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf false {
     programs.hyprland = {
       enable = true;
       # withUWSM = true;

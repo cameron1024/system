@@ -5,8 +5,6 @@
   ...
 }:
 with lib; {
-  imports = [../hyprland/fingerprint.nix];
-
   options = {
     programs'.niri.enable = mkEnableOption "niri";
   };
@@ -15,26 +13,18 @@ with lib; {
     services'.fingerprint.enable = true;
 
     services'.tuigreet.enable = true;
-    services'.tuigreet.command = mkForce "niri-session"    ;
+    services'.tuigreet.command = mkForce "niri-session";
 
+    services'.desktop.enable = true;
+    services'.desktop.oledMitigations.powerOffDisplayCommand = ''
+      niri msg action power-off-monitors
+    '';
 
     programs.niri.enable = true;
 
-    services.blueman.enable = true;
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
     services.cpupower-gui.enable = true;
-
-    services.pulseaudio.enable = false;
-    services.pulseaudio.support32Bit = true;
-    security.rtkit.enable = true;
-    services.pipewire = {
-      enable = true;
-      pulse.enable = true;
-    };
-
-    hardware.graphics.enable = true;
-    hardware.graphics.enable32Bit = true;
 
     environment.systemPackages = with pkgs; [
       vulkan-tools
