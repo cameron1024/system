@@ -21,6 +21,7 @@
     appimage-run
     nixos-generators
     caligula
+    pureref
   ];
   
 }

@@ -22,7 +22,7 @@ in {
     ./hy3.nix
   ];
 
-  home.packages = lib.mkIf machine.linux [
+  home.packages = lib.mkIf pkgs.stdenv.isLinux [
     toggleGaps
     pkgs.google-chrome-stable
   ];
