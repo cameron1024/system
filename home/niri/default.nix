@@ -21,28 +21,6 @@ with lib; {
       description = "Extra .kdl config to append to the generated config";
       default = "";
     };
-
-    binds = mkOption {
-      type = listOf (submodule {
-        options = {
-          key = mkOption {
-            type = types.str;
-            description = "The key combination to trigger this";
-          };
-
-          hotkeyOverlayTitle = mkOption {
-            type = types.nullOr types.str;
-            description = "Override the hotkey overlay title";
-            default = null;
-          };
-
-          spawn = mkOption {
-            type = types.listOf types.str;
-            description = "List of strings representing program and its arguments";
-          };
-        };
-      });
-    };
   };
 
   config = mkIf (osConfig != null && osConfig.programs'.niri.enable) {

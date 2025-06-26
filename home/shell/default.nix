@@ -3,15 +3,7 @@
   lib,
   machine,
   ...
-}: let
-  systemPackages = with pkgs;
-    if machine.linux
-    then [
-      pcmanfm
-      gcc
-    ]
-    else [];
-in {
+}: {
   imports = [
     ./fish
     ./nushell
@@ -31,11 +23,11 @@ in {
   ];
 
   config = {
-    programs.bat = lib.mkIf machine.linux {
+    programs.bat = {
       enable = true;
       # themes = {
       #   everforest = {
-      #     src = pkgs.everforest-collection; 
+      #     src = pkgs.everforest-collection;
       #     file = "bat/everforest-soft.tmTheme";
       #   };
       # };
@@ -93,6 +85,9 @@ in {
 
         comma
       ]
-      ++ systemPackages;
+      ++ (lib.optionals pkgs.stdenv.isLinux [
+        pcmanfm
+        gcc
+      ]);
   };
 }
