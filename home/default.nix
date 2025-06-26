@@ -19,6 +19,8 @@
 
   home.packages = with pkgs; [
     appimage-run
+    nixos-generators
+    caligula
   ];
   
 }
