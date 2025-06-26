@@ -47,10 +47,6 @@ in {
         };
       };
 
-      extraFirmware = mkOption {
-        default = null;
-      };
-
       hostname = mkOption {
         type = types.str;
       };
@@ -135,14 +131,8 @@ in {
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
-    hardware.firmware =
-      if cfg.extraFirmware != null
-      then cfg.extraFirmware pkgs
-      else [];
 
-    networking.hostName = cfg.hostname;
     networking.networkmanager.enable = true;
-    networking.nameservers = ["1.1.1.1"];
 
     time.timeZone = "Europe/London";
 
@@ -154,16 +144,6 @@ in {
       extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input"];
     };
 
-    fonts.enableDefaultPackages = true;
-    fonts.packages = with pkgs; [
-      nerd-fonts.fira-code
-      nerd-fonts.fira-mono
-      fira
-      monaspace
-      noto-fonts
-      noto-fonts-monochrome-emoji
-    ];
-
     environment.systemPackages = with pkgs; [
       git
       curl
@@ -172,9 +152,6 @@ in {
       jq
       linux.cpupower
       linux.perf
-      ffmpeg
-      vulkan-tools
-      clinfo
     ];
     # ++ (
     #   if (cfg.cpuArch != "znver5")
@@ -182,44 +159,11 @@ in {
     #   else [intel-gpu-tools]
     # );
 
-    nixpkgs.config.packageOverrides = lib.mkIf (cfg.cpuArch != "znver5") (pkgs: {
-      intel-vaapi-driver = pkgs.intel-vaapi-driver.override {enableHybridCodec = true;};
-    });
+    nixpkgs.config.allowUnfree = true;
+    nixpkgs.config.rocmSupport = config.gpu'.arch == "zen5";
 
     hardware.ipu6.enable = true;
     hardware.ipu6.platform = "ipu6ep";
-
-    environment.variables = {
-      RUSTICL_ENABLE = "radeonsi";
-      ROC_ENABLE_PRE_VEGA = "1";
-    };
-
-    hardware.graphics.enable = true;
-    hardware.graphics.extraPackages = with pkgs; (
-      []
-      ++ (lib.optionals (cfg.cpuArch == "alderlake") [
-        intel-media-driver
-        intel-vaapi-driver
-        libvdpau-va-gl
-        vpl-gpu-rt
-      ])
-      # ++ (lib.optionals (cfg.cpuArch == "znver5") [
-      #   mesa
-      #   libva
-      #   libvdpau-va-gl
-      #   vulkan-loader
-      #   vulkan-validation-layers
-      #   amdvlk
-      #   mesa.opencl
-      # ])
-    );
-    # hardware.graphics.extraPackages = lib.mkIf (cfg.cpuArch != "znver5") (with pkgs; [
-    #   intel-media-driver
-    #   intel-vaapi-driver
-    #   libvdpau-va-gl
-    #   vpl-gpu-rt
-    #   # intel-gpu-tools
-    # ]);
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
 
@@ -235,21 +179,10 @@ in {
         trusted-users = ["root" "@wheel"];
         substituters = ["https://hyprland.cachix.org"];
         trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-        system-features = let
-          arch = cfg.cpuArch;
-        in (
+        system-features =
           []
-          ++ (
-            if arch == "znver5"
-            then ["gccarch-znver5"]
-            else []
-          )
-          ++ (
-            if arch == "alderlake"
-            then ["gccarch-alderlake"]
-            else []
-          )
-        );
+          ++ (lib.optionals (cfg.cpuArch == "znver5") ["gccarch-znver5"])
+          ++ (lib.optionals (cfg.cpuArch == "alderlake") ["gccarch-alderlake"]);
       };
     };
   };

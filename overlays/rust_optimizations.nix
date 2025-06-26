@@ -9,6 +9,7 @@
     prev,
   }:
     inputs.nixpkgs.lib.customisation.overrideDerivation pkgs.${name} (oldAttrs: {
+      # recent nightly is important for avx512 support
       cargo = prev.rust-bin.nightly.latest.default;
       rustc = prev.rust-bin.nightly.latest.default;
       "RUSTFLAGS" = "-Ctarget-cpu=${arch}";

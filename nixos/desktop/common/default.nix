@@ -8,6 +8,7 @@ with lib; {
     ./audio.nix
     ./bluetooth.nix
     ./fingerprint.nix
+    ./fonts.nix
   ];
 
   options.services'.desktop = let

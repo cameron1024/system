@@ -13,10 +13,16 @@ with lib; {
   };
 
   config = lib.mkMerge [
+    # All GPUs
     {
       hardware.graphics.enable = true;
+      environment.systemPackages = with pkgs; [
+        vulkan-tools
+        clinfo
+      ];
     }
 
+    # AMD GPUs
     (lib.mkIf (config.gpu'.arch == "zen5") {
       services.ollama.rocmOverrideGfx = "11.0.2";
       services.ollama.acceleration = "rocm";
@@ -25,12 +31,29 @@ with lib; {
 
       environment.systemPackages = with pkgs; [
         rocmPackages.rocminfo
-        clinfo
       ];
+
+      environment.variables = {
+        RUSTICL_ENABLE = "radeonsi";
+        ROC_ENABLE_PRE_VEGA = "1";
+      };
     })
 
+    # Intel GPUs
     (lib.mkIf (config.gpu'.arch == "intel") {
       hardware.intel-gpu-tools.enable = true;
+      hardware.graphics.extraPackages = with pkgs; [
+        intel-media-driver
+        intel-vaapi-driver
+        libvdpau-va-gl
+        vpl-gpu-rt
+      ];
+
+      nixpkgs.config.packageOverrides = pkgs: {
+        intel-vaapi-driver = pkgs.intel-vaapi-driver.override {
+          enableHybridCodec = true;
+        };
+      };
     })
   ];
 }

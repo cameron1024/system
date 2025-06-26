@@ -4,31 +4,13 @@
     spec,
     hardware,
     config ? {},
+    homeManager ? true,
+    optimizations ? true,
   }: let
-    overlays = [
-      (import inputs.rust-overlay)
-      (import ../overlays/gcc_optimizations.nix {
-        inherit inputs;
-        arch = machine.cpuArch;
-        packageList = [
-          # "neovim"
-        ];
-      })
-      (import ../overlays/rust_optimizations.nix {
-        inherit inputs;
-        arch = machine.cpuArch;
-        packageList = [
-          "rust-analyzer"
-          "starship"
-          "ripgrep"
-          "eza"
-          "nushell"
-          "fish"
-          "television"
-        ];
-      })
-      (import ../overlays/utils.nix)
-    ];
+    overlays = import ../overlays {
+      inherit inputs optimizations;
+      arch = spec.cpuArch;
+    };
 
     machine = spec;
 
@@ -41,29 +23,30 @@
       inherit system;
       inherit specialArgs;
 
-      modules = [
-        inputs.home-manager.nixosModules.default
-        ./common.nix
-        hardware
-        {
-          inherit machine;
-
-          system.stateVersion = "24.11";
-          nixpkgs = {
-            config.allowUnfree = true;
-            config.rocmSupport = machine.cpuArch == "znver5";
-            overlays = overlays;
-          };
-
-          nix.registry.nixpkgs.flake = inputs.nixpkgs;
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.users.cameron = import ../home;
-          home-manager.extraSpecialArgs = specialArgs;
-          home-manager.backupFileExtension = "backup";
-        }
-        config
-      ];
+      modules =
+        [
+          ./common.nix
+          hardware
+          {
+            inherit machine;
+            system.stateVersion = "24.11";
+            nixpkgs.overlays = overlays;
+          }
+          config
+        ]
+        ++ (
+          if homeManager
+          then [
+            inputs.home-manager.nixosModules.default
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.users.cameron = import ../home;
+              home-manager.extraSpecialArgs = specialArgs;
+              home-manager.backupFileExtension = "backup";
+            }
+          ]
+          else []
+        );
     };
 in {
   thinkchad = mkSystem {
@@ -73,6 +56,8 @@ in {
 
     config = {
       gpu'.arch = "intel";
+
+      networking.hostName = "thinkchad";
 
       programs'.niri.enable = true;
       services'.desktop.displays = with import ./machines/displays.nix; [
@@ -90,6 +75,8 @@ in {
 
     config = {
       gpu'.arch = "zen5";
+
+      networking.hostName = "mini";
 
       services'.jellyfin.enable = true;
       services'.immich.enable = true;
