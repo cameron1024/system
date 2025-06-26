@@ -96,7 +96,15 @@ in {
 
   pi = inputs.nixpkgs.lib.nixosSystem rec {
     system = "aarch64-linux";
-    pkgs = import inputs.nixpkgs {inherit system;};
+    pkgs = import inputs.nixpkgs {
+      inherit system;
+      overlays = [
+        (final: super: {
+          makeModulesClosure = x:
+            super.makeModulesClosure (x // {allowMissing = true;});
+        })
+      ];
+    };
     modules = [
       # ./hardware/pi.nix
       inputs.nixos-hardware.nixosModules.raspberry-pi-4
