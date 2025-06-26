@@ -1,10 +1,32 @@
-{pkgs, ...}: {
-  imports = [./quickshell ./power-menu.nix ./gtk.nix];
-  programs.obs-studio.enable = true;
-
-  home.packages = with pkgs; [
-    plover.dev
-    libnotify
-    wl-clipboard
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+with lib; {
+  imports = [
+    ./gtk.nix
+    ./lock
+    ./power-menu.nix
+    ./quickshell
+    ./waybar
   ];
+
+  options = {
+    services'.desktop.enable = mkEnableOption "desktop";
+  };
+
+  config = mkIf config.services'.desktop.enable {
+    gtk'.enable = true;
+
+    programs'.waybar.enable = true;
+    programs'.quickshell.enable = true;
+    programs'.departure.enable = true;
+
+    home.packages = with pkgs; [
+      libnotify
+      wl-clipboard
+    ];
+  };
 }

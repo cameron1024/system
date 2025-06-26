@@ -1,10 +1,15 @@
 {
   pkgs,
-  machine,
+  config,
   lib,
   ...
-}: {
-  config = lib.mkIf machine.linux {
+}:
+with lib; {
+  options = {
+    gtk'.enable = mkEnableOption "Everforest GTK";
+  };
+  
+  config = lib.mkIf config.gtk'.enable {
     gtk = {
       enable = true;
 

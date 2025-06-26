@@ -2,7 +2,6 @@
   machine,
   pkgs,
   lib,
-  config,
   osConfig,
   ...
 }:
