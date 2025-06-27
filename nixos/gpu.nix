@@ -24,8 +24,7 @@ with lib; {
 
     # AMD GPUs
     (lib.mkIf (config.gpu'.arch == "zen5") {
-      services.ollama.rocmOverrideGfx = "11.0.2";
-      services.ollama.acceleration = "rocm";
+      nixpkgs.config.rocmSupport = true;
 
       hardware.graphics.extraPackages = with pkgs.rocmPackages; [clr clr.icd];
 
@@ -37,6 +36,9 @@ with lib; {
         RUSTICL_ENABLE = "radeonsi";
         ROC_ENABLE_PRE_VEGA = "1";
       };
+
+      services.ollama.rocmOverrideGfx = "11.0.2";
+      services.ollama.acceleration = "rocm";
     })
 
     # Intel GPUs

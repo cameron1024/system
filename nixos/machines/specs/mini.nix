@@ -2,11 +2,6 @@
   hostname = "mini";
   cpuArch = "znver5";
 
-  kernelParams = [
-    # "amdgpu.dcdebugmask=0x12"
-    # "amdgpu.noretry=1"
-  ];
-
   linux = true;
   wm.hyprland.enable = true;
 

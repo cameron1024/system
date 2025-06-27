@@ -6,16 +6,17 @@
   ...
 }: let
   cfg = config.machine;
-  linux = pkgs.linuxPackages_6_15;
 in {
   imports = [
+    ./ai.nix
     ./desktop
+    ./gpu.nix
     ./greeter.nix
     ./postgres.nix
-    ./ai.nix
-    ./gpu.nix
-    ./ssh.nix
     ./server
+    ./ssh.nix
+    ./webcam.nix
+    ./standard.nix
   ];
   options = with lib; let
     colorOption = mkOption {
@@ -33,10 +34,6 @@ in {
       cpuArch = mkOption {
         type = types.nullOr types.str;
         default = null;
-      };
-      kernelParams = mkOption {
-        type = types.listOf types.str;
-        default = [];
       };
       user = {
         name = mkOption {
@@ -119,56 +116,31 @@ in {
         };
       };
     };
-
-    pi'.enable = mkEnableOption "Raspberry Pi";
   };
 
-  config = lib.mkIf (!config.pi'.enable) {
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    boot.loader.efi.efiSysMountPoint = lib.mkIf (cfg.boot != null) cfg.boot;
-    boot.loader.grub.memtest86.enable = true;
-    boot.kernelPackages = linux;
-    boot.kernelParams = cfg.kernelParams;
-
-    hardware.enableAllFirmware = true;
-    hardware.enableRedistributableFirmware = true;
-
-    networking.networkmanager.enable = true;
-
+  config = {
     time.timeZone = "Europe/London";
 
     console.keyMap = "uk";
 
-    users.users.cameron = {
-      isNormalUser = true;
-      description = "cameron";
-      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input"];
-    };
-
-    environment.systemPackages = with pkgs; [
-      git
-      curl
-      vim
-      networkmanager
-      jq
-      linux.cpupower
-      linux.perf
-    ];
+    # environment.systemPackages = with pkgs; [
+    #   git
+    #   curl
+    #   vim
+    #   networkmanager
+    #   jq
+    #   linux.cpupower
+    #   linux.perf
+    # ];
     # ++ (
     #   if (cfg.cpuArch != "znver5")
     #   then []
     #   else [intel-gpu-tools]
     # );
 
-    nixpkgs.config.allowUnfree = true;
-    nixpkgs.config.rocmSupport = config.gpu'.arch == "zen5";
-
-    hardware.ipu6.enable = true;
-    hardware.ipu6.platform = "ipu6ep";
-
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
 
+    nixpkgs.config.allowUnfree = true;
     nix = {
       package = pkgs.nixVersions.stable;
       registry.nixpkgs.flake = inputs.nixpkgs;

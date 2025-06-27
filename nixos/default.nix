@@ -1,7 +1,7 @@
 {inputs}: let
   mkSystem = {
     system,
-    spec,
+    spec ? {},
     hardware,
     config ? {},
     homeManager ? true,
@@ -9,7 +9,7 @@
   }: let
     overlays = import ../overlays {
       inherit inputs optimizations;
-      arch = spec.cpuArch;
+      arch = spec.cpuArch or null;
     };
 
     machine = spec;
@@ -33,19 +33,15 @@
           }
           config
         ]
-        ++ (
-          if homeManager
-          then [
-            inputs.home-manager.nixosModules.default
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.users.cameron = import ../home;
-              home-manager.extraSpecialArgs = specialArgs;
-              home-manager.backupFileExtension = "backup";
-            }
-          ]
-          else []
-        );
+        ++ (inputs.nixpkgs.lib.optionals homeManager [
+          inputs.home-manager.nixosModules.default
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.users.cameron = import ../home;
+            home-manager.extraSpecialArgs = specialArgs;
+            home-manager.backupFileExtension = "backup";
+          }
+        ]);
     };
 in {
   thinkchad = mkSystem {
@@ -55,7 +51,10 @@ in {
 
     config = {
       system.stateVersion = "24.11";
+      services'.standardMachine.enable = true;
       gpu'.arch = "intel";
+
+      boot.loader.efi.efiSysMountPoint = "/boot";
 
       networking.hostName = "thinkchad";
 
@@ -75,6 +74,7 @@ in {
 
     config = {
       system.stateVersion = "24.11";
+      services'.standardMachine.enable = true;
       gpu'.arch = "zen5";
 
       boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -94,36 +94,27 @@ in {
     };
   };
 
-  pi = inputs.nixpkgs.lib.nixosSystem rec {
+  pi = mkSystem {
     system = "aarch64-linux";
-    pkgs = import inputs.nixpkgs {
-      inherit system;
-      overlays = [
-        (final: super: {
-          makeModulesClosure = x:
-            super.makeModulesClosure (x // {allowMissing = true;});
-        })
-      ];
+    hardware = inputs.nixos-hardware.nixosModules.raspberry-pi-4;
+    homeManager = false;
+    config = {lib, ...}: {
+      system.stateVersion = "25.11";
+
+      networking.hostName = "pi";
+      networking.wireless.enable = false;
+
+      users.users."cameron" = {
+        isNormalUser = true;
+        extraGroups = ["wheel" "networkmanager" "video"];
+        initialPassword = "password";
+        initialHashedPassword = lib.mkForce null;
+      };
+
+      users.users.root.initialHashedPassword = "";
+
+      services'.openssh.enable = true;
+      services'.adguardhome.enable = true;
     };
-    modules = [
-      # ./hardware/pi.nix
-      inputs.nixos-hardware.nixosModules.raspberry-pi-4
-      {
-        system.stateVersion = "25.11";
-
-        networking.hostName = "pi";
-
-        users.users."nixos" = {
-          isNormalUser = true;
-          extraGroups = ["wheel" "networkmanager" "video"];
-          initialHashedPassword = "";
-        };
-
-        users.users.root.initialHashedPassword = "";
-
-        services.openssh.enable = true;
-        services.openssh.openFirewall = true;
-      }
-    ];
   };
 }

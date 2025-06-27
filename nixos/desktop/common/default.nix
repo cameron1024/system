@@ -76,6 +76,12 @@ with lib; {
   };
 
   config = mkIf config.services'.desktop.enable {
+    users.users.cameron = {
+      isNormalUser = true;
+      description = "cameron";
+      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input"];
+    };
+
     hardware.graphics.enable = true;
     hardware.graphics.enable32Bit = true;
 
