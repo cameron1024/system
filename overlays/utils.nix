@@ -46,5 +46,10 @@ final: prev: {
       };
     };
 
+  writeShellScriptNu = name: script: let
+    scriptFile = final.writeText "script.nu" script;
+  in
+    final.writeShellScriptBin name "${final.nushell}/bin/nu ${scriptFile}\n";
+
   # everforest-gtk = prev.callPackage ./packages/everforest-gtk.nix {};
 }
