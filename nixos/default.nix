@@ -29,7 +29,6 @@
           hardware
           {
             inherit machine;
-            system.stateVersion = "24.11";
             nixpkgs.overlays = overlays;
           }
           config
@@ -55,6 +54,7 @@ in {
     hardware = ./hardware/thinkpad.nix;
 
     config = {
+      system.stateVersion = "24.11";
       gpu'.arch = "intel";
 
       networking.hostName = "thinkchad";
@@ -75,7 +75,10 @@ in {
     hardware = ./hardware/mini2.nix;
 
     config = {
+      system.stateVersion = "24.11";
       gpu'.arch = "zen5";
+
+      boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
       networking.hostName = "mini";
 
@@ -90,5 +93,38 @@ in {
 
       programs.steam.enable = true;
     };
+  };
+
+  pi = inputs.nixpkgs.lib.nixosSystem rec {
+    system = "aarch64-linux";
+    pkgs = import inputs.nixpkgs {
+      inherit system;
+      overlays = [
+        (final: super: {
+          makeModulesClosure = x:
+            super.makeModulesClosure (x // {allowMissing = true;});
+        })
+      ];
+    };
+    modules = [
+      # ./hardware/pi.nix
+      inputs.nixos-hardware.nixosModules.raspberry-pi-4
+      {
+        system.stateVersion = "25.11";
+
+        networking.hostName = "pi";
+
+        users.users."nixos" = {
+          isNormalUser = true;
+          extraGroups = ["wheel" "networkmanager" "video"];
+          initialHashedPassword = "";
+        };
+
+        users.users.root.initialHashedPassword = "";
+
+        services.openssh.enable = true;
+        services.openssh.openFirewall = true;
+      }
+    ];
   };
 }

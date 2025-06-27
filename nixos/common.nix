@@ -119,9 +119,11 @@ in {
         };
       };
     };
+
+    pi'.enable = mkEnableOption "Raspberry Pi";
   };
 
-  config = {
+  config = lib.mkIf (!config.pi'.enable) {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.efi.efiSysMountPoint = lib.mkIf (cfg.boot != null) cfg.boot;
