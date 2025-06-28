@@ -5,6 +5,7 @@
     homeManager ? true,
     optimizations ? true,
     modules ? [],
+    homeModules ? [],
     extraOverlays ? [],
   }: let
     overlays =
@@ -42,6 +43,11 @@
             home-manager.extraSpecialArgs = specialArgs;
             home-manager.backupFileExtension = "backup";
           }
+          {
+            home-manager.users.cameron = {
+              imports = homeModules;
+            };
+          }
         ]);
     };
 in {
@@ -72,6 +78,11 @@ in {
   mini = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/mini.nix {inherit inputs;};
+    homeModules = [
+      {
+        programs'.deployment-tools.enable = true;
+      }
+    ];
     modules = [
       ./hardware/mini2.nix
       {
@@ -86,7 +97,12 @@ in {
         services'.jellyfin.enable = true;
         services'.immich.enable = true;
         services'.home-assistant.enable = true;
+        services'.ai.enable = true;
 
+        programs.ssh.extraConfig = ''
+          Host pi
+            ForwardAgent yes
+        '';
         programs'.niri.enable = true;
         services'.desktop.displays = with import ./machines/displays.nix; [
           alien
@@ -108,6 +124,7 @@ in {
       })
     ];
     modules = [
+      ./hardware/pi.nix
       inputs.nixos-hardware.nixosModules.raspberry-pi-4
       ({lib, ...}: {
         system.stateVersion = "25.11";
@@ -118,14 +135,19 @@ in {
         users.users."cameron" = {
           isNormalUser = true;
           extraGroups = ["wheel" "networkmanager" "video"];
-          initialPassword = "password";
-          initialHashedPassword = lib.mkForce null;
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII0+Mt9HeGZy7gpWXEn4WABPWO4jAWR3r24wlhW8bsIh cameron@mini"
+          ];
         };
 
         users.users.root.initialHashedPassword = "";
 
+        security.pam.sshAgentAuth.enable = true;
+        security.pam.services.sshAgentAuth.enable = true;
         services'.openssh.enable = true;
         services'.adguardhome.enable = true;
+
+        programs.neovim.enable = true;
       })
     ];
   };
