@@ -1,6 +1,6 @@
 {
   pkgs,
-  machine,
+  lib,
   ...
 }: {
   home.shellAliases = {
@@ -10,11 +10,9 @@
   };
 
   home.packages = with pkgs;
-    [
-    ]
-    ++ (
-      if machine.linux
-      then [pkgs.android-studio pkgs.flutter]
-      else []
-    );
+    []
+    ++ (lib.optionals stdenv.isLinux [
+      android-studio
+      flutter
+    ]);
 }

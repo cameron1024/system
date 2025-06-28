@@ -50,4 +50,16 @@
     scale = 1;
     oled = false;
   };
+  rog = {
+    name = "DP-1";
+    resolution.width = 2560;
+    resolution.height = 1440;
+
+    position.x = 0;
+    position.y = 500;
+
+    refreshRate = 239.970;
+    scale = 1;
+    oled = false;
+  };
 }

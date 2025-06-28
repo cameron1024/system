@@ -66,6 +66,7 @@ in {
         networking.hostName = "thinkchad";
 
         programs'.niri.enable = true;
+        services'.desktop.isLaptop = true;
         services'.desktop.displays = with import ./machines/displays.nix; [
           thinkpadBuiltin
         ];

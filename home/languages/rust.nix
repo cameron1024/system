@@ -1,19 +1,10 @@
 {
   pkgs,
-  inputs,
-  machine,
+  lib,
   ...
-}: let
-  extras =
-    if machine.linux
-    then [
-      pkgs.cargo-rr
-      pkgs.binsider
-    ]
-    else [];
-in {
-  home.packages =
-    (with pkgs; [
+}: {
+  home.packages = with pkgs;
+    [
       rustup
 
       cargo-info
@@ -39,8 +30,11 @@ in {
       evcxr
 
       python3 # needed for cargo-kani
-    ])
-    ++ extras;
+    ]
+    ++ (lib.optionals stdenv.isLinux [
+      cargo-rr
+      binsider
+    ]);
 
   home.sessionVariables = {
     "RUST_BACKTRACE" = 1;

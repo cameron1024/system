@@ -50,7 +50,7 @@ with lib; {
       };
     };
   in {
-    enable = mkEnableOption "basic dekstop functionality";
+    enable = mkEnableOption "basic desktop functionality";
 
     isLaptop = mkEnableOption {
       type = types.bool;

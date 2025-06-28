@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   osConfig,
   ...
 }:
@@ -9,13 +10,20 @@ with lib; {
     ../hyprland/launcher.nix
     ../hyprland/bar
     ../hyprland/wallpaper
-    ../hyprland/lock
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
     ../desktop
   ];
 
-  config = mkIf (pkgs.stdenv.isLinux && osConfig.services'.desktop.enable) {
+  options.programs'.niri = {
+    extraConfig = mkOption {
+      type = types.str;
+      description = "Extra .kdl config to append to the generated config";
+      default = "";
+    };
+  };
+
+  config = mkIf (osConfig != null && osConfig.programs'.niri.enable) {
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite
@@ -47,10 +55,17 @@ with lib; {
             position x=${toString position.x} y=${toString position.y}
         }
       '';
-      displays = map formatDisplay osConfig.services'.desktop.displays;
-    in ''
-      ${builtins.readFile ./config.kdl}
-      ${lib.strings.concatMapStrings (x: x + "\n") displays}
-    '';
+      displaysConfig = map formatDisplay osConfig.services'.desktop.displays;
+    in
+      /*
+      kdl
+      */
+      ''
+        ${builtins.readFile ./config.kdl}
+        ${lib.strings.concatMapStrings (x: x + "\n") displaysConfig}
+
+
+        ${config.programs'.niri.extraConfig}
+      '';
   };
 }

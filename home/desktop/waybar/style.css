@@ -1,0 +1,87 @@
+* {
+  font-family: FiraCode Nerd Font;
+  font-size: 18px;
+  min-height: 0;
+  border-radius: 0px;
+}
+
+window#waybar {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: @fg;
+}
+
+#custom-powermenu, #clock, #tray, #cpu, #memory,  #disk, #network, #tray, #battery, #backlight, #pulseaudio, #custom-weather, #clock {
+  background-color: rgba(0, 0, 0, 0.0);
+  padding: 10px;
+}
+
+#custom-powermenu:hover, #clock:hover, #tray:hover, #cpu:hover, #memory:hover,  #disk:hover, #network:hover, #tray:hover, #battery:hover, #backlight:hover, #pulseaudio:hover, #custom-weather:hover #clock:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  transition: all 0.2s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+#custom-powermenu {
+  min-width: 20px;
+}
+
+#cpu {
+   color: @green;
+}
+
+#cpu {
+   color: @green;
+}
+
+#memory {
+   color: @greenish;
+}
+
+#disk {
+   color: @blue;
+}
+
+#network {
+   color: @pink;
+}
+
+#battery {
+   color: @green;
+}
+
+#backlight {
+   color: @yellow;
+}
+
+#pulseaudio {
+   color: @blue;
+}
+
+#battery.charging {
+   color: @green;
+}
+
+#battery.warning {
+   color: @orange;
+}
+
+#battery.critical {
+   color: @red;
+}
+
+#workspaces button {
+  border: none;
+  padding: 10px;
+}
+
+#workspaces button.active {
+  color: @green;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+#workspaces button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.87, 0, 0.13, 1);
+  box-shadow: inherit;
+  text-shadow: inherit;
+}

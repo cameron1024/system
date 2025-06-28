@@ -1,10 +1,10 @@
 {
   pkgs,
   inputs,
-  machine,
   lib,
   ...
-}: {
+}:
+with lib; {
   imports = [
     ./bar
     ./lock
@@ -26,7 +26,11 @@
     # ./kando.nix
   ];
 
-  config = lib.mkIf machine.wm.hyprland.enable {
+  options = {
+    programs'.hyprland.enable = mkEnableOption "Hyprland";
+  };
+
+  config = lib.mkIf config.programs'.hyprland.enable {
     home.pointerCursor = {
       gtk.enable = true;
       package = pkgs.bibata-cursors;
@@ -39,7 +43,7 @@
 
       settings = {
         env = ["XCURSOR_SIZE, 24"];
-        exec-once = [ "tmux" ];
+        exec-once = ["tmux"];
       };
     };
 

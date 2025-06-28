@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
   departure = {
     rustPlatform,
     fetchFromGitHub,
@@ -26,6 +31,12 @@
       nativeBuildInputs = [pkg-config];
       buildInputs = [glib pango gdk-pixbuf gtk4 gtk4-layer-shell];
     };
-in {
-  home.packages = [(pkgs.callPackage departure {})];
-}
+in
+  with lib; {
+    options = {
+      programs'.departure.enable = mkEnableOption "Departure logout app";
+    };
+    config = mkIf config.programs'.departure.enable {
+      home.packages = [(pkgs.callPackage departure {})];
+    };
+  }
