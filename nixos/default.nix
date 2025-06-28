@@ -98,6 +98,7 @@ in {
         services'.immich.enable = true;
         services'.home-assistant.enable = true;
         services'.ai.enable = true;
+        services'.adguardhome.enable = true;
 
         programs.ssh.extraConfig = ''
           Host pi
@@ -126,7 +127,7 @@ in {
     modules = [
       ./hardware/pi.nix
       inputs.nixos-hardware.nixosModules.raspberry-pi-4
-      ({lib, ...}: {
+      {
         system.stateVersion = "25.11";
 
         networking.hostName = "pi";
@@ -148,7 +149,7 @@ in {
         services'.adguardhome.enable = true;
 
         programs.neovim.enable = true;
-      })
+      }
     ];
   };
 }

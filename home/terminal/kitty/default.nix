@@ -30,5 +30,7 @@
     cursor_trail_decay 0.1 0.2
 
     hide_window_decorations yes
+
+    font_size 12.0
   '';
 }

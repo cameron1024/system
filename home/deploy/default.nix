@@ -11,7 +11,6 @@ with lib; {
 
   config = mkIf config.programs'.deployment-tools.enable {
     home.packages = with pkgs; [
-      colemna
       nixos-generators
       caligula
     ];

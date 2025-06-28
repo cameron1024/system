@@ -10,6 +10,7 @@
     ./shell
     ./terminal
     ./languages
+    ./deploy
 
     ./communication.nix
     ./media.nix
