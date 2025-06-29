@@ -108,6 +108,7 @@ in {
         programs'.niri.enable = true;
         services'.desktop.displays = with import ./machines/displays.nix; [
           alien
+          rog
         ];
 
         programs.steam.enable = true;

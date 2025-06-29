@@ -1,6 +1,7 @@
 {
   programs.nixvim = {
     plugins.diffview.enable = true;
+    plugins.diffview.enhancedDiffHl = true;
 
     plugins.gitsigns = {
       enable = true;

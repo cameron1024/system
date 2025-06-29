@@ -44,22 +44,22 @@
     resolution.height = 1440;
 
     position.x = 0;
-    position.y = 500;
+    position.y = 0;
 
     refreshRate = 239.970;
     scale = 1;
     oled = false;
   };
   rog = {
-    name = "DP-1";
+    name = "HDMI-A-1";
     resolution.width = 2560;
     resolution.height = 1440;
 
-    position.x = 0;
-    position.y = 500;
+    position.x = 2560;
+    position.y = 0;
 
-    refreshRate = 239.970;
+    refreshRate = 119.998;
     scale = 1;
-    oled = false;
+    oled = true;
   };
 }

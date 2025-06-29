@@ -7,7 +7,7 @@
     inputs.nixvim.homeManagerModules.default
     ./lang
     ./lsp
-    ./ai.nix
+    # ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
     ./firenvim.nix
@@ -42,7 +42,6 @@
       performance.combinePlugins.enable = true;
       performance.combinePlugins.standalonePlugins = [
         "firenvim"
-        "avante.nvim"
       ];
     };
   };
