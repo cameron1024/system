@@ -24,12 +24,12 @@ in {
     };
 
     plugins.treesitter-context = {
-      enable = false;
+      enable = true;
       inherit lazyLoad;
     };
 
     plugins.treesitter-textobjects = {
-      enable = false;
+      enable = true;
 
       select.enable = true;
       select.disable = ["dart"];
@@ -73,7 +73,7 @@ in {
     '';
 
     plugins.treesj = {
-      enable = false;
+      enable = true;
       lazyLoad.enable = true;
       lazyLoad.settings.keys = [
         {
@@ -90,7 +90,7 @@ in {
     };
 
     plugins.nvim-ufo = {
-      enable = false;
+      enable = true;
       lazyLoad.enable = true;
       lazyLoad.settings.event = "BufReadPre";
       lazyLoad.settings.before.__raw = ''
