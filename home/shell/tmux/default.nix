@@ -4,14 +4,6 @@
   ...
 }: let
   plugins = with pkgs.tmuxPlugins; [
-    # {
-    #   plugin = fingers;
-    #   extraConfig = ''
-    #     set -g @fingers-key c-f
-    #     set -g @fingers-pattern-0 'sha256-\\w*'
-    #   '';
-    # }
-
     tmux-fzf
     vim-tmux-navigator
     extrakto

@@ -43,15 +43,8 @@ in {
         };
       };
 
-      accept.auto_brackets.enabled.__raw = ''
-        function() 
-          return not vim.tbl_contains({"rust"}, vim.bo.filetype)
-        end
-      '';
-
-      signature.enabled = true;
+      signature.enabled = false;
       completion.documentation.auto_show = true;
-      completion.accept.auto_brackets.enabled = false;
       completion.menu.draw.treesitter = ["lsp"];
       completion.list.selection = {
         preselect = false;
