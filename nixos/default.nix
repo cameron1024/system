@@ -59,6 +59,7 @@ in {
       {
         system.stateVersion = "24.11";
         services'.standardMachine.enable = true;
+        services'.standardMachine.zenKernel = true;
         gpu'.arch = "intel";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
@@ -89,6 +90,7 @@ in {
       {
         system.stateVersion = "24.11";
         services'.standardMachine.enable = true;
+        services'.standardMachine.zenKernel = false;
         gpu'.arch = "zen5";
 
         boot.binfmt.emulatedSystems = ["aarch64-linux"];

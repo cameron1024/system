@@ -39,9 +39,10 @@
       performance.byteCompileLua.nvimRuntime = true;
       performance.byteCompileLua.plugins = true;
 
-      performance.combinePlugins.enable = true;
+      performance.combinePlugins.enable = false;
       performance.combinePlugins.standalonePlugins = [
         "firenvim"
+        "blink-cmp"
       ];
     };
   };

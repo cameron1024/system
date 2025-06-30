@@ -9,13 +9,17 @@
 with lib; {
   options = {
     services'.standardMachine.enable = mkEnableOption "standard machine config";
+    services'.standardMachine.zenKernel = mkEnableOption "zen kernel";
   };
   config = mkIf config.services'.standardMachine.enable {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.grub.memtest86.enable = true;
 
-    boot.kernelPackages = pkgs.linuxPackages_6_15;
+    boot.kernelPackages =
+      if config.services'.standardMachine.zenKernel
+      then pkgs.linuxPackages_zen
+      else pkgs.linuxPackages_6_15;
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
