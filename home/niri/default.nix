@@ -23,7 +23,7 @@ with lib; {
     };
   };
 
-  config = mkIf (osConfig != null && osConfig.programs'.niri.enable) {
+  config = mkIf (pkgs.stdenv.isLinux && osConfig.programs'.niri.enable) {
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite

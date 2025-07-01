@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: {
-  config = lib.mkIf config.services'.desktop.enable {
+  config = lib.mkIf (pkgs.stdenv.isLinux && config.services'.desktop.enable) {
     fonts.enableDefaultPackages = true;
     fonts.packages = with pkgs; [
       nerd-fonts.fira-code

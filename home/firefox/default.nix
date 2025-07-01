@@ -1,7 +1,12 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  package = with pkgs;
+    if stdenv.isLinux
+    then (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {})
+    else firefox;
+in {
   programs.firefox = {
     enable = true;
-    package = with pkgs; (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {});
+    inherit package;
 
     profiles.default = {
       userChrome = builtins.readFile ./userChrome.css;
