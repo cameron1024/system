@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   inputs,
   ...
 }: {
@@ -32,6 +33,9 @@
       enable = true;
       package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
       plugins."lz-n".enable = true;
+
+      plugins.telescope.enable = lib.mkForce false;
+      plugins.fugit2.enable = true;
 
       vimdiffAlias = true;
 
