@@ -8,6 +8,8 @@
     inputs.nixvim.homeManagerModules.default
     ./lang
     ./lsp
+    ./treesitter
+
     # ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
@@ -19,7 +21,6 @@
     ./settings
     ./snacks.nix
     ./theme.nix
-    ./treesitter.nix
     ./test.nix
     ./trouble.nix
     ./tmux-navigator.nix
@@ -35,7 +36,6 @@
       plugins."lz-n".enable = true;
 
       plugins.telescope.enable = lib.mkForce false;
-      plugins.fugit2.enable = true;
 
       vimdiffAlias = true;
 
