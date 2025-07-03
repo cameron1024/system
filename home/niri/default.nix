@@ -8,7 +8,6 @@
 with lib; {
   imports = [
     ../hyprland/launcher.nix
-    ../hyprland/bar
     ../hyprland/wallpaper
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
@@ -24,6 +23,7 @@ with lib; {
   };
 
   config = mkIf (osConfig != null && osConfig.programs'.niri.enable) {
+    services'.desktop.enable = true;
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite

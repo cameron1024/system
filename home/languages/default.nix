@@ -3,5 +3,8 @@
 
   home.packages = with pkgs; [
     rainfrog
+    mask
+    mprocs
+    zig
   ];
 }

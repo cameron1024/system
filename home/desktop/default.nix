@@ -27,6 +27,7 @@ with lib; {
     home.packages = with pkgs; [
       libnotify
       wl-clipboard
+      google-chrome
     ];
   };
 }

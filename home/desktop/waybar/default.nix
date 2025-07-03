@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  osConfig,
   ...
 }: let
   colors = with (import ../../../nixos/machines/colors.nix).everforest; ''
@@ -33,7 +34,7 @@ in
         ];
       };
 
-      services.blueman-applet.enable = machine.linux;
+      services.blueman-applet.enable = true;
 
       programs.waybar = {
         enable = true;
@@ -44,7 +45,7 @@ in
             layer = "top";
             position = "top";
             height = 43;
-            output = map (d: d.name) machine.displays;
+            output = map (d: d.name) osConfig.services'.desktop.displays;
             start_hidden = true;
 
             modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];

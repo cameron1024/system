@@ -9,5 +9,6 @@
     ./toml.nix
     ./typescript.nix
     ./typst.nix
+    ./zig.nix
   ];
 }

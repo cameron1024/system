@@ -24,6 +24,7 @@
       cargo-flamegraph
 
       bacon
+      rusty-man
 
       hyperfine
 

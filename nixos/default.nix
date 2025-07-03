@@ -90,7 +90,7 @@ in {
       {
         system.stateVersion = "24.11";
         services'.standardMachine.enable = true;
-        services'.standardMachine.zenKernel = false;
+        services'.standardMachine.zenKernel = true;
         gpu'.arch = "zen5";
 
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -102,6 +102,7 @@ in {
         services'.home-assistant.enable = true;
         services'.ai.enable = true;
         services'.adguardhome.enable = true;
+        services'.openssh.enable = true;
 
         programs.ssh.extraConfig = ''
           Host pi
