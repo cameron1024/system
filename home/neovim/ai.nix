@@ -4,8 +4,8 @@
     plugins.avante.settings = {
       provider = "ollama";
       providers.ollama = {
-        endpoint = "http://mini:11434";
-        model = "devstral";
+        endpoint = "http://mini:11112";
+        model = "mistralai/devstral-small-2505";
       };
     };
 

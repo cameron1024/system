@@ -1,4 +1,5 @@
 {
+  pkgs,
   config,
   lib,
   ...
@@ -27,5 +28,20 @@ with lib; {
         "OFFLINE_MODE" = "true";
       };
     };
+
+    environment.systemPackages = with pkgs; [
+      lmstudio
+    ];
+
+    # systemd.services."lmstudio" = {
+    #   enable = true;
+    #   wantedBy = ["multi-user.target"];
+    #   description = "LMStudio Service";
+    #   script = ''
+    #     ${pkgs.lmstudio}/bin/lms server start --port 11112 --log-level info
+    #   '';
+    # };
+
+    # networking.firewall.allowedTCPPorts = [11112];
   };
 }

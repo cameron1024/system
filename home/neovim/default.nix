@@ -40,14 +40,14 @@
       vimdiffAlias = true;
 
       performance.byteCompileLua.enable = true;
+
+      performance.byteCompileLua.configs = true;
+      performance.byteCompileLua.initLua = true;
+      performance.byteCompileLua.luaLib = true;
       performance.byteCompileLua.nvimRuntime = true;
       performance.byteCompileLua.plugins = true;
 
       performance.combinePlugins.enable = true;
-      performance.combinePlugins.standalonePlugins = [
-        "firenvim"
-        "blink-cmp"
-      ];
     };
   };
 }

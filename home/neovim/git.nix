@@ -45,7 +45,7 @@
         {
           __unkeyed-1 = "]c";
           __unkeyed-2.__raw = ''
-            function() 
+            function()
               if vim.wo.diff then
                 vim.cmd.normal { ']c', bang = true }
               else
@@ -91,5 +91,11 @@
     };
 
     plugins.fugitive.enable = true;
+
+    plugins.hunk = {
+      enable = true;
+      lazyLoad.enable = true;
+      lazyLoad.settings.cmd = "DiffEditor";
+    };
   };
 }

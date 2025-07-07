@@ -9,5 +9,8 @@
         };
       };
     };
+    performance.combinePlugins.standalonePlugins = [
+      "firenvim"
+    ];
   };
 }

@@ -1,8 +1,8 @@
 {
   programs.nixvim = {
     diagnostic.settings = {
-      virtual_lines.current_line = true;
-      virtual_text = false;
+      virtual_lines = false;
+      virtual_text = true;
     };
 
     plugins.fidget.enable = true;
@@ -52,20 +52,20 @@
             end
           '';
         }
-        {
-          key = "<leader>d";
-          action.__raw = ''
-            function()
-              local cfg = vim.diagnostic.config()
-              if cfg.virtual_lines == false then
-                cfg.virtual_lines = { current_line = true }
-              else
-                cfg.virtual_lines = false
-              end
-              vim.diagnostic.config(cfg)
-            end
-          '';
-        }
+        # {
+        #   key = "<leader>d";
+        #   action.__raw = ''
+        #     function()
+        #       local cfg = vim.diagnostic.config()
+        #       if cfg.virtual_lines == false then
+        #         cfg.virtual_lines = { current_line = true }
+        #       else
+        #         cfg.virtual_lines = false
+        #       end
+        #       vim.diagnostic.config(cfg)
+        #     end
+        #   '';
+        # }
       ];
 
       servers.nixd.enable = true;

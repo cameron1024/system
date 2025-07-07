@@ -14,6 +14,7 @@
     ./fzf.nix
     ./direnv.nix
     ./eza.nix
+    ./jj.nix
     ./yazi.nix
     ./previewers.nix
     ./nix.nix

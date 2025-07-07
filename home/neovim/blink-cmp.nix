@@ -5,6 +5,10 @@ let
     settings.event = "InsertEnter";
   };
 in {
+  programs.nixvim.performance.combinePlugins.standalonePlugins = [
+    "blink-cmp"
+  ];
+
   programs.nixvim.plugins.blink-emoji = {
     inherit enable lazyLoad;
   };
