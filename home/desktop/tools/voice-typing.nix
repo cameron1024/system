@@ -1,7 +1,7 @@
 {
   pkgs,
   lib,
-  machine,
+  config,
   ...
 }: let
   storeKey = "voice-typing-pid";
@@ -35,13 +35,16 @@
       # rm $AUDIO_LOCATION
     fi
   '';
-in {
-  config = lib.mkIf machine.linux {
-    home.packages = [toggleVoiceTyping];
-    wayland.windowManager.hyprland.settings = {
-      bind = [
-        "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
-      ];
+in
+  with lib; {
+    options.programs'.voice-typing.enable = mkEnableOption "voice typing";
+
+    config = lib.mkIf config.programs'.voice-typing.enable {
+      home.packages = [toggleVoiceTyping];
+      wayland.windowManager.hyprland.settings = {
+        bind = [
+          "SUPER, z, exec, ${toggleVoiceTyping}/bin/toggle-voice-typing"
+        ];
+      };
     };
-  };
-}
+  }
