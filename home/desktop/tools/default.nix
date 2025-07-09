@@ -1,0 +1,3 @@
+{
+  imports = [./voice-typing.nix];
+}

@@ -1,5 +1,6 @@
 {
-  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -72,6 +73,29 @@
           ];
       };
   in {
+    homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
+      pkgs = import inputs.nixpkgs {
+        system = "x86_64-linux";
+        overlays = [
+          (import ./overlays {
+            inherit inputs;
+            optimizations = false;
+          })
+        ];
+      };
+      modules = [
+        {
+          home-manager.users.cameron = import ../home;
+          home-manager.extraSpecialArgs = {
+            inherit inputs;
+            machine = {};
+          };
+          home-manager.backupFileExtension = "backup";
+        }
+        ./home
+      ];
+    };
+
     nixosConfigurations = import ./nixos {
       inherit inputs;
     };
