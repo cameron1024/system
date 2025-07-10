@@ -8,7 +8,7 @@
 with lib; {
   imports = [./idle.nix];
 
-  config = mkIf (pkgs.stdenv.isLinux && osConfig.services'.desktop.enable) {
+  config = mkIf (pkgs.stdenv.isLinux && osConfig.services'.desktop.enable or false) {
     wayland.windowManager.hyprland.settings = {
       bind = [
         "SUPER, escape, exec, hyprlock"

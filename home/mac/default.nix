@@ -1,9 +1,9 @@
 {
   lib,
-  machine,
+  pkgs,
   ...
 }: {
-  config = lib.mkIf (!machine.linux) {
+  config = lib.mkIf (pkgs.stdenv.isDarwin) {
     home.file."Library/KeyBindings/DefaultKeyBinding.dict".source = ./override_option_bindings;
   };
 }

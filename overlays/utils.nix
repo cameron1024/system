@@ -8,6 +8,14 @@ final: prev: {
       url = "https://drive.usercontent.google.com/download?id=${id}";
     };
 
+  wrapWithNixGL = {
+    package,
+    name,
+  }:
+    final.writeShellScriptBin name ''
+      ${final.nixgl.nixGLIntel}/bin/nixGLIntel ${package}/bin/${name} "$@"
+    '';
+
   cams-utils = {
     hyprland = {
       mkColor = hex: "rgb(${prev.lib.strings.removePrefix "#" hex})";

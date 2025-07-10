@@ -1,10 +1,9 @@
 {
   lib,
-  machine,
   pkgs,
   ...
 }: {
-  config = lib.mkIf machine.linux {
+  config = lib.mkIf pkgs.stdenv.isLinux {
     home.shellAliases = {
       "cat" = "bat";
     };

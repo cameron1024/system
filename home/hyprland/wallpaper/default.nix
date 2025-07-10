@@ -1,10 +1,10 @@
 {
   lib,
   pkgs,
-  machine,
   ...
 }: let
-  wallpapers = map (wp: wp pkgs) machine.wallpapers;
+  # TODO(cameron): fix
+  wallpapers = map (wp: wp pkgs) [];
   allWallpapersString = lib.lists.foldr (a: b: "${a} ${b}") "" wallpapers;
 
   randomWallpaper = pkgs.writeShellScriptBin "randomWallpaper.sh" ''
@@ -12,7 +12,7 @@
     ${builtins.readFile ./randomWallpaper.sh}
   '';
 in {
-  home.packages = lib.mkIf machine.linux [
+  home.packages = lib.mkIf pkgs.stdenv.isLinux [
     pkgs.swww
     randomWallpaper
   ];

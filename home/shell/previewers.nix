@@ -1,6 +1,5 @@
 {
   pkgs,
-  machine,
   ...
 }: {
   home.packages = with pkgs;
@@ -11,7 +10,7 @@
       presenterm
     ]
     ++ (
-      if machine.linux
+      if pkgs.stdenv.isLinux
       then [pkgs.tdf]
       else []
     );

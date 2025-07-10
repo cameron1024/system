@@ -1,6 +1,5 @@
 {
   pkgs,
-  machine,
   ...
 }: let
   plugins = with pkgs.tmuxPlugins; [
@@ -60,7 +59,7 @@ in {
         bind -n M-enter set -g status
       ''
       + (
-        if machine.linux
+        if pkgs.stdenv.isLinux
         then ""
         else ''
           set-option -g default-command ${pkgs.fish}/bin/fish

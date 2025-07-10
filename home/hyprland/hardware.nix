@@ -55,7 +55,7 @@
       }
     '';
 in {
-  config = lib.mkIf machine.linux {
+  config = lib.mkIf pkgs.stdenv.isLinux {
     services.swayosd.enable = true;
     services.swayosd.stylePath = "${themeFile}";
 

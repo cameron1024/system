@@ -22,7 +22,7 @@ with lib; {
     };
   };
 
-  config = mkIf (pkgs.stdenv.isLinux && osConfig.programs'.niri.enable) {
+  config = mkIf (pkgs.stdenv.isLinux && osConfig.programs'.niri.enable or false) {
     services'.desktop.enable = true;
     home.packages = with pkgs; [
       wl-clipboard

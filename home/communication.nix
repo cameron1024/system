@@ -1,10 +1,9 @@
 {
   pkgs,
   lib,
-  machine,
   ...
 }: {
-  home.packages = lib.mkIf machine.linux (with pkgs; [
+  home.packages = lib.mkIf pkgs.stdenv.isLinux (with pkgs; [
     whatsapp-for-linux
     zapzap # PWA whatsapp
     slack

@@ -2,7 +2,6 @@
   pkgs,
   config,
   lib,
-  machine,
   ...
 }: let
   macExtras = ''
@@ -24,7 +23,7 @@ in {
         fish_add_path ~/.cargo/bin
       ''
       + (
-        if machine.linux
+        if pkgs.stdenv.isLinux
         then ""
         else macExtras
       );

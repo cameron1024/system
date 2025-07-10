@@ -4,6 +4,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
+    nixgl.url = "github:nix-community/nixGL";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -76,23 +78,26 @@
     homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
       pkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
-        overlays = [
-          (import ./overlays {
-            inherit inputs;
-            optimizations = false;
-          })
-        ];
+        config.allowUnfree = true;
+        overlays = import ./overlays {
+          inherit inputs;
+          optimizations = false;
+        };
+      };
+      extraSpecialArgs = {
+        inherit inputs;
+        machine = {};
       };
       modules = [
-        {
-          home-manager.users.cameron = import ../home;
-          home-manager.extraSpecialArgs = {
-            inherit inputs;
-            machine = {};
-          };
-          home-manager.backupFileExtension = "backup";
-        }
         ./home
+        {
+          home.username = "cameron";
+          home.homeDirectory = "/home/cameron";
+          home.stateVersion = "25.11";
+
+          programs.git.userName = "cameron";
+          programs.git.userEmail = "cameron.studdstreet@gmail.com";
+        }
       ];
     };
 
