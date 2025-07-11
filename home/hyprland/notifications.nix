@@ -1,6 +1,5 @@
 {
   pkgs,
-  machine,
   lib,
   ...
 }: 

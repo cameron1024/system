@@ -53,14 +53,6 @@
         fish
         */
         ''
-
-          set -gx PATH $PATH "$HOME/.puro/bin"
-          set -gx PATH $PATH "$HOME/.puro/shared/pub_cache/bin"
-          set -gx PATH $PATH "$HOME/.puro/envs/default/flutter/bin"
-
-          set -gx PURO_ROOT "/Users/cameron/.puro"
-          set -gx PUB_CACHE "/Users/cameron/.puro/shared/pub_cache"
-
           set -gx JAVA_HOME /opt/homebrew/Cellar/openjdk@17/17.0.14
         '';
       programs.nushell = {

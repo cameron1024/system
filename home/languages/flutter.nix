@@ -12,7 +12,7 @@
   home.packages = with pkgs;
     []
     ++ (lib.optionals stdenv.isLinux [
-      android-studio
-      flutter
+      # android-studio
+      # flutter
     ]);
 }

@@ -4,13 +4,13 @@
   ...
 }: let
   package =
-    # if osConfig == null
-    # then
+    if osConfig == null
+    then
       pkgs.wrapWithNixGL {
         package = pkgs.kitty;
         name = "kitty";
-      };
-    # else pkgs.kitty;
+      }
+    else pkgs.kitty;
 in {
   programs.kitty.enable = true;
   programs.kitty.package = package;

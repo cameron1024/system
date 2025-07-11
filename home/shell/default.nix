@@ -1,14 +1,14 @@
 {
   pkgs,
   lib,
-  machine,
+  osConfig,
   ...
 }: {
   imports = [
     ./fish
     ./nushell
     ./tmux
-    ./prompt
+    ./prompt  
     ./git
     ./zoxide.nix
     ./fzf.nix
@@ -67,6 +67,7 @@
         #data stuff
         sq
         jq
+        yq
         jaq
 
         # network stuff
@@ -80,13 +81,14 @@
         sad
 
         ripdrag
+        wl-clipboard
 
         awscli2
         google-cloud-sdk
 
         comma
       ]
-      ++ (lib.optionals pkgs.stdenv.isLinux [
+      ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
         pcmanfm
         gcc
       ]);

@@ -9,11 +9,16 @@ final: prev: {
     };
 
   wrapWithNixGL = {
-    package,
     name,
-  }:
+    package ? null,
+  }: let
+    realPackage =
+      if package == null
+      then final.${name}
+      else package;
+  in
     final.writeShellScriptBin name ''
-      ${final.nixgl.nixGLIntel}/bin/nixGLIntel ${package}/bin/${name} "$@"
+      ${final.nixgl.nixGLIntel}/bin/nixGLIntel ${realPackage}/bin/${name} "$@"
     '';
 
   cams-utils = {
