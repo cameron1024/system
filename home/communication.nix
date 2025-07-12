@@ -12,5 +12,6 @@
 
     rquickshare
     deluge
+    google-chrome
   ]);
 }

@@ -30,6 +30,8 @@
 
       evcxr
 
+      mdbook
+
       python3 # needed for cargo-kani
     ]
     ++ (lib.optionals stdenv.isLinux [

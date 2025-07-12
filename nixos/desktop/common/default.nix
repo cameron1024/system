@@ -79,7 +79,7 @@ with lib; {
     users.users.cameron = {
       isNormalUser = true;
       description = "cameron";
-      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input"];
+      extraGroups = ["networkmanager" "wheel" "audio" "video" "sound" "input" "dialout"];
     };
 
     hardware.graphics.enable = true;
