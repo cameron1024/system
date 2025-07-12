@@ -26,14 +26,6 @@ with lib; {
         rofimoji
         rofi-power-menu
       ];
-
-      extraConfig =
-        /*
-        rasi
-        */
-        ''
-
-        '';
     };
   };
 }
