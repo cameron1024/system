@@ -1,14 +1,23 @@
-{machine, ...}: {
+{
+  pkgs,
+  osConfig,
+  ...
+}: let
+  package =
+    if osConfig == null
+    then
+      pkgs.wrapWithNixGL {
+        package = pkgs.kitty;
+        name = "kitty";
+      }
+    else pkgs.kitty;
+in {
   programs.kitty.enable = true;
-  programs.kitty.themeFile =
-    if machine.colorscheme.name == "gruvbox"
-    then "Gruvbox Dark Hard"
-    else if machine.colorscheme.name == "everforest"
-    then "everforest_dark_hard"
-    else null;
+  programs.kitty.package = package;
+  programs.kitty.themeFile = "everforest_dark_hard";
 
   programs.kitty.font.name =
-    if machine.linux
+    if pkgs.stdenv.isLinux
     then "FiraCode Nerd Font"
     else "Fira Code";
   programs.kitty.settings = {

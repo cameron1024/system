@@ -1,10 +1,9 @@
 {
   pkgs,
-  machine,
   lib,
   ...
 }: {
-  config = lib.mkIf machine.linux {
+  config = lib.mkIf pkgs.stdenv.isLinux {
     home.packages = with pkgs; [
       vlc
 

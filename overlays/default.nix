@@ -1,6 +1,6 @@
 {
   inputs,
-  arch,
+  arch ? null,
   optimizations ? true,
 }: let
   optionals = cond: list:
@@ -25,5 +25,6 @@ in
     })
   ])
   ++ [
+    inputs.nixgl.overlay
     (import ./utils.nix)
   ]

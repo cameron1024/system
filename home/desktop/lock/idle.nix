@@ -4,7 +4,7 @@
   osConfig,
   ...
 }: let
-  desktopEnabled = osConfig.services'.desktop.enable;
+  desktopEnabled = osConfig.services'.desktop.enable or false;
   isLaptop = osConfig.services'.desktop.isLaptop;
   oledMitigations = osConfig.services'.desktop.oledMitigations;
 

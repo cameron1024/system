@@ -1,10 +1,15 @@
 {
   pkgs,
   lib,
-  machine,
+  osConfig,
   ...
-}: {
-  home.packages = lib.mkIf machine.linux (with pkgs; [
+}: let
+  slack =
+    if osConfig == null
+    then pkgs.wrapWithNixGL {name = "slack";}
+    else pkgs.slack;
+in {
+  home.packages = lib.mkIf pkgs.stdenv.isLinux (with pkgs; [
     whatsapp-for-linux
     zapzap # PWA whatsapp
     slack

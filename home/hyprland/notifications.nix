@@ -1,10 +1,31 @@
 {
   pkgs,
-  machine,
   lib,
   ...
-}: {
-  home.packages = lib.mkIf machine.linux [
+}: 
+let
+colorscheme = {
+    name = "everforest";
+    base00 = "#2b3339";
+    base01 = "#323c41";
+    base02 = "#503946";
+    base03 = "#868d80";
+    base04 = "#d3c6aa";
+    base05 = "#d3c6aa";
+    base06 = "#e9e8d2";
+    base07 = "#fff9e8";
+    base08 = "#7fbbb3";
+    base09 = "#d699b6";
+    base0A = "#83c092";
+    base0B = "#dbbc7f";
+    base0C = "#e69875";
+    base0D = "#a7c080";
+    base0E = "#e67e80";
+    base0F = "#d699b6";
+  };
+in
+{
+  home.packages = lib.mkIf pkgs.stdenv.isLinux [
     pkgs.swaynotificationcenter
   ];
 
@@ -124,7 +145,7 @@
       }
     '';
 
-  xdg.configFile."swaync/style.css".text = with machine.colorscheme; ''
+  xdg.configFile."swaync/style.css".text = with colorscheme; ''
     @define-color cc-bg ${base00};
     @define-color noti-border-color ${base00};
     @define-color noti-bg ${base01};

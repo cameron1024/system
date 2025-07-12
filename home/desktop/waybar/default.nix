@@ -36,7 +36,7 @@ in
 
       services.blueman-applet.enable = true;
 
-      programs.waybar = {
+      programs.waybar = lib.mkIf (osConfig != null) {
         enable = true;
         style = colors + (builtins.readFile ./style.css);
 
@@ -45,7 +45,7 @@ in
             layer = "top";
             position = "top";
             height = 43;
-            output = map (d: d.name) osConfig.services'.desktop.displays;
+            output = map (d: d.name) osConfig.services'.desktop.displays or [];
             start_hidden = true;
 
             modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];

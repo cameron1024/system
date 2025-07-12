@@ -1,4 +1,4 @@
-{machine, ...}: {
+{pkgs, ...}: {
   programs.nixvim = {
     # vim.g.* = ...;
     globals = {
@@ -44,7 +44,7 @@
       # textwidth.__raw = "vim.g.started_by_firenvim and 0 or 80";
 
       guifont =
-        if machine.linux
+        if pkgs.stdenv.isLinux
         then "FiraCode Nerd Font:12"
         else "Fira Code:12";
     };
