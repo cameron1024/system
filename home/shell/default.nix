@@ -63,6 +63,7 @@
         coreutils
         gnumake
         tokei
+        fzf
 
         #data stuff
         sq

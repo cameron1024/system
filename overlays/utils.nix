@@ -1,4 +1,6 @@
 final: prev: {
+  zmk-studio = final.callPackage ./packages/zmk-studio.nix {};
+  
   fetchDrive = {
     id,
     hash,

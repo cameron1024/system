@@ -1,14 +1,18 @@
-{
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   plugins = with pkgs.tmuxPlugins; [
     tmux-fzf
     vim-tmux-navigator
-    extrakto
+    {
+      plugin = tmux-thumbs;
+      extraConfig = ''
+        set -g @thumbs-key f
+        set -g @thumbs-command 'echo -n {} | wl-copy'
+        set -g @thumbs-regexp-1 'sha256-[a-zA-Z0-9/\+]{52}'
+      '';
+    }
   ];
 in {
-  home.packages = [pkgs.fzf];
+  home.packages = with pkgs; [thumbs];
   programs.tmux = {
     enable = true;
 
@@ -21,9 +25,11 @@ in {
     mouse = true;
 
     extraConfig =
+      /*
+      tmux
+      */
       ''
         ${builtins.readFile ./everforest.tmux}
-
 
         set -g default-terminal "xterm-256color"
         set -ag terminal-overrides ",xterm-256color:RGB:Sxl"

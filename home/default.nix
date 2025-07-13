@@ -1,7 +1,12 @@
-{inputs, pkgs, ...}: {
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     inputs.mac-app-util.homeManagerModules.default
-    ./firefox
+    ./internet
     ./mac
     ./neovim
     ./neovim-env.nix
@@ -16,10 +21,9 @@
     ./media.nix
   ];
 
-
   home.packages = with pkgs; [
     appimage-run
     pureref
+    zmk-studio
   ];
-  
 }
