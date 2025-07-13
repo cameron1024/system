@@ -87,7 +87,9 @@ in {
     spec = import ./machines/specs/mini.nix {inherit inputs;};
     homeModules = [
       {
+        home.stateVersion = "25.11";
         programs'.deployment-tools.enable = true;
+
       }
     ];
     modules = [

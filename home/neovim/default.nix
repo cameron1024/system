@@ -13,6 +13,7 @@
     # ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
+    ./distant.nix
     ./firenvim.nix
     ./formatting.nix
     ./git.nix

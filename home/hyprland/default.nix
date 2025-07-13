@@ -14,7 +14,6 @@ with lib; {
     ./hardware.nix
     ./touchscreen.nix
     ./input.nix
-    ./launcher.nix
     ./notifications.nix
     ./widgets
     ./windowing

@@ -17,5 +17,6 @@ in {
 
     rquickshare
     deluge
+    google-chrome
   ]);
 }

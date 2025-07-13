@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   ...
 }: {
   home.packages = with pkgs; [
@@ -43,8 +44,10 @@
 
   programs.git = {
     enable = true;
-
     lfs.enable = true;
+
+    userName = lib.mkDefault "cameron";
+    userEmail = lib.mkDefault "cameron.studdstreet@gmail.com";
 
     # delta.enable = true;
     difftastic.enable = true;

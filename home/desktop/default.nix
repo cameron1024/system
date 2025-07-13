@@ -11,6 +11,7 @@ with lib; {
     ./power-menu.nix
     ./quickshell
     ./waybar
+    ./rofi
   ];
 
   options = {
@@ -21,6 +22,7 @@ with lib; {
     gtk'.enable = true;
 
     programs'.waybar.enable = true;
+    programs'.rofi.enable = true;
     programs'.quickshell.enable = true;
     programs'.departure.enable = true;
 
