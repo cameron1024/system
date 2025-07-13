@@ -54,6 +54,11 @@ in {
   thinkchad = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
+    homeModules = [
+      {
+        home.stateVersion = "24.11";
+      }
+    ];
     modules = [
       ./hardware/thinkpad.nix
       {
