@@ -79,11 +79,11 @@
       builtins.listToAttrs
       (
         map
-        (username: {
+        ({username, system}: {
           name = username;
           value = inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = import inputs.nixpkgs {
-              system = "x86_64-linux";
+              inherit system;
               config.allowUnfree = true;
               overlays = import ./overlays {
                 inherit inputs;
@@ -104,8 +104,14 @@
           };
         })
         [
-          "cameron"
-          "ubuntu"
+          {
+            username = "cameron";
+            system = "x86_64-linux";
+          }
+          {
+            username = "ubuntu";
+            system = "aarch64-linux";
+          }
         ]
       );
     # homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
