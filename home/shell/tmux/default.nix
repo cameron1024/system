@@ -7,7 +7,7 @@
       extraConfig = ''
         set -g @thumbs-key f
         set -g @thumbs-command 'echo -n {} | wl-copy'
-        set -g @thumbs-regexp-1 'sha256-[a-zA-Z0-9/\+]{52}'
+        set -g @thumbs-regexp-1 'sha256-[a-zA-Z0-9/\+]{44}'
       '';
     }
   ];

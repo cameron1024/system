@@ -75,31 +75,60 @@
           ];
       };
   in {
-    homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = import inputs.nixpkgs {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
-        overlays = import ./overlays {
-          inherit inputs;
-          optimizations = false;
-        };
-      };
-      extraSpecialArgs = {
-        inherit inputs;
-        machine = {};
-      };
-      modules = [
-        ./home
-        {
-          home.username = "cameron";
-          home.homeDirectory = "/home/cameron";
-          home.stateVersion = "25.11";
-
-          programs.git.userName = "cameron";
-          programs.git.userEmail = "cameron.studdstreet@gmail.com";
-        }
-      ];
-    };
+    homeConfigurations =
+      builtins.listToAttrs
+      (
+        map
+        (username: {
+          name = username;
+          value = inputs.home-manager.lib.homeManagerConfiguration {
+            pkgs = import inputs.nixpkgs {
+              system = "x86_64-linux";
+              config.allowUnfree = true;
+              overlays = import ./overlays {
+                inherit inputs;
+                optimizations = false;
+              };
+            };
+            extraSpecialArgs = {
+              inherit inputs;
+              machine = {};
+            };
+            modules = [
+              ./home
+              {
+                home.username = username;
+                home.stateVersion = "25.11";
+              }
+            ];
+          };
+        })
+        [
+          "cameron"
+          "ubuntu"
+        ]
+      );
+    # homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
+    #   pkgs = import inputs.nixpkgs {
+    #     system = "x86_64-linux";
+    #     config.allowUnfree = true;
+    #     overlays = import ./overlays {
+    #       inherit inputs;
+    #       optimizations = false;
+    #     };
+    #   };
+    #   extraSpecialArgs = {
+    #     inherit inputs;
+    #     machine = {};
+    #   };
+    #   modules = [
+    #     ./home
+    #     {
+    #       home.username = "cameron";
+    #       home.stateVersion = "25.11";
+    #     }
+    #   ];
+    # };
 
     nixosConfigurations = import ./nixos {
       inherit inputs;

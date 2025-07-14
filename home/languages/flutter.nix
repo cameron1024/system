@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  nixosConfig,
   ...
 }: {
   home.shellAliases = {
@@ -11,8 +12,8 @@
 
   home.packages = with pkgs;
     []
-    ++ (lib.optionals stdenv.isLinux [
-      # android-studio
-      # flutter
+    ++ (lib.optionals (nixosConfig != null) [
+      android-studio
+      flutter
     ]);
 }

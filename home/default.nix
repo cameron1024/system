@@ -1,7 +1,7 @@
 {
   inputs,
   pkgs,
-  lib,
+  config,
   ...
 }: {
   imports = [
@@ -20,6 +20,8 @@
     ./communication.nix
     ./media.nix
   ];
+
+  home.homeDirectory = "/home/${config.home.username}"; 
 
   home.packages = with pkgs; [
     appimage-run
