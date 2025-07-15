@@ -79,7 +79,10 @@
       builtins.listToAttrs
       (
         map
-        ({username, system}: {
+        ({
+          username,
+          system,
+        }: {
           name = username;
           value = inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = import inputs.nixpkgs {
@@ -114,27 +117,6 @@
           }
         ]
       );
-    # homeConfigurations."cameron" = inputs.home-manager.lib.homeManagerConfiguration {
-    #   pkgs = import inputs.nixpkgs {
-    #     system = "x86_64-linux";
-    #     config.allowUnfree = true;
-    #     overlays = import ./overlays {
-    #       inherit inputs;
-    #       optimizations = false;
-    #     };
-    #   };
-    #   extraSpecialArgs = {
-    #     inherit inputs;
-    #     machine = {};
-    #   };
-    #   modules = [
-    #     ./home
-    #     {
-    #       home.username = "cameron";
-    #       home.stateVersion = "25.11";
-    #     }
-    #   ];
-    # };
 
     nixosConfigurations = import ./nixos {
       inherit inputs;
