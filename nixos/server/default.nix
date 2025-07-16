@@ -6,7 +6,7 @@
   imports = [
     ./adguard.nix
     ./dashboard.nix
-    ./home-assistant.nix
+    ./home-assistant
   ];
   options.services' = {
     immich.enable = lib.mkEnableOption "Enable Immich service";

@@ -30,7 +30,14 @@ in {
       keymap."<C-c>" = ["hide" "fallback"];
       keymap."<C-space>" = ["show" "show_documentation" "hide_documentation" "fallback"];
 
-      sources.default = ["lsp" "path" "buffer" "snippets" "emoji" "git"];
+      sources.default = [
+        "lsp"
+        "path"
+        "buffer"
+        "snippets"
+        "emoji"
+        # "git"
+      ];
       sources.providers = {
         lsp.async = true;
         emoji = {
@@ -39,12 +46,12 @@ in {
           name = "Emoji";
           score_offset = -30;
         };
-        git = {
-          async = true;
-          module = "blink-cmp-git";
-          name = "Git";
-          score_offset = -15;
-        };
+        # git = {
+        #   async = true;
+        #   module = "blink-cmp-git";
+        #   name = "Git";
+        #   score_offset = -50;
+        # };
       };
 
       signature.enabled = false;

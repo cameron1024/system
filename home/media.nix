@@ -8,10 +8,14 @@
       [
         vlc
       ]
-      ++ (lib.optionals ((pkgs.system == "x86_64-linux") [
-        # remarkable desktop is windows app
-        wineWowPackages.stable
-        rmapi
-      ]));
+      ++ (
+        if (pkgs.system == "x86_64-linux")
+        then [
+          # remarkable desktop is windows app
+          wineWowPackages.stable
+          rmapi
+        ]
+        else []
+      );
   };
 }
