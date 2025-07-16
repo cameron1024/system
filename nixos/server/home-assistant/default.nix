@@ -19,7 +19,8 @@
   ];
 in
   with lib; {
-    # imports = [./scripts];
+    imports = [./automations];
+
     options = {
       services'.home-assistant.enable = mkEnableOption "home assistant";
     };
