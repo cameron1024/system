@@ -123,6 +123,11 @@
     };
 
     darwinConfigurations."DTO-A032" = inputs.nix-darwin.lib.darwinSystem rec {
+      pkgs = import inputs.nixpkgs {
+        system = "aarch64-darwin";
+        config.allowUnfree = true;
+        overlays = import ./overlays {inherit inputs;};
+      };
       specialArgs = {
         inherit inputs;
         machine = import ./nixos/machines/specs/macbook.nix;

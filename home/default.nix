@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   config,
+  lib,
   ...
 }: {
   imports = [
@@ -21,11 +22,16 @@
     ./media.nix
   ];
 
-  home.homeDirectory = "/home/${config.home.username}"; 
+  home.homeDirectory = lib.mkDefault "/home/${config.home.username}";
+  home.stateVersion = lib.mkDefault "25.05";
 
-  home.packages = with pkgs; [
-    appimage-run
-    pureref
-    zmk-studio
-  ];
+  home.packages = with pkgs; (
+    if pkgs.stdenv.isLinux
+    then [
+      appimage-run
+      pureref
+      zmk-studio
+    ]
+    else []
+  );
 }
