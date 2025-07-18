@@ -4,9 +4,9 @@
     plugins.diffview.enhancedDiffHl = true;
 
     plugins.gitsigns = {
-      enable = false;
+      enable = true;
       lazyLoad.enable = true;
-      # lazyLoad.settings.event = "BufRead";
+      lazyLoad.settings.event = "BufRead";
       lazyLoad.settings.keys = [
         {
           __unkeyed-1 = "<leader>hs";
