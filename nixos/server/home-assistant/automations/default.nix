@@ -72,7 +72,7 @@ with lib; {
             type = "notify";
             domain = "mobile_app";
             device_id = devices.pixel9.device_id;
-            message = "The CO2 level in your office is currently";
+            message = "The CO2 level in your office is currently {{ trigger.to_state.state }} ppm.";
             title = "High CO2 in your office";
           }
         ];
