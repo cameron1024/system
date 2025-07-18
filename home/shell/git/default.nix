@@ -29,11 +29,18 @@
     "gf" = "git fetch";
     "grst" = "git reset --hard HEAD";
 
+    # bisect
+    "gbs" = "git bisect start";
+    "gbg" = "git bisect good";
+    "gbb" = "git bisect bad";
+    "gbr" = "git bisect reset";
+
     # "github diff"
     "ghd" = "git diff origin/main...HEAD";
 
     "gb" = "gh browse";
     "gpv" = "gh pr view --web";
+    "gpc" = "gh pr create --web";
   };
 
   # these don't work in nushell

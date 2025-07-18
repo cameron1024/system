@@ -59,6 +59,16 @@ final: prev: {
           hash = "";
         };
       };
+      magenta = prev.vimUtils.buildVimPlugin {
+        pname = "magenta.nvim";
+        version = "0.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "dlants";
+          repo = "magenta.nvim";
+          rev = "53051e64e7021e1e983a6c771badca377dc0c94a";
+          hash = "sha256-ugVqYxBEsrD/jInG0ecSKGaa37M4AimYEsr8NEyt9tA=";
+        };
+      };
     };
 
   writeShellScriptNu = name: script: let

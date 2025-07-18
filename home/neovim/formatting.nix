@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  home.packages = with pkgs; [alejandra typstyle];
+  home.packages = with pkgs; [alejandra typstyle shfmt];
   programs.nixvim = {
     plugins.conform-nvim = {
       enable = true;
@@ -24,6 +24,7 @@
         formatters_by_ft = {
           "nix" = ["alejandra"];
           "typst" = ["typstyle"];
+          "sh" = ["shfmt"];
         };
       };
     };
