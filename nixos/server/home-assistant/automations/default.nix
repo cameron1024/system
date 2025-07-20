@@ -22,10 +22,10 @@ with lib; {
         conditions = [];
         actions = [
           {
-            type = "turn_on";
-            device_id = devices.apollo.device_id;
-            entity_id = devices.apollo.led_entity_id;
             domain = "light";
+            type = "turn_on";
+            device_id = devices.hue.cameron_office.device_id;
+            entity_id = devices.hue.cameron_office.entity_id;
           }
         ];
       };
@@ -40,15 +40,16 @@ with lib; {
             type = "not_occupied";
             device_id = devices.apollo.device_id;
             entity_id = devices.apollo.zone_3_occupancy_entity_id;
+            for.seconds = 10;
           }
         ];
         conditions = [];
         actions = [
           {
-            type = "turn_off";
-            device_id = devices.apollo.device_id;
-            entity_id = devices.apollo.led_entity_id;
             domain = "light";
+            type = "turn_off";
+            device_id = devices.hue.cameron_office.device_id;
+            entity_id = devices.hue.cameron_office.entity_id;
           }
         ];
       };
@@ -58,11 +59,11 @@ with lib; {
         alias = "Cameron's Office High CO2";
         triggers = [
           {
+            trigger = "device";
             type = "carbon_dioxide";
             device_id = devices.apollo.device_id;
             entity_id = devices.apollo.co2_sensor_entity_id;
             domain = "sensor";
-            trigger = "device";
             above = 800;
           }
         ];

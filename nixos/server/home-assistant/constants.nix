@@ -12,5 +12,9 @@
     pixel9 = {
       device_id = "9e4db89ed4e6ef9c7c5042edc89993fa";
     };
+    hue.cameron_office = {
+      device_id = "227a31a132d2d9f7969c1df5aebe876f"; 
+      entity_id = "33450abf3ae4889b30f37e0ce67307e7"; 
+    };
   };
 }

@@ -6,16 +6,20 @@
 }: let
   extraComponents = [
     "analytics"
-    "google_translate"
-    "met"
-    "radio_browser"
-    "shopping_list"
-    "isal" # fast zlib
-    "hue"
-    "mobile_app"
-    "jellyfin"
+    "api"
+    "cast"
     "default_config"
     "esphome"
+    "google_translate"
+    "hue"
+    "immich"
+    "isal" # fast zlib
+    "jellyfin"
+    "london_air"
+    "met"
+    "mobile_app"
+    "radio_browser"
+    "shopping_list"
   ];
 in
   with lib; {
@@ -38,7 +42,7 @@ in
         config = {
           default_config = {};
           mobile_app = {};
-
+          api = {};
           logger.default = "info";
         };
       };
