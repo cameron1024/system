@@ -18,6 +18,7 @@
     "london_air"
     "met"
     "mobile_app"
+    "nest"
     "radio_browser"
     "shopping_list"
   ];

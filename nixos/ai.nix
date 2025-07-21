@@ -31,6 +31,7 @@ with lib; {
 
     environment.systemPackages = with pkgs; [
       lmstudio
+      jan
     ];
 
     # systemd.services."lmstudio" = {

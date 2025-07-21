@@ -54,9 +54,42 @@ with lib; {
         ];
       };
 
-      "automation cameron_office_high_co2" = {
+      "automation cameron_office_high_co2_phone_alert" = {
         mode = "single";
-        alias = "Cameron's Office High CO2";
+        alias = "Cameron's Office High CO2 Phone Alert";
+        triggers = [
+          {
+            trigger = "device";
+            type = "carbon_dioxide";
+            device_id = devices.apollo.device_id;
+            entity_id = devices.apollo.co2_sensor_entity_id;
+            domain = "sensor";
+            above = 800;
+          }
+        ];
+        conditions = [
+          {
+            condition = "device";
+            domain = "binary_sensor";
+            type = "is_occupied"; 
+            device_id = devices.apollo.device_id;
+            entity_id = devices.apollo.zone_3_occupancy_entity_id;
+          } 
+        ];
+        actions = [
+          {
+            type = "notify";
+            domain = "mobile_app";
+            device_id = devices.pixel9.device_id;
+            message = "The CO2 level in your office is currently {{ trigger.to_state.state }} ppm.";
+            title = "High CO2 in your office";
+          }
+        ];
+      };
+
+      "automation cameron_office_high_co2_light_on" = {
+        mode = "single";
+        alias = "Cameron's Office High CO2 Light On";
         triggers = [
           {
             trigger = "device";

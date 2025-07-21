@@ -45,6 +45,20 @@
   };
 
   outputs = inputs: let
+    mkNixvim = {system}: let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        overlays = import ./overlays {inherit inputs;};
+        config.allowUnfree = true;
+      };
+      nixvim = inputs.nixvim.legacyPackages.${system};
+      nixvimModule = {
+        inherit pkgs;
+        module = ./home/neovim;
+        extraSpecialArgs = {inherit inputs;};
+      };
+    in
+      nixvim.makeNixvimWithModule nixvimModule;
     mkDevShell = {system}: let
       pkgs = import inputs.nixpkgs {
         inherit system;
@@ -145,5 +159,9 @@
 
     devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
+    
+    packages."x86_64-linux".vim = mkNixvim {system = "x86_64-linux";};
+    packages."aarch64-linux".vim = mkNixvim {system = "aarch64-linux";};
+    packages."aarch64-darwin".vim = mkNixvim {system = "aarch64-darwin";};
   };
 }
