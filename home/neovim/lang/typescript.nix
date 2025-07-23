@@ -1,9 +1,8 @@
-{pkgs, ...}: let
+let
   lazyLoad = {
     settings.ft = ["typescript" "typescriptreact"];
   };
 in {
-  home.packages = [pkgs.nodejs];
   programs.nixvim = {
     plugins.lsp.servers.tailwindcss.enable = true;
     plugins.lsp.servers.svelte.enable = true;

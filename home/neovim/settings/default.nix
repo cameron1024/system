@@ -1,3 +1,7 @@
 {
-  imports = [./commands.nix ./keybindings.nix ./options.nix];
+  imports = [
+    ./commands.nix
+    ./keybindings.nix
+    ./options.nix
+  ];
 }

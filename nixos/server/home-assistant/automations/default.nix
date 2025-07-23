@@ -87,9 +87,9 @@ with lib; {
         ];
       };
 
-      "automation cameron_office_high_co2_light_on" = {
+      "automation cameron_office_co2_light_high" = {
         mode = "single";
-        alias = "Cameron's Office High CO2 Light On";
+        alias = "Cameron's Office CO2 Light (high)";
         triggers = [
           {
             trigger = "device";
@@ -103,11 +103,36 @@ with lib; {
         conditions = [];
         actions = [
           {
-            type = "notify";
-            domain = "mobile_app";
-            device_id = devices.pixel9.device_id;
-            message = "The CO2 level in your office is currently {{ trigger.to_state.state }} ppm.";
-            title = "High CO2 in your office";
+            action = "light.turn_on";
+            metadata = {};
+            data.rgb_color = [255 0 0];
+            data.brightness_pct = 100;
+            target.device_id = devices.apollo.led_entity_id;
+          }
+        ];
+      };
+
+      "automation cameron_office_co2_light_low" = {
+        mode = "single";
+        alias = "Cameron's Office CO2 Light (low)";
+        triggers = [
+          {
+            trigger = "device";
+            type = "carbon_dioxide";
+            device_id = devices.apollo.device_id;
+            entity_id = devices.apollo.co2_sensor_entity_id;
+            domain = "sensor";
+            below = 800;
+          }
+        ];
+        conditions = [];
+        actions = [
+          {
+            action = "light.turn_on";
+            metadata = {};
+            data.rgb_color = [0 255 0];
+            data.brightness_pct = 100;
+            target.device_id = devices.apollo.led_entity_id;
           }
         ];
       };

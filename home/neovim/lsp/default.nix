@@ -3,6 +3,7 @@
     diagnostic.settings = {
       virtual_lines = false;
       virtual_text = true;
+      signs = true;
     };
 
     plugins.fidget.enable = true;

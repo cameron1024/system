@@ -6,28 +6,23 @@
 }: {
   imports = [
     inputs.nixvim.homeManagerModules.default
-    ./lang
-    ./lsp
-    ./treesitter
 
-    # ./ai.nix
     ./blink-cmp.nix
     ./debug.nix
-    ./distant.nix
+    ./editing.nix
     ./firenvim.nix
     ./formatting.nix
     ./git.nix
-    # ./http
+    ./lang
+    ./lsp
     ./oil.nix
     ./settings
     ./snacks.nix
-    ./theme.nix
     ./test.nix
-    ./trouble.nix
+    ./theme.nix
     ./tmux-navigator.nix
-    ./editing.nix
-    ./neorg.nix
-    ./0x0.nix
+    ./treesitter
+    ./trouble.nix
   ];
 
   config = {

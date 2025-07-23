@@ -308,16 +308,6 @@ animations {
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
     slowdown 0.5 
-
-    window-resize {
-        custom-shader r"
-            vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
-                vec3 coords_tex_next = niri_geo_to_tex_next * coords_curr_geo;
-                vec4 color = texture2D(niri_tex_next, coords_tex_next.st);
-                return color;
-            }
-        "
-    }
 }
 
 // Indicate screencasted windows with red colors.
