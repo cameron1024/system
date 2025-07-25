@@ -159,7 +159,7 @@
 
     devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
-    
+
     packages."x86_64-linux".vim = mkNixvim {system = "x86_64-linux";};
     packages."aarch64-linux".vim = mkNixvim {system = "aarch64-linux";};
     packages."aarch64-darwin".vim = mkNixvim {system = "aarch64-darwin";};

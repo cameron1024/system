@@ -69,6 +69,19 @@ final: prev: {
           hash = "sha256-ugVqYxBEsrD/jInG0ecSKGaa37M4AimYEsr8NEyt9tA=";
         };
       };
+      
+      mdx = prev.vimUtils.buildVimPlugin {
+        pname = "mdx.nvim";
+        version = "0.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "davidmh";
+          repo = "mdx.nvim";
+          rev = "464a74be368dce212cff02f6305845dc7f209ab3";
+          hash = "sha256-jpMcrWx/Rg9sMfkQFXnIM8VB5qRuSB/70wuSh6Y5uFk=";
+        };
+      };
+
+
     };
 
   writeShellScriptNu = name: script: let

@@ -6,6 +6,7 @@ let
     settings.event = "BufReadPost";
   };
 in {
+  imports = [./injections.nix];
   programs.nixvim = {
     plugins.treesitter = {
       inherit enable;

@@ -13,7 +13,7 @@
 
       number = true;
       relativenumber = true;
-      signcolumn = "yes:2";
+      signcolumn = "auto:3";
       cursorline = true;
 
       splitright = true;
@@ -41,8 +41,10 @@
       shiftround = true;
       shiftwidth = 2;
       tabstop = 2;
-      textwidth = 0;
+      # textwidth = 0;
       # textwidth.__raw = "vim.g.started_by_firenvim and 0 or 80";
+
+      spell = true;
 
       guifont =
         if pkgs.stdenv.isLinux

@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  home.packages = with pkgs; [alejandra typstyle shfmt];
+  home.packages = with pkgs; [alejandra typstyle shfmt sql-formatter];
   programs.nixvim = {
     plugins.conform-nvim = {
       enable = true;
@@ -13,18 +13,30 @@
         }
       ];
       settings = {
-        default_format_opts.lsp_format = "fallback";
+        # default_format_opts.lsp_format = "fallback";
         formatters = {
           typstyle = {
             command = "${pkgs.typstyle}/bin/typstyle";
             args = ["-i" "-t" "2" "$FILENAME"];
             stdin = false;
           };
+          sql-formatter = {
+            command = "${pkgs.sql-formatter}/bin/sql-formatter";
+            args = ["--fix" "$FILENAME"];
+            stdin = false;
+          };
+          injected = {
+            ignore_errors = false;
+          };
         };
         formatters_by_ft = {
-          "nix" = ["alejandra"];
-          "typst" = ["typstyle"];
+          "markdown" = ["injected"];
+          "rust" = [ "rustfmt" "injected" ];
+          "nix" = ["alejandra" "injected"];
+          "typst" = ["typstyle" "injected"];
           "sh" = ["shfmt"];
+          "sql" = ["sql-formatter"];
+          "json" = ["jq"];
         };
       };
     };
