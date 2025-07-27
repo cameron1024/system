@@ -89,10 +89,14 @@
         google-cloud-sdk
 
         comma
+        nix-index
       ]
       ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
         pcmanfm
         gcc
       ]);
+
+      programs.nix-index.enable = true;
+      programs.nix-index.enableFishIntegration = true;
   };
 }
