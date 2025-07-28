@@ -9,6 +9,9 @@
     else [];
 in
   []
+  # ++ (optionals (optimizations && arch != null [
+  #   (import ./gcc_optimiztions.nix {inherit inputs; })
+  # ]))
   ++ (optionals (optimizations && arch != null) [
     (import inputs.rust-overlay)
     (import ./rust_optimizations.nix {

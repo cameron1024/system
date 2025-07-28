@@ -13,7 +13,7 @@
 
       number = true;
       relativenumber = true;
-      signcolumn = "auto:3";
+      signcolumn = "yes:2";
       cursorline = true;
 
       splitright = true;

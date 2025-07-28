@@ -40,6 +40,7 @@
         code.enabled = false;
         code.conceal_delimiters = false;
         code.language_name = false;
+        code.language_icon = false;
 
         preview.modes = ["n" "x"];
         preview.hybrid_modes = ["i" "r"];
