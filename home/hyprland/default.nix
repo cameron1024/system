@@ -58,18 +58,5 @@ with lib; {
     programs.obs-studio.enable = true;
 
     xdg.enable = true;
-
-    gtk = {
-      enable = true;
-
-      theme.name = "Everforest-Dark-BL";
-      theme.package = pkgs.everforest-gtk-theme;
-
-      font.name = "Fira Sans";
-      font.package = pkgs.fira;
-
-      cursorTheme.name = "Graphite dark Cursors";
-      cursorTheme.package = pkgs.graphite-cursors;
-    };
   };
 }

@@ -6,6 +6,7 @@
 }:
 with lib; {
   imports = [
+    ./audio.nix
     ./gtk.nix
     ./lock
     ./power-menu.nix
@@ -25,6 +26,8 @@ with lib; {
     programs'.rofi.enable = true;
     programs'.quickshell.enable = true;
     programs'.departure.enable = true;
+
+    xdg.userDirs.enable = true;
 
     home.packages = with pkgs; [
       libnotify

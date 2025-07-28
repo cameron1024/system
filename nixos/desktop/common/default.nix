@@ -89,3 +89,4 @@ with lib; {
     services.upower.enable = true;
   };
 }
+

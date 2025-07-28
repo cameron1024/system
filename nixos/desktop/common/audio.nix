@@ -22,19 +22,5 @@
       alsa.support32Bit = true;
       pulse.enable = true;
     };
-
-    services.mpd.enable = true;
-    services.mpd.user = "cameron";
-    systemd.services.mpd.environment = {
-      # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
-      # User-id must match above user. MPD will look inside this directory for the PipeWire socket.
-      XDG_RUNTIME_DIR = "/run/user/${toString config.users.users.cameron.uid}";
-    };
-    services.mpd.extraConfig = ''
-      audio_output {
-        type "pipewire"
-        name "Pipewire"
-      }
-    '';
   };
 }

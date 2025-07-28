@@ -11,7 +11,7 @@ with lib; {
   
   config = lib.mkIf config.gtk'.enable {
     gtk = {
-      enable = true;
+      enable = false;
 
       theme.name = "Everforest-Dark-BL";
       theme.package = pkgs.everforest-gtk-theme;
