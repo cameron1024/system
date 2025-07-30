@@ -1,5 +1,5 @@
 {
-  programs.nixvim.plugins.oil = {
+  plugins.oil = {
     enable = true;
 
     lazyLoad = {

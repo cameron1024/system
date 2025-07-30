@@ -54,8 +54,12 @@
       nixvim = inputs.nixvim.legacyPackages.${system};
       nixvimModule = {
         inherit pkgs;
-        module = ./home/neovim;
         extraSpecialArgs = {inherit inputs;};
+        module = {
+          imports = [./home/neovim/module.nix];
+          # colorschemes.everforest.enable = true;
+          # colorscheme = "everforest";
+        };
       };
     in
       nixvim.makeNixvimWithModule nixvimModule;

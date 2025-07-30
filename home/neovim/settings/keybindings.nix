@@ -1,5 +1,5 @@
 {
-  programs.nixvim.keymaps = [
+  keymaps = [
     {
       key = "<leader>q";
       action = "<cmd>x<cr>";

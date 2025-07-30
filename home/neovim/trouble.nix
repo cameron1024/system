@@ -1,5 +1,5 @@
 {
-  programs.nixvim.plugins.trouble = {
+  plugins.trouble = {
     enable = true;
     lazyLoad.enable = true;
     lazyLoad.settings.cmd = ["Trouble"];

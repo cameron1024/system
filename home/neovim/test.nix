@@ -1,5 +1,5 @@
 {
-  programs.nixvim.plugins.neotest = {
+  plugins.neotest = {
     enable = true;
     lazyLoad.enable = true;
     lazyLoad.settings.keys = [
@@ -53,7 +53,7 @@
         '';
       }
     ];
-    
+
     adapters.dart.enable = true;
     adapters.rust.enable = true;
 

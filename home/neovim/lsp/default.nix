@@ -1,81 +1,79 @@
 {
-  programs.nixvim = {
-    diagnostic.settings = {
-      virtual_lines = false;
-      virtual_text = true;
-      signs = true;
+  diagnostic.settings = {
+    virtual_lines = false;
+    virtual_text = true;
+    signs = true;
+  };
+
+  plugins.fidget.enable = true;
+  plugins.fidget.lazyLoad.enable = true;
+  plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
+
+  plugins.actions-preview.enable = true;
+  plugins.actions-preview.lazyLoad.enable = true;
+  plugins.actions-preview.lazyLoad.settings.keys = [
+    {
+      __unkeyed-1 = "gra";
+      __unkeyed-2.__raw = ''
+        function()
+          require "actions-preview".code_actions()
+        end
+      '';
+      mode = ["n" "v"];
+    }
+  ];
+  plugins.actions-preview.settings = {
+    backend = ["snacks"];
+    snacks.layout.preset = "ivy";
+  };
+
+  plugins.lsp = {
+    enable = true;
+    lazyLoad.enable = true;
+    lazyLoad.settings.event = ["BufReadPost" "BufNewFile"];
+
+    keymaps.diagnostic = {
+      "<C-n>" = "goto_next";
+      "<C-b>" = "goto_prev";
     };
-
-    plugins.fidget.enable = true;
-    plugins.fidget.lazyLoad.enable = true;
-    plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
-
-    plugins.actions-preview.enable = true;
-    plugins.actions-preview.lazyLoad.enable = true;
-    plugins.actions-preview.lazyLoad.settings.keys = [
+    keymaps.lspBuf = {
+      "K" = "hover";
+      "gd" = "definition";
+      "gt" = "type_definition";
+      "gi" = "implementation";
+    };
+    keymaps.extra = [
       {
-        __unkeyed-1 = "gra";
-        __unkeyed-2.__raw = ''
+        key = "<leader>i";
+        action.__raw = ''
           function()
-            require "actions-preview".code_actions()
+            local lsp = vim.lsp
+            lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
           end
         '';
-        mode = ["n" "v"];
       }
+      # {
+      #   key = "<leader>d";
+      #   action.__raw = ''
+      #     function()
+      #       local cfg = vim.diagnostic.config()
+      #       if cfg.virtual_lines == false then
+      #         cfg.virtual_lines = { current_line = true }
+      #       else
+      #         cfg.virtual_lines = false
+      #       end
+      #       vim.diagnostic.config(cfg)
+      #     end
+      #   '';
+      # }
     ];
-    plugins.actions-preview.settings = {
-      backend = ["snacks"];
-      snacks.layout.preset = "ivy";
-    };
 
-    plugins.lsp = {
-      enable = true;
-      lazyLoad.enable = true;
-      lazyLoad.settings.event = ["BufReadPost" "BufNewFile"];
-
-      keymaps.diagnostic = {
-        "<C-n>" = "goto_next";
-        "<C-b>" = "goto_prev";
-      };
-      keymaps.lspBuf = {
-        "K" = "hover";
-        "gd" = "definition";
-        "gt" = "type_definition";
-        "gi" = "implementation";
-      };
-      keymaps.extra = [
-        {
-          key = "<leader>i";
-          action.__raw = ''
-            function()
-              local lsp = vim.lsp
-              lsp.inlay_hint.enable(not lsp.inlay_hint.is_enabled())
-            end
-          '';
-        }
-        # {
-        #   key = "<leader>d";
-        #   action.__raw = ''
-        #     function()
-        #       local cfg = vim.diagnostic.config()
-        #       if cfg.virtual_lines == false then
-        #         cfg.virtual_lines = { current_line = true }
-        #       else
-        #         cfg.virtual_lines = false
-        #       end
-        #       vim.diagnostic.config(cfg)
-        #     end
-        #   '';
-        # }
-      ];
-
-      servers.nixd.enable = true;
-      servers.nil_ls.enable = true;
-      servers.bashls.enable = true;
-      servers.lemminx.enable = true;
-      servers.sourcekit.enable = true;
-      servers.nushell.enable = true;
-      servers.qmlls.enable = true;
-    };
+    servers.nixd.enable = true;
+    servers.nil_ls.enable = true;
+    servers.bashls.enable = true;
+    servers.lemminx.enable = true;
+    servers.sourcekit.enable = true;
+    servers.nushell.enable = true;
+    servers.qmlls.enable = true;
   };
 }

@@ -1,5 +1,5 @@
-{pkgs, ...}: {
-  programs.nixvim.userCommands = {
+{
+  userCommands = {
     "Wrap" = {
       command.__raw =
         /*

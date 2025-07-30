@@ -1,3 +1,3 @@
 {
-  programs.nixvim.plugins.lsp.servers.taplo.enable = true;
+  plugins.lsp.servers.taplo.enable = true;
 }

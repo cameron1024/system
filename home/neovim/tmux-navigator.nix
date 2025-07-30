@@ -1,12 +1,12 @@
 let
   mode = ["n" "i" "x" "o" "v" "t"];
 in {
-  programs.nixvim.plugins.tmux-navigator = {
+  plugins.tmux-navigator = {
     enable = true;
     settings.no_mappings = 1;
   };
 
-  programs.nixvim.keymaps = [
+  keymaps = [
     {
       key = "<C-h>";
       action = "<cmd>TmuxNavigateLeft<cr>";

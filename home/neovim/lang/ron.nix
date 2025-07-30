@@ -9,5 +9,5 @@
     };
   };
 in {
-  programs.nixvim.extraPlugins = [ronVim];
+  extraPlugins = [ronVim];
 }

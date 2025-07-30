@@ -11,7 +11,6 @@
     };
   };
 in {
-  programs.nixvim = {
     plugins.lsp.servers.rust_analyzer.enable = true;
     plugins.lsp.servers.rust_analyzer.installCargo = false;
     plugins.lsp.servers.rust_analyzer.installRustc = false;
@@ -37,5 +36,4 @@ in {
       lazyLoad.enable = true;
       lazyLoad.settings.ft = "toml";
     };
-  };
 }

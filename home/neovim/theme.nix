@@ -59,65 +59,63 @@ let
     lazyLoad.settings.event = "BufEnter";
   };
 in {
-  programs.nixvim = {
-    colorscheme = "everforest";
-    colorschemes.everforest.enable = true;
+  colorscheme = "everforest";
+  colorschemes.everforest.enable = true;
 
-    plugins.web-devicons = simpleConfig;
+  plugins.web-devicons = simpleConfig;
 
-    plugins.lualine = {
-      enable = true;
-      lazyLoad.enable = true;
-      lazyLoad.settings.event = "BufReadPost";
-      luaConfig.post = ''
-        if vim.g.started_by_firenvim == true then
-          vim.o.laststatus = 0
-        else
-          vim.o.laststatus = 3
-        end
-      '';
+  plugins.lualine = {
+    enable = true;
+    lazyLoad.enable = true;
+    lazyLoad.settings.event = "BufReadPost";
+    luaConfig.post = ''
+      if vim.g.started_by_firenvim == true then
+        vim.o.laststatus = 0
+      else
+        vim.o.laststatus = 3
+      end
+    '';
 
-      settings = {
-        extensions = [
-          "fugitive"
-          "man"
-          "oil"
-          "quickfix"
-          "trouble"
-        ];
-        options = {
-          component_separators = {
-            left = "|";
-            right = "|";
-          };
-          section_separators = {
-            left = "";
-            right = "";
-          };
+    settings = {
+      extensions = [
+        "fugitive"
+        "man"
+        "oil"
+        "quickfix"
+        "trouble"
+      ];
+      options = {
+        component_separators = {
+          left = "|";
+          right = "|";
         };
-
-        sections = {
-          lualine_a = [lualineModes];
-          lualine_b = ["branch" "diff"];
-          lualine_c = [
-            "diagnostics"
-
-            {
-              __unkeyed-1 = "filename";
-              path = 1;
-            }
-          ];
-          lualine_x = ["searchcount"];
-          lualine_y = [lualineMacro];
-          lualine_z = ["location"];
+        section_separators = {
+          left = "";
+          right = "";
         };
       };
+
+      sections = {
+        lualine_a = [lualineModes];
+        lualine_b = ["branch" "diff"];
+        lualine_c = [
+          "diagnostics"
+
+          {
+            __unkeyed-1 = "filename";
+            path = 1;
+          }
+        ];
+        lualine_x = ["searchcount"];
+        lualine_y = [lualineMacro];
+        lualine_z = ["location"];
+      };
     };
-
-    plugins.nvim-bqf.enable = true;
-
-    extraConfigVim = ''
-      autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}
-    '';
   };
+
+  plugins.nvim-bqf.enable = true;
+
+  extraConfigVim = ''
+    autocmd TextYankPost * silent! lua vim.hl.on_yank {higroup='IncSearch', timeout=300}
+  '';
 }

@@ -1,5 +1,5 @@
 {
-  programs.nixvim.plugins.lean = {
+  plugins.lean = {
     enable = true;
     lazyLoad.enable = true;
     lazyLoad.settings.ft = "lean";

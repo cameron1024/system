@@ -1,5 +1,4 @@
 {
-  programs.nixvim = {
     plugins.dap = {
       enable = true;
       lazyLoad.enable = true;
@@ -98,5 +97,4 @@
         }
       ];
     };
-  };
 }

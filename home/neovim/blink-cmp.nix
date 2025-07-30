@@ -5,22 +5,22 @@ let
     settings.event = "InsertEnter";
   };
 in {
-  programs.nixvim.performance.combinePlugins.standalonePlugins = [
+  performance.combinePlugins.standalonePlugins = [
     "blink-cmp"
   ];
 
-  programs.nixvim.plugins.blink-emoji = {
+  plugins.blink-emoji = {
     inherit enable lazyLoad;
   };
-  programs.nixvim.plugins.blink-cmp-git = {
-    inherit enable lazyLoad;
-  };
-
-  programs.nixvim.plugins.colorful-menu = {
+  plugins.blink-cmp-git = {
     inherit enable lazyLoad;
   };
 
-  programs.nixvim.plugins.blink-cmp = {
+  plugins.colorful-menu = {
+    inherit enable lazyLoad;
+  };
+
+  plugins.blink-cmp = {
     inherit enable lazyLoad;
     settings = {
       keymap.preset = "enter";
