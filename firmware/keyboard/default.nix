@@ -6,6 +6,7 @@
     board = "nice_nano_v2";
     shield = "corne_%PART% nice_view_adapter nice_view";
     zephyrDepsHash = "sha256-iWWZVmLZUTKoqzkI0K3l2f37kslEX0Mnah2AB+idZWg=";
+    enableZmkStudio = true;
   };
 
   flash = inputs.zmk.packages.${system}.flash.override { inherit firmware; };

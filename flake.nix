@@ -172,7 +172,9 @@
     packages."aarch64-linux".vim = mkNixvim {system = "aarch64-linux";};
     packages."aarch64-darwin".vim = mkNixvim {system = "aarch64-darwin";};
 
+    packages."x86_64-linux".firmware = (mkKeyboard {system = "x86_64-linux";}).firmware;
     packages."x86_64-linux".keyboardFirmware = (mkKeyboard {system = "x86_64-linux";}).firmware;
     packages."x86_64-linux".keyboardFlash = (mkKeyboard {system = "x86_64-linux";}).flash;
+    packages."x86_64-linux".keyboardUpdate = (mkKeyboard {system = "x86_64-linux";}).update;
   };
 }
