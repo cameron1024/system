@@ -11,8 +11,6 @@
     };
   };
 in {
-  home.packages = with pkgs; [lldb];
-
   programs.nixvim = {
     plugins.lsp.servers.rust_analyzer.enable = true;
     plugins.lsp.servers.rust_analyzer.installCargo = false;

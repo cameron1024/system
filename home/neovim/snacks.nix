@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-  home.packages = with pkgs; [imagemagick mermaid-cli ghostscript];
   programs.nixvim = {
     env."SNACKS_KITTY" = "true";
 

@@ -13,5 +13,14 @@
   home.packages = with pkgs; [
     typst
     neovide
+
+    alejandra
+    typstyle
+    shfmt
+    sql-formatter
+
+    imagemagick
+    mermaid-cli
+    ghostscript
   ];
 }

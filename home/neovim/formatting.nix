@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-  home.packages = with pkgs; [alejandra typstyle shfmt sql-formatter];
   programs.nixvim = {
     plugins.conform-nvim = {
       enable = true;
@@ -13,7 +12,7 @@
         }
       ];
       settings = {
-        # default_format_opts.lsp_format = "fallback";
+        default_format_opts.lsp_format = "fallback";
         formatters = {
           typstyle = {
             command = "${pkgs.typstyle}/bin/typstyle";
