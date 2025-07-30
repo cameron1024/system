@@ -12,5 +12,5 @@ let
   };
 in
 writeShellScriptBin "zmk-studio" ''
-  ${appimage-run}/bin/appimage-run ${appimage} 
+  CONFIG_ZMK_STUDIO_LOCKING=n ${appimage-run}/bin/appimage-run ${appimage} 
 ''
