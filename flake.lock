@@ -1334,7 +1334,8 @@
         "rust-overlay": "rust-overlay_2",
         "rustaceanvim": "rustaceanvim",
         "sherlock": "sherlock",
-        "television": "television"
+        "television": "television",
+        "zmk": "zmk"
       }
     },
     "rust-overlay": {
@@ -1660,6 +1661,26 @@
       "original": {
         "owner": "mrcjkb",
         "repo": "vimcats",
+        "type": "github"
+      }
+    },
+    "zmk": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1753577062,
+        "narHash": "sha256-7Nzb3Sq322gMz9tw8NemqfWLG6nZUqzfWEojF+sXlkI=",
+        "owner": "lilyinstarlight",
+        "repo": "zmk-nix",
+        "rev": "27cc107a90c891e24db345350499bf298c336f93",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lilyinstarlight",
+        "repo": "zmk-nix",
         "type": "github"
       }
     }

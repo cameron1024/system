@@ -42,9 +42,13 @@
     sherlock.url = "github:Skxxtz/sherlock";
 
     television.url = "github:alexpasmantier/television";
+
+    zmk.url = "github:lilyinstarlight/zmk-nix";
+    zmk.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let
+    mkKeyboard = {system}: import ./firmware/keyboard {inherit system inputs;};
     mkNixvim = {system}: let
       pkgs = import inputs.nixpkgs {
         inherit system;
@@ -167,5 +171,8 @@
     packages."x86_64-linux".vim = mkNixvim {system = "x86_64-linux";};
     packages."aarch64-linux".vim = mkNixvim {system = "aarch64-linux";};
     packages."aarch64-darwin".vim = mkNixvim {system = "aarch64-darwin";};
+
+    packages."x86_64-linux".keyboardFirmware = (mkKeyboard {system = "x86_64-linux";}).firmware;
+    packages."x86_64-linux".keyboardFlash = (mkKeyboard {system = "x86_64-linux";}).flash;
   };
 }
