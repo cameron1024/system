@@ -5,7 +5,10 @@ let
     settings.event = "BufReadPost";
   };
 in {
-  imports = [./injections.nix];
+  imports = [
+    ./injections.nix
+    ./treewalker.nix
+  ];
   plugins.treesitter = {
     inherit enable;
     lazyLoad.enable = true;

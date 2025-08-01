@@ -43,6 +43,7 @@ final: prev: {
           hash = "sha256-jVWggPmdINFNVHJSCpbTZq8wKwGjldu6PNSkb7naiQE=";
         };
       };
+
       obsidian-nvim = prev.vimUtils.buildVimPlugin {
         pname = "obsidian.nvim";
         version = "3.11.0";

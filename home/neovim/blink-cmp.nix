@@ -42,7 +42,6 @@ in {
         lsp.async = true;
         emoji = {
           module = "blink-emoji";
-
           name = "Emoji";
           score_offset = -30;
         };

@@ -221,7 +221,7 @@ layout {
     // You can enable drop shadows for windows.
     shadow {
         // Uncomment the next line to enable shadows.
-        // on
+        on
 
         // By default, the shadow draws only around its window, and not behind it.
         // Uncomment this setting to make the shadow draw behind its window.
@@ -308,6 +308,10 @@ animations {
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
     slowdown 0.5 
+}
+
+window-rule { 
+  draw-border-with-background false
 }
 
 // Indicate screencasted windows with red colors.
@@ -586,3 +590,4 @@ binds {
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
 }
+
