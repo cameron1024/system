@@ -75,6 +75,8 @@ in {
         services'.desktop.isLaptop = true;
         services'.desktop.displays = with import ./machines/displays.nix; [
           thinkpadBuiltin
+          (rog // {name = "DP-6"; refreshRate = 60;})
+
         ];
 
         programs.steam.enable = true;

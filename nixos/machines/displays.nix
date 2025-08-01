@@ -4,7 +4,7 @@
     resolution.width = 2880;
     resolution.height = 1800;
 
-    position.x = 0;
+    position.x = 1440;
     position.y = 0;
 
     refreshRate = 120;
