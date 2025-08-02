@@ -83,11 +83,11 @@
     };
   };
 
-  plugins.octo = {
-    enable = true;
-    lazyLoad.enable = true;
-    lazyLoad.settings.cmd = "Octo";
-  };
+  # plugins.octo = {
+  #   enable = true;
+  #   lazyLoad.enable = true;
+  #   lazyLoad.settings.cmd = "Octo";
+  # };
 
   plugins.fugitive.enable = true;
 
