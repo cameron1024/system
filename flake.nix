@@ -45,6 +45,8 @@
 
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
+    
+    nix-ai-tools.url = "github:numtide/nix-ai-tools";
   };
 
   outputs = inputs: let

@@ -2,6 +2,7 @@
   imports = [
     ./cedar.nix
     ./flutter.nix
+    ./json.nix
     ./lean.nix
     ./markdown.nix
     ./ron.nix

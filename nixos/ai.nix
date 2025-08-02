@@ -37,14 +37,14 @@ with lib; {
       jan
     ];
 
-    # systemd.services."lmstudio" = {
-    #   enable = true;
-    #   wantedBy = ["multi-user.target"];
-    #   description = "LMStudio Service";
-    #   script = ''
-    #     ${pkgs.lmstudio}/bin/lms server start --port 11112 --log-level info
-    #   '';
-    # };
+    systemd.user.services."lmstudio" = {
+      enable = true;
+      wantedBy = ["multi-user.target"];
+      description = "LMStudio Service";
+      script = ''
+        ${pkgs.lmstudio}/bin/lms server start --port 11112 --log-level info
+      '';
+    };
 
     # networking.firewall.allowedTCPPorts = [11112];
   };

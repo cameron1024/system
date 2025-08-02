@@ -1,4 +1,7 @@
-{pkgs, ...}: {
-  home.packages = [pkgs.aichat];
-
+{
+  inputs,
+  pkgs,
+  ...
+}: {
+  home.packages = [inputs.nix-ai-tools.packages.${pkgs.system}.crush];
 }
