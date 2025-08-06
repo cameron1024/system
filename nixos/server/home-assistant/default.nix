@@ -33,12 +33,15 @@ in
     config = mkIf config.services'.home-assistant.enable {
       services.home-assistant = {
         enable = true;
-        # configWritable = true;
         package = pkgs.home-assistant.override {
           inherit extraComponents;
         };
         openFirewall = true;
         inherit extraComponents;
+
+        customComponents = with pkgs.home-assistant-custom-components; [
+          dreo
+        ];
 
         config = {
           default_config = {};

@@ -90,6 +90,8 @@
 
         comma
         nix-index
+
+        fblog
       ]
       ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
         pcmanfm

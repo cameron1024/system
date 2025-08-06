@@ -14,6 +14,7 @@ in {
     plugins.lsp.servers.rust_analyzer.enable = true;
     plugins.lsp.servers.rust_analyzer.installCargo = false;
     plugins.lsp.servers.rust_analyzer.installRustc = false;
+    plugins.lsp.servers.rust_analyzer.settings.check.command = "clippy";
 
     extraPlugins = [ferris];
     autoCmd = [
