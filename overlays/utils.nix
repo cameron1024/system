@@ -1,7 +1,7 @@
 final: prev: {
   zmk-studio = final.callPackage ./packages/zmk-studio.nix {};
   euphonica = final.callPackage ./packages/euphonica.nix {};
-  
+
   fetchDrive = {
     id,
     hash,
@@ -64,7 +64,7 @@ final: prev: {
           hash = "sha256-ugVqYxBEsrD/jInG0ecSKGaa37M4AimYEsr8NEyt9tA=";
         };
       };
-      
+
       mdx = prev.vimUtils.buildVimPlugin {
         pname = "mdx.nvim";
         version = "0.0.0";
@@ -75,13 +75,16 @@ final: prev: {
           hash = "sha256-jpMcrWx/Rg9sMfkQFXnIM8VB5qRuSB/70wuSh6Y5uFk=";
         };
       };
-
-
     };
 
   writeShellScriptNu = name: script: let
     scriptFile = final.writeText "script.nu" script;
   in
-    final.writeShellScriptBin name "${final.nushell}/bin/nu ${scriptFile}\n";
+    final.writeShellScriptBin name "${final.nushell}/bin/nu${scriptFile}\n";
 
+  home-assistant-custom-components =
+    prev.home-assistant-custom-components
+    // {
+      dreo = final.callPackage ./packages/dreo-hass.nix {};
+    };
 }

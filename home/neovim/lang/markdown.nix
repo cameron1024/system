@@ -1,5 +1,18 @@
-{pkgs, ...}: {
-  extraPlugins = with pkgs.vimPlugins; [mdx];
+{pkgs, ...}: 
+  let 
+    mdx = pkgs.vimUtils.buildVimPlugin {
+        pname = "mdx.nvim";
+        version = "0.0.0";
+        src = pkgs.fetchFromGitHub {
+          owner = "davidmh";
+          repo = "mdx.nvim";
+          rev = "464a74be368dce212cff02f6305845dc7f209ab3";
+          hash = "sha256-jpMcrWx/Rg9sMfkQFXnIM8VB5qRuSB/70wuSh6Y5uFk=";
+        };
+      };
+  in
+{
+  extraPlugins = [mdx];
 
   extraConfigLua = ''
     require "lz.n".load {

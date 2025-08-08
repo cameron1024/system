@@ -29,10 +29,10 @@ with lib; {
 
     xdg.userDirs.enable = true;
 
-    home.packages = with pkgs; [
+    home.packages = if pkgs.stdenv.isLinux then (with pkgs; [
       libnotify
       wl-clipboard
       google-chrome
-    ];
+    ]) else[];
   };
 }

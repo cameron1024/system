@@ -83,14 +83,18 @@
         sad
 
         ripdrag
-        wl-clipboard
 
         awscli2
         google-cloud-sdk
 
         comma
         nix-index
+
+        fblog
       ]
+      ++ (lib.optionals (pkgs.stdenv.isLinux) [
+        wl-clipboard
+      ])
       ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
         pcmanfm
         gcc
