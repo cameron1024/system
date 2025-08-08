@@ -13,7 +13,6 @@
   home.packages = with pkgs;
     []
     ++ (lib.optionals (nixosConfig != null) [
-      android-studio
       flutter
     ]);
 }
