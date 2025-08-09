@@ -3,10 +3,13 @@
   lib,
   config,
   osConfig,
+  inputs,
   ...
 }:
 with lib; {
   imports = [
+    inputs.dank-material-shell.homeModules.dankMaterialShell
+    inputs.niri.homeModules.niri
     ../hyprland/wallpaper
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
@@ -26,6 +29,7 @@ with lib; {
     home.packages = with pkgs; [
       wl-clipboard
       xwayland-satellite
+      material-icons
     ];
 
     home.pointerCursor = {
@@ -34,7 +38,11 @@ with lib; {
       name = "Bibata-Modern-Classic";
     };
 
-    xdg.configFile."niri/config.kdl".text = let
+    # programs.dankMaterialShell.enable = true;
+    # programs.dankMaterialShell.enableSystemd = true;
+    # programs.dankMaterialShell.enableKeybinds = false;
+
+    programs.niri.config = let
       formatDisplay = {
         name,
         resolution,

@@ -1,6 +1,7 @@
 final: prev: {
   zmk-studio = final.callPackage ./packages/zmk-studio.nix {};
   euphonica = final.callPackage ./packages/euphonica.nix {};
+  material-rounded = final.callPackage ./packages/material-rounded.nix {};
 
   fetchDrive = {
     id,
@@ -77,6 +78,7 @@ final: prev: {
       };
     };
 
+
   writeShellScriptNu = name: script: let
     scriptFile = final.writeText "script.nu" script;
   in
@@ -87,4 +89,7 @@ final: prev: {
     // {
       dreo = final.callPackage ./packages/dreo-hass.nix {};
     };
+
+
+
 }

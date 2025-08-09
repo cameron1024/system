@@ -47,6 +47,9 @@
     zmk.inputs.nixpkgs.follows = "nixpkgs";
     
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
+
+    dank-material-shell.url = "github:bbedward/DankMaterialShell";
+    niri.url = "github:sodiboo/niri-flake";
   };
 
   outputs = inputs: let

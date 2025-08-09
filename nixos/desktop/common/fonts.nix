@@ -13,6 +13,11 @@
       monaspace
       noto-fonts
       noto-fonts-monochrome-emoji
+      inter
+      fira-code
+      material-rounded
+      material-icons
+      material-design-icons
     ];
   };
 }
