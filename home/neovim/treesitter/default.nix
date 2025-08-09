@@ -1,18 +1,52 @@
-let
+{pkgs, ...}: let
   enable = true;
   lazyLoad = {
     enable = true;
     settings.event = "BufReadPost";
+  };
+
+  treesitter-snap = pkgs.tree-sitter.buildGrammar {
+    language = "snap";
+    version = "0.0.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "cameron1024";
+      repo = "treesitter-snap-grammar";
+      rev = "59510a5033c01626a1b435dd9eb2d01d2d7f63b9";
+      hash = "sha256-wTzbgjWr5ec+jEp5LLPMo1jnDWNV78qBY+/sGiry1/c=";
+    };
   };
 in {
   imports = [
     ./injections.nix
     ./treewalker.nix
   ];
+
+  extraFiles."after/ftplugin/snap.lua".text =
+    /*
+    lua
+    */
+    ''
+      local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+      parser_config.snap = {
+        install_info = {
+          files = {"src/parser.c"},
+          url = "${treesitter-snap}",
+        },
+      }
+
+      vim.treesitter.start()
+    '';
+  filetype.extension."snap" = "snap";
   plugins.treesitter = {
     inherit enable;
     lazyLoad.enable = true;
     lazyLoad.settings.event = "BufReadPost";
+
+    grammarPackages =
+      pkgs.vimPlugins.nvim-treesitter.passthru.allGrammars
+      ++ [
+        treesitter-snap
+      ];
 
     settings = {
       highlight.enable = true;

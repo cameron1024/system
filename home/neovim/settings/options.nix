@@ -14,6 +14,7 @@
     relativenumber = true;
     signcolumn = "yes:2";
     cursorline = true;
+    scrolloff = 3;
 
     splitright = true;
     splitbelow = true;
