@@ -23,6 +23,11 @@
           args = ["--fix" "$FILENAME"];
           stdin = false;
         };
+        kdl = {
+          command = "${pkgs.kdlfmt}/bin/kdlfmt";
+          args = ["format" "$FILENAME"];
+          stdin = false;
+        };
         injected = {
           ignore_errors = false;
         };
@@ -34,6 +39,7 @@
         "typst" = ["typstyle" "injected"];
         "sh" = ["shfmt"];
         "sql" = ["sql-formatter"];
+        "kdl" = ["kdl"];
         "json" = ["jq"];
       };
     };

@@ -48,7 +48,7 @@
 
     guifont =
       if pkgs.stdenv.isLinux
-      then "FiraCode Nerd Font:12"
-      else "Fira Code:12";
+      then "FiraCode Nerd Font:10"
+      else "Fira Code:10";
   };
 }
