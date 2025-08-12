@@ -100,6 +100,10 @@ in {
         query = "@assignment.rhs";
         desc = "Assignment RHS";
       };
+      "at" = {
+        query = "@type";
+        desc = "Type";
+      };
     };
   };
 
