@@ -2,13 +2,13 @@
   pkgs,
   lib,
   config,
-  osConfig,
+  nixosConfig,
   inputs,
   ...
 }:
 with lib; {
   imports = [
-    inputs.dank-material-shell.homeModules.dankMaterialShell
+    # inputs.dank-material-shell.homeModules.dankMaterialShell
     inputs.niri.homeModules.niri
     ../hyprland/wallpaper
     ../hyprland/notifications.nix
@@ -24,7 +24,7 @@ with lib; {
     };
   };
 
-  config = mkIf (pkgs.stdenv.isLinux && osConfig.programs'.niri.enable or false) {
+  config = mkIf (pkgs.stdenv.isLinux && (nixosConfig.programs'.niri.enable or false)) {
     services'.desktop.enable = true;
     home.packages = with pkgs; [
       wl-clipboard
@@ -62,7 +62,7 @@ with lib; {
             position x=${toString position.x} y=${toString position.y}
         }
       '';
-      displaysConfig = map formatDisplay osConfig.services'.desktop.displays;
+      displaysConfig = map formatDisplay nixosConfig.services'.desktop.displays or [];
     in
       /*
       kdl
