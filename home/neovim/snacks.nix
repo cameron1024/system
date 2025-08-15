@@ -17,10 +17,24 @@
           '';
         }
         {
+          desc = "Files Cword";
+          __unkeyed-1 = "<leader>N";
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.files { hidden = true, search = vim.fn.expand "<cword>" } end
+          '';
+        }
+        {
           desc = "Grep";
           __unkeyed-1 = "<leader>f";
           __unkeyed-2.__raw = ''
             function() Snacks.picker.grep { hidden = true } end
+          '';
+        }
+        {
+          desc = "Grep Cword";
+          __unkeyed-1 = "<leader>F";
+          __unkeyed-2.__raw = ''
+            function() Snacks.picker.grep { hidden = true, search = vim.fn.expand "<cword>" } end
           '';
         }
         {

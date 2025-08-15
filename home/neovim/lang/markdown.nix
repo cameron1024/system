@@ -12,7 +12,7 @@
       };
   in
 {
-  extraPlugins = [mdx];
+  extraPlugins = with pkgs.vimPlugins; [mdx vim-table-mode];
 
   extraConfigLua = ''
     require "lz.n".load {

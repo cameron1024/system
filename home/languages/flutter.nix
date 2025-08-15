@@ -14,5 +14,10 @@
     []
     ++ (lib.optionals (nixosConfig != null) [
       flutter
+      chromedriver
     ]);
+
+  home.sessionVariables = lib.mkIf (nixosConfig != null) {
+    "CHROME_EXECUTABLE" = "${pkgs.google-chrome}/bin/google-chrome-stable";
+  };
 }

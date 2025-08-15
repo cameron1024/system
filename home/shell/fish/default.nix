@@ -32,6 +32,8 @@ in {
 
         set -gx PURO_ROOT "/${usersDir}/cameron/.puro"
         set -gx PUB_CACHE "/${usersDir}/cameron/.puro/shared/pub_cache"
+
+        set -gx DITTO_LICENSE $(cat ~/ditto_license)
       ''
       + (
         if pkgs.stdenv.isLinux

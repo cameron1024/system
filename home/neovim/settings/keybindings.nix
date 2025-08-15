@@ -51,6 +51,15 @@
     }
 
     {
+      key = "]q";
+      action = ":cnext<cr>zz";
+    }
+    {
+      key = "[q";
+      action = ":cprev<cr>zz";
+    }
+
+    {
       key = "H";
       mode = ["n" "o" "x" "v"];
       action = "^";
