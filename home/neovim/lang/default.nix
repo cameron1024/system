@@ -5,6 +5,7 @@
     ./json.nix
     ./lean.nix
     ./markdown.nix
+    ./nu.nix
     ./ron.nix
     ./rust.nix
     ./toml.nix
