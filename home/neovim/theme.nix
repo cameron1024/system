@@ -107,7 +107,7 @@ in {
           }
         ];
         lualine_x = ["searchcount"];
-        lualine_y = [lualineMacro];
+        lualine_y = [lualineMacro "overseer"];
         lualine_z = ["location"];
       };
     };

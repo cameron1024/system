@@ -50,5 +50,7 @@
       if pkgs.stdenv.isLinux
       then "FiraCode Nerd Font:10"
       else "Fira Code:10";
+
+    exrc = true;
   };
 }

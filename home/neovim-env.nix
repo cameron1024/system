@@ -28,5 +28,6 @@
     imagemagick
     mermaid-cli
     ghostscript
+    d2
   ];
 }

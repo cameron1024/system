@@ -9,6 +9,7 @@
     ./lang
     ./lsp
     ./oil.nix
+    ./overseer.nix
     ./settings
     ./snacks.nix
     ./test.nix
