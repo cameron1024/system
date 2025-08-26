@@ -1,7 +1,8 @@
-{lib, ...}: {
+{lib, pkgs, ...}: {
   imports = [
     ./blink-cmp.nix
     ./debug.nix
+    ./diagnostics.nix
     ./editing.nix
     ./firenvim.nix
     ./formatting.nix
@@ -23,6 +24,8 @@
 
   plugins.telescope.enable = lib.mkForce false;
   plugins.fzf-lua.enable = lib.mkForce false;
+  plugins.neotest.enable = lib.mkForce false;
+  plugins.neotest.package = pkgs.vimPlugins.neotest.override { doCheck = false; };
 
   test.buildNixvim = false;
   test.runNvim = false;

@@ -1,6 +1,6 @@
 {
   plugins.overseer = {
-    enable = true;
+    enable = false;
     lazyLoad.settings.before.__raw = ''
     function()
       require "lz.n".trigger_load ""

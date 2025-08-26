@@ -113,6 +113,7 @@ in {
     };
   };
 
+
   plugins.nvim-bqf.enable = true;
 
   extraConfigVim = ''
