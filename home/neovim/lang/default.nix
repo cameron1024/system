@@ -6,6 +6,7 @@
     ./lean.nix
     ./markdown.nix
     ./nu.nix
+    ./raku.nix
     ./ron.nix
     ./rust.nix
     ./toml.nix

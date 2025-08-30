@@ -28,7 +28,11 @@ in {
     keymaps = [
       {
         key = "<C-p>";
-        action.__raw = "function() require 'ferris.methods.open_parent_module'() end";
+        action.__raw = ''
+          function()
+            require "ferris.methods.open_parent_module"()
+          end
+        '';
       }
     ];
 

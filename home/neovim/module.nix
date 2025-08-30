@@ -19,13 +19,11 @@
     ./treesitter
     ./trouble.nix
   ];
-  # package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
   plugins."lz-n".enable = true;
 
   plugins.telescope.enable = lib.mkForce false;
   plugins.fzf-lua.enable = lib.mkForce false;
-  plugins.neotest.enable = lib.mkForce false;
-  plugins.neotest.package = pkgs.vimPlugins.neotest.override { doCheck = false; };
+  # plugins.neotest.enable = lib.mkForce false;
 
   test.buildNixvim = false;
   test.runNvim = false;

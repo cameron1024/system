@@ -1,9 +1,9 @@
 {
   plugins.overseer = {
-    enable = false;
+    enable = true;
     lazyLoad.settings.before.__raw = ''
     function()
-      require "lz.n".trigger_load ""
+      require "lz.n".trigger_load "snacs"
     end
     '';
     lazyLoad.settings.keys = [

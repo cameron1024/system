@@ -91,6 +91,7 @@
         nix-index
 
         fblog
+        asciinema
       ]
       ++ (lib.optionals (pkgs.stdenv.isLinux) [
         wl-clipboard
