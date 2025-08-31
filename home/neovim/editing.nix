@@ -33,6 +33,9 @@ in {
   plugins.colorizer.lazyLoad.enable = true;
   plugins.colorizer.lazyLoad.settings.cmd = "ColorizerToggle";
 
+  plugins.img-clip.enable = true;
+  plugins.img-clip.lazyLoad.settings.cmd = "PasteImage";
+
   keymaps = [
     {
       key = "<leader>m";
@@ -43,4 +46,6 @@ in {
       action = "<cmd>UndotreeToggle<cr>";
     }
   ];
+
+
 }

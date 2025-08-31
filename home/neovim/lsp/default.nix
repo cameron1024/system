@@ -22,6 +22,9 @@
   plugins.actions-preview.settings = {
     backend = ["snacks"];
     snacks.layout.preset = "ivy";
+    highlight_command.__unkeyed-1.__raw = ''
+      require "actions-preview.highlight".delta()
+    '';
   };
 
   plugins.lsp = {
@@ -74,4 +77,6 @@
     # servers.raku_navigator.enable = true;
 
   };
+
+
 }
