@@ -54,6 +54,9 @@ in {
       };
 
       signature.enabled = false;
+
+      completion.ghost_text.enabled = true;
+
       completion.documentation.auto_show = true;
       completion.menu.draw = {
         columns.__raw = ''{ {"kind_icon"}, {"label", gap = 1 } }'';
