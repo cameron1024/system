@@ -55,7 +55,19 @@ in {
 
       signature.enabled = false;
       completion.documentation.auto_show = true;
-      completion.menu.draw.treesitter = ["lsp"];
+      completion.menu.draw = {
+        columns.__raw = ''{ {"kind_icon"}, {"label", gap = 1 } }'';
+        components.label.text.__raw = ''
+          function(ctx)
+            return require "colorful-menu".blink_components_text(ctx)
+          end
+        '';
+        components.label.highlight.__raw = ''
+          function(ctx)
+            return require "colorful-menu".blink_components_highlight(ctx)
+          end
+        '';
+      };
       completion.list.selection = {
         preselect = false;
         auto_insert = true;
