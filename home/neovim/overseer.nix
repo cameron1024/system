@@ -3,7 +3,7 @@
     enable = true;
     lazyLoad.settings.before.__raw = ''
     function()
-      require "lz.n".trigger_load "snacs"
+      require "lz.n".trigger_load "snacks.nvim"
     end
     '';
     lazyLoad.settings.keys = [
@@ -13,12 +13,7 @@
       }
       {
         __unkeyed-1 = "<leader>l";
-        __unkeyed-2.__raw = ''
-        function()
-          require "lz.n".trigger_load "snacks.nvim"
-          vim.cmd "OverseerRun"
-        end
-        '';
+        __unkeyed-2 = "<cmd>OverseerRun<cr>";
       }
     ];
   };

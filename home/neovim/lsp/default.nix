@@ -1,5 +1,7 @@
 {
 
+  # TODO: https://github.com/WilliamHsieh/overlook.nvim 
+
   plugins.fidget.enable = true;
   plugins.fidget.lazyLoad.enable = true;
   plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
