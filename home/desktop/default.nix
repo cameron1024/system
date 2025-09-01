@@ -10,7 +10,6 @@ with lib; {
     ./gtk.nix
     ./lock
     ./power-menu.nix
-    ./quickshell
     ./waybar
     ./rofi
   ];
@@ -24,7 +23,6 @@ with lib; {
 
     programs'.waybar.enable = true;
     programs'.rofi.enable = true;
-    programs'.quickshell.enable = true;
     programs'.departure.enable = true;
 
     xdg.userDirs.enable = true;

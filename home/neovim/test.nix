@@ -1,6 +1,6 @@
-{
+{lib, ...}: {
   plugins.neotest = {
-    enable = true;
+    enable = lib.mkForce true;
     lazyLoad.enable = true;
     lazyLoad.settings.keys = [
       {
@@ -54,8 +54,8 @@
       }
     ];
 
-    adapters.dart.enable = true;
-    adapters.rust.enable = true;
+    adapters.dart.enable = false;
+    adapters.rust.enable = false;
 
     # settings.diagnostic.enabled = false;
   };

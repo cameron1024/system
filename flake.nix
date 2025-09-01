@@ -28,9 +28,6 @@
     ags.url = "github:aylur/ags";
     ags.inputs.nixpkgs.follows = "nixpkgs";
 
-    quickshell.url = "github:quickshell-mirror/quickshell";
-    quickshell.inputs.nixpkgs.follows = "nixpkgs";
-
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -48,8 +45,8 @@
     
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
 
-    dank-material-shell.url = "github:bbedward/DankMaterialShell";
-    niri.url = "github:sodiboo/niri-flake";
+    # niri.url = "github:cameron1024/niri";
+    # niri.inputs.rust-overlay.follows = "";
   };
 
   outputs = inputs: let

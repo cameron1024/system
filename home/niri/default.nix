@@ -8,8 +8,6 @@
 }:
 with lib; {
   imports = [
-    # inputs.dank-material-shell.homeModules.dankMaterialShell
-    inputs.niri.homeModules.niri
     ../hyprland/wallpaper
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
@@ -38,11 +36,8 @@ with lib; {
       name = "Bibata-Modern-Classic";
     };
 
-    # programs.dankMaterialShell.enable = true;
-    # programs.dankMaterialShell.enableSystemd = true;
-    # programs.dankMaterialShell.enableKeybinds = false;
 
-    programs.niri.config = let
+    xdg.configFile."niri/config.kdl".text = let
       formatDisplay = {
         name,
         resolution,

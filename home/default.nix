@@ -20,6 +20,7 @@
 
     ./communication.nix
     ./media.nix
+    ./zed.nix
   ];
 
   home.homeDirectory = lib.mkDefault "/home/${config.home.username}";
