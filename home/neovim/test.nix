@@ -1,6 +1,7 @@
 {lib, ...}: {
+  
   plugins.neotest = {
-    enable = lib.mkForce true;
+    enable = lib.mkForce false;
     lazyLoad.enable = true;
     lazyLoad.settings.keys = [
       {
