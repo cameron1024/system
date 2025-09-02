@@ -42,11 +42,11 @@
 
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
-    
+
     nix-ai-tools.url = "github:numtide/nix-ai-tools";
 
-    # niri.url = "github:cameron1024/niri";
-    # niri.inputs.rust-overlay.follows = "";
+    quickshell.url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+    quickshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

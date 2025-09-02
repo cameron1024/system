@@ -7,6 +7,7 @@
   config = lib.mkIf (pkgs.stdenv.isLinux && config.services'.desktop.enable) {
     fonts.enableDefaultPackages = true;
     fonts.packages = with pkgs; [
+      josefin
       nerd-fonts.fira-code
       nerd-fonts.fira-mono
       fira

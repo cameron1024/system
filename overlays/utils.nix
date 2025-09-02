@@ -90,6 +90,5 @@ final: prev: {
       dreo = final.callPackage ./packages/dreo-hass.nix {};
     };
 
-
-
+  josefin = final.callPackage ./packages/josefin-sans.nix {};
 }
