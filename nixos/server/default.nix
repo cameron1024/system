@@ -7,10 +7,12 @@
     ./adguard.nix
     ./dashboard.nix
     ./home-assistant
+    ./nix-cache.nix
   ];
   options.services' = {
     immich.enable = lib.mkEnableOption "Enable Immich service";
     jellyfin.enable = lib.mkEnableOption "Enable Jellyfin service";
+    nix-cache.enable = lib.mkEnableOption "Enable Nix cache service";
   };
 
   config = {
