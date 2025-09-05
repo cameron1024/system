@@ -16,7 +16,9 @@ in {
     enable = true;
 
     # use `home.shellAliases` as abbreviations instead of aliases
-    shellAliases = lib.mkForce {};
+    shellAliases = lib.mkForce {
+      "dt" = "mask --maskfile $HOME/scripts/maskfile.md";
+    };
     shellAbbrs = config.home.shellAliases;
 
     interactiveShellInit =
