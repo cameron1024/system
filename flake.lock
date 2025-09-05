@@ -1333,6 +1333,26 @@
         "type": "github"
       }
     },
+    "quickshell": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1756352679,
+        "narHash": "sha256-UkKaPXTPzT7HAcBOV4NlWx2GAEJaTf0eb5OX6Q6jPqg=",
+        "ref": "refs/heads/master",
+        "rev": "f7597cdae2d537c5b12843599955856090dc49d5",
+        "revCount": 668,
+        "type": "git",
+        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
+      }
+    },
     "root": {
       "inputs": {
         "ags": "ags",
@@ -1348,6 +1368,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_7",
         "nixvim": "nixvim",
+        "quickshell": "quickshell",
         "rust-overlay": "rust-overlay_2",
         "rustaceanvim": "rustaceanvim",
         "sherlock": "sherlock",

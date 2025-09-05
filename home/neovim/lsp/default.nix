@@ -74,7 +74,7 @@
     servers.lemminx.enable = true;
     servers.sourcekit.enable = true;
     servers.nushell.enable = true;
-    # servers.raku_navigator.enable = true;
+    servers.qmlls.enable = true;
 
   };
 

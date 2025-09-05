@@ -12,6 +12,7 @@ with lib; {
     ./power-menu.nix
     ./waybar
     ./rofi
+    ./quickshell
   ];
 
   options = {
