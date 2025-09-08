@@ -11,6 +11,7 @@
       enable = false;
       # configureBuildUsers = true;
       package = pkgs.nixVersions.stable;
+      settings.trusted-users = [ "root" "cameron" "@admin" ];
 
       extraOptions = ''
         experimental-features = nix-command flakes
