@@ -56,27 +56,27 @@ in
               ["hyprland/workspaces"];
 
             "cpu" = {
-              format = " {usage}%";
+              format = "  {usage}%";
             };
 
             "memory" = {
-              format = " {}%";
+              format = "  {}%";
             };
 
             "disk" = {
-              format = " {free}";
-              format-alt = " {percentage_used}% ({free})";
+              format = "  {free}";
+              format-alt = "  {percentage_used}% ({free})";
               tooltip = true;
             };
 
             "network" = {
-              format = "󰹹{bandwidthTotalBytes}";
+              format = "󰹹 {bandwidthTotalBytes}";
               format-disconnected = "󰖪 ";
               format-alt = " {bandwidthUpBytes} |  {bandwidthDownBytes}";
-              format-wifi = "󰖩 {essid}({signalStrength}%)";
-              tooltip-format-wifi = "󰖩 {essid}({signalStrength}%)";
-              tooltip-format-ethernet = "🌐 {ipaddr}/{cidr}";
-              tooltip-format-disconnected = "󰖪 ";
+              format-wifi = "󰖩  {essid}({signalStrength}%)";
+              tooltip-format-wifi = "󰖩  {essid}({signalStrength}%)";
+              tooltip-format-ethernet = "🌐  {ipaddr}/{cidr}";
+              tooltip-format-disconnected = "󰖪  ";
               on-click-right = "nm-connection-editor";
             };
 

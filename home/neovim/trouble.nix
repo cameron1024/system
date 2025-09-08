@@ -8,10 +8,6 @@
         __unkeyed-1 = "<C-e>";
         __unkeyed-2 = "<cmd>Trouble diagnostics toggle<cr>";
       }
-      {
-        __unkeyed-1 = "<C-s>";
-        __unkeyed-2 = "<cmd>Trouble symbols toggle<cr>";
-      }
     ];
 
     settings.keys = {

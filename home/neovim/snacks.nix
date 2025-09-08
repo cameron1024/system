@@ -1,4 +1,15 @@
-{
+let
+  binding = {
+    key,
+    action,
+    desc ? null,
+    mode ? null,
+  }: {
+    inherit desc mode;
+    __unkeyed-1 = key;
+    __unkeyed-2 = action;
+  };
+in {
   env."SNACKS_KITTY" = "true";
 
   plugins.snacks = {
@@ -6,69 +17,100 @@
     lazyLoad = {
       enable = true;
       settings.ft = ["markdown" "typst" "png"]; # for images
-      settings.keys = [
+      settings.keys = map binding [
         # === Searching ===
-
         {
           desc = "Files";
-          __unkeyed-1 = "<leader>n";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.files { hidden = true, } end
-          '';
+          key = "<leader>n";
+          action.__raw = "function() Snacks.picker.files { hidden = true } end";
         }
         {
           desc = "Files Cword";
-          __unkeyed-1 = "<leader>N";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.files { hidden = true, search = vim.fn.expand "<cword>" } end
+          key = "<leader>N";
+          action.__raw = ''
+            function()
+              Snacks.picker.files {
+                hidden = true,
+                search = vim.fn.expand "<cword>",
+              }
+            end
           '';
         }
         {
           desc = "Grep";
-          __unkeyed-1 = "<leader>f";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.grep { hidden = true } end
-          '';
+          key = "<leader>f";
+          action.__raw = "function() Snacks.picker.grep { hidden = true } end";
         }
         {
           desc = "Grep Cword";
-          __unkeyed-1 = "<leader>F";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.grep { hidden = true, search = vim.fn.expand "<cword>" } end
+          key = "<leader>F";
+          action.__raw = ''
+            function()
+              Snacks.picker.grep {
+                hidden = true,
+                search = vim.fn.expand "<cword>",
+              }
+            end
           '';
         }
+
+        # === LSP ===
+        {
+          desc = "LSP Definitions";
+          key = "gd";
+          action.__raw = "function() Snacks.picker.lsp_definitions() end";
+        }
+        {
+          desc = "LSP Type Definition";
+          key = "gt";
+          action.__raw = "function() Snacks.picker.lsp_type_definitions() end";
+        }
+        {
+          desc = "LSP References";
+          key = "grr";
+          action.__raw = "function() Snacks.picker.lsp_references() end";
+        }
+        {
+          desc = "LSP Implementations";
+          key = "gi";
+          action.__raw = "function() Snacks.picker.lsp_implementations() end";
+        }
+
         {
           desc = "Marks";
-          __unkeyed-1 = "<leader>m";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.marks() end
-          '';
+          key = "<leader>m";
+          action.__raw = "function() Snacks.picker.marks() end";
         }
         {
           desc = "File Picker";
-          __unkeyed-1 = "<leader>p";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.explorer() end
-          '';
-        }
-        {
-          desc = "Undo";
-          __unkeyed-1 = "<leader>u";
-          __unkeyed-2.__raw = ''
-            function() Snacks.picker.undo() end
-          '';
+          key = "<leader>p";
+          action.__raw = "function() Snacks.picker.explorer() end";
         }
         {
           desc = "Search history";
-          __unkeyed-1 = "<leader>/";
-          __unkeyed-2.__raw = ''
+          key = "<leader>/";
+          action.__raw = ''
             function() Snacks.picker.search_history() end
           '';
         }
         {
+          desc = "Diagnostics";
+          key = "<leader>d";
+          action.__raw = ''
+            function() Snacks.picker.diagnostics() end
+          '';
+        }
+        {
+          desc = "Zoxide";
+          key = "<leader>z";
+          action.__raw = ''
+            function() Snacks.picker.zoxide() end
+          '';
+        }
+        {
           desc = "Last Picker";
-          __unkeyed-1 = "<leader><leader>";
-          __unkeyed-2.__raw = ''
+          key = "<leader><leader>";
+          action.__raw = ''
             function() Snacks.picker.resume() end
           '';
         }
@@ -76,8 +118,8 @@
         {
           desc = "Toggle Terminal";
           mode = ["n" "i" "v" "t" "x"];
-          __unkeyed-1 = "<C-t>";
-          __unkeyed-2.__raw = ''
+          key = "<C-t>";
+          action.__raw = ''
             function()
               Snacks.terminal.toggle(nil, {
                 interactive = true,
@@ -90,28 +132,32 @@
         {
           desc = "Next reference";
           mode = ["n" "o" "x" "v"];
-          __unkeyed-1 = "]r";
-          __unkeyed-2.__raw = ''
+          key = "]r";
+          action.__raw = ''
             function() Snacks.words.jump(1, true) end
           '';
         }
         {
           desc = "Prev reference";
           mode = ["n" "o" "x" "v"];
-          __unkeyed-1 = "[r";
-          __unkeyed-2.__raw = ''
+          key = "[r";
+          action.__raw = ''
             function() Snacks.words.jump(-1, true) end
           '';
         }
       ];
     };
-
     settings = {
       indent.enabled = true;
       input.enabled = true;
       picker.layout = "ivy";
+      picker.win.input.keys."<a-p>" = false;
+      picker.win.input.keys."<a-k>".__raw = ''{ "toggle_preview", mode = { "i", "n" } }'';
+      picker.win.input.keys."<c-r><c-f>".__raw = ''{ "insert_file", mode = "i" }'';
       notifier.enable = true;
       words.enabled = true;
+      quickfile.enabled = true;
+      statuscolumn.enabled = true;
 
       image.enable = true;
       image.math.enabled = false; # typst equations look weird

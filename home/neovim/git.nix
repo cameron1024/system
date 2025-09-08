@@ -1,12 +1,12 @@
 {
   plugins.diffview.enable = true;
   plugins.diffview.enhancedDiffHl = true;
-  plugins.diffview.hooks.diffBufRead = ''
-    function(bufnr)
-      require "lz.n".trigger_load "ufo"
-      require "ufo.main".detach(bufnr)
-    end
-  '';
+  # plugins.diffview.hooks.diffBufRead = ''
+  #   function(bufnr)
+  #     require "lz.n".trigger_load "ufo"
+  #     require "ufo.main".detach(bufnr)
+  #   end
+  # '';
 
   plugins.gitsigns = {
     enable = true;

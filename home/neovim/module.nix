@@ -5,6 +5,7 @@
     ./diagnostics.nix
     ./editing.nix
     ./firenvim.nix
+    ./fold.nix
     ./formatting.nix
     ./git.nix
     ./lang

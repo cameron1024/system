@@ -123,20 +123,14 @@ in {
 
     console.keyMap = "uk";
 
-    # environment.systemPackages = with pkgs; [
-    #   git
-    #   curl
-    #   vim
-    #   networkmanager
-    #   jq
-    #   linux.cpupower
-    #   linux.perf
-    # ];
-    # ++ (
-    #   if (cfg.cpuArch != "znver5")
-    #   then []
-    #   else [intel-gpu-tools]
-    # );
+    environment.systemPackages = with pkgs; [
+      git
+      curl
+      vim
+      networkmanager
+      jq
+      unixtools.ifconfig
+    ];
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
 

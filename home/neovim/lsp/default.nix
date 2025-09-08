@@ -38,9 +38,6 @@
     };
     keymaps.lspBuf = {
       "K" = "hover";
-      "gd" = "definition";
-      "gt" = "type_definition";
-      "gi" = "implementation";
     };
     keymaps.extra = [
       {
