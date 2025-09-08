@@ -32,6 +32,7 @@
       appimage-run
       pureref
       zmk-studio
+      rakudo
     ]
     else []
   );

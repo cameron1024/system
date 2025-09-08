@@ -1,8 +1,7 @@
 {
   pkgs,
   lib,
-  osConfig,
-  ...
+  osConfig, ...
 }: {
   imports = [
     ./fish
@@ -65,6 +64,7 @@
         gnumake
         tokei
         fzf
+        ast-grep
 
         #data stuff
         sq
