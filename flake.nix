@@ -79,7 +79,12 @@
         packages =
           if system == "aarch64-darwin"
           then [
-            (pkgs.writeShellScriptBin "s" ''
+            (pkgs.writeShellScriptBin 
+
+            "s" 
+
+
+            ''
               cd $(git rev-parse --show-toplevel)
 
               git add -A
