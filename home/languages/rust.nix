@@ -8,6 +8,7 @@
       rustup
 
       cargo-info
+      cargo-dist
       cargo-insta
       cargo-wipe
       cargo-rdme

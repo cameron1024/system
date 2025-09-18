@@ -132,6 +132,8 @@ in {
       unixtools.ifconfig
     ];
 
+    programs.nix-ld.enable = true;
+
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
 
     nixpkgs.config.allowUnfree = true;

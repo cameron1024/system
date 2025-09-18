@@ -65,6 +65,7 @@
       # }
     ];
 
+    servers.ast_grep.enable = true;
     servers.nixd.enable = true;
     servers.nil_ls.enable = true;
     servers.bashls.enable = true;
