@@ -23,6 +23,7 @@ in {
     shell = "${pkgs.fish}/bin/fish";
     # shell = "${pkgs.nushell}/bin/nu";
     mouse = true;
+    historyLimit = 50000;
 
     extraConfig =
       /*
