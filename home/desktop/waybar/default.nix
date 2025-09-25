@@ -21,6 +21,7 @@ in
     options.programs'.waybar = {
       enable = mkEnableOption "waybar";
       enableHyprlandIntegration = mkEnableOption "Hyprland workspace switcher";
+      enableNiriIntegration = mkEnableOption "Niri workspace switcher";
     };
 
     config = mkIf (pkgs.stdenv.isLinux && config.programs'.waybar.enable) {
@@ -51,9 +52,14 @@ in
             modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];
             modules-right = ["tray" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
-              optionals
-              config.programs'.waybar.enableHyprlandIntegration
-              ["hyprland/workspaces"];
+              []
+              ++ (optional config.programs'.waybar.enableHyprlandIntegration "hyprland/workspaces")
+              ++ (optional config.programs'.waybar.enableNiriIntegration "niri/workspaces");
+
+
+            "niri/workspaces" = {
+              format = "●";
+            };
 
             "cpu" = {
               format = "  {usage}%";
@@ -89,7 +95,7 @@ in
             };
 
             "backlight" = {
-              format = "󰃠 {percent:3}%";
+              format = "󰃠  {percent:3}%";
               on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 5%+";
               on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
               on-click = "${pkgs.brightnessctl}/bin/brightnessctl set $(hypr-utils store cycle brightness 20 50 70 100)%";
@@ -121,10 +127,10 @@ in
             };
 
             "battery" = {
-              format = "{icon} {capacity}%";
-              format-charging = " {capacity}%";
+              format = "{icon}  {capacity}%";
+              format-charging = "  {capacity}%";
               format-icons = ["" "" "" "" ""];
-              format-plugged = " {capacity}% ";
+              format-plugged = "  {capacity}% ";
               states = {
                 warning = 20;
                 critical = 10;

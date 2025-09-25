@@ -1,0 +1,52 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "active_pane_modifiers": {
+    "inactive_opacity": 0.7
+  },
+  "hover_popover_enabled": false,
+  "diagnostics": {
+  	"button": true,
+  	"include_warnings": true,
+  	"lsp_pull_diagnostics": {
+  		"enabled": true,
+  		"debounce_ms": 50
+  	},
+  	"inline": {
+  		"enabled": true,
+  		"update_debounce_ms": 150,
+  		"padding": 4,
+  		"min_column": 0,
+  		"max_severity": null
+  	}
+  },
+  "vim_mode": true,
+  "ui_font_size": 24,
+  "buffer_font_size": 24,
+  "buffer_font_family": "FiraCode Nerd Font",
+  "ui_font_family": "Josefin Sans",
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 0
+    }
+  },
+  "terminal": {
+    "shell": {
+      "program": "fish"
+    }
+  },
+  "disable_ai": true,
+  "theme": {
+    "mode": "dark",
+    "light": "Everforest Dark",
+    "dark": "Everforest Dark"
+  }
+  
+  
+}

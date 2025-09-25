@@ -1,0 +1,51 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Editor && vim_mode != insert",
+    "bindings": {
+      "space q": "pane::CloseActiveItem",
+      "space n": "file_finder::Toggle",
+      "space f": "project_search::ToggleFocus",
+      "space i": "editor::ToggleInlayHints",
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-v": "pane::SplitRight",
+      "ctrl-x": "pane::SplitDown"
+      
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "ctrl-h": "vim::Left",
+      "ctrl-j": "vim::Down",
+      "ctrl-k": "vim::Up",
+      "ctrl-l": "vim::Right"
+    }
+  },
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !showing_code_actions",
+    "bindings": {
+      "enter": "editor::SelectLargerSyntaxNode",
+      "backspace": "editor::SelectSmallerSyntaxNode",
+      "H": "editor::MoveToBeginningOfLine",
+      "L": "editor::MoveToEndOfLine",
+      "ctrl-b": "editor::GoToPreviousDiagnostic",
+      "ctrl-n": "editor::GoToDiagnostic",
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual",
+    "bindings": {
+      "S": "vim::PushAddSurrounds"
+    }
+  }
+]

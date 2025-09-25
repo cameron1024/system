@@ -23,6 +23,7 @@ with lib; {
     gtk'.enable = true;
 
     programs'.waybar.enable = true;
+    programs'.waybar.enableNiriIntegration = true;
     programs'.rofi.enable = true;
     programs'.departure.enable = true;
 
