@@ -10,9 +10,23 @@
           hash = "sha256-jpMcrWx/Rg9sMfkQFXnIM8VB5qRuSB/70wuSh6Y5uFk=";
         };
       };
+    # iwe = pkgs.vimUtils.buildVimPlugin {
+    #     pname = "iwe.nvim";
+    #     version = "0.0.0";
+    #     src = pkgs.fetchFromGitHub {
+    #       owner = "iwe-org";
+    #       repo = "iwe.nvim";
+    #       rev = "b415c7e49e6a65147d03373bd6871d181f7ae5df";
+    #       hash = "sha256-AbaGYiWJWwn2+rs96ezIlAKYHQUjRtQt74UnuPzvudg=";
+    #     };
+    #   };
   in
 {
-  extraPlugins = with pkgs.vimPlugins; [mdx vim-table-mode];
+  extraPlugins = with pkgs.vimPlugins; [
+    mdx
+    # iwe
+    vim-table-mode
+  ];
 
   extraConfigLua = ''
     require "lz.n".load {
@@ -20,7 +34,22 @@
         "mdx",
         ft = "mdx",
         after = function() require "mdx".setup() end,
-      }
+      },
+      -- {
+      --   "iwe",
+      --   ft = "markdown",
+      --   after = function()
+      --     require "iwe".setup {
+      --       lsp = {
+      --         root_markers = { ".iwe" },
+      --         auto_format_on_save = false,
+      --       },
+      --       mappings = {
+      --         enable_markdown_mappings = false,
+      --       },
+      --     }
+      --   end,
+      -- },
     }
   '';
 
@@ -56,6 +85,8 @@
       preview.hybrid_modes = ["i" "r"];
     };
   };
+
+
 
   # plugins.markview = {
   #   enable = true;

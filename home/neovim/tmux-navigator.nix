@@ -1,5 +1,5 @@
 let
-  mode = ["n" "i" "x" "o" "v" "t"];
+  mode = ["n" "x" "o" "v" "t"];
 in {
   plugins.tmux-navigator = {
     enable = true;

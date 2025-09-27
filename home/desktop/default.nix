@@ -6,6 +6,7 @@
 }:
 with lib; {
   imports = [
+    ./ai.nix
     ./audio.nix
     ./gtk.nix
     ./lock

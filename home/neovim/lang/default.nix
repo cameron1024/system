@@ -1,6 +1,7 @@
 {
   imports = [
     ./cedar.nix
+    ./cue.nix
     ./flutter.nix
     ./json.nix
     ./lean.nix

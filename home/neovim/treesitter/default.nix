@@ -159,6 +159,13 @@ in {
 
   plugins.aerial = {
     enable = true;
-
   };
+
+  keymaps = [
+    {
+      key = "<C-s>";
+      action = "<cmd>AerialToggle<cr>";
+    }
+  ];
+
 }
