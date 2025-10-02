@@ -23,6 +23,7 @@ in {
 
     interactiveShellInit =
       ''
+        set fish_greeting
         fish_default_key_bindings
         set -x DIRENV_LOG_FORMAT ""
 

@@ -1,4 +1,4 @@
-{lib, pkgs, ...}: {
+{lib, ...}: {
   imports = [
     ./blink-cmp.nix
     ./debug.nix
