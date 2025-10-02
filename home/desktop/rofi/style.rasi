@@ -1,111 +1,272 @@
-/*******************************************************************************
- * ROFI SQUARED THEME USING THE EVERFOREST PALETTE 
- * User                 : LR-Tech               
- * Theme Repo           : https://github.com/lr-tech/rofi-themes-collection
- *******************************************************************************/
-
 * {
-    font:   "Josefin Sans 16";
-
-    bgdark:     #272E33;
-    bgalt:     #3C4841;
-    bggreen:     #56635F;
-    fg0:     #A7C080;
-
-    accent-color:     #A7C080;
-    urgent-color:     #DBBC7F;
-
-    background-color:   transparent;
-    text-color:         @fg0;
-
-    transparent: rgba(0,0,0,0);
+    bg-dim:              #232a2e;
+    bg0:                 #2d353b;
+    bg1:                 #343f44;
+    bg2:                 #3d484d;
+    bg3:                 #475258;
+    bg4:                 #4f585e;
+    bg5:                 #56635f;
+    
+    fg:                  #d3c6aa;
+    fg-dim:              #a6b0a0;
+    
+    red:                 #e67e80;
+    red-dim:             #da6362;
+    orange:              #e69875;
+    yellow:              #dbbc7f;
+    green:               #a7c080;
+    green-dim:           #8aa872;
+    aqua:                #83c092;
+    blue:                #7fbbb3;
+    purple:              #d699b6;
+    grey0:               #7a8478;
+    grey1:               #859289;
+    grey2:               #9da9a0;
+    
+    background:          @bg0;
+    background-alt:      @bg1;
+    foreground:          @fg;
+    selected:            @bg3;
+    selected-fg:         @fg;
+    active:              @green;
+    urgent:              @red;
+    
+    font:                "Josefin Sans 12";
+    text-color:          @foreground;
+    background-color:    transparent;
+    
+    spacing:             2;
+    border-radius:       8px;
 }
 
 window {
-    location:   center;
-    anchor: center;
-    transparency: "screenshot";
-    padding: 10px;
-    border: 0px;
-    border-radius: 3px;
-
-    background-color:   @transparent;
-    spacing: 0;
-    children: [mainbox];
-    orientation: horizontal;
+    transparency:        "real";
+    background-color:    @background;
+    text-color:          @foreground;
+    border:              2px;
+    border-color:        @bg5;
+    border-radius:       @border-radius;
+    width:               650px;
+    location:            center;
+    x-offset:            0;
+    y-offset:            0;
+    padding:             0;
 }
 
 mainbox {
-    spacing: 0;
-    children: [ inputbar, message, listview ];
-}
-
-message {
-    color: @bggreen;
-    padding: 5px;
-    border-color: @fg0;
-    border: 0px 2px 2px 2px;
-    background-color: @bgdark;
+    background-color:    transparent;
+    border:              0;
+    padding:             0;
+    children:            [ inputbar, message, listview, mode-switcher ];
 }
 
 inputbar {
-    color: @fg0;
-    padding:    11px;
-    background-color:   @bgalt;
-
-    border: 1px;
-    border-radius: 3px 3px 0px 0px;
-    border-color: @bggreen;
-}
-
-entry, prompt, case-indicator {
-    text-font: inherit;
-    text-color:inherit;
+    children:            [ prompt, textbox-prompt-colon, entry, num-filtered-rows, textbox-num-sep, num-rows, case-indicator ];
+    background-color:    @bg1;
+    text-color:          @foreground;
+    expand:              false;
+    border:              0px;
+    border-radius:       0px;
+    border-color:        @selected;
+    margin:              0px;
+    padding:             15px 20px;
+    position:            north;
 }
 
 prompt {
-    margin: 0px 1em 0em 0em ;
+    enabled:             true;
+    padding:             0px 8px 0px 0px;
+    background-color:    transparent;
+    text-color:          @green;
+    font:                "Josefin Sans SemiBold 12";
+}
+
+textbox-prompt-colon {
+    expand:              false;
+    str:                 "";
+    margin:              0px 0.3em 0em 0em;
+    background-color:    transparent;
+    text-color:          @grey1;
+}
+
+entry {
+    background-color:    transparent;
+    text-color:          @foreground;
+    cursor:              text;
+    spacing:             0;
+    placeholder-color:   @grey0;
+    placeholder:         "Type to search...";
+    font:                "Josefin Sans 12";
+}
+
+num-filtered-rows {
+    expand:              false;
+    background-color:    transparent;
+    text-color:          @grey1;
+}
+
+textbox-num-sep {
+    expand:              false;
+    str:                 "/";
+    background-color:    transparent;
+    text-color:          @grey0;
+}
+
+num-rows {
+    expand:              false;
+    background-color:    transparent;
+    text-color:          @grey1;
+}
+
+case-indicator {
+    background-color:    transparent;
+    text-color:          @yellow;
+    spacing:             0;
+}
+
+message {
+    enabled:             true;
+    margin:              0px;
+    padding:             10px 20px;
+    border:              0px solid;
+    border-radius:       0px;
+    border-color:        @selected;
+    background-color:    @bg-dim;
+    text-color:          @foreground;
+}
+
+textbox {
+    background-color:    transparent;
+    text-color:          @foreground;
+    vertical-align:      0.5;
+    horizontal-align:    0.0;
+    highlight:           none;
+    font:                "Josefin Sans 11";
 }
 
 listview {
-    padding: 8px;
-    border-radius: 0px 0px 3px 3px;
-    border-color: @bggreen;
-    border: 0px 1px 1px 1px;
-    background-color: rgba(46,52,64,0.9);
-    dynamic: false;
+    background-color:    transparent;
+    padding:             10px 10px;
+    columns:             1;
+    lines:               8;
+    spacing:             5px;
+    cycle:               true;
+    dynamic:             true;
+    layout:              vertical;
+    scrollbar:           true;
 }
 
 element {
-    padding: 3px;
-    vertical-align: 0.5;
-    border-radius: 3px;
-    background-color: transparent;
-    color: @fg0;
-    text-color: rgb(216, 222, 233);
+    background-color:    transparent;
+    text-color:          @foreground;
+    orientation:         horizontal;
+    border-radius:       6px;
+    padding:             10px 15px;
+    spacing:             10px;
+}
+
+element-icon {
+    background-color:    transparent;
+    text-color:          inherit;
+    size:                24px;
+    border:              0px;
+}
+
+element-text {
+    background-color:    transparent;
+    text-color:          inherit;
+    expand:              true;
+    horizontal-align:    0;
+    vertical-align:      0.5;
+    margin:              0px 2.5px 0px 2.5px;
+    font:                "Josefin Sans 11";
+}
+
+element normal.normal {
+    background-color:    transparent;
+    text-color:          @foreground;
+}
+
+element normal.urgent {
+    background-color:    @urgent;
+    text-color:          @background;
+}
+
+element normal.active {
+    background-color:    @active;
+    text-color:          @background;
 }
 
 element selected.normal {
-	background-color: @accent-color;
-	text-color: #2e3440;
+    background-color:    @selected;
+    text-color:          @selected-fg;
+    border:              0px 0px 0px 3px;
+    border-color:        @green;
 }
 
-element-text, element-icon {
-    background-color: inherit;
-    text-color:       inherit;
+element selected.urgent {
+    background-color:    @red-dim;
+    text-color:          @background;
+    border:              0px 0px 0px 3px;
+    border-color:        @red;
+}
+
+element selected.active {
+    background-color:    @green-dim;
+    text-color:          @background;
+    border:              0px 0px 0px 3px;
+    border-color:        @green;
+}
+
+element alternate.normal {
+    background-color:    transparent;
+    text-color:          @foreground;
+}
+
+element alternate.urgent {
+    background-color:    @urgent;
+    text-color:          @background;
+}
+
+element alternate.active {
+    background-color:    @active;
+    text-color:          @background;
+}
+
+scrollbar {
+    width:               4px;
+    border:              0;
+    handle-width:        4px;
+    handle-color:        @grey0;
+    background-color:    @bg1;
+    border-radius:       2px;
+    padding:             0;
+}
+
+sidebar {
+    border:              0px;
+    border-color:        @selected;
+    background-color:    @background-alt;
+}
+
+mode-switcher {
+    background-color:    @bg1;
+    border:              0px 0px 0px;
+    border-color:        @bg5;
+    padding:             10px;
 }
 
 button {
-    padding: 6px;
-    color: @fg0;
-    horizontal-align: 0.5;
-
-    border: 2px 0px 2px 2px;
-    border-radius: 4px 0px 0px 4px;
-    border-color: @bggreen;
+    background-color:    @bg2;
+    text-color:          @grey1;
+    cursor:              pointer;
+    padding:             8px 12px;
+    border-radius:       6px;
+    font:                "Josefin Sans 11";
 }
 
-button selected normal {
-    border: 2px 0px 2px 2px;
-    border-color: @fg0;
+button selected {
+    background-color:    @green;
+    text-color:          @bg0;
+    font:                "Josefin Sans SemiBold 11";
 }

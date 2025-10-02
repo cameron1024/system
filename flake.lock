@@ -771,6 +771,39 @@
         "type": "github"
       }
     },
+    "kani-repo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1751568156,
+        "narHash": "sha256-8UyAO9eTwcUtOktSJ9QdYpccgDRefWDTIewjAwvkhdA=",
+        "ref": "main",
+        "rev": "96f7e59a8c8058f3edbdcc4d52940e376d54ff09",
+        "revCount": 2130,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/model-checking/kani"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "96f7e59a8c8058f3edbdcc4d52940e376d54ff09",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/model-checking/kani"
+      }
+    },
+    "kani-tarball": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1751573292,
+        "narHash": "sha256-RP38iCbQWoQyAYtq2Nnkm6iFhXtVQ4rbHaKyCFMcIsQ=",
+        "type": "tarball",
+        "url": "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz"
+      }
+    },
     "lla": {
       "inputs": {
         "naersk": "naersk",
@@ -1359,6 +1392,8 @@
         "astal": "astal_2",
         "home-manager": "home-manager",
         "hypr-utils": "hypr-utils",
+        "kani-repo": "kani-repo",
+        "kani-tarball": "kani-tarball",
         "lla": "lla",
         "mac-app-util": "mac-app-util",
         "neovim-nightly-overlay": "neovim-nightly-overlay",

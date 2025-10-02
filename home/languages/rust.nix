@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   home.packages = with pkgs;
@@ -23,6 +24,10 @@
       cargo-expand
       cargo-release
       cargo-flamegraph
+
+      (pkgs.callPackage ./rust-kani.nix {
+        inherit (inputs) rust-overlay kani-tarball kani-repo;
+      })
 
       bacon
       rusty-man
