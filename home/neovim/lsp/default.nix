@@ -74,6 +74,7 @@
     servers.nushell.enable = true;
     servers.qmlls.enable = true;
     servers.cue.enable = true;
+    servers.asm_lsp.enable = true;
 
   };
 

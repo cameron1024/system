@@ -18,5 +18,8 @@ in {
     rquickshare
     deluge
     google-chrome
+
+    signal-cli
+    signal-desktop
   ]);
 }

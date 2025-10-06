@@ -29,6 +29,9 @@
         inherit (inputs) rust-overlay kani-tarball kani-repo;
       })
 
+      perf
+      rr
+
       bacon
       rusty-man
 
