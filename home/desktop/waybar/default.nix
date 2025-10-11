@@ -16,6 +16,18 @@
     @define-color pink ${base0F};
     @define-color yellow ${base0B};
   '';
+
+  githubNotifications = pkgs.writeShellApplication  {
+    name = "github-notifications.sh";
+    runtimeInputs = with pkgs; [
+      gh
+      jq
+    ];
+
+    text = ''
+      gh 
+    '';
+  };
 in
   with lib; {
     options.programs'.waybar = {
@@ -141,6 +153,10 @@ in
             "custom/powermenu" = {
               format = "󱄅";
               on-click-right = "randomWallpaper.sh";
+            };
+
+            "custom/github" = {
+              format = " {}";
             };
           };
         };

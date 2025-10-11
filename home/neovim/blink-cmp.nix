@@ -1,4 +1,4 @@
-let
+{pkgs, ...}:let
   enable = true;
   lazyLoad = {
     enable = true;

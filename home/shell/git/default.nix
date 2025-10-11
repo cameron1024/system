@@ -83,6 +83,9 @@
 
   programs.gh = {
     enable = true;
+    extensions = with pkgs; [
+      gh-notify
+    ];
   };
 
   programs.gh-dash.enable = true;

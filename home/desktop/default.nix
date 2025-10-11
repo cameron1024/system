@@ -12,6 +12,7 @@ with lib; {
     ./lock
     ./power-menu.nix
     ./waybar
+    ./walker.nix
     ./rofi
     ./quickshell
   ];
