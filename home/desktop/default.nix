@@ -10,6 +10,7 @@ with lib; {
     ./audio.nix
     ./gtk.nix
     ./lock
+    ./one-password.nix
     ./power-menu.nix
     ./waybar
     ./walker.nix

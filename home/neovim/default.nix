@@ -9,4 +9,5 @@
   ];
 
   config.programs.nixvim = ./module.nix;
+  config.home.packages = with pkgs; [nil nixd];
 }
