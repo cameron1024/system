@@ -53,6 +53,9 @@
 
     kani-tarball.url = "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz";
     kani-tarball.flake = false;
+
+    zed.url = "github:zed-industries/zed";
+    zed.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

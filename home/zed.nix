@@ -1,5 +1,5 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [zed-editor];
+{inputs, pkgs, ...}: {
+  home.packages = [inputs.zed.packages.${pkgs.system}.default];
 
   xdg.desktopEntries.zed = {
     name = "zed";

@@ -15,7 +15,7 @@ with lib; {
 
     programs.rofi = {
       enable = true;
-      package = pkgs.rofi-wayland;
+      # package = pkgs.rofi-wayland;
       cycle = true;
       font = "Fira Code NerdFont";
       location = "left";
