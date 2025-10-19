@@ -8,7 +8,7 @@
 }:
 with lib; {
   imports = [
-    ../hyprland/wallpaper
+    # ../hyprland/wallpaper
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
     ../desktop

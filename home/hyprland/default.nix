@@ -17,7 +17,7 @@ with lib; {
     ./notifications.nix
     ./widgets
     ./windowing
-    ./wallpaper
+    # ./wallpaper
     # ./walker.nix
     ./screenshot.nix
     ./quake-term.nix

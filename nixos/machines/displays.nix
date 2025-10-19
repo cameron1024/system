@@ -4,8 +4,20 @@
     resolution.width = 2880;
     resolution.height = 1800;
 
-    position.x = 1440;
-    position.y = 0;
+    position.x = 0;
+    position.y = 1440;
+
+    refreshRate = 120;
+    scale = 1;
+    oled = true;
+  };
+  frameworkBuiltin = {
+    name = "eDP-1";
+    resolution.width = 2880;
+    resolution.height = 1920;
+
+    position.x = 0;
+    position.y = 1440;
 
     refreshRate = 120;
     scale = 1;

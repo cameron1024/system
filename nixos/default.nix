@@ -51,6 +51,39 @@
         ]);
     };
 in {
+  framework = mkSystem {
+    system = "x86_64-linux";
+    spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
+    homeModules = [
+      {
+        home.stateVersion = "25.05";
+      }
+    ];
+    modules = [
+      ./hardware/framework.nix
+      {
+        system.stateVersion = "25.05";
+        services'.standardMachine.enable = true;
+        services'.standardMachine.zenKernel = true;
+        gpu'.arch = "intel";
+
+        boot.loader.efi.efiSysMountPoint = "/boot";
+
+        networking.hostName = "framework";
+
+        programs'.niri.enable = true;
+        services'.desktop.isLaptop = true;
+        services'.desktop.displays = with import ./machines/displays.nix; [
+          frameworkBuiltin
+          (rog
+            // {
+              name = "DP-10";
+              refreshRate = 143.985;
+            })
+        ];
+      }
+    ];
+  };
   thinkchad = mkSystem {
     system = "x86_64-linux";
     spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
@@ -75,8 +108,11 @@ in {
         services'.desktop.isLaptop = true;
         services'.desktop.displays = with import ./machines/displays.nix; [
           thinkpadBuiltin
-          (rog // {name = "DP-6"; refreshRate = 60;})
-
+          (rog
+            // {
+              name = "DP-6";
+              refreshRate = 60;
+            })
         ];
 
         programs.steam.enable = true;
@@ -91,7 +127,6 @@ in {
       {
         home.stateVersion = "25.11";
         programs'.deployment-tools.enable = true;
-
       }
     ];
     modules = [
@@ -134,8 +169,7 @@ in {
     extraOverlays = [
       # rpi kernel has some missing kernel modules - build fails without this
       (final: super: {
-        makeModulesClosure = x:
-          super.makeModulesClosure (x // {allowMissing = true;});
+        makeModulesClosure = x: super.makeModulesClosure (x // {allowMissing = true;});
       })
     ];
     modules = [
@@ -149,7 +183,11 @@ in {
 
         users.users."cameron" = {
           isNormalUser = true;
-          extraGroups = ["wheel" "networkmanager" "video"];
+          extraGroups = [
+            "wheel"
+            "networkmanager"
+            "video"
+          ];
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII0+Mt9HeGZy7gpWXEn4WABPWO4jAWR3r24wlhW8bsIh cameron@mini"
           ];

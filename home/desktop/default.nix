@@ -16,6 +16,7 @@ with lib; {
     ./walker.nix
     ./rofi
     ./quickshell
+    ./wallpaper.nix
   ];
 
   options = {

@@ -32,4 +32,9 @@ in {
     id = "1w1c20wUZv9b5O7yqGvAtIdFOxgIBQxTV";
     hash = "sha256-v4Jr7cTzqpa63pnbOzG9yx5iWGUJEMooJ2B6upBcaRA=";
   };
+
+  darkForest = fetchDrive {
+    id = "11KYtodciqeveLwql0FOtcsJquh6RWjf5";
+    hash = "sha256-6ZLsZjDNrlg8asdXh9jxyYfkltPu+EOKuFXEOM2To/Q=";
+  };
 }
