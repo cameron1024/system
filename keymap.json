@@ -7,22 +7,6 @@
 // from the command palette.
 [
   {
-    "context": "Editor && vim_mode != insert",
-    "bindings": {
-      "space q": "pane::CloseActiveItem",
-      "space n": "file_finder::Toggle",
-      "space f": "project_search::ToggleFocus",
-      "space i": "editor::ToggleInlayHints",
-      "ctrl-h": "workspace::ActivatePaneLeft",
-      "ctrl-l": "workspace::ActivatePaneRight",
-      "ctrl-j": "workspace::ActivatePaneDown",
-      "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-v": "pane::SplitRight",
-      "ctrl-x": "pane::SplitDown"
-      
-    }
-  },
-  {
     "context": "Editor && vim_mode == insert",
     "bindings": {
       "ctrl-h": "vim::Left",
@@ -36,10 +20,29 @@
     "bindings": {
       "enter": "editor::SelectLargerSyntaxNode",
       "backspace": "editor::SelectSmallerSyntaxNode",
-      "H": "editor::MoveToBeginningOfLine",
-      "L": "editor::MoveToEndOfLine",
+      "H": "vim::StartOfLineDownward",
+      "L": "vim::EndOfLine",
       "ctrl-b": "editor::GoToPreviousDiagnostic",
       "ctrl-n": "editor::GoToDiagnostic",
+      "g i": "editor::GoToImplementation",
+      "g t": "editor::GoToTypeDefinition",
+      "g r r": "editor::FindAllReferences",
+      "space q": "pane::CloseActiveItem",
+      "space n": "file_finder::Toggle",
+      "space f": "project_search::ToggleFocus",
+      // "space i": "editor::ToggleInlayHints",
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-v": "pane::SplitRight",
+      "ctrl-x": "pane::SplitDown"
+    }
+  },
+  {
+    "context": "((Editor && vim_mode == normal) || ProjectPanel)",
+    "bindings": {
+      "space p": "project_panel::ToggleFocus"
     }
   },
   {

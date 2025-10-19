@@ -7,46 +7,75 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "collaboration_panel": {
+    "dock": "right"
+  },
+  "disable_ai": true,
+  "edit_predictions": {
+    "mode": "subtle"
+  },
+  "use_system_prompts": true,
   "active_pane_modifiers": {
     "inactive_opacity": 0.7
   },
   "hover_popover_enabled": false,
   "diagnostics": {
-  	"button": true,
-  	"include_warnings": true,
-  	"lsp_pull_diagnostics": {
-  		"enabled": true,
-  		"debounce_ms": 50
-  	},
-  	"inline": {
-  		"enabled": true,
-  		"update_debounce_ms": 150,
-  		"padding": 4,
-  		"min_column": 0,
-  		"max_severity": null
-  	}
-  },
-  "vim_mode": true,
-  "ui_font_size": 24,
-  "buffer_font_size": 24,
-  "buffer_font_family": "FiraCode Nerd Font",
-  "ui_font_family": "Josefin Sans",
-  "autosave": {
-    "after_delay": {
-      "milliseconds": 0
+    "button": true,
+    "include_warnings": true,
+    "lsp_pull_diagnostics": {
+      "enabled": true,
+      "debounce_ms": 50
+    },
+    "inline": {
+      "enabled": true,
+      "update_debounce_ms": 150,
+      "padding": 4,
+      "min_column": 0,
+      "max_severity": null
     }
   },
+  "vim_mode": true,
+  "ui_font_size": 18,
+  "buffer_font_size": 18,
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 102
+    }
+  },
+  "relative_line_numbers": true,
   "terminal": {
     "shell": {
       "program": "fish"
     }
   },
-  "disable_ai": true,
+  "use_system_path_prompts": false,
+  
+  
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        // "checkOnSave": false,
+        "check": {
+          "overrideCommand": ["cargo", "build", "--message-format=json"]
+        }
+      }
+    }
+  },
+  
+  /* ============= */ 
+  /* === THEME === */ 
+  
+  "buffer_font_family": "FiraCode Nerd Font",
+  "ui_font_family": "Josefin Sans",
   "theme": {
     "mode": "dark",
     "light": "Everforest Dark",
     "dark": "Everforest Dark"
   }
   
-  
+  // "theme": {
+  //   "mode": "dark",
+  //   "light": "One Light",
+  //   "dark": "One Dark"
+  // },
 }
