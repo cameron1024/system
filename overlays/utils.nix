@@ -3,15 +3,6 @@ final: prev: {
   euphonica = final.callPackage ./packages/euphonica.nix {};
   material-rounded = final.callPackage ./packages/material-rounded.nix {};
 
-  fetchDrive = {
-    id,
-    hash,
-  }: pkgs:
-    pkgs.fetchurl {
-      inherit hash;
-      url = "https://drive.usercontent.google.com/download?id=${id}";
-    };
-
   wrapWithNixGL = {
     name,
     package ? null,

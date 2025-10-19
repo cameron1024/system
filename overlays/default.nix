@@ -34,4 +34,5 @@ in
   ++ [
     inputs.nixgl.overlay
     (import ./utils.nix)
+    (import ./wallpapers.nix)
   ]

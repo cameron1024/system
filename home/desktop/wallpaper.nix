@@ -4,16 +4,19 @@
   config,
   ...
 }: let
-  wallpaper = config.services'.desktop.wallpaper;
+  wallpapers = config.services'.desktop.wallpapers;
   setWallpaper = pkgs.writeShellApplication {
     name = "set-wallpaper.sh";
-    runtimeInputs = with pkgs; [
-      swww
-      wallpaper
+    runtimeInputs = [
+      pkgs.swww
+      wallpapers
     ];
     text = ''
-      
-      ln -sf ${wallpaper} "$HOME/.wallpaper"
+      CURRENT=$(readlink -f "$HOME/.wallpaper")
+      WALLPAPER=$(find ${wallpapers}/* ! -path "$CURRENT" | shuf -n 1)
+      >&2 echo "wallpaper: $WALLPAPER" 
+
+      ln -sf "$WALLPAPER" "$HOME/.wallpaper"
       swww img "$HOME/.wallpaper" \
         --resize crop \
         --transition-fps 120 \
@@ -24,9 +27,9 @@
   };
 in {
   options = with lib; {
-    services'.desktop.wallpaper = mkOption {
+    services'.desktop.wallpapers = mkOption {
       type = types.package;
-      default = (import ../../nixos/machines/wallpapers.nix).darkForest pkgs;
+      default = pkgs.wallpapers.all;
     };
   };
 

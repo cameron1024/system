@@ -152,7 +152,7 @@ in
 
             "custom/powermenu" = {
               format = "󱄅";
-              on-click-right = "randomWallpaper.sh";
+              on-click-right = "set-wallpaper.sh";
             };
 
             "custom/github" = {
