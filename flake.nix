@@ -17,17 +17,6 @@
     rustaceanvim.url = "github:mrcjkb/rustaceanvim";
     rustaceanvim.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-darwin.url = "github:LnL7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-
-    mac-app-util.url = "github:hraban/mac-app-util";
-
-    astal.url = "github:Aylur/astal";
-    astal.inputs.nixpkgs.follows = "nixpkgs";
-
-    ags.url = "github:aylur/ags";
-    ags.inputs.nixpkgs.follows = "nixpkgs";
-
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -43,11 +32,6 @@
 
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-ai-tools.url = "github:numtide/nix-ai-tools";
-
-    quickshell.url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
-    quickshell.inputs.nixpkgs.follows = "nixpkgs";
 
     kani-repo.url = "git+https://github.com/model-checking/kani?ref=main&rev=96f7e59a8c8058f3edbdcc4d52940e376d54ff09&submodules=1";
     kani-repo.flake = false;
@@ -161,27 +145,6 @@
 
     nixosConfigurations = import ./nixos {
       inherit inputs;
-    };
-
-    darwinConfigurations."DTO-A032" = inputs.nix-darwin.lib.darwinSystem rec {
-      pkgs = import inputs.nixpkgs {
-        system = "aarch64-darwin";
-        config.allowUnfree = true;
-        overlays = import ./overlays {inherit inputs;};
-      };
-      specialArgs = {
-        inherit inputs;
-        machine = import ./nixos/machines/specs/macbook.nix;
-      };
-      modules = [
-        inputs.home-manager.darwinModules.home-manager
-        ./mac
-        {
-          home-manager.users.cameron = import ./home;
-          home-manager.extraSpecialArgs = specialArgs;
-          home-manager.backupFileExtension = "backup";
-        }
-      ];
     };
 
     devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};

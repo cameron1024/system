@@ -1,12 +1,10 @@
 {
-  inputs,
   pkgs,
   config,
   lib,
   ...
 }: {
   imports = [
-    inputs.mac-app-util.homeManagerModules.default
     ./internet
     ./mac
     ./neovim

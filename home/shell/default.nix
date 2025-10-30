@@ -18,7 +18,6 @@
     ./previewers.nix
     ./nix.nix
     ./bat.nix
-    ./ai.nix
 
     ./system
   ];
