@@ -14,9 +14,6 @@
 
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
-    rustaceanvim.url = "github:mrcjkb/rustaceanvim";
-    rustaceanvim.inputs.nixpkgs.follows = "nixpkgs";
-
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
