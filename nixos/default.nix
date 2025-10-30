@@ -65,7 +65,7 @@ in {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = true;
-        gpu'.arch = "intel";
+        gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
 
@@ -81,6 +81,9 @@ in {
               refreshRate = 143.985;
             })
         ];
+
+        services'.ai.enable = true;
+        services'.ai.ollama.enable = false;
       }
     ];
   };

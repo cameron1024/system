@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }:
 with lib; {
@@ -37,6 +38,7 @@ with lib; {
       libnotify
       wl-clipboard
       google-chrome
+      inputs.hexecute.packages.${pkgs.system}.default
     ]) else[];
   };
 }

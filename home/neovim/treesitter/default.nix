@@ -68,41 +68,43 @@ in {
   plugins.treesitter-textobjects = {
     enable = true;
 
-    select.enable = true;
-    select.disable = ["dart"];
-    select.lookahead = true;
-    select.keymaps = {
-      "af" = {
-        query = "@function.outer";
-        desc = "Around Function";
-      };
-      "if" = {
-        query = "@function.inner";
-        desc = "In Function";
-      };
-      "ac" = {
-        query = "@class.outer";
-        desc = "Around Class";
-      };
-      "ic" = {
-        query = "@class.inner";
-        desc = "In Class";
-      };
-      "aa" = {
-        query = "@parameter.outer";
-        desc = "Around Argument";
-      };
-      "ia" = {
-        query = "@parameter.inner";
-        desc = "In Argument";
-      };
-      "ar" = {
-        query = "@assignment.rhs";
-        desc = "Assignment RHS";
-      };
-      "at" = {
-        query = "@type";
-        desc = "Type";
+    settings = {
+      select.enable = true;
+      select.disable = ["dart"];
+      select.lookahead = true;
+      select.keymaps = {
+        "af" = {
+          query = "@function.outer";
+          desc = "Around Function";
+        };
+        "if" = {
+          query = "@function.inner";
+          desc = "In Function";
+        };
+        "ac" = {
+          query = "@class.outer";
+          desc = "Around Class";
+        };
+        "ic" = {
+          query = "@class.inner";
+          desc = "In Class";
+        };
+        "aa" = {
+          query = "@parameter.outer";
+          desc = "Around Argument";
+        };
+        "ia" = {
+          query = "@parameter.inner";
+          desc = "In Argument";
+        };
+        "ar" = {
+          query = "@assignment.rhs";
+          desc = "Assignment RHS";
+        };
+        "at" = {
+          query = "@type";
+          desc = "Type";
+        };
       };
     };
   };
@@ -167,5 +169,4 @@ in {
       action = "<cmd>AerialToggle<cr>";
     }
   ];
-
 }

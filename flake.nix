@@ -35,6 +35,7 @@
     lla.inputs.nixpkgs.follows = "nixpkgs";
 
     nixvim.url = "github:nix-community/nixvim";
+    nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     sherlock.url = "github:Skxxtz/sherlock";
 
@@ -56,6 +57,8 @@
 
     zed.url = "github:zed-industries/zed";
     zed.inputs.nixpkgs.follows = "nixpkgs";
+
+    hexecute.url = "github:ThatOtherAndrew/Hexecute";
   };
 
   outputs = inputs: let
