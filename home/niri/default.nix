@@ -28,6 +28,8 @@ with lib; {
       wl-clipboard
       xwayland-satellite
       material-icons
+      niriswitcher
+      glib
     ];
 
     home.pointerCursor = {
@@ -69,5 +71,6 @@ with lib; {
 
         ${config.programs'.niri.extraConfig}
       '';
+
   };
 }

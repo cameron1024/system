@@ -50,18 +50,12 @@
         overlays = import ./overlays {inherit inputs;};
         config.allowUnfree = true;
       };
-      nixvim = inputs.nixvim.legacyPackages.${system};
-      nixvimModule = {
+    in
+      inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
         inherit pkgs;
         extraSpecialArgs = {inherit inputs;};
-        module = {
-          imports = [./home/neovim/module.nix];
-          # colorschemes.everforest.enable = true;
-          # colorscheme = "everforest";
-        };
+        module.imports = [./home/neovim/module.nix];
       };
-    in
-      nixvim.makeNixvimWithModule nixvimModule;
     mkDevShell = {system}: let
       pkgs = import inputs.nixpkgs {
         inherit system;
@@ -72,20 +66,17 @@
         packages =
           if system == "aarch64-darwin"
           then [
-            (pkgs.writeShellScriptBin 
+            (pkgs.writeShellScriptBin
+              "s"
+              ''
+                cd $(git rev-parse --show-toplevel)
 
-            "s" 
-
-
-            ''
-              cd $(git rev-parse --show-toplevel)
-
-              git add -A
-              sudo nix run nix-darwin \
-                --extra-experimental-features flakes \
-                --extra-experimental-features nix-command \
-                -- switch --flake .
-            '')
+                git add -A
+                sudo nix run nix-darwin \
+                  --extra-experimental-features flakes \
+                  --extra-experimental-features nix-command \
+                  -- switch --flake .
+              '')
           ]
           else [
             (pkgs.writeShellScriptBin "s" ''

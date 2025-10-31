@@ -278,6 +278,7 @@ spawn-at-startup "swww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayosd-server"
+spawn-at-startup "niriswitcher"
 
 environment {
   // required for xwayland-satellite
@@ -507,7 +508,8 @@ binds {
 
 
     // Switches focus between the current and the previous workspace.
-    Alt+Tab { focus-workspace-previous; }
+    Alt+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
+    Alt+Shift+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
 
     // The following binds move the focused window in and out of a column.
     // If the window is alone, they will consume it into the nearby column to the side.
