@@ -278,6 +278,8 @@ spawn-at-startup "swww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayosd-server"
+spawn-at-startup "niriswitcher"
+spawn-at-startup "wayscriber" "--daemon"
 
 environment {
   // required for xwayland-satellite
@@ -391,6 +393,7 @@ binds {
     // Mod-Shift-/, which is usually the same as Mod-?,
     // shows a list of important hotkeys.
     Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+Backslash { spawn "hexecute"; }
 
     Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
     Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
@@ -400,7 +403,8 @@ binds {
     Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
     Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+S { set-dynamic-cast-window; }
-    Mod+D { clear-dynamic-cast-target; }
+    Mod+Ctrl+S { clear-dynamic-cast-target; }
+    Mod+D { spawn "wayscriber" "-a"; }
 
     // You can also use a shell. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument in the end.
@@ -506,7 +510,8 @@ binds {
 
 
     // Switches focus between the current and the previous workspace.
-    Alt+Tab { focus-workspace-previous; }
+    Alt+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
+    Alt+Shift+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
 
     // The following binds move the focused window in and out of a column.
     // If the window is alone, they will consume it into the nearby column to the side.

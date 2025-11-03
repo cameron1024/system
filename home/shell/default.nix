@@ -18,7 +18,6 @@
     ./previewers.nix
     ./nix.nix
     ./bat.nix
-    ./ai.nix
 
     ./system
   ];
@@ -92,13 +91,15 @@
 
         fblog
         asciinema
+
+        procs
       ]
       ++ (lib.optionals (pkgs.stdenv.isLinux) [
         wl-clipboard
       ])
       ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
         pcmanfm
-        gcc
+        # gcc
       ]);
 
       programs.nix-index.enable = true;

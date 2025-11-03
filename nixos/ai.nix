@@ -7,17 +7,22 @@
 with lib; {
   options = {
     services'.ai.enable = mkEnableOption "AI stuff";
+    services'.ai.ollama.enable = mkOption {
+      default = config.services'.ai.enable;
+    };
   };
   config = mkIf config.services'.ai.enable {
-    services.ollama.enable = true;
-    services.ollama.package = pkgs.ollama-rocm;
-    services.ollama.host = "0.0.0.0";
-    services.ollama.openFirewall = true;
-    services.ollama.environmentVariables = {
-      "OLLAMA_KEEP_ALIVE" = "2h";
-      "OLLAMA_NUM_PARALLEL" = "5";
-      "OLLAMA_NOHISTORY" = "true";
-      "OLLAMA_MAX_LOADED_MODELS" = "2";
+    services.ollama = mkIf config.services'.ai.ollama.enable {
+      enable = true;
+      package = pkgs.ollama-rocm;
+      host = "0.0.0.0";
+      openFirewall = true;
+      environmentVariables = {
+        "OLLAMA_KEEP_ALIVE" = "2h";
+        "OLLAMA_NUM_PARALLEL" = "5";
+        "OLLAMA_NOHISTORY" = "true";
+        "OLLAMA_MAX_LOADED_MODELS" = "2";
+      };
     };
 
     # services.open-webui = {

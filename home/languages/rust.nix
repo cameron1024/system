@@ -41,6 +41,8 @@
 
       mdbook
 
+      clang
+
       python3 # needed for cargo-kani
     ]
     ++ (lib.optionals stdenv.isLinux [

@@ -69,6 +69,28 @@ final: prev: {
       };
     };
 
+  wayscriber = prev.rustPlatform.buildRustPackage rec {
+    name = "wayscriber";
+    version = "0.0.0";
+    src = prev.fetchFromGitHub {
+      owner = "devmobasa";
+      repo = "wayscriber";
+      rev = "a7c5e488b8a58ce3abfc9d9f2214e51f47cc2c56";
+      hash = "sha256-whYrvShYBUdhSlFaWV07K/FGWxYGBySlxw06fEfutag=";
+    };
+    cargoLock.lockFile = "${src}/Cargo.lock";
+
+    nativeBuildInputs = with prev; [
+      pkg-config
+    ];
+
+    buildInputs = with prev; [
+      libxkbcommon
+      glib
+      cairo
+      pango
+    ];
+  };
 
   writeShellScriptNu = name: script: let
     scriptFile = final.writeText "script.nu" script;

@@ -28,6 +28,9 @@ with lib; {
       wl-clipboard
       xwayland-satellite
       material-icons
+      niriswitcher
+      glib
+      wayscriber
     ];
 
     home.pointerCursor = {
@@ -35,7 +38,7 @@ with lib; {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
     };
-
+    
 
     xdg.configFile."niri/config.kdl".text = let
       formatDisplay = {
