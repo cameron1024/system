@@ -279,6 +279,7 @@ spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayosd-server"
 spawn-at-startup "niriswitcher"
+spawn-at-startup "wayscriber" "--daemon"
 
 environment {
   // required for xwayland-satellite
@@ -402,7 +403,8 @@ binds {
     Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
     Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+S { set-dynamic-cast-window; }
-    Mod+D { clear-dynamic-cast-target; }
+    Mod+Ctrl+S { clear-dynamic-cast-target; }
+    Mod+D { spawn "wayscriber" "-a"; }
 
     // You can also use a shell. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument in the end.

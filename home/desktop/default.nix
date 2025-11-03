@@ -5,6 +5,7 @@
   inputs,
   ...
 }:
+
 with lib; {
   imports = [
     ./ai.nix
@@ -34,11 +35,15 @@ with lib; {
 
     xdg.userDirs.enable = true;
 
-    home.packages = if pkgs.stdenv.isLinux then (with pkgs; [
-      libnotify
-      wl-clipboard
-      google-chrome
-      inputs.hexecute.packages.${pkgs.system}.default
-    ]) else[];
+    home.packages =
+      if pkgs.stdenv.isLinux
+      then
+        (with pkgs; [
+          libnotify
+          wl-clipboard
+          google-chrome
+          inputs.hexecute.packages.${pkgs.system}.default
+        ])
+      else [];
   };
 }
