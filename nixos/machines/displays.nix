@@ -51,7 +51,7 @@
   };
 
   alien = {
-    name = "DP-2";
+    name = "DP-1";
     resolution.width = 2560;
     resolution.height = 1440;
 

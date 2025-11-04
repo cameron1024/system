@@ -100,17 +100,17 @@ in {
       {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
-        services'.standardMachine.zenKernel = true;
-        gpu'.arch = "intel";
+        services'.standardMachine.zenKernel = false;
+        gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
 
         networking.hostName = "fast";
 
         programs'.niri.enable = true;
-        services'.desktop.isLaptop = true;
+        services'.desktop.isLaptop = false;
         services'.desktop.displays = with import ./machines/displays.nix; [
-          (alien // { name = "HDMI-A-1"; refreshRate = 143.998; })
+          alien
           # (rog
           #   // {
           #     name = "DP-10";
