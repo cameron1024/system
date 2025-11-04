@@ -1,11 +1,4 @@
 {
-  "agent": {
-    "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4"
-    },
-    "model_parameters": []
-  },
   "project_panel": {
     "indent_guides": {
       "show": "always"
@@ -16,7 +9,7 @@
   "collaboration_panel": {
     "dock": "right"
   },
-  // "disable_ai": true,
+  "disable_ai": true,
   "edit_predictions": {
     "mode": "subtle"
   },
@@ -40,12 +33,15 @@
       "max_severity": null
     }
   },
-  "vim_mode": true,
+  "vim_mode": false,
+  "ui_font_size": 18,
+  "buffer_font_size": 18,
   "autosave": {
     "after_delay": {
       "milliseconds": 100
     }
   },
+  "relative_line_numbers": true,
   "terminal": {
     "shell": "system"
   },
@@ -68,18 +64,11 @@
   /* === THEME === */
 
   "buffer_font_family": "FiraCode Nerd Font",
-  "buffer_font_size": 24,
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 24,
   "theme": {
     "mode": "dark",
     "light": "Everforest Dark",
     "dark": "Everforest Dark Hard"
-  },
-  // lighter green than fallback #193b2d44
-  // lighter blue than fallback #11326444
-  "experimental.theme_overrides": {
-    // "editor.foreground": "#FF0000",
   }
 
   // "theme": {

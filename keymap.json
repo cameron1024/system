@@ -50,5 +50,11 @@
     "bindings": {
       "S": "vim::PushAddSurrounds"
     }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "alt-shift-f": "editor::Format"
+    }
   }
 ]
