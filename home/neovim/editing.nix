@@ -24,8 +24,8 @@ in {
   plugins.todo-comments.lazyLoad.settings.event = "BufReadPost";
 
   plugins.marks.enable = true;
-  plugins.marks.cyclic = true;
-  plugins.marks.defaultMappings = true;
+  plugins.marks.settings.cyclic = true;
+  plugins.marks.settings.defaultMappings = true;
 
   plugins.undotree.enable = true;
 

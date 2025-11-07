@@ -149,9 +149,7 @@ in {
 
       settings = {
         trusted-users = ["root" "@wheel" "cameron"];
-        substituters = ["https://hyprland.cachix.org"];
         trusted-public-keys = [
-          "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
           "mini:DD2Jy+6Pb/gCpgACueQupEUUAl0cpzTy5zff94KIZxk="
         ];
         system-features =

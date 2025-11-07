@@ -8,10 +8,12 @@
 }:
 with lib; {
   imports = [
-    # ../hyprland/wallpaper
+    ./screenshot.nix
+
     ../hyprland/notifications.nix
     ../hyprland/hardware.nix
     ../desktop
+
   ];
 
   options.programs'.niri = {

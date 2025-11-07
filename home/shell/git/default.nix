@@ -10,6 +10,11 @@
     delta
   ];
 
+  programs.difftastic.enable = true;
+  programs.difftastic.options.display = "inline";
+  programs.difftastic.git.enable = true;
+  programs.difftastic.git.diffToolMode = true;
+
   programs.lazygit = {
     enable = true;
     settings = {
@@ -53,14 +58,12 @@
     enable = true;
     lfs.enable = true;
 
-    userName = lib.mkDefault "cameron";
-    userEmail = lib.mkDefault "cameron.studdstreet@gmail.com";
-
     # delta.enable = true;
-    difftastic.enable = true;
-    difftastic.display = "inline";
 
-    extraConfig = {
+    settings = {
+      user.name = lib.mkDefault "cameron";
+      user.email = lib.mkDefault "cameron.studdstreet@gmail.com";
+
       core = {
         editor = "nvim";
         attributesFile = "~/.gitattributes";

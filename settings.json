@@ -76,11 +76,6 @@
     "light": "Everforest Dark",
     "dark": "Everforest Dark Hard"
   },
-  // lighter green than fallback #193b2d44
-  // lighter blue than fallback #11326444
-  "experimental.theme_overrides": {
-    // "editor.foreground": "#FF0000",
-  }
 
   // "theme": {
   //   "mode": "dark",

@@ -111,11 +111,7 @@ in {
         services'.desktop.isLaptop = false;
         services'.desktop.displays = with import ./machines/displays.nix; [
           alien
-          # (rog
-          #   // {
-          #     name = "DP-10";
-          #     refreshRate = 143.985;
-          #   })
+          rog
         ];
       }
     ];

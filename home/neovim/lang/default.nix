@@ -10,6 +10,7 @@
     ./raku.nix
     ./ron.nix
     ./rust.nix
+    ./python.nix
     ./toml.nix
     ./typescript.nix
     ./typst.nix
