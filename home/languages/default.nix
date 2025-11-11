@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   imports = [
+    ./c.nix
     ./rust.nix
     ./flutter.nix
     ./funky.nix

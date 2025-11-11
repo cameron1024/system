@@ -70,11 +70,11 @@
     servers.nil_ls.enable = true;
     servers.bashls.enable = true;
     servers.lemminx.enable = true;
-    servers.sourcekit.enable = true;
     servers.nushell.enable = true;
     servers.qmlls.enable = true;
     servers.cue.enable = true;
     servers.asm_lsp.enable = true;
+    servers.clangd.enable = true;
 
   };
 
