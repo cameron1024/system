@@ -93,6 +93,7 @@
         asciinema
 
         procs
+        colorized-logs
       ]
       ++ (lib.optionals (pkgs.stdenv.isLinux) [
         wl-clipboard

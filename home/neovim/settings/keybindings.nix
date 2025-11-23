@@ -123,5 +123,9 @@
         end
       '';
     }
+    {
+      key = "<C-d>";
+      action = "<cmd>nohl<cr>";
+    }
   ];
 }

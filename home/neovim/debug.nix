@@ -1,6 +1,6 @@
 {
     plugins.dap = {
-      enable = true;
+      enable = false;
       lazyLoad.enable = true;
       lazyLoad.settings.keys = [
         {

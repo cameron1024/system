@@ -34,4 +34,6 @@
     ]
     else []
   );
+
+  programs.obs-studio.enable = true;
 }

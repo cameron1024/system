@@ -33,7 +33,17 @@ with lib; {
     programs'.rofi.enable = true;
     programs'.departure.enable = true;
 
-    xdg.userDirs.enable = true;
+    services.darkman.enable = true;
+
+    xdg = {
+      enable = true;
+      userDirs.enable = true;
+      portal.enable = true;
+      portal.extraPortals = with pkgs; [
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal-gtk
+      ];
+    };
 
     home.packages =
       if pkgs.stdenv.isLinux
