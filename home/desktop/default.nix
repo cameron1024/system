@@ -5,19 +5,20 @@
   inputs,
   ...
 }:
-
 with lib; {
   imports = [
+    inputs.noctalia.homeModules.default
+
     ./ai.nix
     ./audio.nix
     ./gtk.nix
     ./lock
+    ./noctalia.nix
     ./one-password.nix
     ./power-menu.nix
     ./waybar
     ./walker.nix
     ./rofi
-    ./quickshell
     ./wallpaper.nix
   ];
 

@@ -14,7 +14,7 @@ final: prev: let
       version = "0.0.0";
       phases = ["installPhase"];
       installPhase = let
-        mapToCp = name: wallpaper: "cp ${toString wallpaper} $out/${name}";
+        mapToCp = name: wallpaper: "cp ${toString wallpaper} $out/${name}.png";
         script = builtins.concatStringsSep "\n" (final.lib.mapAttrsToList mapToCp wallpapers);
       in ''
         mkdir -p $out

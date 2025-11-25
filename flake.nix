@@ -40,6 +40,9 @@
     zed.inputs.nixpkgs.follows = "nixpkgs";
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
+
+    noctalia.url = "github:noctalia-dev/noctalia-shell";
+    noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

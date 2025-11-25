@@ -8,8 +8,12 @@ hotkey-overlay {
 }
 
 overview {
-  zoom 0.5
-  backdrop-color "#1e2428"
+  zoom 0.33
+  // backdrop-color "#1e2428"
+}
+layer-rule {
+  match namespace="^noctalia-overview*"
+  place-within-backdrop true
 }
 
 clipboard {
@@ -382,6 +386,7 @@ window-rule {
     clip-to-geometry true
 }
 
+
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
@@ -398,13 +403,27 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Backslash { spawn "hexecute"; }
 
-    Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
-    Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
+    // Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
+    // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }
 
-    Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
-    Mod+N { spawn "swaync-client" "-t" "-sw"; }
+    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    // Mod+S { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
+    // Mod+Comma { spawn "noctalia-shell" "ipc" "call" "settings" "toggle"; }
+
+    // Audio controls
+    XF86AudioRaiseVolume { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
+    XF86AudioLowerVolume { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
+    XF86AudioMute { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+
+    // Brightness controls
+    XF86MonBrightnessUp { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
+    XF86MonBrightnessDown { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+    // Mod+N { spawn "swaync-client" "-t" "-sw"; }
+    Mod+B { spawn "noctalia-shell" "ipc" "call" "bar" "toggle"; }
+    Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"; }
+    // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+S { set-dynamic-cast-window; }
     Mod+Ctrl+S { clear-dynamic-cast-target; }
     Mod+D { spawn "wayscriber" "-a"; }
@@ -415,12 +434,12 @@ binds {
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
-    XF86AudioRaiseVolume  allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
-    XF86AudioLowerVolume  allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
-    XF86AudioMute         allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
-    XF86AudioMicMute      allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
-    XF86MonBrightnessUp   allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
+    // XF86AudioRaiseVolume  allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
+    // XF86AudioLowerVolume  allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
+    // XF86AudioMute         allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
+    // XF86AudioMicMute      allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
+    // XF86MonBrightnessUp   allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
+    // XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
 
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
