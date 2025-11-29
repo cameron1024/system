@@ -30,7 +30,6 @@ with lib; {
       wl-clipboard
       xwayland-satellite
       material-icons
-      niriswitcher
       glib
       wayscriber
     ];

@@ -113,6 +113,8 @@ in {
           alien
           rog
         ];
+
+        programs.steam.enable = true;
       }
     ];
   };

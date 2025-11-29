@@ -33,7 +33,7 @@ input {
     keyboard {
         xkb {
             layout "gb"
-            options "ctrl:nocaps"
+            // options "ctrl:nocaps"
         }
 
         repeat-delay 300
@@ -280,12 +280,12 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
-spawn-at-startup "waybar"
+spawn-at-startup "noctalia-shell"
+// spawn-at-startup "waybar"
 spawn-at-startup "swww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
-spawn-at-startup "swayosd-server"
-spawn-at-startup "niriswitcher"
+// spawn-at-startup "swayosd-server"
 spawn-at-startup "wayscriber" "--daemon"
 
 environment {
@@ -529,11 +529,6 @@ binds {
     Mod+Shift+7 { move-column-to-workspace 7; }
     Mod+Shift+8 { move-column-to-workspace 8; }
     Mod+Shift+9 { move-column-to-workspace 9; }
-
-
-    // Switches focus between the current and the previous workspace.
-    Alt+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
-    Alt+Shift+Tab repeat=false { spawn "gdbus" "call" "--session" "--dest" "io.github.isaksamsten.Niriswitcher" "--object-path" "/io/github/isaksamsten/Niriswitcher" "--method" "io.github.isaksamsten.Niriswitcher.application" ; }
 
     Mod+X { spawn "ocr-screenshot.sh"; }
 

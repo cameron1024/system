@@ -43,6 +43,8 @@
 
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
+
+    niri.url = "github:yalter/niri/v25.11";
   };
 
   outputs = inputs: let

@@ -48,6 +48,12 @@
         {
           id = "SystemMonitor";
         }
+        {
+          id = "Taskbar";
+        }
+        {
+          id = "MediaMini";
+        }
       ];
 
     };

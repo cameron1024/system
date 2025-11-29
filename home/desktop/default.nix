@@ -54,6 +54,7 @@ with lib; {
           wl-clipboard
           google-chrome
           inputs.hexecute.packages.${pkgs.system}.default
+          s-tui
         ])
       else [];
   };
