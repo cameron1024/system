@@ -11,6 +11,7 @@ overview {
   zoom 0.33
   // backdrop-color "#1e2428"
 }
+
 layer-rule {
   match namespace="^noctalia-overview*"
   place-within-backdrop true
