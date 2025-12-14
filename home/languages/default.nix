@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, inputs, ...}: {
   imports = [
     ./c.nix
     ./rust.nix
@@ -13,5 +13,7 @@
     mprocs
     zig
     cue
+
+    inputs.tracy.packages.${pkgs.system}.default
   ];
 }

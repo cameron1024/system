@@ -75,6 +75,7 @@
     servers.cue.enable = true;
     servers.asm_lsp.enable = true;
     servers.clangd.enable = true;
+    servers.scheme_langserver.enable = true;
 
   };
 

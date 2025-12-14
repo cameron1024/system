@@ -5,8 +5,7 @@
   config,
   ...
 }:
-with lib;
-{
+with lib; {
   options = {
     programs'.niri.enable = mkEnableOption "niri";
   };
@@ -29,15 +28,13 @@ with lib;
     services.upower.enable = true;
     services.cpupower-gui.enable = true;
 
-    # Configure keyd for dual-function caps lock
     services.keyd = {
       enable = true;
       keyboards.default = {
-        ids = [ "*" ];
+        ids = ["*"];
         settings = {
           main = {
             "capslock" = "overload(control, esc)";
-            "leftshift+capslock" = "capslock";
           };
         };
       };

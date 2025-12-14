@@ -114,6 +114,8 @@ in {
           rog
         ];
 
+        networking.firewall.enable = false;
+
         programs.steam.enable = true;
       }
     ];

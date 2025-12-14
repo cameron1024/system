@@ -406,11 +406,11 @@ binds {
 
     // Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
     // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
-    Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty"; }
+    Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }
 
     Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    // Mod+S { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
+    Mod+Alt+Space { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
     // Mod+Comma { spawn "noctalia-shell" "ipc" "call" "settings" "toggle"; }
 
     // Audio controls

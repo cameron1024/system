@@ -51,7 +51,7 @@
   };
 
   alien = {
-    name = "DP-1";
+    name = "DP-2";
     resolution.width = 2560;
     resolution.height = 1440;
 
@@ -63,7 +63,7 @@
     oled = false;
   };
   rog = {
-    name = "DP-2";
+    name = "DP-1";
     resolution.width = 2560;
     resolution.height = 1440;
 
