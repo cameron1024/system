@@ -408,6 +408,7 @@ binds {
     // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }
+    Mod+W hotkey-overlay-title="Qute" { spawn "qutebrowser"; }
 
     Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
     Mod+Alt+Space { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }

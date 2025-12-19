@@ -12,8 +12,8 @@ with lib; {
 
   config = mkIf (config.programs'.niri.enable) {
     services'.fingerprint.enable = true;
-
-    services'.tuigreet.enable = true;
+    
+    services'.tuigreet.enable = !config.services.displayManager.gdm.enable;
     services'.tuigreet.command = mkForce "niri-session";
 
     services'.desktop.enable = true;

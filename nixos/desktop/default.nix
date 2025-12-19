@@ -13,4 +13,6 @@
   config.environment.systemPackages = [
     inputs.noctalia.packages.${pkgs.system}.default
   ];
+  # config.services.displayManager.gdm.enable = true;
+  # config.services.desktopManager.gnome.enable = true;
 }

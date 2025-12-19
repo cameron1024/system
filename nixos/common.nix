@@ -140,7 +140,6 @@ in {
 
     nixpkgs.config.allowUnfree = true;
     nix = {
-      package = pkgs.nixVersions.stable;
       registry.nixpkgs.flake = inputs.nixpkgs;
 
       extraOptions = ''

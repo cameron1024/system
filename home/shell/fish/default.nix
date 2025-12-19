@@ -31,6 +31,8 @@ in {
 
         set -gx PURO_ROOT "/${usersDir}/cameron/.puro"
         set -gx PUB_CACHE "/${usersDir}/cameron/.puro/shared/pub_cache"
+
+        source ~/.secrets.fish | true
       ''
       + (
         if pkgs.stdenv.isLinux

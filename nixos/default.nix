@@ -29,6 +29,7 @@
       modules =
         modules
         ++ [
+          inputs.determinate.nixosModules.default
           ./common.nix
           {
             inherit machine;
@@ -89,7 +90,6 @@ in {
   };
   fast = mkSystem {
     system = "x86_64-linux";
-    spec = import ./machines/specs/thinkpad.nix {inherit inputs;};
     homeModules = [
       {
         home.stateVersion = "25.05";
@@ -104,6 +104,7 @@ in {
         gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
+        boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
         networking.hostName = "fast";
 
@@ -115,6 +116,8 @@ in {
         ];
 
         networking.firewall.enable = false;
+        services.livekit.enable = true;
+        services.livekit.keyFile = "/home/cameron/livekit";
 
         programs.steam.enable = true;
       }

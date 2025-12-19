@@ -1,5 +1,4 @@
 {
-  machine,
   pkgs,
   lib,
   osConfig,
@@ -16,8 +15,8 @@ with lib; {
     };
 
     programs.hyprlock = {
-      enable = machine.linux;
-      settings = with machine.colorscheme;
+      enable = pkgs.stdenv.isLinux;
+      settings = with (import ../../../nixos/machines/colors.nix).everforest;
       with pkgs.cams-utils.hyprland; {
         general = {
           hide_cursor = true;
