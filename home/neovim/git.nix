@@ -1,6 +1,6 @@
 {
   plugins.diffview.enable = true;
-  plugins.diffview.enhancedDiffHl = true;
+  plugins.diffview.settings.enhanced_diff_hl = true;
   # plugins.diffview.hooks.diffBufRead = ''
   #   function(bufnr)
   #     require "lz.n".trigger_load "ufo"
