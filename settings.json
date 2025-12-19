@@ -1,8 +1,30 @@
 {
+  "sticky_scroll": { "enabled": true },
+
+  // "features": {
+  //   "edit_prediction_provider": {
+  //     "experimental": "sweep",
+  //   }
+  // },
+  "use_on_type_format": false,
+  "remove_trailing_whitespace_on_save": false,
+  "languages": {
+    "Rust": {
+      "use_on_type_format": false
+    }
+  },
+  "relative_line_numbers": "enabled",
+  "icon_theme": "Colored Zed Icons Theme Dark",
+  "audio": {
+    "experimental.auto_microphone_volume": true,
+    "experimental.rodio_audio": true
+  },
   "agent": {
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-sonnet-4"
+      "model": "claude-opus-4-5"
     },
     "model_parameters": []
   },
@@ -43,39 +65,52 @@
   "vim_mode": true,
   "autosave": {
     "after_delay": {
-      "milliseconds": 100
+      "milliseconds": 1000
     }
   },
   "terminal": {
-    "shell": "system"
+    "shell": {
+      "program": "fish"
+    }
   },
   "use_system_path_prompts": false,
 
   "format_on_save": "off",
 
-  "lsp": {
-    "rust-analyzer": {
-      "initialization_options": {
-        // "checkOnSave": false,
-        "check": {
-          "overrideCommand": ["cargo", "build", "--message-format=json"]
-        }
-      }
-    }
-  },
+  // "window_decorations": "server",
+
+  // "lsp": {
+  //   "rust-analyzer": {
+  //     "initialization_options": {
+  //       // "checkOnSave": false,
+  //       // "check": {
+  //       //   "overrideCommand": ["cargo", "build", "--message-format=json"]
+  //       // }
+  //     }
+  //   }
+  // },
 
   /* ============= */
   /* === THEME === */
 
-  "buffer_font_family": "FiraCode Nerd Font",
-  "buffer_font_size": 24,
+  "buffer_font_family": "Fira Code",
+  "buffer_font_size": 18,
+  "buffer_font_features": {
+    "calt": true,
+    "clig": true
+  },
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 24,
+  "ui_font_size": 18,
   "theme": {
     "mode": "dark",
     "light": "Everforest Dark",
     "dark": "Everforest Dark Hard"
   },
+  // lighter green than fallback #193b2d44
+  // lighter blue than fallback #11326444
+  "experimental.theme_overrides": {
+    // "editor.foreground": "#FF0000",
+  }
 
   // "theme": {
   //   "mode": "dark",

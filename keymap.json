@@ -12,7 +12,26 @@
       "ctrl-h": "vim::Left",
       "ctrl-j": "vim::Down",
       "ctrl-k": "vim::Up",
-      "ctrl-l": "vim::Right"
+      "ctrl-l": "vim::Right",
+      "alt-space": "editor::AcceptEditPrediction",
+    }
+  },
+  {
+    "context": "((Editor && (vim_mode == normal || vim_mode == visual)) || !Editor) && !Terminal",
+    "bindings": {
+      "space n": "file_finder::Toggle",
+      "space f": "pane::DeploySearch"
+    }
+  },
+  {
+    "context": "(Editor && (vim_mode == normal || vim_mode == visual)) || !Editor",
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-o": "pane::GoBack",
+      "ctrl-i": "pane::GoForward",
     }
   },
   {
@@ -26,23 +45,43 @@
       "ctrl-n": "editor::GoToDiagnostic",
       "g i": "editor::GoToImplementation",
       "g t": "editor::GoToTypeDefinition",
-      "g r r": "editor::FindAllReferences",
+      "g r r": ["editor::FindAllReferences", { "always_open_multibuffer": false }],
       "space q": "pane::CloseActiveItem",
-      "space n": "file_finder::Toggle",
-      "space f": "project_search::ToggleFocus",
-      // "space i": "editor::ToggleInlayHints",
-      "ctrl-h": "workspace::ActivatePaneLeft",
-      "ctrl-l": "workspace::ActivatePaneRight",
-      "ctrl-j": "workspace::ActivatePaneDown",
-      "ctrl-k": "workspace::ActivatePaneUp",
+      "space i": "editor::ToggleInlayHints",
       "ctrl-v": "pane::SplitRight",
-      "ctrl-x": "pane::SplitDown"
+      "ctrl-x": "pane::SplitDown",
+      "alt-space": "editor::AcceptEditPrediction",
+      "space h p": "editor::ExpandAllDiffHunks",
+      "space z": "workspace::ToggleZoom",
+      "alt-l": "vim::SelectNextSyntaxNode",
+      "alt-h": "vim::SelectPreviousSyntaxNode",
+      "]m": "editor::SelectNextMultibufferMatch",
+      "[m": "editor::SelectPreviousMultibufferMatch",
     }
   },
   {
-    "context": "((Editor && vim_mode == normal) || ProjectPanel)",
+    "context": "(Editor && vim_mode == normal)",
     "bindings": {
-      "space p": "project_panel::ToggleFocus"
+      "space p": "project_panel::ToggleFocus",
+      "space v": "vim::SwitchToVisualBlockMode"
+    }
+  },
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "space p": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-t": "workspace::ToggleBottomDock"
+    }
+  },
+  {
+    "context": "!Terminal",
+    "bindings": {
+      "ctrl-t": "terminal_panel::ToggleFocus"
     }
   },
   {
