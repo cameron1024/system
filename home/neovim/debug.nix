@@ -82,7 +82,7 @@
     };
 
     plugins.dap-ui = {
-      enable = true;
+      enable = false;
       lazyLoad.enable = true;
       lazyLoad.settings.before.__raw = ''
         function() require 'lz.n'.trigger_load 'nvim-dap' end

@@ -17,13 +17,13 @@
 
   programs.lazygit = {
     enable = true;
-    settings = {
-      git = {
-        paging = {
-          externalDiffCommand = "difft --color=always";
-        };
-      };
-    };
+    # settings = {
+    #   git = {
+    #     paging = {
+    #       externalDiffCommand = "difft --color=always";
+    #     };
+    #   };
+    # };
   };
 
   home.shellAliases = {

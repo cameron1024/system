@@ -10,7 +10,6 @@
     else pkgs.slack;
 in {
   home.packages = lib.mkIf pkgs.stdenv.isLinux (with pkgs; [
-    whatsapp-for-linux
     zapzap # PWA whatsapp
     slack
     discord
@@ -21,5 +20,8 @@ in {
 
     signal-cli
     signal-desktop
+
+    protonmail-desktop
   ]);
+
 }

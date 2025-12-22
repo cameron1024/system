@@ -20,7 +20,7 @@
     position.y = 1440;
 
     refreshRate = 120;
-    scale = 1;
+    scale = 1.5;
     oled = true;
   };
 

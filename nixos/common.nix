@@ -8,6 +8,8 @@
   cfg = config.machine;
 in {
   imports = [
+    inputs.nix-snapd.nixosModules.default
+
     ./ai.nix
     ./desktop
     ./gpu.nix
@@ -124,6 +126,7 @@ in {
     console.keyMap = "uk";
 
     services.flatpak.enable = true;
+    services.snap.enable = true;
 
     environment.systemPackages = with pkgs; [
       git

@@ -31,7 +31,6 @@
       pureref
       zmk-studio
       rakudo
-      qutebrowser
     ]
     else []
   );

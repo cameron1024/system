@@ -62,6 +62,9 @@
     niri.url = "github:yalter/niri/v25.11";
 
     tracy.url = "github:tukanoidd/tracy.nix";
+
+    nix-snapd.url = "github:nix-community/nix-snapd";
+    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let
