@@ -3,8 +3,10 @@
   pkgs,
   ...
 }: {
-  programs.television.enable = true;
-  programs.television.enableFishIntegration = true;
+  home.packages = with pkgs; [television];
+  programs.fish.interactiveShellInit = ''
+    tv init fish | source
+  '';
   # programs.television.settings = {
   #   shell_integration.keybindings.command_history = "";
   # };

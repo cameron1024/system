@@ -39,12 +39,12 @@ with lib; {
     xdg = {
       enable = true;
       userDirs.enable = true;
-      portal.enable = true;
-      portal.config.common.default = "*";
-      portal.extraPortals = with pkgs; [
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
-      ];
+      # portal.enable = true;
+      # portal.config.common.default = "*";
+      # portal.extraPortals = with pkgs; [
+      #   xdg-desktop-portal-wlr
+      #   xdg-desktop-portal-gtk
+      # ];
     };
 
     home.packages =

@@ -22,6 +22,15 @@ in {
     signal-desktop
 
     protonmail-desktop
+    # protonmail-bridge
+    # protonmail-bridge-gui
+    proton-pass
+    # proton-pass-cli
+    neomutt
+    himalaya
+    thunderbird
   ]);
+
+  
 
 }

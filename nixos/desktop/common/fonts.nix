@@ -10,7 +10,7 @@
       josefin
       nerd-fonts.fira-code
       nerd-fonts.fira-mono
-      fira
+      fira-code
       monaspace
       noto-fonts
       noto-fonts-monochrome-emoji
