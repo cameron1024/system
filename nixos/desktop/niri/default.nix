@@ -1,5 +1,4 @@
 {
-  inputs,
   pkgs,
   lib,
   config,
@@ -22,7 +21,7 @@ with lib; {
     '';
 
     programs.niri.enable = true;
-    programs.niri.package = inputs.niri.packages.${pkgs.system}.default;
+    programs.niri.useNautilus = true;
 
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;

@@ -1,6 +1,14 @@
 {
   programs.qutebrowser = {
     enable = true;
+    
+    keyBindings.normal = {
+      "<Ctrl-o>" = "back";
+      "<Ctrl-i>" = "forward";
+      "H" = "tab-prev";
+      "L" = "tab-next";
+    };
+
     settings = let
       colors = {
         bg_dim = "#1e2326";
@@ -31,6 +39,8 @@
         statusline3 = "#e67e80";
       };
     in {
+      scrolling.smooth = true;
+
       fonts.default_family = "Josefin Sans";
       fonts.default_size = "24px";
 

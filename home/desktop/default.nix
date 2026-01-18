@@ -18,6 +18,7 @@ with lib; {
     ./power-menu.nix
     ./waybar
     ./walker.nix
+    ./sherlock.nix
     ./rofi
     ./wallpaper.nix
   ];

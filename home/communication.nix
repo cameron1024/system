@@ -21,6 +21,8 @@ in {
     signal-cli
     signal-desktop
 
+    zathura
+
     protonmail-desktop
     # protonmail-bridge
     # protonmail-bridge-gui
@@ -29,6 +31,9 @@ in {
     neomutt
     himalaya
     thunderbird
+
+    zulip
+    zulip-term
   ]);
 
   

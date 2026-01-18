@@ -59,8 +59,6 @@
     noctalia.url = "github:noctalia-dev/noctalia-shell";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
-    niri.url = "github:yalter/niri/v25.11";
-
     tracy.url = "github:tukanoidd/tracy.nix";
 
     nix-snapd.url = "github:nix-community/nix-snapd";
