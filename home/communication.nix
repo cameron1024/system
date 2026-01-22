@@ -29,7 +29,6 @@ in {
     proton-pass
     # proton-pass-cli
     neomutt
-    himalaya
     thunderbird
 
     zulip

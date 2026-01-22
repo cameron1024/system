@@ -37,6 +37,7 @@ with lib; {
 
     services.darkman.enable = true;
 
+
     xdg = {
       enable = true;
       userDirs.enable = true;

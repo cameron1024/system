@@ -16,8 +16,4 @@
     "ls" = "exa -la";
     "l" = "lla";
   };
-
-  home.packages = [
-    inputs.lla.packages.${pkgs.system}.withProtobuf
-  ];
 }

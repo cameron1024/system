@@ -10,6 +10,7 @@ with lib; {
     ./communication.nix
     ./fingerprint.nix
     ./fonts.nix
+    ./mail.nix
   ];
 
   options.services'.desktop = let
@@ -88,6 +89,8 @@ with lib; {
 
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
+
+    services'.mail.enable = true;
 
 
   };

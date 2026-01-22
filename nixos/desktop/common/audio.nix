@@ -21,6 +21,15 @@
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
+      wireplumber.enable = true;
+      extraConfig.pipewire-pulse."50-stream-restore" = {
+        "pulse.cmd" = [
+          {
+            cmd = "load-module";
+            args = "module-stream-restore";
+          }
+        ];
+      };
     };
   };
 }

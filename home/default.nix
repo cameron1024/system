@@ -31,6 +31,7 @@
       pureref
       zmk-studio
       rakudo
+      speedread
     ]
     else []
   );
