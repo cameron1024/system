@@ -55,8 +55,8 @@
       "space z": "workspace::ToggleZoom",
       "alt-l": "vim::SelectNextSyntaxNode",
       "alt-h": "vim::SelectPreviousSyntaxNode",
-      "]m": "editor::SelectNextMultibufferMatch",
-      "[m": "editor::SelectPreviousMultibufferMatch",
+      // "]m": "editor::SelectNextMultibufferMatch",
+      // "[m": "editor::SelectPreviousMultibufferMatch",
     }
   },
   {

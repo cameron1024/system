@@ -1,4 +1,15 @@
 {
+  "which_key": {
+    "enabled": true
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": true
+    },
+    "split_diff": {
+      "auto_split": "off"
+    },
+  },
   "sticky_scroll": { "enabled": true },
 
   // "features": {
@@ -20,11 +31,12 @@
     "experimental.rodio_audio": true
   },
   "agent": {
+    "use_modifier_to_send": true,
     "always_allow_tool_actions": true,
     "default_profile": "write",
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-opus-4-5"
+      "model": "claude-opus-4-5-thinking"
     },
     "model_parameters": []
   },
@@ -103,8 +115,8 @@
   "ui_font_size": 18,
   "theme": {
     "mode": "dark",
-    "light": "Everforest Dark",
-    "dark": "Everforest Dark Hard"
+    "light": "One Light",
+    "dark": "Everforest Dark Hard (regular)"
   },
   // lighter green than fallback #193b2d44
   // lighter blue than fallback #11326444
