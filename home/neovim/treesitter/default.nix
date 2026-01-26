@@ -18,8 +18,10 @@
 in {
   imports = [
     ./injections.nix
+    ./modules.nix
     ./treewalker.nix
   ];
+
 
   extraFiles."after/ftplugin/snap.lua".text =
     /*

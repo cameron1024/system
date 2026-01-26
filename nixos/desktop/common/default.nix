@@ -7,9 +7,11 @@ with lib; {
   imports = [
     ./audio.nix
     ./bluetooth.nix
-    ./communication.nix
     ./fingerprint.nix
     ./fonts.nix
+    
+    
+    
     ./mail.nix
   ];
 
