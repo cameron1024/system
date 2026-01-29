@@ -68,6 +68,18 @@ final: prev: {
           hash = "sha256-jpMcrWx/Rg9sMfkQFXnIM8VB5qRuSB/70wuSh6Y5uFk=";
         };
       };
+
+      lean-nvim = prev.vimPlugins.lean-nvim.overrideAttrs {
+        version = "0.0.0";
+        src = prev.fetchFromGitHub {
+          owner = "Julian";
+          repo = "lean.nvim";
+          rev = "68ad9a01b7da30213441016667ad3f946d080fe8";
+          hash = "sha256-FfYfDPQi0MUPnUV1bcHP7cpHdUkqcH9lHZS8ZNpWCso=";
+        };
+      };
+
+
     };
 
   wayscriber = prev.rustPlatform.buildRustPackage rec {
