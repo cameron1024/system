@@ -19,7 +19,7 @@ with lib; {
     boot.kernelPackages =
       if config.services'.standardMachine.zenKernel
       then pkgs.linuxPackages_zen
-      else pkgs.linuxPackages;
+      else pkgs.linuxPackages_latest;
 
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;

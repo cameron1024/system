@@ -65,7 +65,7 @@ in {
       {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
-        services'.standardMachine.zenKernel = true;
+        services'.standardMachine.zenKernel = false;
         gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
