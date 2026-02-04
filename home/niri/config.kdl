@@ -12,11 +12,6 @@ overview {
   // backdrop-color "#1e2428"
 }
 
-layer-rule {
-  match namespace="^noctalia-overview*"
-  place-within-backdrop true
-}
-
 clipboard {
   disable-primary
 }
@@ -281,12 +276,11 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
-spawn-at-startup "noctalia-shell"
-// spawn-at-startup "waybar"
+spawn-at-startup "waybar"
 spawn-at-startup "swww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
-// spawn-at-startup "swayosd-server"
+spawn-at-startup "swayosd-server"
 spawn-at-startup "wayscriber" "--daemon"
 
 environment {
@@ -387,7 +381,6 @@ window-rule {
     clip-to-geometry true
 }
 
-
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
@@ -405,25 +398,22 @@ binds {
     Mod+Backslash { spawn "hexecute"; }
 
     // Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
+    Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
     // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }
     Mod+W hotkey-overlay-title="Qute" { spawn "qutebrowser"; }
 
-    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    Mod+Alt+Space { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
-    // Mod+Comma { spawn "noctalia-shell" "ipc" "call" "settings" "toggle"; }
+    Mod+Grave { spawn "kitten" "quick-access-terminal"; } 
 
-    // Audio controls
-    XF86AudioRaiseVolume { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
-    XF86AudioLowerVolume { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
-    XF86AudioMute { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
+    XF86AudioRaiseVolume { spawn "swayosd-client" "--output-volume=raise"; }
+    XF86AudioLowerVolume { spawn "swayosd-client" "--output-volume=lower"; }
+    XF86AudioMute        { spawn "swayosd-client" "--output-volume=mute-toggle"; }
 
-    // Brightness controls
-    XF86MonBrightnessUp { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
-    XF86MonBrightnessDown { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+    XF86MonBrightnessUp   { spawn "swayosd-client" "--output-brightness=raise"; }
+    XF86MonBrightnessDown { spawn "swayosd-client" "--output-brightness=lower"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
-    Mod+B { spawn "noctalia-shell" "ipc" "call" "bar" "toggle"; }
+    Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
     Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+S { set-dynamic-cast-window; }

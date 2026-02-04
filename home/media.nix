@@ -13,6 +13,7 @@
         then [
           # remarkable desktop is windows app
           wineWowPackages.stable
+          bottles
           rmapi
         ]
         else []

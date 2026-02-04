@@ -13,7 +13,7 @@ with lib; {
     gtk = {
       enable = true;
 
-      theme.name = "Everforest-Dark-BL";
+      theme.name = "Everforest-Dark";
       theme.package = pkgs.everforest-gtk-theme;
 
       # font.name = "Fira Sans";

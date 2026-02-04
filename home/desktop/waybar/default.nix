@@ -5,28 +5,11 @@
   osConfig,
   ...
 }: let
-  colors = with (import ../../../nixos/machines/colors.nix).everforest; ''
-    @define-color bg ${base00};
-    @define-color fg ${base04};
-    @define-color green ${base0D};
-    @define-color greenish ${base0A};
-    @define-color blue ${base08};
-    @define-color orange ${base0C};
-    @define-color red ${base0E};
-    @define-color pink ${base0F};
-    @define-color yellow ${base0B};
-  '';
-
-  githubNotifications = pkgs.writeShellApplication  {
+  cfg = config.programs'.waybar;
+  githubNotifications = pkgs.writeShellApplication {
     name = "github-notifications.sh";
-    runtimeInputs = with pkgs; [
-      gh
-      jq
-    ];
-
-    text = ''
-      gh 
-    '';
+    runtimeInputs = with pkgs; [ gh jq ];
+    text = "gh api notifications | jq length";
   };
 in
   with lib; {
@@ -36,7 +19,7 @@ in
       enableNiriIntegration = mkEnableOption "Niri workspace switcher";
     };
 
-    config = mkIf (pkgs.stdenv.isLinux && config.programs'.waybar.enable) {
+    config = mkIf (pkgs.stdenv.isLinux && cfg.enable) {
       wayland.windowManager.hyprland.settings = {
         exec-once = [
           "waybar"
@@ -49,25 +32,26 @@ in
 
       services.blueman-applet.enable = true;
 
+      home.packages = [githubNotifications];
+
       programs.waybar = lib.mkIf (osConfig != null) {
         enable = true;
-        style = colors + (builtins.readFile ./style.css);
+        style = ./style2.css;
 
         settings = {
           topBar = {
             layer = "top";
             position = "top";
-            height = 43;
+            height = 45;
             output = map (d: d.name) osConfig.services'.desktop.displays or [];
-            start_hidden = true;
+            start_hidden = false;
 
-            modules-left = ["custom/powermenu" "cpu" "memory" "disk" "network"];
-            modules-right = ["tray" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
+            modules-left = ["cpu" "memory" "disk" "network" "privacy"];
+            modules-right = ["tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
               []
-              ++ (optional config.programs'.waybar.enableHyprlandIntegration "hyprland/workspaces")
-              ++ (optional config.programs'.waybar.enableNiriIntegration "niri/workspaces");
-
+              ++ (optional cfg.enableHyprlandIntegration "hyprland/workspaces")
+              ++ (optional cfg.enableNiriIntegration "niri/workspaces");
 
             "niri/workspaces" = {
               format = "●";
@@ -156,10 +140,15 @@ in
             };
 
             "custom/github" = {
-              format = " {}";
+              format = "<span font='FiraCode Nerd Font'></span> {}";
+              markup = true;
+              interval = 300;
+              exec = "${githubNotifications}/bin/github-notifications.sh";
+              on-click = "xdg-open https://github.com/notifications";
             };
           };
         };
       };
     };
   }
+

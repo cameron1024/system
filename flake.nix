@@ -56,8 +56,8 @@
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
-    noctalia.url = "github:noctalia-dev/noctalia-shell";
-    noctalia.inputs.nixpkgs.follows = "nixpkgs";
+    # noctalia.url = "github:noctalia-dev/noctalia-shell";
+    # noctalia.inputs.nixpkgs.follows = "nixpkgs";
 
     tracy.url = "github:tukanoidd/tracy.nix";
 

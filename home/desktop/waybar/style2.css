@@ -1,0 +1,243 @@
+/* Everforest Waybar Theme - Modern & Minimal */
+/* 
+ * Everforest Color Palette:
+ * bg:      #2d353b
+ * fg:      #d3c6aa
+ * red:     #e67e80
+ * orange:  #e69875
+ * yellow:  #dbbc7f
+ * green:   #a7c080
+ * aqua:    #83c092
+ * blue:    #7fbbb3
+ * purple:  #d699b6
+ */
+
+* {
+  font-family: "Josefin Sans", "FiraCode Nerd Font", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+}
+
+window#waybar {
+  background-color: rgba(45, 53, 59, 0.85);
+  color: #d3c6aa;
+}
+
+/* Tooltip styling */
+tooltip {
+  background-color: #2d353b;
+  border: 1px solid rgba(211, 198, 170, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+tooltip label {
+  color: #d3c6aa;
+}
+
+/* Module container styling */
+#custom-powermenu,
+#clock,
+#tray,
+#cpu,
+#memory,
+#disk,
+#network,
+#battery,
+#backlight,
+#pulseaudio,
+#custom-weather,
+#custom-github,
+#privacy {
+  background-color: transparent;
+  padding: 0 8px;
+  margin: 4px 2px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effects */
+#custom-powermenu:hover,
+#clock:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#network:hover,
+#battery:hover,
+#backlight:hover,
+#pulseaudio:hover,
+#custom-weather:hover,
+#custom-github:hover,
+#privacy:hover {
+  background-color: rgba(211, 198, 170, 0.08);
+}
+
+/* Power menu */
+#custom-powermenu {
+  color: #a7c080;
+  font-size: 18px;
+  padding-left: 10px;
+  margin-left: 4px;
+}
+
+/* GitHub notifications */
+#custom-github {
+  color: #d3c6aa;
+}
+
+/* Privacy module */
+#privacy {
+  color: #e67e80;
+}
+
+#privacy-item {
+  padding: 0 4px;
+}
+
+/* System monitors */
+#cpu {
+  color: #a7c080;
+}
+
+#memory {
+  color: #83c092;
+}
+
+#disk {
+  color: #7fbbb3;
+}
+
+#network {
+  color: #d699b6;
+}
+
+#network.disconnected {
+  color: rgba(211, 198, 170, 0.4);
+}
+
+/* Weather */
+#custom-weather {
+  color: #dbbc7f;
+}
+
+/* Backlight */
+#backlight {
+  color: #dbbc7f;
+}
+
+/* Audio */
+#pulseaudio {
+  color: #7fbbb3;
+}
+
+#pulseaudio.muted {
+  color: rgba(211, 198, 170, 0.4);
+}
+
+/* Battery states */
+#battery {
+  color: #a7c080;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: #83c092;
+}
+
+#battery.warning:not(.charging) {
+  color: #e69875;
+}
+
+#battery.critical:not(.charging) {
+  color: #e67e80;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Clock */
+#clock {
+  color: #d3c6aa;
+  font-weight: 600;
+  padding-right: 10px;
+  margin-right: 4px;
+}
+
+/* Tray */
+#tray {
+  padding: 0 6px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+}
+
+#tray menu {
+  background-color: #2d353b;
+  border: 1px solid rgba(211, 198, 170, 0.15);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+#tray menu menuitem {
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+#tray menu menuitem:hover {
+  background-color: rgba(211, 198, 170, 0.08);
+}
+
+/* Workspaces - Hyprland & Niri */
+#workspaces {
+  background-color: rgba(45, 53, 59, 0.4);
+  border-radius: 8px;
+  margin: 4px 0;
+  padding: 0 2px;
+}
+
+#workspaces button {
+  color: rgba(211, 198, 170, 0.4);
+  background-color: transparent;
+  padding: 2px 8px;
+  margin: 3px 2px;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+  color: #a7c080;
+  background-color: rgba(167, 192, 128, 0.15);
+}
+
+#workspaces button:hover {
+  color: #d3c6aa;
+  background-color: rgba(211, 198, 170, 0.1);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+#workspaces button.urgent {
+  color: #e67e80;
+  background-color: rgba(230, 126, 128, 0.15);
+}

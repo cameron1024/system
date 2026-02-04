@@ -3,13 +3,16 @@
   programs.sherlock.settings = {
     appearance = {
       # Window dimensions
-      width = 600;
-      height = 400;
-      # Use Linux-style modifier symbols: Shift, Caps, Ctrl, Meta, Alt, Super, Hyper, Fallback
+      width = 700;
+      height = 500;
       mod_key_ascii = ["⇧" "⇧" "Ctrl" "Meta" "Alt" "Super" "Hyper" "Ctrl"];
     };
     binds = {
       modifier = "control";
+      up = "control-k";
+      down = "control-j";
+      left = "control-h";
+      right = "control-l";
     };
   };
   programs.sherlock.launchers = [
@@ -39,6 +42,7 @@
     }
     {
       name = "Web Search";
+      display_name = "Search Google for \"{keyword}\"";
       alias = "gg";
       type = "web_launcher";
       args = {
@@ -46,6 +50,21 @@
         icon = "google";
       };
       priority = 100;
+    }
+    {
+      name = "Rust Docs";
+      alias = "rs";
+      type = "command";
+      args = {
+        commands = {
+          "Open docs.rs for {keyword}" = {
+            icon = "application-x-rust";
+            exec = "xdg-open https://docs.rs/{keyword}";
+            search_string = "rust;docs;crate;documentation";
+          };
+        };
+      };
+      priority = 0;
     }
     {
       name = "Emoji Picker";
@@ -109,28 +128,47 @@
     }
 
     /* Search bar */
+    #search-bar {
+      min-height: 40px;
+      padding: 6px 12px;
+      line-height: 1.4;
+      overflow: visible;
+    }
+
+    #search-bar-holder {
+      padding: 8px 10px 6px 10px;
+      overflow: visible;
+    }
+
     #search-entry {
       font-family: "Josefin Sans", sans-serif;
-      font-size: 16px;
+      font-size: 18px;
       color: var(--text);
       background: var(--background-soft);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 8px 12px;
+      padding: 10px 12px 8px 12px;
+      min-height: 38px;
+      line-height: 1.5;
+      overflow: visible;
     }
 
     #search-entry:focus {
       border-color: var(--foreground);
     }
 
-    /* Search icon styling */
-    #search-icon-holder image,
+    /* Search icon styling - use muted color instead of pure white */
+    #search-icon-holder image {
+      -gtk-icon-filter: brightness(0.6) saturate(50%) contrast(80%);
+      opacity: 0.7;
+    }
+
     image.reactive {
-      -gtk-icon-filter: brightness(10) saturate(100%) contrast(100%);
+      -gtk-icon-filter: brightness(1.2) saturate(80%) contrast(100%);
     }
 
     row:selected .tile image.reactive {
-      -gtk-icon-filter: brightness(0.1) saturate(100%) contrast(100%);
+      -gtk-icon-filter: brightness(0.2) saturate(80%) contrast(100%);
     }
 
     /* Search icon animation */
@@ -174,12 +212,26 @@
       background: var(--foreground);
     }
 
+    /* Icon background - consistent dark background for transparent icons */
+    .tile #icon,
+    .tile image:not(.reactive) {
+      background: var(--background-dim);
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    row:selected .tile #icon,
+    row:selected .tile image:not(.reactive) {
+      background: var(--background-dim);
+    }
+
     /* Title styling */
     #title {
       font-family: "Josefin Sans", sans-serif;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
       color: var(--text);
+      min-height: 22px;
     }
 
     row:selected .tile #title {
@@ -190,8 +242,9 @@
     #subtitle,
     #description {
       font-family: "Josefin Sans", sans-serif;
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-muted);
+      min-height: 18px;
     }
 
     row:selected .tile #subtitle,
@@ -202,8 +255,8 @@
     /* Launcher type label */
     #launcher-type {
       font-family: "Josefin Sans", sans-serif;
-      font-size: 10px;
-      color: alpha(var(--text), 0.4);
+      font-size: 12px;
+      color: alpha(var(--text), 0.5);
       margin-left: 0px;
     }
 
@@ -214,7 +267,7 @@
     /* Tag styling */
     .tag {
       font-family: "Josefin Sans", sans-serif;
-      font-size: 11px;
+      font-size: 12px;
       border-radius: 4px;
       padding: 2px 8px;
       margin-left: 7px;
@@ -249,15 +302,17 @@
       background: alpha(var(--foreground), 0.3);
       border-radius: 6px;
       border: 1px solid alpha(var(--text), 0.1);
+      box-shadow: none;
     }
 
     #shortcut-holder label {
       font-family: "Josefin Sans", sans-serif;
       color: var(--text);
+      font-size: 14px;
     }
 
     #shortcut-modkey {
-      font-size: 13px;
+      font-size: 14px;
     }
 
     row:selected .tile #shortcut-holder {
@@ -368,6 +423,45 @@
       background: alpha(var(--foreground), 0.3);
     }
 
+    /* Additional actions / action buttons */
+    .action,
+    .action-btn,
+    #action-holder button,
+    .tile-actions button {
+      background: var(--background-soft);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 13px;
+    }
+
+    .action:hover,
+    .action-btn:hover,
+    #action-holder button:hover,
+    .tile-actions button:hover {
+      background: var(--background-alt);
+      color: var(--text);
+    }
+
+    row:selected .action,
+    row:selected .action-btn,
+    row:selected #action-holder button,
+    row:selected .tile-actions button {
+      background: var(--background-dim);
+      color: var(--text);
+      border-color: var(--border-soft);
+    }
+
+    row:selected .action:hover,
+    row:selected .action-btn:hover,
+    row:selected #action-holder button:hover,
+    row:selected .tile-actions button:hover {
+      background: var(--background-soft);
+      color: var(--text);
+    }
+
     /* Scrollbar styling */
     scrollbar {
       background: transparent;
@@ -382,6 +476,32 @@
 
     scrollbar slider:hover {
       background: alpha(var(--text-muted), 0.5);
+    }
+
+    /* Calculator tile styling */
+    .calc-tile {
+      padding: 10px 12px 20px 12px;
+      border-radius: 8px;
+    }
+
+    #calc-tile-quation {
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    #calc-tile-result {
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 24px;
+      color: var(--text);
+    }
+
+    row:selected .tile #calc-tile-quation {
+      color: alpha(var(--text-active), 0.6);
+    }
+
+    row:selected .tile #calc-tile-result {
+      color: var(--text-active);
     }
   '';
 }

@@ -7,13 +7,13 @@
 }:
 with lib; {
   imports = [
-    inputs.noctalia.homeModules.default
+    # inputs.noctalia.homeModules.default
 
     ./ai.nix
     ./audio.nix
     ./gtk.nix
     ./lock
-    ./noctalia.nix
+    # ./noctalia.nix
     ./one-password.nix
     ./power-menu.nix
     ./waybar
