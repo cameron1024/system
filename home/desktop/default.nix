@@ -58,6 +58,8 @@ with lib; {
           google-chrome
           inputs.hexecute.packages.${pkgs.system}.default
           s-tui
+          gpu-screen-recorder
+          gpu-screen-recorder-gtk
         ])
       else [];
   };
