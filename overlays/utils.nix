@@ -4,6 +4,29 @@ final: prev: {
   material-rounded = final.callPackage ./packages/material-rounded.nix {};
   proton-pass-cli = final.callPackage ./packages/pass-cli.nix {};
 
+  # Fix: upstream nixpkgs package doesn't actually build the theme, it just copies source files
+  everforest-gtk-theme = prev.everforest-gtk-theme.overrideAttrs (oldAttrs: {
+    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [final.sassc];
+
+    dontBuild = false;
+
+    buildPhase = ''
+      runHook preBuild
+      cd themes
+      bash install.sh -n Everforest -d "$TMPDIR/themes" -c light dark -t all
+      cd ..
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out/share/"{themes,icons}
+      cp -a icons/* "$out/share/icons/"
+      cp -a "$TMPDIR/themes/"* "$out/share/themes/"
+      runHook postInstall
+    '';
+  });
+
   wrapWithNixGL = {
     name,
     package ? null,

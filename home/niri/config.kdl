@@ -1,7 +1,6 @@
 // This config is in the KDL format: https://kdl.dev
 // "/-" comments out the following node.
-// Check the wiki for a full description of the configuration:
-// https://github.com/YaLTeR/niri/wiki/Configuration:-Introduction
+// Check the wiki for a full description of the configuration: https://github.com/YaLTeR/niri/wiki/Configuration:-Introduction
 
 hotkey-overlay {
   skip-at-startup
@@ -20,6 +19,11 @@ gestures {
   hot-corners {
       off
   }
+}
+
+window-rule {
+  match app-id="Handy"
+  open-focused false
 }
 
 // Input device configuration.
@@ -307,11 +311,95 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // The wiki explains how to configure individual animations:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Animations
 animations {
-    // Uncomment to turn off all animations.
-    // off
-
     // Slow down all animations by this factor. Values below 1 speed them up instead.
-    slowdown 0.5 
+    slowdown 0.5
+
+    // Snappy spring animations for workspace/window movement
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=1200 epsilon=0.0001
+    }
+
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
+    }
+
+    window-movement {
+        spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
+    }
+
+    window-resize {
+        spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
+    }
+
+    // Sleek window open: scale up from center with fade
+    window-open {
+        duration-ms 200
+        curve "ease-out-expo"
+
+        custom-shader r"
+            vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+                // Elastic scale effect - starts small, expands to full size
+                float progress = niri_clamped_progress;
+                float scale = 0.75 + 0.25 * progress;
+                
+                // Scale from center
+                coords_geo = vec3(
+                    (coords_geo.xy - vec2(0.5)) / scale + vec2(0.5),
+                    1.0
+                );
+
+                // Sample the window texture
+                vec3 coords_tex = niri_geo_to_tex * coords_geo;
+                vec4 color = texture2D(niri_tex, coords_tex.st);
+
+                // Smooth fade in with slight acceleration
+                float alpha = smoothstep(0.0, 1.0, progress);
+                return color * alpha;
+            }
+        "
+    }
+
+    // Sleek window close: scale down slightly with fade out
+    window-close {
+        duration-ms 180
+        curve "ease-out-quad"
+
+        custom-shader r"
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                float progress = niri_clamped_progress;
+                
+                // Scale down slightly as window closes
+                float scale = 1.0 - (progress * 0.08);
+                
+                // Scale from center
+                coords_geo = vec3(
+                    (coords_geo.xy - vec2(0.5)) / scale + vec2(0.5),
+                    1.0
+                );
+
+                // Sample the window texture
+                vec3 coords_tex = niri_geo_to_tex * coords_geo;
+                vec4 color = texture2D(niri_tex, coords_tex.st);
+
+                // Smooth fade out
+                float alpha = 1.0 - smoothstep(0.0, 1.0, progress);
+                return color * alpha;
+            }
+        "
+    }
+
+    config-notification-open-close {
+        spring damping-ratio=0.7 stiffness=1000 epsilon=0.001
+    }
+
+    screenshot-ui-open {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+
+    overview-open-close {
+        spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
+    }
 }
 
 window-rule { 
@@ -399,6 +487,8 @@ binds {
 
     // Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
     Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
+    Mod+Alt+Space hotkey-overlay-title="Speak" {  spawn "pkill" "-USR2" "-n" "handy"; }
+    Mod+N hotkey-overlay-title="Speak" {  spawn "wtype" "asdfasdfasdf"; }
     // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }

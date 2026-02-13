@@ -32,9 +32,6 @@
     hypr-utils.url = "github:cameron1024/hypr-utils";
     hypr-utils.inputs.nixpkgs.follows = "nixpkgs";
 
-    # lla.url = "github:chaqchase/lla";
-    # lla.inputs.nixpkgs.follows = "nixpkgs";
-    #
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -56,13 +53,12 @@
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
-    # noctalia.url = "github:noctalia-dev/noctalia-shell";
-    # noctalia.inputs.nixpkgs.follows = "nixpkgs";
-
     tracy.url = "github:tukanoidd/tracy.nix";
 
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
+
+    handy.url = "github:cameron1024/handy";
   };
 
   outputs = inputs: let

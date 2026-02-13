@@ -37,17 +37,8 @@ with lib; {
 
     services.darkman.enable = true;
 
-
-    xdg = {
-      enable = true;
-      userDirs.enable = true;
-      # portal.enable = true;
-      # portal.config.common.default = "*";
-      # portal.extraPortals = with pkgs; [
-      #   xdg-desktop-portal-wlr
-      #   xdg-desktop-portal-gtk
-      # ];
-    };
+    xdg.enable = true;
+    xdg.userDirs.enable = true;
 
     home.packages =
       if pkgs.stdenv.isLinux
@@ -58,10 +49,10 @@ with lib; {
           google-chrome
           inputs.hexecute.packages.${pkgs.system}.default
           s-tui
-          gpu-screen-recorder
-          gpu-screen-recorder-gtk
+          inputs.handy.packages.${pkgs.system}.default
+          wtype
+          dotool
         ])
       else [];
   };
-
 }
