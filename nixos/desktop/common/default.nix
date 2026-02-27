@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }:
 with lib; {
@@ -94,7 +95,15 @@ with lib; {
 
     services'.mail.enable = true;
 
-
+    services.gnome.at-spi2-core.enable = true;
+    programs.dconf.enable = true;
+    programs.dconf.profiles.user.databases = [{
+      settings."org/gnome/desktop/interface".toolkit-accessibility = true;
+    }];
+    environment.systemPackages = with pkgs; [
+      kdePackages.accessibility-inspector
+      accerciser
+    ];
   };
 }
 
