@@ -11,4 +11,10 @@
   performance.combinePlugins.standalonePlugins = [
     "firenvim"
   ];
+
+  plugins.auto-save.settings.condition.__raw = ''
+    function(buf)
+      return not vim.g.started_by_firenvim
+    end
+  '';
 }

@@ -81,7 +81,7 @@ with lib; {
               font_size = timeHeight;
               valign = "bottom";
               halign = "right";
-              position = "-50, ${builtins.toString timeOffset}";
+              position = "-50, ${toString timeOffset}";
             })
 
           # date

@@ -101,7 +101,7 @@ in {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = false;
-        gpu'.arch = "zen5";
+        # gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
         boot.binfmt.emulatedSystems = ["aarch64-linux"];

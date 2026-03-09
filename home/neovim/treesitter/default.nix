@@ -1,10 +1,4 @@
 {pkgs, ...}: let
-  enable = true;
-  lazyLoad = {
-    enable = true;
-    settings.event = "BufReadPost";
-  };
-
   treesitter-snap = pkgs.tree-sitter.buildGrammar {
     language = "snap";
     version = "0.0.0";
@@ -15,13 +9,22 @@
       hash = "sha256-wTzbgjWr5ec+jEp5LLPMo1jnDWNV78qBY+/sGiry1/c=";
     };
   };
+
+  textobjectKeymap = key: capture: {
+    inherit key;
+    mode = ["x" "o"];
+    action.__raw = ''
+      function()
+        require "nvim-treesitter-textobjects.select".select_textobject("${capture}", "textobjects")
+      end
+    '';
+  };
 in {
   imports = [
     ./injections.nix
     ./modules.nix
     ./treewalker.nix
   ];
-
 
   extraFiles."after/ftplugin/snap.lua".text =
     /*
@@ -40,7 +43,7 @@ in {
     '';
   filetype.extension."snap" = "snap";
   plugins.treesitter = {
-    inherit enable;
+    enable = true;
     lazyLoad.enable = true;
     lazyLoad.settings.event = "BufReadPost";
 
@@ -64,52 +67,17 @@ in {
 
   plugins.treesitter-context = {
     enable = true;
-    inherit lazyLoad;
   };
 
   plugins.treesitter-textobjects = {
     enable = true;
-
     settings = {
       select.enable = true;
       select.disable = ["dart"];
       select.lookahead = true;
       select.keymaps = {
-        "af" = {
-          query = "@function.outer";
-          desc = "Around Function";
-        };
-        "if" = {
-          query = "@function.inner";
-          desc = "In Function";
-        };
-        "ac" = {
-          query = "@class.outer";
-          desc = "Around Class";
-        };
-        "ic" = {
-          query = "@class.inner";
-          desc = "In Class";
-        };
-        "aa" = {
-          query = "@parameter.outer";
-          desc = "Around Argument";
-        };
-        "ia" = {
-          query = "@parameter.inner";
-          desc = "In Argument";
-        };
-        "ar" = {
-          query = "@assignment.rhs";
-          desc = "Assignment RHS";
-        };
-        "at" = {
-          query = "@type";
-          desc = "Type";
-        };
       };
-    };
-  };
+    }; };
 
   extraConfigLuaPre = ''
     vim.o.foldlevel = 99
@@ -134,33 +102,6 @@ in {
     };
   };
 
-  # plugins.nvim-ufo = {
-  #   enable = true;
-  #   lazyLoad.enable = true;
-  #   lazyLoad.settings.event = "BufReadPre";
-  #   lazyLoad.settings.before.__raw = ''
-  #     function() require 'lz.n'.trigger_load 'nvim-treesitter' end
-  #   '';
-  #   lazyLoad.settings.keys = [
-  #     {
-  #       __unkeyed-1 = "zR";
-  #       __unkeyed-2.__raw = ''
-  #         function() require 'ufo'.openAllFolds() end
-  #       '';
-  #     }
-  #     {
-  #       __unkeyed-1 = "zM";
-  #       __unkeyed-2.__raw = ''
-  #         function() require 'ufo'.closeAllFolds() end
-  #       '';
-  #     }
-  #     {
-  #       __unkeyed-1 = "<leader><BS>";
-  #       __unkeyed-2 = "za";
-  #     }
-  #   ];
-  # };
-
   plugins.aerial = {
     enable = true;
   };
@@ -170,5 +111,14 @@ in {
       key = "<C-s>";
       action = "<cmd>AerialToggle<cr>";
     }
+    (textobjectKeymap "af" "@function.outer")
+    (textobjectKeymap "if" "@function.inner")
+    (textobjectKeymap "ac" "@class.outer")
+    (textobjectKeymap "ic" "@class.inner")
+    (textobjectKeymap "aa" "@parameter.outer")
+    (textobjectKeymap "ia" "@parameter.inner")
+    (textobjectKeymap "ar" "@assignment.rhs")
+    (textobjectKeymap "at" "@type")
+
   ];
 }

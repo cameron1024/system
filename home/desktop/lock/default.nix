@@ -39,8 +39,10 @@ with lib; {
 
         input-field = [
           {
-            size = "300, 50";
-            position = "0, 0";
+            size = "250, 45";
+            position = "0, -35%";
+            valign = "center";
+            halign = "center";
             monitor = "";
             dots_center = true;
             fade_on_empty = true;
@@ -75,22 +77,24 @@ with lib; {
           (common
             // {
               text = "$TIME";
-              text_align = "right";
-              font_size = timeHeight;
-              valign = "bottom";
-              halign = "right";
-              position = "-50, ${builtins.toString timeOffset}";
+              text_align = "center";
+              font_size = 360;
+              font_family = "Josefin Sans";
+              valign = "center";
+              halign = "center";
+              position = "0, 10%";
             })
 
           # date
           (common
             // {
               text = "cmd[update:10000] date +'%A %d/%m/%Y'";
-              text_align = "right";
-              font_size = dateHeight;
+              text_align = "left";
+              font_size = 14;
+              font_family = "Josefin Sans";
               valign = "bottom";
-              halign = "right";
-              position = "-50, ${builtins.toString dateOffset}";
+              halign = "left";
+              position = "30, 30";
             })
 
           # weather
@@ -98,10 +102,11 @@ with lib; {
             // {
               text = "cmd[update:10000] hypr-utils store cached 'curl wttr.in/London?format=4'";
               text_align = "right";
-              font_size = weatherHeight;
+              font_size = 14;
+              font_family = "Josefin Sans";
               valign = "bottom";
               halign = "right";
-              position = "-50, ${builtins.toString weatherOffset}";
+              position = "-30, 30";
             })
 
           # battery
@@ -109,10 +114,11 @@ with lib; {
             // {
               text = "cmd[update:1000] hypr-utils system battery --num-spaces 3";
               text_align = "right";
-              font_size = 18;
-              valign = "top";
+              font_size = 14;
+              font_family = "Josefin Sans";
+              valign = "bottom";
               halign = "right";
-              position = "-50, -50";
+              position = "-30, 55";
             })
         ];
       };

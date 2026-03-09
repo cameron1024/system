@@ -8,7 +8,7 @@
   # vim.opt.* = ...;
   opts = {
     timeoutlen = 600;
-    cmdheight = 0;
+    cmdheight.__raw = "vim.g.started_by_firenvim and 1 or 0";
 
     number = true;
     relativenumber = true;
@@ -25,7 +25,7 @@
 
     shell = "fish";
 
-    autowriteall = true;
+    autowriteall.__raw = "not vim.g.started_by_firenvim";
     backup = false;
     swapfile = false;
     undodir = "/tmp/.nvimdid";

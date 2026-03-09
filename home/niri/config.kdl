@@ -489,7 +489,7 @@ binds {
     Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
     Mod+Alt+Space hotkey-overlay-title="Speak" {  spawn "pkill" "-USR2" "-n" "handy"; }
     Mod+N hotkey-overlay-title="Speak" {  spawn "wtype" "asdfasdfasdf"; }
-    // Mod+Escape hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
+    Mod+Shift+Backspace hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }
     Mod+W hotkey-overlay-title="Qute" { spawn "qutebrowser"; }

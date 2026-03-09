@@ -2,7 +2,6 @@ final: prev: {
   zmk-studio = final.callPackage ./packages/zmk-studio.nix {};
   euphonica = final.callPackage ./packages/euphonica.nix {};
   material-rounded = final.callPackage ./packages/material-rounded.nix {};
-  proton-pass-cli = final.callPackage ./packages/pass-cli.nix {};
 
   # Fix: upstream nixpkgs package doesn't actually build the theme, it just copies source files
   everforest-gtk-theme = prev.everforest-gtk-theme.overrideAttrs (oldAttrs: {

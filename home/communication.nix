@@ -26,8 +26,8 @@ in {
     # protonmail-desktop
     # protonmail-bridge
     # protonmail-bridge-gui
-    # proton-pass
-    # proton-pass-cli
+    proton-pass
+    proton-pass-cli
     neomutt
     thunderbird
 
