@@ -7,20 +7,39 @@
 // from the command palette.
 [
   {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "space h s": "git::ToggleStaged",
+    }
+  },
+  {
     "context": "Editor && vim_mode == insert",
     "bindings": {
       "ctrl-h": "vim::Left",
       "ctrl-j": "vim::Down",
       "ctrl-k": "vim::Up",
       "ctrl-l": "vim::Right",
-      "alt-space": "editor::AcceptEditPrediction",
+      "alt-space": "editor::AcceptEditPrediction"
     }
   },
   {
     "context": "((Editor && (vim_mode == normal || vim_mode == visual)) || !Editor) && !Terminal",
     "bindings": {
       "space n": "file_finder::Toggle",
-      "space f": "pane::DeploySearch"
+      "space f": "pane::DeploySearch",
+      "space s": "editor::ToggleSplitDiff",
+      "space m": "project_symbols::Toggle",
+      "space escape": "workspace::CloseAllDocks",
+    }
+  },
+  {
+    "bindings": {
+      "ctrl-g": "git_panel::Toggle",
+      "ctrl-s": "outline_panel::Toggle",
+      "ctrl-t": "terminal_panel::Toggle",
+      "ctrl-a": "multi_workspace::ToggleWorkspaceSidebar",
+      "ctrl-/": "agent::Toggle",
+      "ctrl-m": "collab_panel::Toggle",
     }
   },
   {
@@ -62,26 +81,14 @@
   {
     "context": "(Editor && vim_mode == normal)",
     "bindings": {
-      "space p": "project_panel::ToggleFocus",
+      "space p": "project_panel::Toggle",
       "space v": "vim::SwitchToVisualBlockMode"
     }
   },
   {
     "context": "ProjectPanel",
     "bindings": {
-      "space p": "workspace::ToggleLeftDock"
-    }
-  },
-  {
-    "context": "Terminal",
-    "bindings": {
-      "ctrl-t": "workspace::ToggleBottomDock"
-    }
-  },
-  {
-    "context": "!Terminal",
-    "bindings": {
-      "ctrl-t": "terminal_panel::ToggleFocus"
+      "space p": "project_panel::Toggle"
     }
   },
   {
@@ -95,5 +102,5 @@
     "bindings": {
       "alt-shift-f": "editor::Format"
     }
-  }
+  },
 ]
