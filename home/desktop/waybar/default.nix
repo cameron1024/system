@@ -43,7 +43,7 @@ in
             layer = "top";
             position = "top";
             height = 45;
-            output = map (d: d.name) osConfig.services'.desktop.displays or [];
+            output = map (d: d.name) (filter (d: !d.auxiliary) (osConfig.services'.desktop.displays or []));
             start_hidden = false;
 
             modules-left = ["cpu" "memory" "disk" "network" "privacy"];

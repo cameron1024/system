@@ -1138,15 +1138,16 @@
         "rust-overlay": "rust-overlay_5"
       },
       "locked": {
-        "lastModified": 1773072969,
-        "narHash": "sha256-89KrmJcXX43MXMbY+cmEQQKJZMjvYyceYrdga8h9T/8=",
+        "lastModified": 1774017379,
+        "narHash": "sha256-CmC+4UQjeG8M1tY+0fGNoxRoinXVOpFG65wNWt1ZQV0=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "7cd0c5d72d46bb447518e9f2d04e82530bea9744",
+        "rev": "0fe3e91f19654a78c3613ab5b416a0edcda2aa7a",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
+        "ref": "niri-nixos-screenshare",
         "repo": "zed",
         "type": "github"
       }

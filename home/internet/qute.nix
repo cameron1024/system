@@ -1,12 +1,20 @@
-{
+{ pkgs, ... }:
+let
+  startpage = pkgs.writeText "startpage.html" (builtins.readFile ./startpage.html);
+in {
   programs.qutebrowser = {
     enable = true;
-    
+
     keyBindings.normal = {
       "<Ctrl-o>" = "back";
       "<Ctrl-i>" = "forward";
       "H" = "tab-prev";
       "L" = "tab-next";
+    };
+
+    searchEngines = {
+      "DEFAULT" = "https://google.com/search?q={}";
+      "rs" = "https://docs.rs/{}";
     };
 
     settings = let
@@ -39,12 +47,15 @@
         statusline3 = "#e67e80";
       };
     in {
+      url.start_pages = ["file://${startpage}"];
+      tabs.show = "multiple";
+      statusbar.show = "in-mode";
+
       scrolling.smooth = true;
 
       fonts.default_family = "Josefin Sans";
       fonts.default_size = "24px";
 
-      colors.webpage.bg = colors.bg0;
       colors.keyhint.fg = colors.fg;
       colors.keyhint.suffix.fg = colors.red;
       colors.messages.error.bg = colors.bg_red;
@@ -96,3 +107,4 @@
     };
   };
 }
+

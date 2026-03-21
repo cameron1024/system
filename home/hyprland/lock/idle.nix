@@ -45,7 +45,5 @@ in {
         ];
       };
     };
-    services.caffeine.enable = true;
-    home.packages = [pkgs.caffeine-ng];
   };
 }

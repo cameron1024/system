@@ -115,6 +115,10 @@ in {
             type = types.bool;
             default = false;
           };
+          auxiliary = mkOption {
+            type = types.bool;
+            default = false;
+          };
         };
       };
     };

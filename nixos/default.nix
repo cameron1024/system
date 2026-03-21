@@ -66,7 +66,7 @@ in {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = false;
-        gpu'.arch = "zen5";
+        # gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
 
@@ -101,7 +101,7 @@ in {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = false;
-        # gpu'.arch = "zen5";
+        gpu'.arch = "zen5";
 
         boot.loader.efi.efiSysMountPoint = "/boot";
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
@@ -113,6 +113,7 @@ in {
         services'.desktop.displays = with import ./machines/displays.nix; [
           alien
           rog
+          edge
         ];
 
         networking.firewall.enable = false;
@@ -120,6 +121,10 @@ in {
         services.livekit.keyFile = "/home/cameron/livekit";
 
         programs.steam.enable = true;
+
+        nix.settings.secret-key-files = ["/home/cameron/nix-secret"];
+        nix.sshServe.enable = true;
+        nix.sshServe.keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIORfJFA8hMVOCFfg6c0m3uIbllwm59MFy7dSa6ayR7A9 cameron@fast"];
       }
     ];
   };

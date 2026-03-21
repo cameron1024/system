@@ -26,6 +26,7 @@ window-rule {
   open-focused false
 }
 
+
 // Input device configuration.
 // Find the full list of options on the wiki:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Input
@@ -75,6 +76,10 @@ input {
         // scroll-method "on-button-down"
         // scroll-button 273
         // middle-emulation
+    }
+
+    touch {
+      map-to-output "HDMI-A-1"
     }
 
     // Uncomment this to make the mouse warp to the center of newly focused windows.
@@ -462,8 +467,13 @@ window-rule {
     // block-out-from "screencast"
 }
 
-// Example: enable rounded corners for all windows.
-// (This example rule is commented out with a "/-" in front.)
+window-rule {
+  match app-id=r#"kitty-btm-monitor"#
+  match app-id=r#"ytm-monitor"#
+  open-on-output "HDMI-A-1"
+  default-column-width { proportion 0.5; }
+}
+
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
