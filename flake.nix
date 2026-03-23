@@ -1,16 +1,16 @@
 {
-  # nixConfig = {
-  #   extra-substituters = [
-  #     "https://zed.cachix.org"
-  #     "https://cache.garnix.io"
-  #     "https://install.determinate.systems"
-  #   ];
-  #   extra-trusted-public-keys = [
-  #     "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
-  #     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-  #     "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-  #   ];
-  # };
+  nixConfig = {
+    extra-substituters = [
+      "https://zed.cachix.org"
+      "https://cache.garnix.io"
+      "https://install.determinate.systems"
+    ];
+    extra-trusted-public-keys = [
+      "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+    ];
+  };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";

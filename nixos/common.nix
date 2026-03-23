@@ -151,9 +151,6 @@ in {
 
       settings = {
         trusted-users = ["root" "@wheel" "cameron"];
-        trusted-public-keys = [
-          "mini:DD2Jy+6Pb/gCpgACueQupEUUAl0cpzTy5zff94KIZxk="
-        ];
         system-features =
           []
           ++ (lib.optionals (cfg.cpuArch == "znver5") ["gccarch-znver5"])

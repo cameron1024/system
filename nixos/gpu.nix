@@ -38,7 +38,6 @@ with lib; {
       };
 
       services.ollama.rocmOverrideGfx = "11.0.2";
-      services.ollama.package = pkgs.ollama-rocm;
     })
 
     # Intel GPUs
