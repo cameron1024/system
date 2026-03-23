@@ -85,6 +85,8 @@ in {
 
         services'.ai.enable = true;
         services'.ai.ollama.enable = false;
+
+        nix.settings.extra-substituters = ["http://fast:5000"];
       }
     ];
   };
@@ -121,6 +123,9 @@ in {
         services.livekit.keyFile = "/home/cameron/livekit";
 
         programs.steam.enable = true;
+
+        services'.nix-cache.enable = true;
+        services'.nix-cache.secretKeyFile = "/home/cameron/nix-secret";
 
         nix.settings.secret-key-files = ["/home/cameron/nix-secret"];
         nix.sshServe.enable = true;
@@ -190,6 +195,8 @@ in {
         services'.home-assistant.enable = true;
         services'.ai.enable = true;
         services'.adguardhome.enable = true;
+
+        nix.settings.extra-substituters = ["http://fast:5000"];
         services'.openssh.enable = true;
 
         programs.ssh.extraConfig = ''

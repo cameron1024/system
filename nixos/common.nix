@@ -157,6 +157,7 @@ in {
         trusted-users = ["root" "@wheel" "cameron"];
         trusted-public-keys = [
           "mini:DD2Jy+6Pb/gCpgACueQupEUUAl0cpzTy5zff94KIZxk="
+          "fast-1:Ved/lgXlHnqO/fdXBZ/mxf1UCNmoP52pcoBIiHJa/Eo="
         ];
         system-features =
           []
