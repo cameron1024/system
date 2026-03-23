@@ -10,6 +10,7 @@
     refreshRate = 120;
     scale = 1;
     oled = true;
+    auxiliary = false;
   };
   frameworkBuiltin = {
     name = "eDP-1";
@@ -22,6 +23,7 @@
     refreshRate = 120;
     scale = 1.5;
     oled = true;
+    auxiliary = false;
   };
 
   benq = {
@@ -35,6 +37,7 @@
     refreshRate = 60;
     scale = 1;
     oled = false;
+    auxiliary = false;
   };
 
   lg = {
@@ -48,6 +51,7 @@
     refreshRate = 60;
     scale = 1;
     oled = false;
+    auxiliary = false;
   };
 
   alien = {
@@ -61,6 +65,7 @@
     refreshRate = 239.970;
     scale = 1;
     oled = false;
+    auxiliary = false;
   };
   rog = {
     name = "DP-1";
@@ -73,5 +78,19 @@
     refreshRate = 239.972;
     scale = 1;
     oled = true;
+    auxiliary = false;
+  };
+  edge = {
+    name = "HDMI-A-1";
+    resolution.width = 2560;
+    resolution.height = 720;
+
+    position.x = 2560;
+    position.y = 1440;
+
+    refreshRate = 60.266;
+    scale = 1;
+    oled = false;
+    auxiliary = true;
   };
 }

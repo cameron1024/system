@@ -52,6 +52,11 @@ with lib; {
           type = types.bool;
           description = "Whether this display is OLED (and therefore requires burn-in mitigation)";
         };
+
+        auxiliary = mkOption {
+          type = types.bool;
+          default = false;
+        };
       };
     };
   in {
