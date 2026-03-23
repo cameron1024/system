@@ -13,6 +13,9 @@
     immich.enable = lib.mkEnableOption "Enable Immich service";
     jellyfin.enable = lib.mkEnableOption "Enable Jellyfin service";
     nix-cache.enable = lib.mkEnableOption "Enable Nix cache service";
+    nix-cache.secretKeyFile = lib.mkOption {
+      type = lib.types.str;
+    };
   };
 
   config = {

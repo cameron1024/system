@@ -155,6 +155,11 @@ in {
 
       settings = {
         trusted-users = ["root" "@wheel" "cameron"];
+        extra-substituters = ["http://fast:5000"];
+        trusted-public-keys = [
+          "mini:DD2Jy+6Pb/gCpgACueQupEUUAl0cpzTy5zff94KIZxk="
+          "fast-1:Ved/lgXlHnqO/fdXBZ/mxf1UCNmoP52pcoBIiHJa/Eo="
+        ];
         system-features =
           []
           ++ (lib.optionals (cfg.cpuArch == "znver5") ["gccarch-znver5"])

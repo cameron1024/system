@@ -122,9 +122,11 @@ in {
 
         programs.steam.enable = true;
 
+        services'.nix-cache.enable = true;
+        services'.nix-cache.secretKeyFile = "/home/cameron/nix-secret";
+
         nix.settings.secret-key-files = ["/home/cameron/nix-secret"];
-        nix.sshServe.enable = true;
-        nix.sshServe.keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIORfJFA8hMVOCFfg6c0m3uIbllwm59MFy7dSa6ayR7A9 cameron@fast"];
+
       }
     ];
   };
