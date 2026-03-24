@@ -1,4 +1,7 @@
 {
+  
+  
+  
   nixConfig = {
     extra-substituters = [
       "https://zed.cachix.org"
