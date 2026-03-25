@@ -1,4 +1,8 @@
-{pkgs, lib, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   plugins.lean = {
     enable = true;
     lazyLoad.enable = true;
@@ -6,6 +10,13 @@
     settings.mappings = true;
   };
   dependencies.lean.enable = lib.mkForce false;
+  autoCmd = [
+    {
+      command = "set nospell";
+      event = "FileType";
+      pattern = "lean";
+    }
+  ];
 
   # plugins.treesitter.grammarPackages = [
   #   (pkgs.tree-sitter.buildGrammar {

@@ -25,9 +25,9 @@
       cargo-release
       cargo-flamegraph
 
-      (pkgs.callPackage ./rust-kani.nix {
-        inherit (inputs) rust-overlay kani-tarball kani-repo;
-      })
+      # (pkgs.callPackage ./rust-kani.nix {
+      #   inherit (inputs) rust-overlay kani-tarball kani-repo;
+      # })
 
       perf
       rr

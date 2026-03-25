@@ -45,11 +45,11 @@
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
 
-    kani-repo.url = "git+https://github.com/model-checking/kani?ref=main&rev=96f7e59a8c8058f3edbdcc4d52940e376d54ff09&submodules=1";
-    kani-repo.flake = false;
-
-    kani-tarball.url = "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz";
-    kani-tarball.flake = false;
+    # kani-repo.url = "git+https://github.com/model-checking/kani?ref=main&rev=96f7e59a8c8058f3edbdcc4d52940e376d54ff09&submodules=1";
+    # kani-repo.flake = false;
+    #
+    # kani-tarball.url = "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz";
+    # kani-tarball.flake = false;
 
     zed.url = "github:zed-industries/zed";
     zed.inputs.nixpkgs.follows = "nixpkgs";

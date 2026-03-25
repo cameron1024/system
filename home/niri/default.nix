@@ -10,7 +10,7 @@ with lib; {
   imports = [
     ./screenshot.nix
 
-    ../hyprland/notifications.nix
+    # ../hyprland/notifications.nix
     ../hyprland/hardware.nix
     ../desktop
 

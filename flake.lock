@@ -411,11 +411,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774007980,
-        "narHash": "sha256-FOnZjElEI8pqqCvB6K/1JRHTE8o4rer8driivTpq2uo=",
+        "lastModified": 1774293042,
+        "narHash": "sha256-OEBV+Y5I4Ldu98k0KvGXRfJYh+jjE8ocCSL/dxTGs1s=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "9670de2921812bc4e0452f6e3efd8c859696c183",
+        "rev": "bc357c75e3142a31b849ba49c5299fb52c61cf59",
         "type": "github"
       },
       "original": {
@@ -445,39 +445,6 @@
         "owner": "cameron1024",
         "repo": "hypr-utils",
         "type": "github"
-      }
-    },
-    "kani-repo": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1751568156,
-        "narHash": "sha256-8UyAO9eTwcUtOktSJ9QdYpccgDRefWDTIewjAwvkhdA=",
-        "ref": "main",
-        "rev": "96f7e59a8c8058f3edbdcc4d52940e376d54ff09",
-        "revCount": 2130,
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/model-checking/kani"
-      },
-      "original": {
-        "ref": "main",
-        "rev": "96f7e59a8c8058f3edbdcc4d52940e376d54ff09",
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/model-checking/kani"
-      }
-    },
-    "kani-tarball": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1751573292,
-        "narHash": "sha256-RP38iCbQWoQyAYtq2Nnkm6iFhXtVQ4rbHaKyCFMcIsQ=",
-        "type": "tarball",
-        "url": "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz"
       }
     },
     "neovim-nightly-overlay": {
@@ -810,11 +777,11 @@
     },
     "nixpkgs_7": {
       "locked": {
-        "lastModified": 1773821835,
-        "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
+        "lastModified": 1774106199,
+        "narHash": "sha256-US5Tda2sKmjrg2lNHQL3jRQ6p96cgfWh3J1QBliQ8Ws=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+        "rev": "6c9a78c09ff4d6c21d0319114873508a6ec01655",
         "type": "github"
       },
       "original": {
@@ -885,8 +852,6 @@
         "hexecute": "hexecute",
         "home-manager": "home-manager",
         "hypr-utils": "hypr-utils",
-        "kani-repo": "kani-repo",
-        "kani-tarball": "kani-tarball",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nix-snapd": "nix-snapd",
         "nixgl": "nixgl",

@@ -11,34 +11,34 @@
     };
   };
 in {
-    plugins.lsp.servers.rust_analyzer.enable = true;
-    plugins.lsp.servers.rust_analyzer.installCargo = false;
-    plugins.lsp.servers.rust_analyzer.installRustc = false;
-    plugins.lsp.servers.rust_analyzer.settings.check.command = "clippy";
+  plugins.lsp.servers.rust_analyzer.enable = true;
+  plugins.lsp.servers.rust_analyzer.installCargo = false;
+  plugins.lsp.servers.rust_analyzer.installRustc = false;
+  plugins.lsp.servers.rust_analyzer.settings.check.command = "clippy";
 
-    extraPlugins = [ferris];
-    autoCmd = [
-      {
-        command = "lua require 'ferris'.setup()";
-        event = "FileType";
-        pattern = "rust";
-      }
-    ];
+  extraPlugins = [ferris];
+  autoCmd = [
+    {
+      command = "lua require 'ferris'.setup()";
+      event = "FileType";
+      pattern = "rust";
+    }
+  ];
 
-    keymaps = [
-      {
-        key = "<C-p>";
-        action.__raw = ''
-          function()
-            require "ferris.methods.open_parent_module"()
-          end
-        '';
-      }
-    ];
+  keymaps = [
+    {
+      key = "<C-p>";
+      action.__raw = ''
+        function()
+          require "ferris.methods.open_parent_module"()
+        end
+      '';
+    }
+  ];
 
-    plugins.crates = {
-      enable = true;
-      lazyLoad.enable = true;
-      lazyLoad.settings.ft = "toml";
-    };
+  plugins.crates = {
+    enable = true;
+    lazyLoad.enable = true;
+    lazyLoad.settings.ft = "toml";
+  };
 }
