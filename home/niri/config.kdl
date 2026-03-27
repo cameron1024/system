@@ -496,8 +496,8 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Backslash { spawn "hexecute"; }
 
-    // Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
-    Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
+    Mod+Space hotkey-overlay-title="Launcher" {  spawn "rofi" "-show" "drun"; }
+    // Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
     Mod+Alt+Space hotkey-overlay-title="Speak" {  spawn "pkill" "-USR2" "-n" "handy"; }
     Mod+N hotkey-overlay-title="Speak" {  spawn "wtype" "asdfasdfasdf"; }
     Mod+Shift+Backspace hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }

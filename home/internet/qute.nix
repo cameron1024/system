@@ -10,6 +10,7 @@ in {
       "<Ctrl-i>" = "forward";
       "H" = "tab-prev";
       "L" = "tab-next";
+      "<Ctrl-space>" = "edit-text";
     };
 
     searchEngines = {
@@ -47,8 +48,10 @@ in {
         statusline3 = "#e67e80";
       };
     in {
+
       url.start_pages = ["file://${startpage}"];
-      tabs.show = "multiple";
+      tabs.show = "switching";
+      tabs.position = "bottom";
       statusbar.show = "in-mode";
 
       scrolling.smooth = true;
@@ -99,8 +102,8 @@ in {
       colors.tabs.odd.fg = colors.fg;
       colors.tabs.selected.even.bg = colors.bg2;
       colors.tabs.selected.odd.bg = colors.bg2;
-      colors.tabs.selected.even.fg = colors.fg;
-      colors.tabs.selected.odd.fg = colors.fg;
+      colors.tabs.selected.even.fg = colors.green;
+      colors.tabs.selected.odd.fg = colors.green;
       colors.tabs.indicator.start = colors.blue;
       colors.tabs.indicator.stop = colors.green;
       colors.tabs.indicator.error = colors.red;

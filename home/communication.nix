@@ -23,11 +23,10 @@ in {
 
     zathura
 
-    # protonmail-desktop
-    # protonmail-bridge
-    # protonmail-bridge-gui
+    protonmail-desktop
     proton-pass
     proton-pass-cli
+    keyutils
     neomutt
     thunderbird
 
