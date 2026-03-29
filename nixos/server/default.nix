@@ -4,9 +4,9 @@
   ...
 }: {
   imports = [
-    ./adguard.nix
     ./dashboard.nix
     ./home-assistant
+    ./home-network.nix
     ./nix-cache.nix
   ];
   options.services' = {

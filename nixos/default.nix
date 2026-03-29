@@ -192,6 +192,7 @@ in {
         services'.home-assistant.enable = true;
         services'.ai.enable = true;
         services'.adguardhome.enable = true;
+        services'.ntopng.enable = true;
         services'.openssh.enable = true;
 
         programs.ssh.extraConfig = ''
