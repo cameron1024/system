@@ -1,10 +1,41 @@
 {
+  "ssh_connections": [
+    {
+      "host": "mini",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/cameron/system"
+          ]
+        }
+      ]
+    }
+  ],
+  "status_bar": {
+    "show_active_file": true
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "inline_code_actions": false,
+  "gutter": {
+    "min_line_number_digits": 2,
+    "folds": false,
+    "runnables": false,
+    "breakpoints": false
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
   "debugger": {
-    "dock": "right"
+    "dock": "bottom"
   },
   "document_folding_ranges": "on",
   "auto_indent_on_paste": false,
   "git_panel": {
+    "dock": "left",
     "tree_view": false
   },
   "indent_guides": {
@@ -29,6 +60,7 @@
     "enabled": true,
   },
   "git": {
+    "enable_diff": true,
     "inline_blame": {
       "enabled": true,
     },
@@ -54,14 +86,24 @@
     },
   },
   "relative_line_numbers": "enabled",
-  "icon_theme": "Colored Zed Icons Theme Dark",
+  "icon_theme": {
+    "mode": "light",
+    "light": "Colored Zed Icons Theme Dark",
+    "dark": "Colored Zed Icons Theme Dark"
+  },
   "audio": {
     "experimental.legacy_audio_compatible": true,
     "experimental.auto_microphone_volume": true,
-    "experimental.rodio_audio": true,
+    "experimental.rodio_audio": false,
   },
   "agent": {
+    "dock": "right",
     "tool_permissions": {
+      "tools": {
+        "open": {
+          "default": "allow"
+        }
+      },
       "default": "allow"
     },
     "show_turn_stats": true,
@@ -77,6 +119,7 @@
     "model_parameters": [],
   },
   "project_panel": {
+    "dock": "left",
     "bold_folder_labels": true,
     "indent_guides": {
       "show": "always",
@@ -143,13 +186,13 @@
   /* === THEME === */
 
   "buffer_font_family": "Fira Code",
-  "buffer_font_size": 18,
+  "buffer_font_size": 16,
   "buffer_font_features": {
     "calt": true,
     "clig": true,
   },
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 18,
+  "ui_font_size": 20,
   "theme": {
     "mode": "dark",
     "light": "One Light",

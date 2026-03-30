@@ -10,7 +10,7 @@
     "context": "Editor && vim_mode == normal",
     "bindings": {
       "space h s": "git::ToggleStaged",
-    }
+    },
   },
   {
     "context": "Editor && vim_mode == insert",
@@ -19,8 +19,8 @@
       "ctrl-j": "vim::Down",
       "ctrl-k": "vim::Up",
       "ctrl-l": "vim::Right",
-      "alt-space": "editor::AcceptEditPrediction"
-    }
+      "alt-space": "editor::AcceptEditPrediction",
+    },
   },
   {
     "context": "((Editor && (vim_mode == normal || vim_mode == visual)) || !Editor) && !Terminal",
@@ -30,17 +30,25 @@
       "space s": "editor::ToggleSplitDiff",
       "space m": "project_symbols::Toggle",
       "space escape": "workspace::CloseAllDocks",
-    }
+    },
   },
   {
     "bindings": {
-      "ctrl-g": "git_panel::Toggle",
+      "ctrl-g ctrl-g": "git_panel::Toggle",
+      "ctrl-g ctrl-b": "git::BranchDiff",
+      "ctrl-g ctrl-d": "git::Diff",
       "ctrl-s": "outline_panel::Toggle",
       "ctrl-t": "terminal_panel::Toggle",
-      "ctrl-a": "multi_workspace::ToggleWorkspaceSidebar",
+      "ctrl-a ctrl-a": "multi_workspace::ToggleWorkspaceSidebar",
+      "ctrl-a n": "multi_workspace::NextWorkspace",
+      "ctrl-a p": "multi_workspace::PreviousWorkspace",
       "ctrl-/": "agent::Toggle",
       "ctrl-m": "collab_panel::Toggle",
-    }
+      "ctrl-escape": [
+        "action::Sequence",
+        ["workspace::CloseAllDocks", "multi_workspace::CloseWorkspaceSidebar"],
+      ],
+    },
   },
   {
     "context": "(Editor && (vim_mode == normal || vim_mode == visual)) || !Editor",
@@ -51,7 +59,7 @@
       "ctrl-k": "workspace::ActivatePaneUp",
       "ctrl-o": "pane::GoBack",
       "ctrl-i": "pane::GoForward",
-    }
+    },
   },
   {
     "context": "Editor && (vim_mode == normal || vim_mode == visual) && !showing_code_actions",
@@ -64,7 +72,10 @@
       "ctrl-n": "editor::GoToDiagnostic",
       "g i": "editor::GoToImplementation",
       "g t": "editor::GoToTypeDefinition",
-      "g r r": ["editor::FindAllReferences", { "always_open_multibuffer": false }],
+      "g r r": [
+        "editor::FindAllReferences",
+        { "always_open_multibuffer": false },
+      ],
       "space q": "pane::CloseActiveItem",
       "space i": "editor::ToggleInlayHints",
       "ctrl-v": "pane::SplitRight",
@@ -74,33 +85,32 @@
       "space z": "workspace::ToggleZoom",
       "alt-l": "vim::SelectNextSyntaxNode",
       "alt-h": "vim::SelectPreviousSyntaxNode",
-      // "]m": "editor::SelectNextMultibufferMatch",
-      // "[m": "editor::SelectPreviousMultibufferMatch",
-    }
+      "space h p ": "editor::ToggleSelectedDiffHunks",
+    },
   },
   {
     "context": "(Editor && vim_mode == normal)",
     "bindings": {
       "space p": "project_panel::Toggle",
-      "space v": "vim::SwitchToVisualBlockMode"
-    }
+      "space v": "vim::SwitchToVisualBlockMode",
+    },
   },
   {
     "context": "ProjectPanel",
     "bindings": {
-      "space p": "project_panel::Toggle"
-    }
+      "space p": "project_panel::Toggle",
+    },
   },
   {
     "context": "Editor && vim_mode == visual",
     "bindings": {
-      "S": "vim::PushAddSurrounds"
-    }
+      "S": "vim::PushAddSurrounds",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "alt-shift-f": "editor::Format"
-    }
+      "alt-shift-f": "editor::Format",
+    },
   },
 ]
