@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }: let
   wallpapers = config.services'.desktop.wallpapers;
