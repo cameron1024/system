@@ -11,11 +11,11 @@
 in {
   xdg.configFile."zathura/zathurarc".text = ''
     # Everforest Dark Medium — only colour & font overrides
-    set font "Josefin Sans 12"
+    set font "Josefin Sans 18"
 
     # Default UI
     set default-fg "#d3c6aa"
-    set default-bg "#2d353b"
+    set default-bg "#1e2326"
 
     # Status bar
     set statusbar-fg "#d3c6aa"
@@ -46,6 +46,13 @@ in {
     set highlight-active-color "#83c092"
     set highlight-transparency 0.4
 
+    # Document dark mode (toggle with Ctrl+R)
+    set recolor-lightcolor "#1e2326"
+    set recolor-darkcolor "#d3c6aa"
+    set recolor-keephue true
+    set recolor-reverse-video true
+    set recolor false
+
     # Index mode
     set index-fg "#d3c6aa"
     set index-bg "#2d353b"
@@ -53,7 +60,7 @@ in {
     set index-active-bg "#a7c080"
 
     # Loading indicator
-    set render-loading-bg "#2d353b"
+    set render-loading-bg "#1e2326"
     set render-loading-fg "#d3c6aa"
   '';
 
