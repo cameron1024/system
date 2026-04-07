@@ -8,7 +8,8 @@ hotkey-overlay {
 
 overview {
   zoom 0.33
-  // backdrop-color "#1e2428"
+  backdrop-color "#1e2428"
+  workspace-shadow { off; }
 }
 
 clipboard {
@@ -24,6 +25,11 @@ gestures {
 window-rule {
   match app-id="Handy"
   open-focused false
+}
+
+layer-rule {
+  match namespace="^swww-daemon$"
+  place-within-backdrop true
 }
 
 
@@ -133,6 +139,8 @@ input {
 layout {
     // Set gaps around windows in logical pixels.
     gaps 24
+    
+    background-color "transparent"
 
     insert-hint {
       color "#d699b680"
