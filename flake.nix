@@ -49,7 +49,7 @@
     # kani-tarball.flake = false;
 
     zed.url = "github:zed-industries/zed";
-    zed.inputs.nixpkgs.follows = "nixpkgs";
+    # zed.inputs.nixpkgs.follows = "nixpkgs";
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
