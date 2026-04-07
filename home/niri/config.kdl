@@ -28,7 +28,7 @@ window-rule {
 }
 
 layer-rule {
-  match namespace="^swww-daemon$"
+  match namespace="^awww-daemon$"
   place-within-backdrop true
 }
 
@@ -295,7 +295,7 @@ layout {
 // See the binds section below for more spawn examples.
 
 spawn-at-startup "waybar"
-spawn-at-startup "swww-daemon"
+spawn-at-startup "awww-daemon"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayosd-server"

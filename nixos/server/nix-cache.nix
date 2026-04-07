@@ -4,14 +4,12 @@
   ...
 }: {
   config = lib.mkIf config.services'.nix-cache.enable {
-    services.nix-serve = {
+    services.harmonia = {
       enable = true;
-      port = 5000;
-      secretKeyFile = config.services'.nix-cache.secretKeyFile;
+      signKeyPaths = [config.services'.nix-cache.secretKeyFile];
+      settings.bind = "0.0.0.0:5000";
     };
 
-    networking.firewall.allowedTCPPorts = [
-      config.services.nix-serve.port
-    ];
+    networking.firewall.allowedTCPPorts = [5000];
   };
 }
