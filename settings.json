@@ -92,11 +92,10 @@
     "dark": "Colored Zed Icons Theme Dark"
   },
   "audio": {
-    "experimental.legacy_audio_compatible": true,
     "experimental.auto_microphone_volume": true,
-    "experimental.rodio_audio": false,
   },
   "agent": {
+    "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
       "tools": {
@@ -107,7 +106,7 @@
       "default": "allow"
     },
     "show_turn_stats": true,
-    "play_sound_when_agent_done": false,
+    "play_sound_when_agent_done": "never",
     "use_modifier_to_send": true,
     "default_profile": "write",
     "default_model": {
@@ -130,7 +129,6 @@
   "collaboration_panel": {
     "dock": "right",
   },
-  // "disable_ai": true,
   "edit_predictions": {
     "mode": "subtle",
   },
@@ -192,7 +190,7 @@
     "clig": true,
   },
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 20,
+  "ui_font_size": 16,
   "theme": {
     "mode": "dark",
     "light": "One Light",

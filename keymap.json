@@ -40,8 +40,10 @@
       "ctrl-s": "outline_panel::Toggle",
       "ctrl-t": "terminal_panel::Toggle",
       "ctrl-a ctrl-a": "multi_workspace::ToggleWorkspaceSidebar",
-      "ctrl-a n": "multi_workspace::NextWorkspace",
-      "ctrl-a p": "multi_workspace::PreviousWorkspace",
+      "ctrl-a n": "multi_workspace::NextProjectGroup",
+      "ctrl-a p": "multi_workspace::PreviousProjectGroup",
+      "ctrl-a ctrl-n": "multi_workspace::NextThread",
+      "ctrl-a ctrl-p": "multi_workspace::PreviousThread",
       "ctrl-/": "agent::Toggle",
       "ctrl-m": "collab_panel::Toggle",
       "ctrl-escape": [
