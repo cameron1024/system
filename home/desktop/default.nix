@@ -21,6 +21,7 @@ with lib; {
     ./sherlock.nix
     ./rofi
     ./wallpaper.nix
+    ./vicinae
   ];
 
   options = {
