@@ -18,8 +18,8 @@
           users = [
             {
               name = "cameron";
-              # generated via `htpasswd -bnBC 10 cameron <password>`
-              password = "$2y$10$/qsM6SVedU0E39CpaJjztuC8dnVfxqPiqGW3Vv/nTSup4FoRcHYv.";
+              # generated via `htpasswd -bnBC 10 cameron password`
+              password = "cameron:$2y$10$2MTbXN.RWKSeHT4NJngIIeFmdgMPQFbgBD/QtotpkJU15atDquX7m";
             }
           ];
           dns.bind_hosts = ["0.0.0.0"];
