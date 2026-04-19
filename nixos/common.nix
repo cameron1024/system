@@ -129,8 +129,6 @@ in {
 
     console.keyMap = "uk";
 
-    services.flatpak.enable = true;
-    services.snap.enable = true;
 
     environment.systemPackages = with pkgs; [
       git

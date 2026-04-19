@@ -95,6 +95,9 @@ with lib; {
     hardware.graphics.enable = true;
     hardware.graphics.enable32Bit = true;
 
+    services.flatpak.enable = true;
+    services.snap.enable = true;
+
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
 

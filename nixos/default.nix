@@ -171,18 +171,26 @@ in {
     system = "x86_64-linux";
     spec = import ./machines/specs/mini.nix {inherit inputs;};
     homeModules = [
-      {
+      ({lib, ...}: {
         home.stateVersion = "25.11";
         programs'.deployment-tools.enable = true;
-      }
+
+        # temporary workaround
+        programs.obs-studio.enable = lib.mkForce false;
+        programs.firefox.enable = lib.mkForce false;
+        programs.qutebrowser.enable = lib.mkForce false;
+        programs.ghostty.enable = lib.mkForce false;
+        programs.kitty.enable = lib.mkForce false;
+        programs.alacritty.enable = lib.mkForce false;
+      })
     ];
     modules = [
       ./hardware/mini2.nix
-      {
+      ({lib, ...}: {
         system.stateVersion = "24.11";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = true;
-        gpu'.arch = "zen5";
+        # gpu'.arch = "zen5";
 
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
@@ -200,14 +208,19 @@ in {
           Host pi
             ForwardAgent yes
         '';
-        programs'.niri.enable = true;
-        services'.desktop.displays = with import ./machines/displays.nix; [
-          alien
-          rog
-        ];
 
-        programs.steam.enable = true;
-      }
+        # temporary workaround
+        programs.coolercontrol.enable = lib.mkForce false;
+
+        users.users."cameron" = {
+          isNormalUser = true;
+          extraGroups = [
+            "wheel"
+            "networkmanager"
+          ];
+        };
+
+      })
     ];
   };
 

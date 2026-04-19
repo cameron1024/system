@@ -13,13 +13,13 @@
       services.adguardhome = {
         enable = true;
         openFirewall = true;
-        mutableSettings = true;
+        mutableSettings = false;
         settings = {
           users = [
             {
               name = "admin";
-              # generated via `htpasswd -bnBC 10 admin password`
-              password = "admin:$2y$10$Y54ALyzkvMBG7yzXpJqMguYJu.zbc8PaMgCezlUPU1yQfngkMXrm6";
+              # generated via `htpasswd -bnBC 10 admin password`. Do not include `admin:` prefix
+              password = "$2y$10$Y54ALyzkvMBG7yzXpJqMguYJu.zbc8PaMgCezlUPU1yQfngkMXrm6";
             }
           ];
           dns.bind_hosts = ["0.0.0.0"];

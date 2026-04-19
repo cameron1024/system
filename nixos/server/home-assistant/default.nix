@@ -39,9 +39,9 @@ in
         openFirewall = true;
         inherit extraComponents;
 
-        customComponents = with pkgs.home-assistant-custom-components; [
-          dreo
-        ];
+        # customComponents = with pkgs.home-assistant-custom-components; [
+        #   dreo
+        # ];
 
         config = {
           default_config = {};
