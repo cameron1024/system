@@ -1,7 +1,4 @@
 {
-  
-  
-  
   nixConfig = {
     extra-substituters = [
       "https://zed.cachix.org"
@@ -44,15 +41,11 @@
 
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
+    
+    niri.url = "github:yalter/niri";
 
-    # kani-repo.url = "git+https://github.com/model-checking/kani?ref=main&rev=96f7e59a8c8058f3edbdcc4d52940e376d54ff09&submodules=1";
-    # kani-repo.flake = false;
-    #
-    # kani-tarball.url = "https://github.com/model-checking/kani/releases/download/kani-0.64.0/kani-0.64.0-x86_64-unknown-linux-gnu.tar.gz";
-    # kani-tarball.flake = false;
-
-    zed.url = "github:zed-industries/zed";
-    zed.inputs.nixpkgs.follows = "nixpkgs";
+    zed.url = "github:zed-industries/zed/nightly";
+    # zed.url = "github:zed-industries/zed";
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
@@ -62,6 +55,8 @@
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
     handy.url = "github:cameron1024/handy";
+
+    vicinae.url = "github:vicinaehq/vicinae";
   };
 
   outputs = inputs: let

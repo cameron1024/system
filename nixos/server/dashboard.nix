@@ -8,6 +8,8 @@ with lib; let
   jellyfin = config.services'.jellyfin.enable;
   immich = config.services'.immich.enable;
   home-assistant = config.services'.home-assistant.enable;
+  adguardhome = config.services'.adguardhome.enable;
+  ntopng = config.services'.ntopng.enable;
 in {
   options.services'.dashboard.enable = mkOption {
     type = types.bool;
@@ -15,6 +17,8 @@ in {
       jellyfin
       immich
       home-assistant
+      adguardhome
+      ntopng
     ];
   };
 
@@ -112,6 +116,53 @@ in {
                   };
                 }
               ]);
+          }
+        ])
+        ++ (optionals (adguardhome || ntopng) [
+          {
+            "Network" =
+              []
+              ++ (optionals adguardhome [
+                {
+                  "AdGuard Home" = {
+                    href = "http://mini:4909";
+                    description = "DNS Ad Blocking";
+                    widgets = [
+                      {
+                        type = "adguard";
+                        url = "http://mini:4909";
+                        username = "cameron";
+                        password = "{{HOMEPAGE_VAR_ADGUARD_PASSWORD}}";
+                      }
+                    ];
+                  };
+                }
+              ])
+              ++ (optionals ntopng [
+                {
+                  "ntopng" = {
+                    href = "http://mini:3000";
+                    description = "Network Traffic";
+                  };
+                }
+              ])
+              ++ [
+                {
+                  "Router" = {
+                    href = "http://192.168.1.1";
+                    description = "OpenWrt";
+                    widgets = [
+                      {
+                        type = "openwrt";
+                        url = "http://192.168.1.1";
+                        username = "root";
+                        password = "{{HOMEPAGE_VAR_ROUTER_PASSWORD}}";
+                        interfaceName = "pppoe-wan";
+                      }
+                    ];
+                  };
+                }
+              ];
           }
         ]);
 

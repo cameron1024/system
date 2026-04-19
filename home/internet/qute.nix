@@ -61,6 +61,8 @@ in {
       fonts.default_family = "Josefin Sans";
       fonts.default_size = "24px";
 
+      colors.webpage.preferred_color_scheme = "dark";
+
       colors.keyhint.fg = colors.fg;
       colors.keyhint.suffix.fg = colors.red;
       colors.messages.error.bg = colors.bg_red;

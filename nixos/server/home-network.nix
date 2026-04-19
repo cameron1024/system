@@ -17,9 +17,9 @@
         settings = {
           users = [
             {
-              name = "cameron";
-              # generated via `htpasswd -bnBC 10 cameron <password>`
-              password = "$2y$10$/qsM6SVedU0E39CpaJjztuC8dnVfxqPiqGW3Vv/nTSup4FoRcHYv.";
+              name = "admin";
+              # generated via `htpasswd -bnBC 10 admin password`
+              password = "admin:$2y$10$Y54ALyzkvMBG7yzXpJqMguYJu.zbc8PaMgCezlUPU1yQfngkMXrm6";
             }
           ];
           dns.bind_hosts = ["0.0.0.0"];
@@ -27,7 +27,7 @@
           dns.upstream_dns = ["1.1.1.1"];
 
           querylog.enabled = false;
-          statistics.enabled = false;
+          statistics.enabled = true;
         };
         port = 4909;
         host = "0.0.0.0";

@@ -13,14 +13,14 @@
   '';
 in {
   home.packages = lib.mkIf pkgs.stdenv.isLinux [
-    pkgs.swww
+    pkgs.awww
     randomWallpaper
   ];
 
   wayland.windowManager.hyprland.settings = {
     exec-once = [
       # set the clear background even if the daemon is running
-      "swww-daemon; ${randomWallpaper}/bin/randomWallpaper"
+      "awww-daemon; ${randomWallpaper}/bin/randomWallpaper"
     ];
   };
 

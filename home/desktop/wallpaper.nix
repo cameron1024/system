@@ -2,13 +2,14 @@
   pkgs,
   lib,
   config,
+  inputs,
   ...
 }: let
   wallpapers = config.services'.desktop.wallpapers;
   setWallpaper = pkgs.writeShellApplication {
     name = "set-wallpaper.sh";
     runtimeInputs = [
-      pkgs.swww
+      pkgs.awww
       wallpapers
     ];
     text = ''
@@ -17,7 +18,7 @@
       >&2 echo "wallpaper: $WALLPAPER" 
 
       ln -sf "$WALLPAPER" "$HOME/.wallpaper"
-      swww img "$HOME/.wallpaper" \
+      awww img "$HOME/.wallpaper" \
         --resize crop \
         --transition-fps 120 \
         --transition-pos top-left \
@@ -35,7 +36,7 @@ in {
 
   config = lib.mkIf config.services'.desktop.enable {
     home.packages = with pkgs; [
-      swww
+      awww
       setWallpaper
     ];
 
