@@ -26,10 +26,8 @@
           dns.bootstrap_dns = ["1.1.1.1"];
           dns.upstream_dns = ["1.1.1.1"];
 
-          # Privacy: disable query logging and statistics to avoid persistently
-          # recording which domains devices on the network are visiting
           querylog.enabled = false;
-          statistics.enabled = false;
+          statistics.enabled = true;
         };
         port = 4909;
         host = "0.0.0.0";

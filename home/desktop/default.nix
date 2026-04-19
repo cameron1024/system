@@ -5,7 +5,8 @@
   inputs,
   ...
 }:
-with lib; {
+with lib;
+{
   imports = [
     # inputs.noctalia.homeModules.default
 
@@ -24,8 +25,23 @@ with lib; {
     ./vicinae
   ];
 
-  options = {
-    services'.desktop.enable = mkEnableOption "desktop";
+  options.services'.desktop = {
+    enable = mkEnableOption "desktop";
+
+    launch-at-startup =
+      with types;
+      mkOption {
+        default = [ ];
+        type = listOf (submodule {
+          options = {
+            program = mkOption { type = str; };
+            args = mkOption {
+              type = listOf str;
+              default = [ ];
+            };
+          };
+        });
+      };
   };
 
   config = mkIf config.services'.desktop.enable {
@@ -42,8 +58,7 @@ with lib; {
     xdg.userDirs.enable = true;
 
     home.packages =
-      if pkgs.stdenv.isLinux
-      then
+      if pkgs.stdenv.isLinux then
         (with pkgs; [
           libnotify
           wl-clipboard
@@ -54,6 +69,7 @@ with lib; {
           wtype
           dotool
         ])
-      else [];
+      else
+        [ ];
   };
 }
