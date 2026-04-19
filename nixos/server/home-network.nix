@@ -17,9 +17,9 @@
         settings = {
           users = [
             {
-              name = "cameron";
-              # generated via `htpasswd -bnBC 10 cameron password`
-              password = "cameron:$2y$10$2MTbXN.RWKSeHT4NJngIIeFmdgMPQFbgBD/QtotpkJU15atDquX7m";
+              name = "admin";
+              # generated via `htpasswd -bnBC 10 admin password`
+              password = "admin:$2y$10$Y54ALyzkvMBG7yzXpJqMguYJu.zbc8PaMgCezlUPU1yQfngkMXrm6";
             }
           ];
           dns.bind_hosts = ["0.0.0.0"];
