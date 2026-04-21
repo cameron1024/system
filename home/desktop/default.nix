@@ -56,6 +56,7 @@ with lib;
 
     xdg.enable = true;
     xdg.userDirs.enable = true;
+    xdg.userDirs.setSessionVariables = true;
 
     home.packages =
       if pkgs.stdenv.isLinux then

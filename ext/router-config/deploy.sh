@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+source "$REPO_ROOT/.env" 2>/dev/null || true
+
 ROUTER="root@192.168.1.1"
+MINI_STATIC_IP="192.168.1.2"
 
 do_install() {
     echo "=== Updating packages ==="
@@ -66,30 +70,56 @@ do_set() {
         uci set firewall.@defaults[0].flow_offloading_hw="0"
     '
 
-    if [ -n "${NEW_SSID:-}" ]; then
+    # disable IPv6
+    ssh "$ROUTER" '
+        uci set network.wan6.auto="0"
+        uci set dhcp.lan.dhcpv6="disabled"
+        uci set dhcp.lan.ra="disabled"
+        uci delete network.globals.ula_prefix 2>/dev/null || true
+    '
+
+    # Static DHCP lease for mini + forward DNS to AdGuard Home
+    if [ -n "${ROUTER_MINI_MAC:-}" ]; then
+        echo "  Setting mini static lease and DNS forwarding"
+        ssh "$ROUTER" "
+            uci set dhcp.mini=host
+            uci set dhcp.mini.name='mini'
+            uci set dhcp.mini.mac='$ROUTER_MINI_MAC'
+            uci set dhcp.mini.ip='$MINI_STATIC_IP'
+        "
+        ssh "$ROUTER" '
+            uci set dhcp.@dnsmasq[0].noresolv="1"
+            uci del_list dhcp.@dnsmasq[0].server="'"$MINI_STATIC_IP"'" 2>/dev/null || true
+            uci add_list dhcp.@dnsmasq[0].server="'"$MINI_STATIC_IP"'"
+            uci del_list dhcp.@dnsmasq[0].server="1.1.1.1" 2>/dev/null || true
+            uci add_list dhcp.@dnsmasq[0].server="1.1.1.1"
+        '
+    fi
+
+    if [ -n "${ROUTER_SSID:-}" ]; then
         echo "  Setting WiFi SSID"
         ssh "$ROUTER" "
-            uci set wireless.default_radio0.ssid='$NEW_SSID'
-            uci set wireless.default_radio1.ssid='$NEW_SSID'
+            uci set wireless.default_radio0.ssid='$ROUTER_SSID'
+            uci set wireless.default_radio1.ssid='$ROUTER_SSID'
         "
     fi
 
-    if [ -n "${NEW_WIFI_PASSWORD:-}" ]; then
+    if [ -n "${ROUTER_WIFI_PASSWORD:-}" ]; then
         echo "  Setting WiFi password"
         ssh "$ROUTER" "
-            uci set wireless.default_radio0.key='$NEW_WIFI_PASSWORD'
-            uci set wireless.default_radio1.key='$NEW_WIFI_PASSWORD'
+            uci set wireless.default_radio0.key='$ROUTER_WIFI_PASSWORD'
+            uci set wireless.default_radio1.key='$ROUTER_WIFI_PASSWORD'
         "
     fi
 
-    if [ -n "${NEW_PPPOE_USERNAME:-}" ]; then
+    if [ -n "${ROUTER_PPPOE_USERNAME:-}" ]; then
         echo "  Setting PPPoE username"
-        ssh "$ROUTER" "uci set network.wan.username='$NEW_PPPOE_USERNAME'"
+        ssh "$ROUTER" "uci set network.wan.username='$ROUTER_PPPOE_USERNAME'"
     fi
 
-    if [ -n "${NEW_PPPOE_PASSWORD:-}" ]; then
+    if [ -n "${ROUTER_PPPOE_PASSWORD:-}" ]; then
         echo "  Setting PPPoE password"
-        ssh "$ROUTER" "uci set network.wan.password='$NEW_PPPOE_PASSWORD'"
+        ssh "$ROUTER" "uci set network.wan.password='$ROUTER_PPPOE_PASSWORD'"
     fi
 
     echo
@@ -102,6 +132,7 @@ do_set() {
 do_apply() {
     echo "=== Committing ==="
     ssh "$ROUTER" '
+        uci commit dhcp
         uci commit firewall
         uci commit network
         uci commit sqm

@@ -131,8 +131,8 @@ in {
                       {
                         type = "adguard";
                         url = "http://mini:4909";
-                        username = "cameron";
-                        password = "{{HOMEPAGE_VAR_ADGUARD_PASSWORD}}";
+                        username = "admin";
+                        password = "password";
                       }
                     ];
                   };
@@ -172,6 +172,7 @@ in {
             cpu = true;
             disk = "/";
             memory = true;
+            uptime = true;
           };
         }
         {

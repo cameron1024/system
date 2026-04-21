@@ -142,6 +142,11 @@ in {
     programs.nix-ld.enable = true;
 
     security.sudo.package = pkgs.sudo.override {withInsults = true;};
+    
+    programs.ssh.extraConfig = ''
+      Host router
+        User root
+    '';
 
     nixpkgs.config.allowUnfree = true;
     nix = {

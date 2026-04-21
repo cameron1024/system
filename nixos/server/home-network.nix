@@ -12,6 +12,8 @@
     (lib.mkIf config.services'.adguardhome.enable {
       services.adguardhome = {
         enable = true;
+        port = 4909;
+        host = "0.0.0.0";
         openFirewall = true;
         mutableSettings = false;
         settings = {
@@ -27,10 +29,8 @@
           dns.upstream_dns = ["1.1.1.1"];
 
           querylog.enabled = false;
-          statistics.enabled = true;
+          statistics.enabled = false;
         };
-        port = 4909;
-        host = "0.0.0.0";
       };
 
       networking.nameservers = ["127.0.0.1" "1.1.1.1"];
@@ -50,6 +50,10 @@
           # Limit memory usage — generous for a home network
           --max-num-hosts=1024
           --max-num-flows=65536
+
+          # No authentication — LAN-only service, not exposed externally
+          --disable-login=1
+          --disable-autologout
         '';
       };
 

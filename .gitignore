@@ -1,3 +1,4 @@
 /.direnv
 scripts/switch.sh
 /result
+.env

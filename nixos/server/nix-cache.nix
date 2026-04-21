@@ -4,7 +4,7 @@
   ...
 }: {
   config = lib.mkIf config.services'.nix-cache.enable {
-    services.harmonia = {
+    services.harmonia.cache = {
       enable = true;
       signKeyPaths = [config.services'.nix-cache.secretKeyFile];
       settings.bind = "0.0.0.0:5000";

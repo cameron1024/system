@@ -11,7 +11,8 @@ git add -A
 nixos-rebuild switch \
   --flake .#"$machine" \
   --target-host "cameron@$machine" \
-  --use-remote-sudo \
+  --sudo \
+  --ask-sudo-password \
   "$@"
 ```
 
