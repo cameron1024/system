@@ -96,6 +96,25 @@ do_set() {
         '
     fi
 
+    # Static DHCP lease for TV + block internet access
+    if [ -n "${ROUTER_SMART_TV_MAC:-}" ]; then
+        echo "  Setting TV static lease"
+        ssh "$ROUTER" "
+            uci set dhcp.smart_tv=host
+            uci set dhcp.smart_tv.name='smart-tv'
+            uci set dhcp.smart_tv.mac='$ROUTER_SMART_TV_MAC'
+            uci set dhcp.smart_tv.ip='192.168.1.11'
+        "
+        ssh "$ROUTER" "
+            uci set firewall.block_smart_tv=rule
+            uci set firewall.block_smart_tv.name='Block Smart TV WAN'
+            uci set firewall.block_smart_tv.src='lan'
+            uci set firewall.block_smart_tv.dest='wan'
+            uci set firewall.block_smart_tv.src_ip='192.168.1.11'
+            uci set firewall.block_smart_tv.target='REJECT'
+        "
+    fi
+
     if [ -n "${ROUTER_SSID:-}" ]; then
         echo "  Setting WiFi SSID"
         ssh "$ROUTER" "

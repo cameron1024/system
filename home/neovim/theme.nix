@@ -61,6 +61,7 @@ let
 in {
   colorscheme = "everforest";
   colorschemes.everforest.enable = true;
+  colorschemes.everforest.settings.transparent_background = 1;
 
   plugins.web-devicons = simpleConfig;
 

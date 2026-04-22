@@ -23,6 +23,7 @@ in {
   programs.kitty.settings = {
     confirm_os_window_close = 0;
     disable_ligatures = "never";
+    background_opacity = "0.9";
   };
 
   programs.kitty.extraConfig = ''

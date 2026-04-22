@@ -313,6 +313,13 @@ environment {
 // After enabling or disabling this, you need to restart the apps for this to take effect.
 prefer-no-csd
 
+blur {
+    passes 2
+    offset 3.0
+    noise 0.02
+    saturation 1.5
+}
+
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
 // The path is formatted with strftime(3) to give you the screenshot date and time.
@@ -326,11 +333,10 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Animations
 animations {
     // Slow down all animations by this factor. Values below 1 speed them up instead.
-    slowdown 0.5
+    slowdown 0.4
 
     window-open {
-        duration-ms 260
-        // close to a polished macOS-style ease-out feel
+        duration-ms 300
         curve "cubic-bezier" 0.22 1.0 0.36 1.0
 
         custom-shader r"
@@ -364,7 +370,6 @@ animations {
 
     window-close {
         duration-ms 180
-        // quick, clean exit
         curve "cubic-bezier" 0.32 0.0 0.67 0.0
 
         custom-shader r"
@@ -396,7 +401,6 @@ animations {
     }
 
     window-resize {
-        // Resizes should feel soft but controlled.
         spring damping-ratio=1.0 stiffness=720 epsilon=0.0001
 
         custom-shader r"
@@ -535,6 +539,10 @@ window-rule {
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
+
+    background-effect {
+        blur true
+    }
 }
 
 binds {

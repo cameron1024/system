@@ -30,6 +30,7 @@
       # })
 
       perf
+      samply
       rr
 
       bacon
