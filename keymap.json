@@ -30,6 +30,7 @@
       "space s": "editor::ToggleSplitDiff",
       "space m": "project_symbols::Toggle",
       "space escape": "workspace::CloseAllDocks",
+      "space space": "projects::OpenRecent",
     },
   },
   {
@@ -83,11 +84,17 @@
       "ctrl-v": "pane::SplitRight",
       "ctrl-x": "pane::SplitDown",
       "alt-space": "editor::AcceptEditPrediction",
-      "space h p": "editor::ExpandAllDiffHunks",
       "space z": "workspace::ToggleZoom",
       "alt-l": "vim::SelectNextSyntaxNode",
       "alt-h": "vim::SelectPreviousSyntaxNode",
-      "space h p ": "editor::ToggleSelectedDiffHunks",
+      "space h p": "editor::ToggleSelectedDiffHunks",
+      "space h r": "git::Restore",
+    },
+  },
+  {
+    "context": "!(Editor && vim_mode == insert) && !Terminal && !Picker",
+    "bindings": {
+      "space p": "project_panel::Toggle",
     },
   },
   {

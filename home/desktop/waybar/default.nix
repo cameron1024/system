@@ -44,7 +44,7 @@ in
             position = "top";
             height = 45;
             output = map (d: d.name) (filter (d: !d.auxiliary) (osConfig.services'.desktop.displays or []));
-            start_hidden = false;
+            start_hidden = true;
 
             modules-left = ["cpu" "memory" "disk" "network" "privacy"];
             modules-right = ["tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];

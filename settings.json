@@ -1,4 +1,6 @@
 {
+  "helix_mode": false,
+  "cli_default_open_behavior": "new_window",
   "ssh_connections": [
     {
       "host": "mini",
@@ -10,6 +12,12 @@
           ]
         }
       ]
+    },
+    {
+      "host": "mini",
+      "username": "cameron",
+      "args": [],
+      "projects": []
     }
   ],
   "status_bar": {
@@ -36,7 +44,7 @@
   "auto_indent_on_paste": false,
   "git_panel": {
     "dock": "left",
-    "tree_view": false
+    "tree_view": true
   },
   "indent_guides": {
     "coloring": "indent_aware",
@@ -83,6 +91,7 @@
     },
     "Rust": {
       "use_on_type_format": false,
+      
     },
   },
   "relative_line_numbers": "enabled",
@@ -108,9 +117,8 @@
     "show_turn_stats": true,
     "play_sound_when_agent_done": "never",
     "use_modifier_to_send": true,
-    "default_profile": "write",
     "default_model": {
-      "effort": "high",
+      "effort": "max",
       "enable_thinking": true,
       "provider": "zed.dev",
       "model": "claude-opus-4-6",
@@ -136,7 +144,7 @@
   "active_pane_modifiers": {
     "inactive_opacity": 0.7,
   },
-  "hover_popover_enabled": false,
+  "hover_popover_enabled": true,
   "diagnostics": {
     "button": true,
     "include_warnings": true,
@@ -145,7 +153,7 @@
       "debounce_ms": 50,
     },
     "inline": {
-      "enabled": true,
+      "enabled": false,
       "update_debounce_ms": 50,
       "padding": 4,
       "min_column": 0,
@@ -153,6 +161,7 @@
     },
   },
   "vim_mode": true,
+  // "autosave": "on_exit_insert_mode",
   "autosave": {
     "after_delay": {
       "milliseconds": 1000,
@@ -163,7 +172,7 @@
       "program": "fish",
     },
   },
-  "use_system_path_prompts": false,
+  "use_system_path_prompts": true,
 
   "format_on_save": "off",
 
@@ -172,9 +181,8 @@
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
-        // "checkOnSave": false,
         // "check": {
-        //   "overrideCommand": ["cargo", "build", "--message-format=json"]
+        //   "command": "clippy"
         // }
       }
     }
@@ -183,7 +191,8 @@
   /* ============= */
   /* === THEME === */
 
-  "buffer_font_family": "Fira Code",
+  "buffer_font_family": "FiraCode Nerd Font",
+  "buffer_font_weight": 300,
   "buffer_font_size": 16,
   "buffer_font_features": {
     "calt": true,
@@ -194,7 +203,7 @@
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Everforest Dark Hard (regular)",
+    "dark": "Everforest Dark Hard (blur)",
   },
   "buffer_line_height": {
     "custom": 1.4
