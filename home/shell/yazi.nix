@@ -15,8 +15,4 @@
       };
     };
   };
-
-  home.shellAliases = {
-    "f" = "yazi";
-  };
 }
