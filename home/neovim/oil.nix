@@ -8,9 +8,6 @@
         {
           __unkeyed-1 = "-";
           __unkeyed-2.__raw =
-            /*
-            lua
-            */
             ''
               function() require 'oil'.open() end
             '';

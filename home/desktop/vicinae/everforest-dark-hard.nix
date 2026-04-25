@@ -1,7 +1,9 @@
 {
   meta = {
+    # these are required
+    version = 1;
     name = "Everforest Dark Hard";
-    # description = "Everforest Dark Hard — muted greens on a very dark canvas";
+    description = "Everforest Dark Hard";
     variant = "dark";
     inherits = "vicinae-dark";
   };
@@ -61,8 +63,12 @@
       primary = {
         background = "#374145";
         foreground = "#d3c6aa";
-        hover = {background = "#3d484d";};
-        focus = {outline = "#a7c080";};
+        hover = {
+          background = "#3d484d";
+        };
+        focus = {
+          outline = "#a7c080";
+        };
       };
     };
 
@@ -84,8 +90,12 @@
     grid = {
       item = {
         background = "#2e383c";
-        hover = {outline = "#a7c080";};
-        selection = {outline = "#a7c080";};
+        hover = {
+          outline = "#a7c080";
+        };
+        selection = {
+          outline = "#a7c080";
+        };
       };
     };
 

@@ -1,5 +1,6 @@
-{inputs, ...}: {
-  imports = [inputs.vicinae.homeManagerModules.default];
+{ inputs, ... }:
+{
+  imports = [ inputs.vicinae.homeManagerModules.default ];
   services.vicinae = {
     enable = true;
     systemd = {
@@ -15,14 +16,21 @@
       pop_to_root_on_close = true;
       telemetry.system_info = false;
       font.normal.family = "Josefin Sans";
-      launcher_window.layer_shell.layer = "overlay";
+      launcher_window = {
+        opacity = 1.0;
+        layer_shell.layer = "overlay";
+      };
 
       keybinds = {
         "action.copy" = "return";
       };
       theme = {
-        dark = {name = "everforest-dark-hard";};
-        light = {name = "everforest-dark-hard";};
+        dark = {
+          name = "everforest-dark-hard";
+        };
+        light = {
+          name = "everforest-dark-hard";
+        };
       };
     };
 
@@ -30,4 +38,6 @@
       everforest-dark-hard = import ./everforest-dark-hard.nix;
     };
   };
+
+  services'.desktop.picker = "vicinae dmenu";
 }

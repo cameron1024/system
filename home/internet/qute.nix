@@ -1,4 +1,5 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   startpage = pkgs.writeText "startpage.html" (builtins.readFile ./startpage.html);
   colors = {
     bg_dim = "#1e2326";
@@ -28,7 +29,8 @@
     statusline2 = "#d3c6aa";
     statusline3 = "#e67e80";
   };
-in {
+in
+{
   programs.qutebrowser = {
     enable = true;
 
@@ -43,6 +45,7 @@ in {
     searchEngines = {
       "DEFAULT" = "https://google.com/search?q={}";
       "rs" = "https://docs.rs/{}";
+      "zpr" = "https://github.com/zed-industries/zed/pull/{}";
     };
 
     perDomainSettings = {
@@ -51,8 +54,8 @@ in {
       };
     };
     settings = {
-      url.start_pages = ["file://${startpage}"];
-      tabs.show = "switching";
+      url.start_pages = [ "file://${startpage}" ];
+      tabs.show = "multiple";
       tabs.position = "bottom";
       statusbar.show = "in-mode";
 

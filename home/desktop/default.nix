@@ -16,6 +16,7 @@ with lib;
     ./lock
     # ./noctalia.nix
     ./one-password.nix
+    ./picker.nix
     ./power-menu.nix
     ./waybar
     ./walker.nix
