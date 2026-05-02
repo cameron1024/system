@@ -32,6 +32,7 @@ with lib; {
       material-icons
       glib
       wayscriber
+      playerctl
     ];
 
     home.pointerCursor = {

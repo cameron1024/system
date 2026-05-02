@@ -27,6 +27,11 @@ window-rule {
   open-focused false
 }
 
+window-rule {
+  match app-id="Balatro"
+  open-fullscreen true
+}
+
 layer-rule {
   match namespace="^awww-daemon$"
   place-within-backdrop true
@@ -296,6 +301,7 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
+spawn-at-startup "handy"
 spawn-at-startup "waybar"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "xwayland-satellite"
@@ -580,6 +586,10 @@ binds {
 
     XF86MonBrightnessUp   { spawn "swayosd-client" "--output-brightness=raise"; }
     XF86MonBrightnessDown { spawn "swayosd-client" "--output-brightness=lower"; }
+
+    XF86AudioPlay { spawn "playerctl" "play-pause"; }
+    XF86AudioNext { spawn "playerctl" "next"; }
+    XF86AudioPrev { spawn "playerctl" "previous"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
     Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"; }

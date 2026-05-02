@@ -103,6 +103,11 @@
   "audio": {
     "experimental.auto_microphone_volume": true,
   },
+  "language_models": {
+    "lmstudio": {
+      "api_url": "http://localhost:1234"
+    }
+  },
   "agent": {
     "sidebar_side": "right",
     "dock": "right",
@@ -118,10 +123,8 @@
     "play_sound_when_agent_done": "never",
     "use_modifier_to_send": true,
     "default_model": {
-      "effort": "max",
-      "enable_thinking": true,
-      "provider": "zed.dev",
-      "model": "claude-opus-4-6",
+      "provider": "lmstudio",
+      "model": "qwen3.5-35b-a3b"
     },
     "model_parameters": [],
   },

@@ -32,7 +32,7 @@ with lib; {
     services.keyd = {
       enable = true;
       keyboards.default = {
-        ids = ["*"];
+        ids = ["*" "-32ac:0006"];
         settings = {
           main = {
             "capslock" = "overload(control, esc)";

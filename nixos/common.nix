@@ -158,6 +158,7 @@ in {
 
       settings = {
         trusted-users = ["root" "@wheel" "cameron"];
+        connect-timeout = 3;
         extra-substituters = ["http://fast:5000"];
         trusted-public-keys = [
           "mini:DD2Jy+6Pb/gCpgACueQupEUUAl0cpzTy5zff94KIZxk="

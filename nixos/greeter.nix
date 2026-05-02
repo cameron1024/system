@@ -15,22 +15,22 @@ with lib; {
 
   config = mkIf (config.services'.tuigreet.enable) {
     console.colors = [
-      "343F44"
-      "E67E80"
-      "A7C080"
-      "DBBC7F"
-      "7FBBB3"
-      "D699B6"
-      "83C092"
-      "D3C6AA"
-      "5C6A72"
-      "F85552"
-      "8DA101"
-      "DFA000"
-      "3A94C5"
-      "DF69BA"
-      "35A77C"
-      "DFDDC8"
+      "1E2326" # black    (Dark Hard bg_dim)
+      "E67E80" # red
+      "A7C080" # green
+      "DBBC7F" # yellow
+      "7FBBB3" # blue
+      "D699B6" # magenta
+      "83C092" # cyan
+      "D3C6AA" # white/fg
+      "374145" # bright black (Dark Hard bg2)
+      "F85552" # bright red
+      "8DA101" # bright green
+      "DFA000" # bright yellow
+      "3A94C5" # bright blue
+      "DF69BA" # bright magenta
+      "35A77C" # bright cyan
+      "DFDDC8" # bright white
     ];
 
     services.greetd = {

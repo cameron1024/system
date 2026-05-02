@@ -55,6 +55,7 @@
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
     handy.url = "github:cameron1024/handy";
+    handy.inputs.nixpkgs.follows = "nixpkgs";
 
     vicinae.url = "github:vicinaehq/vicinae";
   };

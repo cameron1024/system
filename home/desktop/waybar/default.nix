@@ -36,7 +36,7 @@ in
 
       programs.waybar = lib.mkIf (osConfig != null) {
         enable = true;
-        style = ./style2.css;
+        style = ./style.css;
 
         settings = {
           topBar = {
@@ -45,8 +45,9 @@ in
             height = 45;
             output = map (d: d.name) (filter (d: !d.auxiliary) (osConfig.services'.desktop.displays or []));
             start_hidden = true;
+            smooth-scrolling-threshold = 5;
 
-            modules-left = ["cpu" "memory" "disk" "network" "privacy"];
+            modules-left = ["power-profiles-daemon" "cpu" "memory" "disk" "network" "privacy"];
             modules-right = ["tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
               []
@@ -55,6 +56,20 @@ in
 
             "niri/workspaces" = {
               format = "●";
+            };
+
+            "power-profiles-daemon" = let
+              icon = cp: builtins.fromJSON ''"\u${cp}"'';
+            in {
+              format = "{icon} ";
+              tooltip-format = "Power profile: {profile}\nDriver: {driver}";
+              tooltip = true;
+              format-icons = {
+                default = icon "F0E7";      # nf-fa-bolt
+                performance = icon "F135";  # nf-fa-rocket
+                balanced = icon "F24E";     # nf-fa-balance_scale
+                power-saver = icon "F06C";  # nf-fa-leaf
+              };
             };
 
             "cpu" = {
@@ -93,7 +108,7 @@ in
             "backlight" = {
               format = "󰃠  {percent:3}%";
               on-scroll-up = "${pkgs.brightnessctl}/bin/brightnessctl set 5%+";
-              on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
+                            on-scroll-down = "${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
               on-click = "${pkgs.brightnessctl}/bin/brightnessctl set $(hypr-utils store cycle brightness 20 50 70 100)%";
             };
 

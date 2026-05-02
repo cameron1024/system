@@ -73,6 +73,10 @@ in {
 
         networking.hostName = "framework";
 
+        programs.steam.enable = true;
+        programs.steam.gamescopeSession.enable = true;
+        programs.gamescope.enable = true;
+
         programs'.niri.enable = true;
         services'.desktop.isLaptop = true;
         services'.desktop.displays = with import ./machines/displays.nix; [

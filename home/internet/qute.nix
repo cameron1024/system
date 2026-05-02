@@ -53,6 +53,17 @@ in
         content.headers.user_agent = "Mozilla/5.0 ({os_info}; rv:130.0) Gecko/20100101 Firefox/130";
       };
     };
+    extraConfig = ''
+      import qutebrowser.api.interceptor
+
+      def _redirect_x_to_xcancel(info: qutebrowser.api.interceptor.Request):
+          if info.request_url.host() in ('x.com', 'www.x.com'):
+              info.request_url.setHost('xcancel.com')
+              info.redirect(info.request_url)
+
+      qutebrowser.api.interceptor.register(_redirect_x_to_xcancel)
+    '';
+
     settings = {
       url.start_pages = [ "file://${startpage}" ];
       tabs.show = "multiple";
