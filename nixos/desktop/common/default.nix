@@ -95,6 +95,10 @@ with lib; {
     hardware.graphics.enable = true;
     hardware.graphics.enable32Bit = true;
 
+    # Logitech device manager (enables hi-res scrolling, SmartShift, etc.)
+    hardware.logitech.wireless.enable = true;
+    hardware.logitech.wireless.enableGraphical = true; # Solaar GUI
+
     services.flatpak.enable = true;
     services.snap.enable = true;
 
