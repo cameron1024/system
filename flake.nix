@@ -44,8 +44,8 @@
     
     niri.url = "github:yalter/niri";
 
-    zed.url = "github:zed-industries/zed/nightly";
-    # zed.url = "github:zed-industries/zed";
+    # zed.url = "github:zed-industries/zed/nightly";
+    zed.url = "github:zed-industries/zed";
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
