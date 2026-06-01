@@ -53,22 +53,40 @@ do_set() {
     '
 
     # https://www.waveform.com/tools/bufferbloat
+    # Plusnet FTTP still uses PPPoE (untagged) over the Openreach ONT, so the
+    # interface stays pppoe-wan. Set download/upload to ~95% of your FTTP
+    # package sync speed (kbit/s), and use the fibre PPPoE framing overhead (26)
+    # instead of the old VDSL2/FTTC value (44, which included PTM framing).
     ssh "$ROUTER" '
         uci set sqm.wan=queue
-        uci set sqm.wan.enabled="1"
         uci set sqm.wan.interface="pppoe-wan"
         uci set sqm.wan.qdisc="cake"
         uci set sqm.wan.script="piece_of_cake.qos"
-        uci set sqm.wan.download="36000"
-        uci set sqm.wan.upload="7200"
+        uci set sqm.wan.download="855000"
+        uci set sqm.wan.upload="104000"
         uci set sqm.wan.linklayer="ethernet"
-        uci set sqm.wan.overhead="44"
+        uci set sqm.wan.overhead="26"
     '
 
-    ssh "$ROUTER" '
-        uci set firewall.@defaults[0].flow_offloading="0"
-        uci set firewall.@defaults[0].flow_offloading_hw="0"
-    '
+    # SQM and flow offloading are mutually exclusive: SQM must inspect every
+    # packet on the CPU, while offloading bypasses it. Enable SQM (and disable
+    # offloading) only when ENABLE_SQM is exactly "1"; otherwise turn on hardware
+    # flow offloading for maximum throughput.
+    if [ "${ENABLE_SQM:-}" = "1" ]; then
+        echo "  SQM enabled (flow offloading disabled)"
+        ssh "$ROUTER" '
+            uci set sqm.wan.enabled="1"
+            uci set firewall.@defaults[0].flow_offloading="0"
+            uci set firewall.@defaults[0].flow_offloading_hw="0"
+        '
+    else
+        echo "  SQM disabled (hardware flow offloading enabled)"
+        ssh "$ROUTER" '
+            uci set sqm.wan.enabled="0"
+            uci set firewall.@defaults[0].flow_offloading="1"
+            uci set firewall.@defaults[0].flow_offloading_hw="1"
+        '
+    fi
 
     # disable IPv6
     ssh "$ROUTER" '
@@ -78,15 +96,21 @@ do_set() {
         uci delete network.globals.ula_prefix 2>/dev/null || true
     '
 
-    # Static DHCP lease for mini + forward DNS to AdGuard Home
+    # Static DHCP lease for mini
     if [ -n "${ROUTER_MINI_MAC:-}" ]; then
-        echo "  Setting mini static lease and DNS forwarding"
+        echo "  Setting mini static lease"
         ssh "$ROUTER" "
             uci set dhcp.mini=host
             uci set dhcp.mini.name='mini'
             uci set dhcp.mini.mac='$ROUTER_MINI_MAC'
             uci set dhcp.mini.ip='$MINI_STATIC_IP'
         "
+    fi
+
+    # Forward DNS to AdGuard Home on the mini, with 1.1.1.1 as a fallback for
+    # when AdGuard is unavailable. noresolv=1 ignores the ISP-provided resolvers.
+    if [ -n "${ROUTER_MINI_MAC:-}" ]; then
+        echo "  Forwarding DNS to AdGuard Home"
         ssh "$ROUTER" '
             uci set dhcp.@dnsmasq[0].noresolv="1"
             uci del_list dhcp.@dnsmasq[0].server="'"$MINI_STATIC_IP"'" 2>/dev/null || true
@@ -168,10 +192,8 @@ case "${1:-}" in
     install) do_install ;;
     set)     do_set ;;
     apply)   do_apply ;;
-    sqm-on)  ssh "$ROUTER" "/etc/init.d/sqm start"  && echo "SQM enabled." ;;
-    sqm-off) ssh "$ROUTER" "/etc/init.d/sqm stop"   && echo "SQM disabled." ;;
     *)
-        echo "Usage: ./deploy.sh <install|set|apply|sqm-on|sqm-off>" >&2
+        echo "Usage: ./deploy.sh <install|set|apply>" >&2
         exit 1
         ;;
 esac
