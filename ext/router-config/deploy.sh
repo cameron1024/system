@@ -40,14 +40,16 @@ do_set() {
 
     ssh "$ROUTER" '
         uci set wireless.radio0.country="GB"
+        uci set wireless.radio0.channel="11"
+        uci set wireless.radio0.htmode="HE20"
         uci set wireless.radio0.disabled="0"
         uci set wireless.default_radio0.encryption="sae-mixed"
     '
 
     ssh "$ROUTER" '
         uci set wireless.radio1.country="GB"
-        uci set wireless.radio1.channel="36"
-        uci set wireless.radio1.htmode="HE160"
+        uci set wireless.radio1.channel="149"
+        uci set wireless.radio1.htmode="HE80"
         uci set wireless.radio1.disabled="0"
         uci set wireless.default_radio1.encryption="sae-mixed"
     '
@@ -192,8 +194,9 @@ case "${1:-}" in
     install) do_install ;;
     set)     do_set ;;
     apply)   do_apply ;;
+    changes) ssh "$ROUTER" "uci changes" ;;
     *)
-        echo "Usage: ./deploy.sh <install|set|apply>" >&2
+        echo "Usage: ./deploy.sh <install|set|apply|changes>" >&2
         exit 1
         ;;
 esac
