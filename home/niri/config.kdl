@@ -32,12 +32,17 @@ window-rule {
   open-fullscreen true
 }
 
+window-rule {
+    match app-id="dev.zed.Zed-Nightly"
+    default-column-width { proportion 1.0; }
+}
+
 layer-rule {
   match namespace="^awww-daemon$"
   place-within-backdrop true
 }
 
-
+debug { honor-xdg-activation-with-invalid-serial; }
 
 
 // Input device configuration.

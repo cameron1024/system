@@ -63,6 +63,7 @@ tooltip label {
 #pulseaudio,
 #custom-weather,
 #custom-github,
+#custom-a11y,
 #privacy {
   background-color: rgba(39, 46, 51, 0.6);
   padding: 4px 10px;
@@ -126,6 +127,14 @@ tooltip label {
 
 #custom-github {
   color: #d699b6;
+}
+
+#custom-a11y {
+  color: #83c092;
+}
+
+#custom-a11y.off {
+  color: rgba(133, 146, 137, 0.35);
 }
 
 #privacy {
@@ -201,6 +210,11 @@ tooltip label {
 #custom-github:hover {
   background-color: rgba(39, 46, 51, 1);
   border-bottom-color: #d699b6;
+}
+
+#custom-a11y:hover {
+  background-color: rgba(39, 46, 51, 1);
+  border-bottom-color: #83c092;
 }
 
 #privacy:hover {

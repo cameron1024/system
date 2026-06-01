@@ -11,6 +11,32 @@
     runtimeInputs = with pkgs; [ gh jq ];
     text = "gh api notifications | jq length";
   };
+  toggleScreenReader = pkgs.writeShellApplication {
+    name = "toggle-screen-reader";
+    runtimeInputs = with pkgs; [ systemdMinimal jq ];
+    text = ''
+      current=$(busctl --user --json=short get-property org.a11y.Bus /org/a11y/bus org.a11y.Status ScreenReaderEnabled | jq '.data')
+      if [ "$current" = "true" ]; then
+        busctl --user set-property org.a11y.Bus /org/a11y/bus org.a11y.Status ScreenReaderEnabled b false
+        echo '{"text": "󰈈", "tooltip": "Screen reader: off", "class": "off"}'
+      else
+        busctl --user set-property org.a11y.Bus /org/a11y/bus org.a11y.Status ScreenReaderEnabled b true
+        echo '{"text": "󰈈", "tooltip": "Screen reader: on", "class": "on"}'
+      fi
+    '';
+  };
+  screenReaderStatus = pkgs.writeShellApplication {
+    name = "screen-reader-status";
+    runtimeInputs = with pkgs; [ systemdMinimal jq ];
+    text = ''
+      current=$(busctl --user --json=short get-property org.a11y.Bus /org/a11y/bus org.a11y.Status ScreenReaderEnabled | jq '.data')
+      if [ "$current" = "true" ]; then
+        echo '{"text": "󰈈", "tooltip": "Screen reader: on", "class": "on"}'
+      else
+        echo '{"text": "󰈈", "tooltip": "Screen reader: off", "class": "off"}'
+      fi
+    '';
+  };
 in
   with lib; {
     options.programs'.waybar = {
@@ -32,7 +58,7 @@ in
 
       services.blueman-applet.enable = true;
 
-      home.packages = [githubNotifications];
+      home.packages = [githubNotifications toggleScreenReader screenReaderStatus];
 
       programs.waybar = lib.mkIf (osConfig != null) {
         enable = true;
@@ -48,7 +74,7 @@ in
             smooth-scrolling-threshold = 5;
 
             modules-left = ["power-profiles-daemon" "cpu" "memory" "disk" "network" "privacy"];
-            modules-right = ["tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
+            modules-right = ["custom/a11y" "tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
               []
               ++ (optional cfg.enableHyprlandIntegration "hyprland/workspaces")
@@ -130,6 +156,14 @@ in
               };
               on-click-right = "pavucontrol";
               on-click = "pactl set-sink-mute 0 toggle";
+            };
+
+            "custom/a11y" = {
+              format = "{}";
+              return-type = "json";
+              interval = 5;
+              exec = "${screenReaderStatus}/bin/screen-reader-status";
+              on-click = "${toggleScreenReader}/bin/toggle-screen-reader";
             };
 
             "tray" = {

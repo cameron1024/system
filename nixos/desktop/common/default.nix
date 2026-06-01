@@ -115,6 +115,7 @@ with lib; {
     environment.systemPackages = with pkgs; [
       kdePackages.accessibility-inspector
       accerciser
+      orca
     ];
   };
 }
