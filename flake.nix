@@ -41,8 +41,6 @@
 
     zmk.url = "github:lilyinstarlight/zmk-nix";
     zmk.inputs.nixpkgs.follows = "nixpkgs";
-    
-    niri.url = "github:yalter/niri";
 
     zed.url = "github:zed-industries/zed/nightly";
     # zed.url = "github:zed-industries/zed";
@@ -58,6 +56,9 @@
     handy.inputs.nixpkgs.follows = "nixpkgs";
 
     vicinae.url = "github:vicinaehq/vicinae";
+
+    streamcontroller.url = "github:Daaboulex/streamcontroller-nix";
+    streamcontroller.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

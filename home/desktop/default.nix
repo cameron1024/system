@@ -24,6 +24,7 @@ with lib;
     ./rofi
     ./wallpaper.nix
     ./vicinae
+    ./streamdeck
   ];
 
   options.services'.desktop = {

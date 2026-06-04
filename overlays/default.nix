@@ -33,6 +33,7 @@ in
   ])
   ++ [
     inputs.nixgl.overlay
+    inputs.streamcontroller.overlays.default
     (import ./utils.nix)
     (import ./wallpapers.nix)
   ]

@@ -23,7 +23,6 @@ with lib; {
 
     programs.niri.enable = true;
     programs.niri.useNautilus = true;
-    programs.niri.package = inputs.niri.packages.${pkgs.system}.default;
 
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;

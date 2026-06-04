@@ -35,12 +35,8 @@ with lib; {
 
     services.greetd = {
       enable = true;
-      settings.default_session.command = ''
-        ${pkgs.tuigreet}/bin/tuigreet \
-          --asterisks \
-          --time \
-          --cmd ${config.services'.tuigreet.command}
-      '';
+      # cannot be single-line
+      settings.default_session.command = "${pkgs.tuigreet}/bin/tuigreet --asterisks --time --cmd ${config.services'.tuigreet.command}";
     };
 
     # prevent text overwriting interface

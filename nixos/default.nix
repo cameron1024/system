@@ -98,11 +98,12 @@ in {
     homeModules = [
       {
         home.stateVersion = "25.05";
+        services'.streamdeck.enable = true;
       }
     ];
     modules = [
       ./hardware/fast.nix
-      {
+      ({pkgs, ...}: {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = false;
@@ -132,7 +133,11 @@ in {
 
         nix.settings.secret-key-files = ["/home/cameron/nix-secret"];
 
-      }
+        # udev rules for Elgato Stream Deck USB access (the HM module that drives
+        # services'.streamdeck can't set system-level udev rules itself).
+        services.udev.packages = [pkgs.streamcontroller];
+
+      })
     ];
   };
   thinkchad = mkSystem {

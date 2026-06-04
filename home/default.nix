@@ -28,7 +28,6 @@
     if pkgs.stdenv.isLinux
     then [
       appimage-run
-      pureref
       zmk-studio
       rakudo
       speedread
