@@ -39,15 +39,87 @@ in {
         url = "https://drive.usercontent.google.com/download?id=1ZW7zL_YzqI6qqaaxdE6jBWFmobw-QhoT";
       };
     in [
+      "d /var/public 0755 root root - -"
       "L+ /var/public/everforest.png - - - - ${image}"
+
+      # Ensure the (non-declarative) secrets file always exists, so the
+      # services that read it don't fail to start before the first secret
+      # deploy. `f` creates it empty if absent and never truncates an
+      # existing file, so deployed secrets are preserved across rebuilds.
+      "d /etc/homepage-dashboard 0755 root root - -"
+      "f /etc/homepage-dashboard/.env 0600 root root - -"
     ];
+
+    # Generate a themed WiFi QR code (Everforest palette) that the
+    # static-web-server above hosts at http://mini:8787/wifi.svg.
+    # The SSID and password are read at runtime from the existing
+    # non-declarative secrets file so they never enter the nix store.
+    systemd.services.wifi-qr = {
+      description = "Generate themed WiFi QR code for the dashboard";
+      wantedBy = ["multi-user.target"];
+      after = ["systemd-tmpfiles-setup.service"];
+      path = [pkgs.qrencode pkgs.gnused];
+      serviceConfig = {
+        Type = "oneshot";
+        EnvironmentFile = "-/etc/homepage-dashboard/.env";
+      };
+      script = ''
+        set -euo pipefail
+
+        # Nothing to do until the WiFi secrets have been deployed.
+        if [ -z "''${ROUTER_SSID:-}" ] || [ -z "''${ROUTER_WIFI_PASSWORD:-}" ]; then
+          echo "WiFi SSID/password not set yet; skipping QR generation" >&2
+          exit 0
+        fi
+
+        # Escape the characters that are special in the WIFI: URI scheme
+        # (backslash, semicolon, comma, colon and double quote).
+        escape() {
+          printf '%s' "$1" | sed 's/\\/\\\\/g; s/;/\\;/g; s/,/\\,/g; s/:/\\:/g; s/"/\\"/g'
+        }
+
+        ssid=$(escape "$ROUTER_SSID")
+        pass=$(escape "$ROUTER_WIFI_PASSWORD")
+
+        qrencode \
+          -t SVG \
+          -o /var/public/wifi.svg \
+          -l H \
+          -s 6 \
+          -m 2 \
+          --svg-path \
+          --foreground=d3c6aa \
+          --background=2d353b \
+          "WIFI:T:WPA;S:$ssid;P:$pass;;"
+      '';
+    };
+
+    # Regenerate the QR code whenever the secrets file changes.
+    systemd.paths.wifi-qr = {
+      wantedBy = ["multi-user.target"];
+      pathConfig.PathChanged = "/etc/homepage-dashboard/.env";
+    };
+
+    # Restart homepage when its secrets file changes, so deployed/cycled
+    # secrets are picked up automatically (systemd does not reload a service
+    # when its EnvironmentFile changes).
+    systemd.paths.homepage-dashboard-reload = {
+      wantedBy = ["multi-user.target"];
+      pathConfig.PathChanged = "/etc/homepage-dashboard/.env";
+    };
+    systemd.services.homepage-dashboard-reload = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.systemd}/bin/systemctl restart homepage-dashboard.service";
+      };
+    };
 
     services.homepage-dashboard = {
       enable = true;
       openFirewall = true;
       listenPort = 8082;
       allowedHosts = "mini:8082";
-      environmentFile = "/etc/homepage-dashboard/.env";
+      environmentFiles = ["/etc/homepage-dashboard/.env"];
 
       settings = {
         title = "Home Server";
@@ -164,7 +236,28 @@ in {
                 }
               ];
           }
-        ]);
+        ])
+        ++ [
+          {
+            "WiFi" = [
+              {
+                "Network Access" = {
+                  description = "Scan the QR code to join the WiFi";
+                  widgets = [
+                    {
+                      type = "iframe";
+                      name = "WiFi QR";
+                      src = "http://mini:8787/wifi.svg";
+                      classes = "h-60";
+                      allowScrolling = "no";
+                      referrerPolicy = "same-origin";
+                    }
+                  ];
+                };
+              }
+            ];
+          }
+        ];
 
       widgets = [
         {

@@ -13,6 +13,7 @@ with lib; {
     home.packages = with pkgs; [
       nixos-generators
       caligula
+      winbox # MikroTik RouterOS GUI (native Linux, v4) for the cAP access point
     ];
   };
 }

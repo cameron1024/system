@@ -48,6 +48,7 @@
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
     tracy.url = "github:tukanoidd/tracy.nix";
+    tracy.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
@@ -106,6 +107,85 @@
             '')
           ];
       };
+    # Recursively wrap every script under `root` into a package. `.sh` files
+    # become writeShellApplication, `.py` files become writePython3Bin, and
+    # subdirectories become nested attrsets (e.g. scripts/foo/bar.sh ->
+    # scripts.foo.bar). The shebang is stripped here so the source files stay
+    # runnable on their own without their contents being otherwise altered.
+    # An optional `<name>.nix` sidecar may provide `runtimeInputs` (added to
+    # PATH) and/or `libraries` (Python imports).
+    mkScripts = pkgs: root: let
+      inherit (pkgs) lib;
+
+      stripShebang = text: let
+        lines = lib.splitString "\n" text;
+      in
+        if lines != [] && lib.hasPrefix "#!" (builtins.head lines)
+        then lib.concatStringsSep "\n" (builtins.tail lines)
+        else text;
+
+      mkScript = dir: base: ext: let
+        sidecar = dir + "/${base}.nix";
+        meta =
+          if builtins.pathExists sidecar
+          then import sidecar {inherit pkgs;}
+          else {};
+        runtimeInputs = meta.runtimeInputs or [];
+        libraries = meta.libraries or [];
+        body = stripShebang (builtins.readFile (dir + "/${base}.${ext}"));
+      in
+        if ext == "sh"
+        then
+          pkgs.writeShellApplication {
+            name = base;
+            inherit runtimeInputs;
+            text = body;
+          }
+        else let
+          bin =
+            pkgs.writers.writePython3Bin base {
+              inherit libraries;
+              flakeIgnore = ["E501"];
+            }
+            body;
+          pyEnv = pkgs.python3.withPackages (ps: libraries ++ [ps.mypy]);
+        in
+          # Type-check with `mypy --strict` at build time, then expose the bin
+          # (prefixing PATH with runtimeInputs when the sidecar asks for any).
+          pkgs.runCommandLocal base {
+            nativeBuildInputs = [pkgs.makeWrapper];
+            meta.mainProgram = base;
+          } ''
+            cp ${dir + "/${base}.${ext}"} script.py
+            ${pyEnv}/bin/mypy --strict --cache-dir="$TMPDIR/mypy" script.py
+
+            makeWrapper ${bin}/bin/${base} $out/bin/${base} ${
+              lib.optionalString (runtimeInputs != [])
+              "--prefix PATH : ${lib.makeBinPath runtimeInputs}"
+            }
+          '';
+
+      walk = dir:
+        lib.pipe (builtins.readDir dir) [
+          (lib.mapAttrsToList (name: type: let
+            m = builtins.match "(.+)\\.(sh|py)" name;
+          in
+            if type == "directory"
+            then {
+              inherit name;
+              value = walk (dir + "/${name}");
+            }
+            else if m == null
+            then null
+            else {
+              name = builtins.head m;
+              value = mkScript dir (builtins.head m) (builtins.elemAt m 1);
+            }))
+          (builtins.filter (x: x != null))
+          builtins.listToAttrs
+        ];
+    in
+      walk root;
   in {
     homeConfigurations =
       builtins.listToAttrs
@@ -156,6 +236,11 @@
 
     devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
+
+    legacyPackages."x86_64-linux".scripts =
+      mkScripts (import inputs.nixpkgs {system = "x86_64-linux";}) ./scripts;
+    legacyPackages."aarch64-darwin".scripts =
+      mkScripts (import inputs.nixpkgs {system = "aarch64-darwin";}) ./scripts;
 
     packages."x86_64-linux".vim = mkNixvim {system = "x86_64-linux";};
     packages."aarch64-linux".vim = mkNixvim {system = "aarch64-linux";};

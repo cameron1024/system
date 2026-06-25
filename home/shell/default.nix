@@ -38,9 +38,10 @@
       settings = {
         filter_mode_shell_up_key_binding = "session";
         enter_accept = true;
+        ai.enabled = false;
       };
 
-      flags = ["--disable-up-arrow"];
+      flags = ["--disable-up-arrow" "--disable-ai"];
     };
 
     home.shellAliases = {

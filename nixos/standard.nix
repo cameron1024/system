@@ -15,6 +15,7 @@ with lib; {
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.grub.memtest86.enable = true;
+    boot.loader.timeout = 1;
 
     boot.kernelPackages =
       if config.services'.standardMachine.zenKernel

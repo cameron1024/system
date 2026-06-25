@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   osConfig,
   ...
 }: let
@@ -24,6 +25,13 @@ in {
     confirm_os_window_close = 0;
     disable_ligatures = "never";
     background_opacity = "0.9";
+
+    # The config lives in the read-only nix store and only ever changes on a
+    # rebuild, so there is no point watching it at runtime. Disabling this also
+    # works around https://github.com/kovidgoyal/kitty/issues/10102, where the
+    # watcher recursively inotify-watches every dir an included config lives in
+    # (e.g. all of /nix/store), exhausting the kernel's inotify watch limit.
+    auto_reload_config = "no";
   };
 
   programs.kitty.extraConfig = ''
@@ -46,5 +54,13 @@ in {
     }
 
     font_size 12.0
+  '';
+
+  # Since auto_reload_config is disabled above, kitty won't pick up config
+  # changes on its own. Whenever this generation is activated (i.e. on every
+  # `nixos-rebuild switch`), signal any running kitty instances to reload their
+  # config. SIGUSR1 triggers a reload regardless of auto_reload_config.
+  home.activation.reloadKitty = lib.hm.dag.entryAfter ["linkGeneration"] ''
+    $DRY_RUN_CMD ${pkgs.procps}/bin/pkill -USR1 -x kitty || true
   '';
 }

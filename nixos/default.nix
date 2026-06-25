@@ -99,6 +99,8 @@ in {
       {
         home.stateVersion = "25.05";
         services'.streamdeck.enable = true;
+        
+        programs'.deployment-tools.enable = true;
       }
     ];
     modules = [
@@ -112,6 +114,9 @@ in {
         boot.loader.efi.efiSysMountPoint = "/boot";
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
+        # MediaTek (MT7921/MT7922) Bluetooth bricks itself on autosuspend
+        boot.extraModprobeConfig = "options btusb enable_autosuspend=0";
+
         networking.hostName = "fast";
 
         programs'.niri.enable = true;
@@ -121,10 +126,6 @@ in {
           rog
           edge
         ];
-
-        networking.firewall.enable = false;
-        services.livekit.enable = true;
-        services.livekit.keyFile = "/home/cameron/livekit";
 
         programs.steam.enable = true;
 

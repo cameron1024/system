@@ -6,6 +6,7 @@ source "$REPO_ROOT/.env" 2>/dev/null || true
 
 ROUTER="root@192.168.1.1"
 MINI_STATIC_IP="192.168.1.2"
+AP_STATIC_IP="192.168.1.3"
 
 do_install() {
     echo "=== Updating packages ==="
@@ -54,6 +55,16 @@ do_set() {
         uci set wireless.default_radio1.encryption="sae-mixed"
     '
 
+    # Wifi roaming
+    ssh "$ROUTER" '
+        uci set wireless.default_radio0.ieee80211k="1"
+        uci set wireless.default_radio0.bss_transition="1"
+        uci set wireless.default_radio0.wnm_sleep_mode="1"
+        uci set wireless.default_radio1.ieee80211k="1"
+        uci set wireless.default_radio1.bss_transition="1"
+        uci set wireless.default_radio1.wnm_sleep_mode="1"
+    '
+
     # https://www.waveform.com/tools/bufferbloat
     # Plusnet FTTP still uses PPPoE (untagged) over the Openreach ONT, so the
     # interface stays pppoe-wan. Set download/upload to ~95% of your FTTP
@@ -72,9 +83,9 @@ do_set() {
 
     # SQM and flow offloading are mutually exclusive: SQM must inspect every
     # packet on the CPU, while offloading bypasses it. Enable SQM (and disable
-    # offloading) only when ENABLE_SQM is exactly "1"; otherwise turn on hardware
-    # flow offloading for maximum throughput.
-    if [ "${ENABLE_SQM:-}" = "1" ]; then
+    # offloading) only when ROUTER_ENABLE_SQM is exactly "1"; otherwise turn on
+    # hardware flow offloading for maximum throughput.
+    if [ "${ROUTER_ENABLE_SQM:-}" = "1" ]; then
         echo "  SQM enabled (flow offloading disabled)"
         ssh "$ROUTER" '
             uci set sqm.wan.enabled="1"
@@ -106,6 +117,18 @@ do_set() {
             uci set dhcp.mini.name='mini'
             uci set dhcp.mini.mac='$ROUTER_MINI_MAC'
             uci set dhcp.mini.ip='$MINI_STATIC_IP'
+        "
+    fi
+
+    # Static DHCP lease for the MikroTik cAP access point, so deploy_ap.sh
+    # always finds it at a predictable address.
+    if [ -n "${ROUTER_AP_MAC:-}" ]; then
+        echo "  Setting cAP access point static lease"
+        ssh "$ROUTER" "
+            uci set dhcp.cap_ap=host
+            uci set dhcp.cap_ap.name='cap-ap'
+            uci set dhcp.cap_ap.mac='$ROUTER_AP_MAC'
+            uci set dhcp.cap_ap.ip='$AP_STATIC_IP'
         "
     fi
 
@@ -155,6 +178,13 @@ do_set() {
             uci set wireless.default_radio0.key='$ROUTER_WIFI_PASSWORD'
             uci set wireless.default_radio1.key='$ROUTER_WIFI_PASSWORD'
         "
+    fi
+
+    # Root password = LuCI web UI login + SSH password auth. Unlike the uci
+    # settings above, passwd takes effect immediately (it is not staged/committed).
+    if [ -n "${ROUTER_PASSWORD:-}" ]; then
+        echo "  Setting router (LuCI/SSH) password"
+        ssh "$ROUTER" "printf '%s\n%s\n' '$ROUTER_PASSWORD' '$ROUTER_PASSWORD' | passwd root"
     fi
 
     if [ -n "${ROUTER_PPPOE_USERNAME:-}" ]; then

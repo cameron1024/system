@@ -117,6 +117,12 @@ with lib; {
     services.flatpak.enable = true;
     services.snap.enable = true;
 
+    # Desktops shouldn't block boot waiting for the network to be "online".
+    # NetworkManager-wait-online otherwise sits in the pre-greeter critical path
+    # for a couple of seconds. Anything that genuinely needs the network starts
+    # on its own once connectivity arrives.
+    systemd.services.NetworkManager-wait-online.enable = false;
+
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
 

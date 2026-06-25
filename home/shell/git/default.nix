@@ -7,7 +7,6 @@
     git-cliff
     difftastic
     mergiraf
-    delta
   ];
 
   programs.difftastic.enable = true;
@@ -57,8 +56,6 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-
-    # delta.enable = true;
 
     settings = {
       user.name = lib.mkDefault "cameron";
