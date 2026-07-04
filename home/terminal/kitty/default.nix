@@ -31,7 +31,9 @@ in {
     # works around https://github.com/kovidgoyal/kitty/issues/10102, where the
     # watcher recursively inotify-watches every dir an included config lives in
     # (e.g. all of /nix/store), exhausting the kernel's inotify watch limit.
-    auto_reload_config = "no";
+    # auto_reload_config is a debounce interval in seconds; a negative value
+    # disables the watcher entirely.
+    auto_reload_config = -1;
   };
 
   programs.kitty.extraConfig = ''
