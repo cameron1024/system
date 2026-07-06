@@ -1,4 +1,5 @@
-{inputs, pkgs, ...}: {
+{inputs, pkgs, lib, config, ...}:
+lib.mkIf config.services'.desktop.enable {
   home.packages = with pkgs; [
     inputs.zed.packages.${pkgs.system}.default
     sentry-cli

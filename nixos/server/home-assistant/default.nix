@@ -21,6 +21,7 @@
     "nest"
     "radio_browser"
     "shopping_list"
+    "zha"
   ];
 in
   with lib; {
