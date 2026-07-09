@@ -85,12 +85,23 @@ in {
           -t SVG \
           -o /var/public/wifi.svg \
           -l H \
-          -s 6 \
-          -m 2 \
+          -s 5 \
+          -m 1 \
           --svg-path \
           --foreground=d3c6aa \
           --background=2d353b \
           "WIFI:T:WPA;S:$ssid;P:$pass;;"
+
+        # qrencode emits an <svg> with a fixed cm width/height AND
+        # preserveAspectRatio="none". Inside the dashboard's fixed-height
+        # iframe that both overflows (clipping the bottom) and would distort.
+        # Strip the intrinsic width/height so the SVG scales to the iframe,
+        # and set preserveAspectRatio so it stays square, centered, and
+        # contained ("meet") rather than stretched.
+        sed -i -E \
+          -e 's/ (width|height)="[0-9.]+cm"//g' \
+          -e 's/preserveAspectRatio="none"/preserveAspectRatio="xMidYMid meet"/' \
+          /var/public/wifi.svg
       '';
     };
 
@@ -248,7 +259,7 @@ in {
                       type = "iframe";
                       name = "WiFi QR";
                       src = "http://mini:8787/wifi.svg";
-                      classes = "h-60";
+                      classes = "h-96";
                       allowScrolling = "no";
                       referrerPolicy = "same-origin";
                     }
