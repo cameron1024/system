@@ -37,6 +37,13 @@ window-rule {
     default-column-width { proportion 1.0; }
 }
 
+// Keep the editor fullscreen, but let Zed's Settings window float so demos
+// (e.g. a11y/toggle_theme_mode.py) don't open it fullscreen.
+window-rule {
+    match app-id="dev.zed.Zed-Nightly" title="Settings"
+    open-floating true
+}
+
 layer-rule {
   match namespace="^awww-daemon$"
   place-within-backdrop true
@@ -67,6 +74,9 @@ input {
     touchpad {
         // off
         tap
+        // Scale down scroll/swipe sensitivity while keeping the
+        // horizontal-view-movement "fling" spring intact. Lower = less sensitive.
+        scroll-factor 0.5
         // dwt
         // dwtp
         // drag false
@@ -309,6 +319,9 @@ layout {
 spawn-at-startup "handy"
 spawn-at-startup "waybar"
 spawn-at-startup "awww-daemon"
+// Re-applies the current wallpaper when a monitor is hotplugged, so new
+// monitors get a background automatically.
+spawn-at-startup "wallpaper-hotplug.sh"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayosd-server"
@@ -585,16 +598,19 @@ binds {
 
     Mod+Grave { spawn "kitten" "quick-access-terminal"; } 
 
-    XF86AudioRaiseVolume { spawn "swayosd-client" "--output-volume=raise"; }
-    XF86AudioLowerVolume { spawn "swayosd-client" "--output-volume=lower"; }
-    XF86AudioMute        { spawn "swayosd-client" "--output-volume=mute-toggle"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
 
-    XF86MonBrightnessUp   { spawn "swayosd-client" "--output-brightness=raise"; }
-    XF86MonBrightnessDown { spawn "swayosd-client" "--output-brightness=lower"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
 
-    XF86AudioPlay { spawn "playerctl" "play-pause"; }
-    XF86AudioNext { spawn "playerctl" "next"; }
-    XF86AudioPrev { spawn "playerctl" "previous"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86AudioForward allow-when-locked=true { spawn "playerctl" "position" "10+"; }
+    XF86AudioRewind  allow-when-locked=true { spawn "playerctl" "position" "10-"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+B { spawn "killall" "-SIGUSR1" ".waybar-wrapped"; }
     Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"; }

@@ -9,8 +9,6 @@
 with lib; {
   imports = [
     ./screenshot.nix
-
-    # ../hyprland/notifications.nix
     ../hyprland/hardware.nix
     ../desktop
 
@@ -33,6 +31,10 @@ with lib; {
       glib
       wayscriber
       playerctl
+      # Live, ephemeral GUI monitor arrangement via wlr-output-management.
+      # Drag-to-arrange, applies immediately, writes no config (reverts on
+      # niri restart) - exactly what we want.
+      wdisplays
     ];
 
     home.pointerCursor = {
