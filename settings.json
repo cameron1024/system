@@ -1,6 +1,66 @@
 {
+  "diff_view_style": "unified",
+  "log": {
+    // "worktree": "debug",
+  },
+  "file_scan_inclusions": [".git"],
+  "completions": {
+    "words": "enabled"
+  },
+  "expand_excerpt_lines": 5,
+  "server_url": "https://zed.dev",
+  "proxy": "",
+  "context_servers": {
+    
+  },
+  "agent_servers": {
+    "foo-agent": {
+      "type": "custom",
+      "command": "asdasdfasdf",
+      "args": [
+        "--whatever"
+      ],
+      "env": {
+        "asdf": "sdfg"
+      }
+    },
+    "opencode": {
+      "type": "registry"
+    }
+  },
+  "language_models": {
+    "openai_compatible": {
+      "GLM 5.2 Baseten": {
+        "api_url": "https://inference.baseten.co/v1",
+        "available_models": [
+          {
+            "name": "zai-org/GLM-5.2",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false
+            }
+          }
+        ]
+      }
+    },
+    "lmstudio": {
+      "api_url": "http://camerons-pc:1234/api/v0"
+    }
+  },
+  "feature_flags": {
+    "lsp-tool": "on",
+    "agent-settings-ui": "on",
+    "sandboxing": "off",
+  },
   "helix_mode": false,
-  "cli_default_open_behavior": "new_window",
+  "cli_default_open_behavior": "existing_window",
   "ssh_connections": [
     {
       "host": "mini",
@@ -18,12 +78,25 @@
       "username": "cameron",
       "args": [],
       "projects": []
+    },
+    {
+      "host": "rainapersonal",
+      "username": "raina",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/raina/System/./"
+          ]
+        }
+      ]
     }
   ],
   "status_bar": {
     "show_active_file": true
   },
   "telemetry": {
+    "anthropic_retention": true,
     "diagnostics": false,
     "metrics": false
   },
@@ -38,6 +111,7 @@
     "dock": "left"
   },
   "debugger": {
+    "timeout": 2000,
     "dock": "bottom"
   },
   "document_folding_ranges": "on",
@@ -65,9 +139,12 @@
   "semantic_tokens": "combined",
   "disable_ai": false,
   "which_key": {
+    "delay_ms": 1000,
     "enabled": true,
   },
   "git": {
+    "show_stage_restore_buttons": false,
+    "path_style": "file_name_first",
     "enable_diff": true,
     "inline_blame": {
       "enabled": true,
@@ -96,19 +173,92 @@
   },
   "relative_line_numbers": "enabled",
   "icon_theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "Colored Zed Icons Theme Dark",
     "dark": "Colored Zed Icons Theme Dark"
   },
   "audio": {
     "experimental.auto_microphone_volume": true,
   },
-  "language_models": {
-    "lmstudio": {
-      "api_url": "http://localhost:1234"
-    }
+  "markdown_preview": {
+    "limit_content_width": false
   },
   "agent": {
+    "default_model": {
+      "speed": "fast",
+      "provider": "zed.dev",
+      "model": "claude-fable-5",
+      "enable_thinking": true,
+      "effort": "high"
+    },
+    "sandbox_permissions": {
+      "warn_confusable_unicode": true,
+      "write_paths": [
+        "/home/cameron/.cache/nix"
+      ],
+      "network_hosts": [
+        "docs.rs",
+        "crates.io",
+        "static.crates.io",
+        "index.crates.io",
+        "github.com",
+        "cache.nixos.org",
+        "*.cachix.org",
+        "channels.nixos.org",
+        "api.github.com",
+        "*.githubusercontent.com"
+      ],
+      "allow_unsandboxed": false
+    },
+    "favorite_models": [
+      {
+        "provider": "zed.dev",
+        "model": "gpt-5.5",
+        "enable_thinking": true,
+        "effort": "medium"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gemini-3.1-pro-preview",
+        "enable_thinking": true,
+        "effort": "HIGH"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "claude-fable-5",
+        "enable_thinking": true,
+        "effort": "high"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "claude-opus-4-8",
+        "enable_thinking": true,
+        "effort": "high",
+        "speed": "fast"
+      },
+      {
+        "provider": "GLM 5.2 Baseten",
+        "model": "zai-org/GLM-5.2",
+        "enable_thinking": false
+      },
+      {
+        "provider": "copilot_chat",
+        "model": "gpt-5.3-codex",
+        "enable_thinking": true,
+        "effort": "high"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gpt-5.6-sol",
+        "enable_thinking": true,
+        "effort": "high",
+        "speed": "fast"
+      }
+    ],
+    "max_content_width": 2000.0,
+    "default_profile": "write",
+    "enabled": true,
+    "flexible": true,
     "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
@@ -122,10 +272,13 @@
     "show_turn_stats": true,
     "play_sound_when_agent_done": "never",
     "use_modifier_to_send": true,
-    "default_model": {
-      "provider": "lmstudio",
-      "model": "qwen3.5-35b-a3b"
-    },
+    // "default_model": {
+    //   "effort": "high",
+    //   "speed": "fast",
+    //   "enable_thinking": true,
+    //   "provider": "copilot_chat",
+    //   "model": "gpt-5.3-codex",
+    // },
     "model_parameters": [],
   },
   "project_panel": {
@@ -138,9 +291,10 @@
   "rounded_selection": true,
   "use_smartcase_search": true,
   "collaboration_panel": {
-    "dock": "right",
+    "dock": "left",
   },
   "edit_predictions": {
+    "provider": "zed",
     "mode": "subtle",
   },
   "use_system_prompts": true,
@@ -196,21 +350,27 @@
 
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 300,
-  "buffer_font_size": 16,
+  "buffer_font_size": 16.0,
   "buffer_font_features": {
     "calt": true,
     "clig": true,
   },
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 16,
+  "ui_font_size": 16.0,
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Everforest Dark Hard (blur)",
+    "dark": "Everforest Dark Hard (regular)",
   },
   "buffer_line_height": {
     "custom": 1.4
   },
+
+  "dev": {
+    "experimental.theme_overrides": {
+      "status_bar.background": "#000000"
+    }
+  }
 
   // "theme": {
   //   "mode": "dark",

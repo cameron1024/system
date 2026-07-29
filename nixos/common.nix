@@ -12,6 +12,7 @@ in {
 
     ./ai.nix
     ./desktop
+    ./docker.nix
     ./gpu.nix
     ./greeter.nix
     ./postgres.nix

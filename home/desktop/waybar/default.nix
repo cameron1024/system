@@ -59,6 +59,35 @@
     runtimeInputs = with pkgs; [ gh jq ];
     text = "gh api notifications | jq length";
   };
+  inotifyWatchers = pkgs.writeShellApplication {
+    name = "inotify-watchers-status.sh";
+    runtimeInputs = with pkgs; [ findutils gnused gnugrep coreutils ];
+    text = ''
+      # Sum "inotify wd:" lines across every visible inotify fd. Only fds of
+      # processes we own are readable, but the watch limit is per-UID anyway.
+      total=$(find /proc -maxdepth 3 -path '/proc/[0-9]*/fd/*' -lname 'anon_inode:inotify' 2>/dev/null \
+        | sed 's|/fd/|/fdinfo/|' \
+        | xargs -r cat 2>/dev/null \
+        | grep -c '^inotify wd:' || true)
+      limit=$(cat /proc/sys/fs/inotify/max_user_watches)
+      pct=$((total * 100 / limit))
+
+      if [ "$total" -ge 1000 ]; then
+        text="$((total / 1000))k"
+      else
+        text="$total"
+      fi
+
+      class="ok"
+      if [ "$pct" -ge 90 ]; then
+        class="critical"
+      elif [ "$pct" -ge 70 ]; then
+        class="warning"
+      fi
+
+      echo "{\"text\": \"$text\", \"tooltip\": \"inotify watchers: $total / $limit ($pct%)\", \"class\": \"$class\"}"
+    '';
+  };
   toggleScreenReader = pkgs.writeShellApplication {
     name = "toggle-screen-reader";
     runtimeInputs = with pkgs; [ systemdMinimal jq ];
@@ -121,7 +150,7 @@ in
             start_hidden = true;
             smooth-scrolling-threshold = 5;
 
-            modules-left = ["power-profiles-daemon" "cpu" "memory" "disk" "network" "privacy"];
+            modules-left = ["power-profiles-daemon" "cpu" "memory" "disk" "custom/inotify" "network" "privacy"];
             modules-right = ["custom/a11y" "tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
               []
@@ -157,6 +186,14 @@ in
             "disk" = {
               format = "  {free}";
               format-alt = "  {percentage_used}% ({free})";
+              tooltip = true;
+            };
+
+            "custom/inotify" = {
+              format = "󰷇 {}"; # nf-md-file_eye
+              return-type = "json";
+              interval = 10;
+              exec = "${inotifyWatchers}/bin/inotify-watchers-status.sh";
               tooltip = true;
             };
 

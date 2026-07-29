@@ -26,5 +26,7 @@ with lib; {
     hardware.enableRedistributableFirmware = true;
 
     networking.networkmanager.enable = true;
+
+    services'.docker.enable = mkDefault true;
   };
 }

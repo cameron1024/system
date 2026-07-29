@@ -53,7 +53,7 @@
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
-    handy.url = "github:cameron1024/handy";
+    handy.url = "github:cjpais/handy";
     handy.inputs.nixpkgs.follows = "nixpkgs";
 
     vicinae.url = "github:vicinaehq/vicinae";
