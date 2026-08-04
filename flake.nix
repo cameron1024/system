@@ -13,6 +13,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    systems.url = "github:nix-systems/default-linux";
+    bun2nix.url = "github:nix-community/bun2nix/2.0.8";
+    bun2nix.inputs.nixpkgs.follows = "nixpkgs";
+    bun2nix.inputs.systems.follows = "systems";
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixgl.url = "github:nix-community/nixGL";
@@ -53,6 +58,7 @@
 
     handy.url = "github:cjpais/handy";
     handy.inputs.nixpkgs.follows = "nixpkgs";
+    handy.inputs.bun2nix.follows = "bun2nix";
 
     vicinae.url = "github:vicinaehq/vicinae";
 
