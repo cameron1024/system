@@ -749,6 +749,10 @@ binds {
     // Center all fully visible columns on screen.
     Mod+Ctrl+C { center-visible-columns; }
 
+    // Toggle gaps + window corner radius on/off by swapping the config symlink
+    // between the Nix-generated "gaps" and "no-gaps" variants (see home/niri/default.nix).
+    Mod+G hotkey-overlay-title="Toggle gaps" { spawn "niri-toggle-gaps"; }
+
     // Finer width adjustments.
     // This command can also:
     // * set width in pixels: "1000"
