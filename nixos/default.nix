@@ -96,16 +96,19 @@ in {
   fast = mkSystem {
     system = "x86_64-linux";
     homeModules = [
-      {
+      ({lib, ...}: {
         home.stateVersion = "25.05";
         services'.streamdeck.enable = true;
         
         programs'.deployment-tools.enable = true;
-      }
+
+        # No (working) bluetooth on this machine; see note in the system config.
+        services.blueman-applet.enable = lib.mkForce false;
+      })
     ];
     modules = [
       ./hardware/fast.nix
-      ({pkgs, ...}: {
+      ({pkgs, lib, ...}: {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
         services'.standardMachine.zenKernel = false;
@@ -114,8 +117,14 @@ in {
         boot.loader.efi.efiSysMountPoint = "/boot";
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
-        # MediaTek (MT7921/MT7922) Bluetooth bricks itself on autosuspend
-        boot.extraModprobeConfig = "options btusb enable_autosuspend=0";
+        # The onboard MT7927's BT firmware isn't in linux-firmware yet
+        # (redistribution unresolved: linux-firmware MR !946), so the adapter
+        # loops probe -> fw load fail -> USB reset ~2x/sec, spamming the
+        # journal and churning udev. BT is unused on this machine, so keep
+        # the driver from ever binding.
+        boot.blacklistedKernelModules = ["btusb" "btmtk"];
+        hardware.bluetooth.enable = lib.mkForce false;
+        services.blueman.enable = lib.mkForce false;
 
         networking.hostName = "fast";
 
@@ -213,6 +222,7 @@ in {
         services'.adguardhome.enable = true;
         services'.ntopng.enable = true;
         services'.openssh.enable = true;
+        services'.reverse-proxy.enable = true;
 
         programs.ssh.extraConfig = ''
           Host pi

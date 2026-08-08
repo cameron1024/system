@@ -3,7 +3,6 @@ final: prev: {
   euphonica = final.callPackage ./packages/euphonica.nix {};
   material-rounded = final.callPackage ./packages/material-rounded.nix {};
 
-  # Build the GTK 3/4 themes without the removed GTK 2 murrine engine.
   everforest-gtk-theme = final.stdenvNoCC.mkDerivation {
     pname = "everforest-gtk-theme";
     version = "0-unstable-2025-10-15";
@@ -40,6 +39,16 @@ final: prev: {
       platforms = final.lib.platforms.unix;
     };
   };
+
+  cpupower-gui = prev.cpupower-gui.overrideAttrs (oldAttrs: {
+    postPatch =
+      (oldAttrs.postPatch or "")
+      + ''
+        substituteInPlace cpupower_gui/cpupower-gui.in \
+          --replace-fail 'config_sub.add_argument(' 'config_sub.set_defaults(' \
+          --replace-fail '"apply", action="store_true", help="apply cpupower configuration",' 'apply=True,'
+      '';
+  });
 
   zulip-term = prev.zulip-term.overridePythonAttrs (oldAttrs: {
     disabledTests =
@@ -125,15 +134,15 @@ final: prev: {
         };
       };
 
-      lean-nvim = prev.vimPlugins.lean-nvim.overrideAttrs {
-        version = "0.0.0";
-        src = prev.fetchFromGitHub {
-          owner = "Julian";
-          repo = "lean.nvim";
-          rev = "68ad9a01b7da30213441016667ad3f946d080fe8";
-          hash = "sha256-FfYfDPQi0MUPnUV1bcHP7cpHdUkqcH9lHZS8ZNpWCso=";
-        };
-      };
+      # lean-nvim = prev.vimPlugins.lean-nvim.overrideAttrs {
+      #   version = "0.0.0";
+      #   src = prev.fetchFromGitHub {
+      #     owner = "Julian";
+      #     repo = "lean.nvim";
+      #     rev = "68ad9a01b7da30213441016667ad3f946d080fe8";
+      #     hash = "sha256-FfYfDPQi0MUPnUV1bcHP7cpHdUkqcH9lHZS8ZNpWCso=";
+      #   };
+      # };
 
 
     };

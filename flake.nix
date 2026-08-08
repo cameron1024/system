@@ -13,10 +13,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    systems.url = "github:nix-systems/default-linux";
-    bun2nix.url = "github:nix-community/bun2nix/2.0.8";
-    bun2nix.inputs.nixpkgs.follows = "nixpkgs";
-    bun2nix.inputs.systems.follows = "systems";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -47,6 +43,7 @@
 
     zed.url = "github:zed-industries/zed/nightly";
     # zed.url = "github:zed-industries/zed";
+    # NOT zed.inputs.nixpkgs.follows ..., breaks caching
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
@@ -58,6 +55,10 @@
 
     handy.url = "github:cjpais/handy";
     handy.inputs.nixpkgs.follows = "nixpkgs";
+    systems.url = "github:nix-systems/default-linux";
+    bun2nix.url = "github:nix-community/bun2nix/2.0.8";
+    bun2nix.inputs.nixpkgs.follows = "nixpkgs";
+    bun2nix.inputs.systems.follows = "systems";
     handy.inputs.bun2nix.follows = "bun2nix";
 
     vicinae.url = "github:vicinaehq/vicinae";

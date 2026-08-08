@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
 
   # TODO: https://github.com/WilliamHsieh/overlook.nvim 
 
@@ -6,23 +6,28 @@
   plugins.fidget.lazyLoad.enable = true;
   plugins.fidget.lazyLoad.settings.event = ["LspAttach"];
 
-  plugins.actions-preview.enable = true;
-  plugins.actions-preview.lazyLoad.enable = true;
-  plugins.actions-preview.lazyLoad.settings.keys = [
-    {
-      __unkeyed-1 = "gra";
-      __unkeyed-2.__raw = ''
-        function()
-          require "actions-preview".code_actions()
-        end
-      '';
-      mode = ["n" "v"];
-    }
+  extraPlugins = [
+    pkgs.vimPlugins.plenary-nvim
+    (pkgs.callPackage ./lsp-tiny-code-action.nix {})
   ];
-  plugins.actions-preview.settings = {
-    backend = ["snacks"];
-    snacks.layout.preset = "ivy";
-  };
+  extraConfigLua = ''
+    local keymap = require 'lz.n'.keymap {
+      "tiny-code-action",
+      after = function()
+        require 'tiny-code-action'.setup {
+          backend = "difftastic",
+          picker = "snacks",
+        }
+      end,
+    }
+
+    keymap.set(
+      { "n", "v" },
+      "gra",
+      function() require 'tiny-code-action'.code_action() end,
+      { desc = "Code actions" }
+    )
+  '';
 
   plugins.lsp = {
     enable = true;

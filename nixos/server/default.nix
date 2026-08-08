@@ -8,6 +8,7 @@
     ./home-assistant
     ./home-network.nix
     ./nix-cache.nix
+    ./reverse-proxy.nix
   ];
   options.services' = {
     immich.enable = lib.mkEnableOption "Enable Immich service";
