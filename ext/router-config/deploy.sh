@@ -56,14 +56,17 @@ do_set() {
         uci set wireless.default_radio1.encryption="sae-mixed"
     '
 
-    # Wifi roaming
+    # Wifi roaming (802.11k/v) was tried here and reverted: wnm_sleep_mode in
+    # particular is known to break clients (drops/rekey failures, especially
+    # with sae-mixed). Ensure the options stay absent.
     ssh "$ROUTER" '
-        uci set wireless.default_radio0.ieee80211k="1"
-        uci set wireless.default_radio0.bss_transition="1"
-        uci set wireless.default_radio0.wnm_sleep_mode="1"
-        uci set wireless.default_radio1.ieee80211k="1"
-        uci set wireless.default_radio1.bss_transition="1"
-        uci set wireless.default_radio1.wnm_sleep_mode="1"
+        uci -q delete wireless.default_radio0.ieee80211k
+        uci -q delete wireless.default_radio0.bss_transition
+        uci -q delete wireless.default_radio0.wnm_sleep_mode
+        uci -q delete wireless.default_radio1.ieee80211k
+        uci -q delete wireless.default_radio1.bss_transition
+        uci -q delete wireless.default_radio1.wnm_sleep_mode
+        true
     '
 
     # https://www.waveform.com/tools/bufferbloat
