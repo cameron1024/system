@@ -2,18 +2,17 @@
   nixConfig = {
     extra-substituters = [
       "https://zed.cachix.org"
-      "https://cache.garnix.io"
       "https://install.determinate.systems"
     ];
     extra-trusted-public-keys = [
       "zed.cachix.org-1:/pHQ6dpMsAZk2DiP4WCL0p9YDNKWj2Q5FL20bNmw1cU="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
     ];
   };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -44,6 +43,7 @@
 
     zed.url = "github:zed-industries/zed/nightly";
     # zed.url = "github:zed-industries/zed";
+    # NOT zed.inputs.nixpkgs.follows ..., breaks caching
 
     hexecute.url = "github:ThatOtherAndrew/Hexecute";
 
@@ -53,8 +53,13 @@
     nix-snapd.url = "github:nix-community/nix-snapd";
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
-    handy.url = "github:cameron1024/handy";
+    handy.url = "github:cjpais/handy";
     handy.inputs.nixpkgs.follows = "nixpkgs";
+    systems.url = "github:nix-systems/default-linux";
+    bun2nix.url = "github:nix-community/bun2nix/2.0.8";
+    bun2nix.inputs.nixpkgs.follows = "nixpkgs";
+    bun2nix.inputs.systems.follows = "systems";
+    handy.inputs.bun2nix.follows = "bun2nix";
 
     vicinae.url = "github:vicinaehq/vicinae";
 

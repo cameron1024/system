@@ -3,11 +3,18 @@ final: prev: {
   euphonica = final.callPackage ./packages/euphonica.nix {};
   material-rounded = final.callPackage ./packages/material-rounded.nix {};
 
-  # Fix: upstream nixpkgs package doesn't actually build the theme, it just copies source files
-  everforest-gtk-theme = prev.everforest-gtk-theme.overrideAttrs (oldAttrs: {
-    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [final.sassc];
+  everforest-gtk-theme = final.stdenvNoCC.mkDerivation {
+    pname = "everforest-gtk-theme";
+    version = "0-unstable-2025-10-15";
 
-    dontBuild = false;
+    src = final.fetchFromGitHub {
+      owner = "Fausto-Korpsvart";
+      repo = "Everforest-GTK-Theme";
+      rev = "930a5dc57f7a06e8c6538d531544e41c56dbb27a";
+      hash = "sha256-mlJE7gVElWUjJIZnAL5ztchphmaU82llol+YdKqnSxg=";
+    };
+
+    nativeBuildInputs = [final.sassc];
 
     buildPhase = ''
       runHook preBuild
@@ -24,6 +31,42 @@ final: prev: {
       cp -a "$TMPDIR/themes/"* "$out/share/themes/"
       runHook postInstall
     '';
+
+    meta = {
+      description = "Everforest colour palette for GTK";
+      homepage = "https://github.com/Fausto-Korpsvart/Everforest-GTK-Theme";
+      license = final.lib.licenses.gpl3Only;
+      platforms = final.lib.platforms.unix;
+    };
+  };
+
+  cpupower-gui = prev.cpupower-gui.overrideAttrs (oldAttrs: {
+    postPatch =
+      (oldAttrs.postPatch or "")
+      + ''
+        substituteInPlace cpupower_gui/cpupower-gui.in \
+          --replace-fail 'config_sub.add_argument(' 'config_sub.set_defaults(' \
+          --replace-fail '"apply", action="store_true", help="apply cpupower configuration",' 'apply=True,'
+      '';
+  });
+
+  zulip-term = prev.zulip-term.overridePythonAttrs (oldAttrs: {
+    disabledTests =
+      (oldAttrs.disabledTests or [])
+      ++ [
+        # These assert the pytest executable-name prefix, which changed under Python 3.14.
+        "test_main_multiple_autohide_options"
+        "test_main_multiple_notify_options"
+      ];
+  });
+
+  mistral-vibe = prev.mistral-vibe.overridePythonAttrs (oldAttrs: {
+    disabledTests =
+      (oldAttrs.disabledTests or [])
+      ++ [
+        # Races Textual widget mounting when the suite runs in parallel.
+        "test_skill_without_args_does_not_add_extra_text"
+      ];
   });
 
   wrapWithNixGL = {
@@ -91,15 +134,15 @@ final: prev: {
         };
       };
 
-      lean-nvim = prev.vimPlugins.lean-nvim.overrideAttrs {
-        version = "0.0.0";
-        src = prev.fetchFromGitHub {
-          owner = "Julian";
-          repo = "lean.nvim";
-          rev = "68ad9a01b7da30213441016667ad3f946d080fe8";
-          hash = "sha256-FfYfDPQi0MUPnUV1bcHP7cpHdUkqcH9lHZS8ZNpWCso=";
-        };
-      };
+      # lean-nvim = prev.vimPlugins.lean-nvim.overrideAttrs {
+      #   version = "0.0.0";
+      #   src = prev.fetchFromGitHub {
+      #     owner = "Julian";
+      #     repo = "lean.nvim";
+      #     rev = "68ad9a01b7da30213441016667ad3f946d080fe8";
+      #     hash = "sha256-FfYfDPQi0MUPnUV1bcHP7cpHdUkqcH9lHZS8ZNpWCso=";
+      #   };
+      # };
 
 
     };

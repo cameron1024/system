@@ -57,6 +57,7 @@ tooltip label {
 #cpu,
 #memory,
 #disk,
+#custom-inotify,
 #network,
 #battery,
 #backlight,
@@ -103,6 +104,21 @@ tooltip label {
 
 #disk {
   color: #7fbbb3;
+}
+
+#custom-inotify {
+  color: #83c092;
+}
+
+#custom-inotify.warning {
+  color: #e69875;
+  border-bottom-color: #e69875;
+}
+
+#custom-inotify.critical {
+  color: #e67e80;
+  border-bottom-color: #e67e80;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 #network {
@@ -180,6 +196,11 @@ tooltip label {
 #disk:hover {
   background-color: rgba(39, 46, 51, 1);
   border-bottom-color: #7fbbb3;
+}
+
+#custom-inotify:hover {
+  background-color: rgba(39, 46, 51, 1);
+  border-bottom-color: #83c092;
 }
 
 #network:hover {

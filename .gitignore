@@ -2,3 +2,4 @@
 scripts/switch.sh
 /result
 .env
+/local

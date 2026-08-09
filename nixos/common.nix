@@ -12,6 +12,7 @@ in {
 
     ./ai.nix
     ./desktop
+    ./docker.nix
     ./gpu.nix
     ./greeter.nix
     ./postgres.nix
@@ -126,6 +127,25 @@ in {
 
   config = {
     time.timeZone = "Europe/London";
+
+    # Metadata about the flake source this generation was built from.
+    # Stable location: /etc/flake-generation.json. Because it's part of the
+    # system closure, each generation (and rollback) carries its own copy.
+    environment.etc."flake-generation.json".text = let
+      self = inputs.self;
+      dirty = !(self ? rev);
+    in
+      builtins.toJSON {
+        flake_hash =
+          if dirty
+          then lib.removeSuffix "-dirty" (self.dirtyRev or "unknown")
+          else self.rev;
+        inherit dirty;
+        flake_contents = self.narHash;
+      };
+
+    # Also surface the revision in `nixos-version --json` (configurationRevision).
+    system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
     console.keyMap = "uk";
 

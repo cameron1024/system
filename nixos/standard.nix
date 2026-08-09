@@ -31,5 +31,7 @@ with lib; {
     services.fwupd.enable = true;
 
     networking.networkmanager.enable = true;
+
+    services'.docker.enable = mkDefault true;
   };
 }

@@ -10,6 +10,7 @@
     "context": "Editor && vim_mode == normal",
     "bindings": {
       "space h s": "git::ToggleStaged",
+      "ctrl-p": "editor::GoToParentModule",
     },
   },
   {
@@ -23,8 +24,9 @@
     },
   },
   {
-    "context": "((Editor && (vim_mode == normal || vim_mode == visual)) || !Editor) && !Terminal",
+    "context": "((Editor && mode == full && (vim_mode == normal || vim_mode == visual)) || !Editor) && !Terminal",
     "bindings": {
+      "space p": "project_panel::Toggle",
       "space n": "file_finder::Toggle",
       "space f": "pane::DeploySearch",
       "space s": "editor::ToggleSplitDiff",
@@ -92,15 +94,8 @@
     },
   },
   {
-    "context": "!(Editor && vim_mode == insert) && !Terminal && !Picker",
-    "bindings": {
-      "space p": "project_panel::Toggle",
-    },
-  },
-  {
     "context": "(Editor && vim_mode == normal)",
     "bindings": {
-      "space p": "project_panel::Toggle",
       "space v": "vim::SwitchToVisualBlockMode",
     },
   },

@@ -49,6 +49,13 @@ in
           mobile_app = {};
           api = {};
           logger.default = "info";
+
+          # Accept requests forwarded by the local Caddy reverse proxy
+          # (http://home.lan); HA rejects proxied requests otherwise.
+          http = {
+            use_x_forwarded_for = true;
+            trusted_proxies = ["127.0.0.1" "::1"];
+          };
         };
       };
     };

@@ -79,6 +79,12 @@ do_set() {
         uci set sqm.wan.upload="104000"
         uci set sqm.wan.linklayer="ethernet"
         uci set sqm.wan.overhead="26"
+        # cake auto-sizes its egress buffer to ~5.2MB at this rate, and it was
+        # observed hitting that ceiling (memory used == limit in `tc -s qdisc`).
+        # Bump it ~25% to give upload bursts more headroom.
+        uci set sqm.wan.qdisc_advanced="1"
+        uci set sqm.wan.qdisc_really_really_advanced="1"
+        uci set sqm.wan.eqdisc_opts="memlimit 6500000"
     '
 
     # SQM and flow offloading are mutually exclusive: SQM must inspect every
@@ -144,6 +150,18 @@ do_set() {
             uci add_list dhcp.@dnsmasq[0].server="1.1.1.1"
         '
     fi
+
+    # Service domains: resolve to the mini, where a Caddy reverse proxy
+    # (nixos/server/reverse-proxy.nix) routes each hostname to the right port.
+    # dnsmasq answers these locally; .lan is its local domain so they are
+    # never forwarded upstream.
+    echo "  Setting service domain DNS entries"
+    for domain in home.lan media.lan; do
+        ssh "$ROUTER" '
+            uci del_list dhcp.@dnsmasq[0].address="/'"$domain"'/'"$MINI_STATIC_IP"'" 2>/dev/null || true
+            uci add_list dhcp.@dnsmasq[0].address="/'"$domain"'/'"$MINI_STATIC_IP"'"
+        '
+    done
 
     # Static DHCP lease for TV + block internet access
     if [ -n "${ROUTER_SMART_TV_MAC:-}" ]; then
