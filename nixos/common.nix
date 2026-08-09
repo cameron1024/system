@@ -15,6 +15,7 @@ in {
     ./docker.nix
     ./gpu.nix
     ./greeter.nix
+    ./moonlight-kiosk.nix
     ./postgres.nix
     ./server
     ./ssh.nix

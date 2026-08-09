@@ -7,6 +7,7 @@ source "$REPO_ROOT/.env" 2>/dev/null || true
 ROUTER="root@192.168.1.1"
 MINI_STATIC_IP="192.168.1.2"
 AP_STATIC_IP="192.168.1.3"
+WINDOWS_PC_STATIC_IP="192.168.1.12"
 
 do_install() {
     echo "=== Updating packages ==="
@@ -179,6 +180,18 @@ do_set() {
             uci set firewall.block_smart_tv.dest='wan'
             uci set firewall.block_smart_tv.src_ip='192.168.1.11'
             uci set firewall.block_smart_tv.target='REJECT'
+        "
+    fi
+
+    # Static DHCP lease for the Windows PC (Sunshine game-streaming host), so
+    # Moonlight clients always find it at a predictable address.
+    if [ -n "${ROUTER_WINDOWS_PC_MAC:-}" ]; then
+        echo "  Setting Windows PC static lease"
+        ssh "$ROUTER" "
+            uci set dhcp.windows_pc=host
+            uci set dhcp.windows_pc.name='camerons-pc'
+            uci set dhcp.windows_pc.mac='$ROUTER_WINDOWS_PC_MAC'
+            uci set dhcp.windows_pc.ip='$WINDOWS_PC_STATIC_IP'
         "
     fi
 
