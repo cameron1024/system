@@ -48,7 +48,6 @@ with lib; {
     (lib.mkIf config.platform'.rocm.enable {
       nixpkgs.overlays = [
         (final: prev: {
-          llama-cpp = prev.llama-cpp.override { rocmSupport = true; };
           ollama = prev.ollama.override { acceleration = "rocm"; };
         })
       ];

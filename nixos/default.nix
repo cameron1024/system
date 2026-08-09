@@ -223,6 +223,7 @@ in {
         services'.ntopng.enable = true;
         services'.openssh.enable = true;
         services'.reverse-proxy.enable = true;
+        services'.moonlight-kiosk.enable = true;
 
         programs.ssh.extraConfig = ''
           Host pi
