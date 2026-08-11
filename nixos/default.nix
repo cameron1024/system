@@ -136,6 +136,8 @@ in {
           edge
         ];
 
+        networking.firewall.allowedTCPPorts = [ 8080 ];
+
         programs.steam.enable = true;
 
         services'.nix-cache.enable = true;

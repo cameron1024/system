@@ -25,8 +25,6 @@
   ];
 in
   with lib; {
-    imports = [./automations];
-
     options = {
       services'.home-assistant.enable = mkEnableOption "home assistant";
     };
@@ -58,5 +56,11 @@ in
           };
         };
       };
+
+      # `openFirewall` only opens TCP 8123. Auto-discovery of ESPHome/Apollo
+      # (and other) devices happens over mDNS (multicast 224.0.0.251:5353), so
+      # HA's built-in zeroconf listener needs UDP 5353 open or inbound
+      # announcements are dropped and devices never surface for discovery.
+      networking.firewall.allowedUDPPorts = [5353];
     };
   }
