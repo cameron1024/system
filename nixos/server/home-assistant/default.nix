@@ -4,6 +4,8 @@
   lib,
   ...
 }: let
+  ids = import ../../../ids.nix;
+
   extraComponents = [
     "analytics"
     "api"
@@ -38,9 +40,13 @@ in
         openFirewall = true;
         inherit extraComponents;
 
-        # customComponents = with pkgs.home-assistant-custom-components; [
-        #   dreo
-        # ];
+        customComponents = with pkgs.home-assistant-custom-components; [
+          zone-mapper
+        ];
+
+        customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+          zone-mapper-card
+        ];
 
         config = {
           default_config = {};
@@ -48,12 +54,40 @@ in
           api = {};
           logger.default = "info";
 
+          # Register a NixOS-managed YAML dashboard as a sidebar entry; its
+          # contents come from `lovelaceConfig` below (written to
+          # ui-lovelace.yaml). Overrides the module's default "Overview" title.
+          lovelace.dashboards.nixos-lovelace = {
+            mode = "yaml";
+            filename = "ui-lovelace.yaml";
+            title = "Zone Mapper";
+            icon = "mdi:radar";
+            show_in_sidebar = true;
+          };
+
           # Accept requests forwarded by the local Caddy reverse proxy
           # (http://home.lan); HA rejects proxied requests otherwise.
           http = {
             use_x_forwarded_for = true;
             trusted_proxies = ["127.0.0.1" "::1"];
           };
+        };
+
+        lovelaceConfig = {
+          title = "Zone Mapper";
+          views = [
+            {
+              title = "Zone Mapper";
+              path = "zone-mapper";
+              icon = "mdi:radar";
+              cards = [
+                {
+                  type = "custom:zone-mapper-card";
+                  location = ids.homeAssistant.locations.office;
+                }
+              ];
+            }
+          ];
         };
       };
 

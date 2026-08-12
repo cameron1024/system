@@ -179,6 +179,13 @@ final: prev: {
     prev.home-assistant-custom-components
     // {
       dreo = final.callPackage ./packages/dreo-hass.nix {};
+      zone-mapper = final.callPackage ./packages/zone-mapper-hass.nix {};
+    };
+
+  home-assistant-custom-lovelace-modules =
+    prev.home-assistant-custom-lovelace-modules
+    // {
+      zone-mapper-card = final.callPackage ./packages/zone-mapper-card.nix {};
     };
 
   josefin = final.callPackage ./packages/josefin-sans.nix {};
