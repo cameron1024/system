@@ -2,6 +2,9 @@
   home.packages = with pkgs; [
     fstar
     elan # lean theorem prover
+
+    ponyc # pony compiler
+    pony-corral # pony package manager
     mistral-vibe # mistral's open-source (apache-2.0) cli coding agent
   ];
 

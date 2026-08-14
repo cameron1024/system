@@ -87,9 +87,6 @@ in {
               refreshRate = 143.985;
             })
         ];
-
-        services'.ai.enable = true;
-        services'.ai.ollama.enable = false;
       }
     ];
   };

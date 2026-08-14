@@ -25,6 +25,11 @@ with lib; {
     hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
 
+    # Firmware updates via LVFS (fwupdmgr). Needed e.g. to pick up Framework
+    # BIOS/PD updates such as the UCSI 2.0 + PD firmware fixes in 3.05 that
+    # get Type-C DisplayPort Alt Mode working with video Expansion Cards.
+    services.fwupd.enable = true;
+
     networking.networkmanager.enable = true;
 
     services'.docker.enable = mkDefault true;
