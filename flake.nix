@@ -26,6 +26,8 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
+    crane.url = "github:ipetkov/crane";
+
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     hypr-utils.url = "github:cameron1024/hypr-utils";

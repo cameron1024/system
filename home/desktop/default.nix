@@ -60,15 +60,25 @@ with lib;
     xdg.userDirs.enable = true;
     xdg.userDirs.setSessionVariables = true;
 
-    xdg.mimeApps = {
-      enable = true;
-      defaultApplications = {
-        "text/html" = "org.qutebrowser.qutebrowser.desktop";
-        "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
-        "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
-        "x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
-        "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
-      };
+    # xdg.mimeApps = {
+    #   enable = true;
+    #   defaultApplications = {
+    #     "text/html" = "org.qutebrowser.qutebrowser.desktop";
+    #     "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
+    #     "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
+    #     "x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
+    #     "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
+    #     "x-scheme-handler/delta" = "delta.desktop";
+    #   };
+    # };
+
+    # Delta is proprietary and installed out of band; the binary is assumed
+    # to be on PATH.
+    xdg.desktopEntries.delta = {
+      name = "Delta";
+      exec = "delta %u";
+      terminal = false;
+      mimeType = [ "x-scheme-handler/delta" ];
     };
 
     home.packages =

@@ -52,6 +52,11 @@ in
       "https://accounts.google.com/*" = {
         content.headers.user_agent = "Mozilla/5.0 ({os_info}; rv:130.0) Gecko/20100101 Firefox/130";
       };
+      # Allow delta.dev to redirect to delta:// links without direct user
+      # interaction (JS/server redirects on join pages).
+      "https://delta.dev/*" = {
+        content.unknown_url_scheme_policy = "allow-all";
+      };
     };
     extraConfig = ''
       import qutebrowser.api.interceptor

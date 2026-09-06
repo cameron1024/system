@@ -4,103 +4,202 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 source "$REPO_ROOT/.env" 2>/dev/null || true
 
-# Static lease assigned in ./deploy.sh
-AP_HOST="admin@192.168.1.3"
+# Cudy M3000 running OpenWrt, as a dumb AP on the main LAN. The static IP is
+# set below; ./deploy.sh should also carry a matching static lease so the
+# address stays reserved even if the AP ever falls back to DHCP.
+AP="root@192.168.1.4"
+AP_IP="192.168.1.4"
+ROUTER_IP="192.168.1.1"
 
-# --- wifi -------------------------------------------------------------
-AP_COUNTRY="United Kingdom"
-
-# Put the cAP on DIFFERENT channels from the Flint 2 (which uses 2.4=11,
+# Put the AP on DIFFERENT channels from the Flint 2 (which uses 2.4=11,
 # 5=149) so the two APs don't talk over each other on the air.
-AP_CHANNEL_2G_FREQ="${AP_CHANNEL_2G_FREQ:-2412}"   # channel 1
-AP_CHANNEL_5G_FREQ="${AP_CHANNEL_5G_FREQ:-5180}"   # channel 36
+AP_CHANNEL_2G="${AP_CHANNEL_2G:-1}"
+AP_CHANNEL_5G="${AP_CHANNEL_5G:-36}"
 
-# Radio generation. cAP ax -> *-ax ; cAP ac -> 2ghz-n / 5ghz-ac.
-AP_BAND_2G="${AP_BAND_2G:-2ghz-ax}"
-AP_BAND_5G="${AP_BAND_5G:-5ghz-ax}"
-
-# Public key installed by the `keys` subcommand (RouterOS has no ssh-copy-id).
+# Public key installed by the `keys` subcommand (dropbear has no ~/.ssh, so
+# ssh-copy-id doesn't work out of the box).
 AP_SSH_PUBKEY="${AP_SSH_PUBKEY:-$HOME/.ssh/id_ed25519.pub}"
 
-do_apply() {
-    : "${ROUTER_SSID:?set ROUTER_SSID in .env}"
-    : "${ROUTER_WIFI_PASSWORD:?set ROUTER_WIFI_PASSWORD in .env}"
-    : "${ROUTER_AP_PASSWORD:?set ROUTER_AP_PASSWORD in .env}"
+do_set() {
+    echo "=== Staging configuration ==="
 
-    local ap_user="${AP_HOST%@*}"
+    ssh "$AP" '
+        uci set system.@system[0].hostname="cudy-ap"
+        uci set system.@system[0].timezone="GMT0BST,M3.5.0/1,M10.5.0"
+        uci set system.@system[0].zonename="Europe/London"
+    '
 
-    echo "=== Applying configuration to $AP_HOST ==="
-    # Pipe the commands straight into the RouterOS console over SSH. RouterOS
-    # runs each line immediately (no staging); the :if guards make re-running
-    # safe, and full paths keep each line self-contained. Errors print inline
-    # but don't abort the rest.
-    ssh "$AP_HOST" <<RSC
-# Identity
-/system identity set name="cap-ap"
-
-# Admin password (from ROUTER_AP_PASSWORD; does not drop the current session)
-/user set [find name="$ap_user"] password="$ROUTER_AP_PASSWORD"
-
-# Dumb AP: ensure a bridge exists and every ethernet port is a member of it
-:if ([:len [/interface bridge find name="bridge"]] = 0) do={ /interface bridge add name="bridge" }
-:foreach e in=[/interface ethernet find] do={ :local en [/interface ethernet get \$e name]; :if ([:len [/interface bridge port find interface=\$en]] = 0) do={ /interface bridge port add bridge=bridge interface=\$en } }
-
-# Get an address from the Flint 2's DHCP; serve no DHCP of our own; don't NAT
-:if ([:len [/ip dhcp-client find interface=bridge]] = 0) do={ /ip dhcp-client add interface=bridge disabled=no }
-/ip dhcp-server disable [find]
-/ip firewall nat disable [find action=masquerade]
-
-# Radios (wifi1 = 5 GHz, wifi2 = 2.4 GHz; swap default-names if your unit differs).
-# Everything is set inline on the interface (SSID, passphrase, datapath, steering)
-# so this apply is authoritative: inline settings override the named profiles
-# that first-time setup / the MikroTik app writes, which would otherwise win.
-# Vendor-agnostic assisted roaming: steering.rrm = 802.11k (neighbour reports),
-# steering.wnm = 802.11v (BSS transition). security.ft=no leaves out 802.11r.
-/interface wifi set [find default-name=wifi1] disabled=no configuration.mode=ap configuration.country="$AP_COUNTRY" configuration.ssid="$ROUTER_SSID" security.authentication-types=wpa2-psk,wpa3-psk security.passphrase="$ROUTER_WIFI_PASSWORD" security.ft=no steering.rrm=yes steering.wnm=yes datapath.bridge=bridge channel.band=$AP_BAND_5G channel.frequency=$AP_CHANNEL_5G_FREQ channel.width=20/40/80mhz
-/interface wifi set [find default-name=wifi2] disabled=no configuration.mode=ap configuration.country="$AP_COUNTRY" configuration.ssid="$ROUTER_SSID" security.authentication-types=wpa2-psk,wpa3-psk security.passphrase="$ROUTER_WIFI_PASSWORD" security.ft=no steering.rrm=yes steering.wnm=yes datapath.bridge=bridge channel.band=$AP_BAND_2G channel.frequency=$AP_CHANNEL_2G_FREQ channel.width=20mhz
-RSC
-    echo "Done."
-}
-
-do_show() {
-    ssh "$AP_HOST" "
-        /interface wifi print
-        /interface wifi security print
-        /interface wifi registration-table print
+    # Dumb AP: a static address on the main LAN, gateway/DNS at the router.
+    ssh "$AP" "
+        uci set network.lan.proto='static'
+        uci set network.lan.ipaddr='$AP_IP'
+        uci set network.lan.netmask='255.255.255.0'
+        uci set network.lan.gateway='$ROUTER_IP'
+        uci set network.lan.dns='$ROUTER_IP'
     "
+
+    # Fold the wan port into the LAN bridge so every port is usable, and
+    # drop the wan interfaces entirely (an AP routes nothing).
+    ssh "$AP" '
+        uci -q delete network.wan
+        uci -q delete network.wan6
+        uci del_list network.@device[0].ports="wan" 2>/dev/null || true
+        uci add_list network.@device[0].ports="wan"
+        true
+    '
+
+    ssh "$AP" '
+        uci set wireless.radio0.country="GB"
+        uci set wireless.radio0.channel="'"$AP_CHANNEL_2G"'"
+        uci set wireless.radio0.htmode="HE20"
+        uci set wireless.radio0.disabled="0"
+        uci set wireless.default_radio0.disabled="0"
+        uci set wireless.default_radio0.mode="ap"
+        uci set wireless.default_radio0.network="lan"
+        uci set wireless.default_radio0.encryption="sae-mixed"
+    '
+
+    ssh "$AP" '
+        uci set wireless.radio1.country="GB"
+        uci set wireless.radio1.channel="'"$AP_CHANNEL_5G"'"
+        uci set wireless.radio1.htmode="HE80"
+        uci set wireless.radio1.disabled="0"
+        uci set wireless.default_radio1.disabled="0"
+        uci set wireless.default_radio1.mode="ap"
+        uci set wireless.default_radio1.network="lan"
+        uci set wireless.default_radio1.encryption="sae-mixed"
+    '
+
+    # Wifi roaming (802.11k/v) is kept off, matching the router (see
+    # deploy.sh: wnm_sleep_mode in particular broke clients). Ensure the
+    # options stay absent.
+    ssh "$AP" '
+        uci -q delete wireless.default_radio0.ieee80211k
+        uci -q delete wireless.default_radio0.bss_transition
+        uci -q delete wireless.default_radio0.wnm_sleep_mode
+        uci -q delete wireless.default_radio1.ieee80211k
+        uci -q delete wireless.default_radio1.bss_transition
+        uci -q delete wireless.default_radio1.wnm_sleep_mode
+        true
+    '
+
+    if [ -n "${ROUTER_SSID:-}" ]; then
+        echo "  Setting WiFi SSID"
+        ssh "$AP" "
+            uci set wireless.default_radio0.ssid='$ROUTER_SSID'
+            uci set wireless.default_radio1.ssid='$ROUTER_SSID'
+        "
+    fi
+
+    if [ -n "${ROUTER_WIFI_PASSWORD:-}" ]; then
+        echo "  Setting WiFi password"
+        ssh "$AP" "
+            uci set wireless.default_radio0.key='$ROUTER_WIFI_PASSWORD'
+            uci set wireless.default_radio1.key='$ROUTER_WIFI_PASSWORD'
+        "
+    fi
+
+    # An AP serves no DHCP/DNS and needs no firewall. Like passwd below,
+    # these take effect immediately (they are not staged/committed).
+    echo "  Disabling dnsmasq/odhcpd/firewall (immediate)"
+    ssh "$AP" '
+        /etc/init.d/dnsmasq disable && /etc/init.d/dnsmasq stop
+        /etc/init.d/odhcpd disable && /etc/init.d/odhcpd stop
+        /etc/init.d/firewall disable && /etc/init.d/firewall stop
+        true
+    '
+
+    # Root password = LuCI web UI login + SSH password auth. Unlike the uci
+    # settings above, passwd takes effect immediately.
+    if [ -n "${ROUTER_AP_PASSWORD:-}" ]; then
+        echo "  Setting AP (LuCI/SSH) password"
+        ssh "$AP" "printf '%s\n%s\n' '$ROUTER_AP_PASSWORD' '$ROUTER_AP_PASSWORD' | passwd root"
+    fi
+
+    echo
+    echo "Done. Review staged changes with:"
+    echo "  ssh $AP \"uci changes\""
+    echo
+    echo "To apply, run: ./deploy_ap.sh apply"
 }
 
-# Install an SSH public key for the AP_HOST user. RouterOS has no ssh-copy-id
-# (its SSH drops you into the RouterOS CLI, not a POSIX shell), so we upload the
-# .pub file and import it via /user ssh-keys. Additive: re-running adds another
-# entry, so it's safe alongside any keys you manage by hand.
+do_apply() {
+    local reboot=1
+    for arg in "$@"; do
+        case "$arg" in
+            --no-reboot) reboot=0 ;;
+            *) echo "Unknown apply option: $arg" >&2; exit 1 ;;
+        esac
+    done
+
+    echo "=== Committing ==="
+    ssh "$AP" '
+        uci commit system
+        uci commit network
+        uci commit wireless
+    '
+
+    if [ "$reboot" -eq 1 ]; then
+        echo "=== Rebooting ==="
+        ssh "$AP" "reboot"
+        echo "AP is rebooting. It should be back in about a minute."
+        return
+    fi
+
+    # --no-reboot: reload each service instead. network/wifi come last
+    # because they can briefly drop the link (and your SSH session).
+    echo "=== Reloading services (no reboot) ==="
+    ssh "$AP" '
+        /etc/init.d/system reload
+        /etc/init.d/network reload
+        wifi reload
+    '
+    echo "Services reloaded (no reboot performed)."
+}
+
+# Install an SSH public key for root. Dropbear reads
+# /etc/dropbear/authorized_keys rather than ~/.ssh, so ssh-copy-id doesn't
+# work out of the box. Additive: re-running with a new key appends; the same
+# key is skipped, so this stays idempotent.
 do_keys() {
     [ -f "$AP_SSH_PUBKEY" ] || {
         echo "Public key not found: $AP_SSH_PUBKEY (override with AP_SSH_PUBKEY)" >&2
         exit 1
     }
 
-    local user="${AP_HOST%@*}"
-    local fname
-    fname="$(basename "$AP_SSH_PUBKEY")"
-
-    echo "=== Uploading $AP_SSH_PUBKEY to AP ==="
-    scp "$AP_SSH_PUBKEY" "$AP_HOST:$fname"
-
-    echo "=== Importing key for user '$user' ==="
-    ssh "$AP_HOST" "/user ssh-keys import user=$user public-key-file=$fname; /file remove $fname"
+    echo "=== Installing $AP_SSH_PUBKEY on the AP ==="
+    ssh "$AP" "
+        mkdir -p /etc/dropbear
+        touch /etc/dropbear/authorized_keys
+        chmod 600 /etc/dropbear/authorized_keys
+        grep -qxF '$(cat "$AP_SSH_PUBKEY")' /etc/dropbear/authorized_keys \
+            || echo '$(cat "$AP_SSH_PUBKEY")' >> /etc/dropbear/authorized_keys
+    "
 
     echo "=== Installed keys ==="
-    ssh "$AP_HOST" "/user ssh-keys print"
-    echo "Done. Key auth should now work: ssh $AP_HOST"
+    ssh "$AP" "cat /etc/dropbear/authorized_keys"
+    echo "Done. Key auth should now work: ssh $AP"
+}
+
+do_show() {
+    ssh "$AP" '
+        wifi status | grep -E "\"(up|ssid|channel)\"" || wifi status
+        echo ---
+        for i in $(iw dev | awk "/Interface/{print \$2}"); do
+            echo "== $i"
+            iw dev "$i" station dump | grep -E "^Station|signal:" || true
+        done
+    '
 }
 
 case "${1:-}" in
-    keys)  do_keys ;;
-    apply) do_apply ;;
-    show)  do_show ;;
+    keys)    do_keys ;;
+    set)     do_set ;;
+    apply)   shift; do_apply "$@" ;;
+    changes) ssh "$AP" "uci changes" ;;
+    show)    do_show ;;
     *)
-        echo "Usage: ./deploy_ap.sh <keys|apply|show>" >&2
+        echo "Usage: ./deploy_ap.sh <keys|set|apply [--no-reboot]|changes|show>" >&2
         exit 1
         ;;
 esac

@@ -43,6 +43,5 @@ in {
   home.packages = with pkgs.fishPlugins; [
     gruvbox
     autopair
-    forgit
   ];
 }

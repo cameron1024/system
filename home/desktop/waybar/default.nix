@@ -10,11 +10,11 @@
     name = "fcitx-status.sh";
     runtimeInputs = with pkgs; [ fcitx5 ];
     text = ''
-      status=$(fcitx5-remote -n 2>/dev/null || echo "keyboard-us")
+      status=$(fcitx5-remote -n 2>/dev/null || echo "keyboard-gb")
       case "$status" in
         "mozc") echo '{"text": "あ", "tooltip": "Mozc (Japanese)", "class": "mozc"}' ;;
         "pinyin"|"shuangpin") echo '{"text": "拼", "tooltip": "Pinyin (Chinese)", "class": "pinyin"}' ;;
-        "keyboard-us") echo '{"text": "En", "tooltip": "English (US)", "class": "english"}' ;;
+        "keyboard-gb") echo '{"text": "En", "tooltip": "English (GB)", "class": "english"}' ;;
         *) echo "{\"text\": \"$status\", \"tooltip\": \"$status\", \"class\": \"other\"}" ;;
       esac
     '';
@@ -23,9 +23,9 @@
     name = "fcitx-cycle.sh";
     runtimeInputs = with pkgs; [ fcitx5 ];
     text = ''
-      current=$(fcitx5-remote -n 2>/dev/null || echo "keyboard-us")
+      current=$(fcitx5-remote -n 2>/dev/null || echo "keyboard-gb")
       # Get all available input methods from fcitx5
-      all=$(fcitx5-remote -l 2>/dev/null || echo "keyboard-us")
+      all=$(fcitx5-remote -l 2>/dev/null || echo "keyboard-gb")
       # Build ordered list
       ims=$(echo "$all" | tr ' ' '\n' | grep -v '^$')
       count=$(echo "$ims" | wc -l)
@@ -151,7 +151,7 @@ in
             smooth-scrolling-threshold = 5;
 
             modules-left = ["power-profiles-daemon" "cpu" "memory" "disk" "custom/inotify" "network" "privacy"];
-            modules-right = ["custom/a11y" "tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
+            modules-right = ["custom/a11y" "custom/fcitx" "tray" "custom/github" "custom/weather" "backlight" "pulseaudio" "battery" "clock"];
             modules-center =
               []
               ++ (optional cfg.enableHyprlandIntegration "hyprland/workspaces")
@@ -195,6 +195,7 @@ in
               interval = 10;
               exec = "${inotifyWatchers}/bin/inotify-watchers-status.sh";
               tooltip = true;
+              on-click = "kitty fish --init-command '~/system/scripts/inotify-watchers.nu'";
             };
 
             "network" = {

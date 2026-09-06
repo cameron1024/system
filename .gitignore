@@ -3,3 +3,4 @@ scripts/switch.sh
 /result
 .env
 /local
+target/

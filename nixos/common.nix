@@ -167,6 +167,9 @@ in {
     programs.ssh.extraConfig = ''
       Host router
         User root
+      Host cudy-ap
+        HostName 192.168.1.4
+        User root
     '';
 
     nixpkgs.config.allowUnfree = true;

@@ -105,6 +105,16 @@ in {
             "priority.driver" = 2000;
           };
         }
+        # Default to the 5.1 profile on the GPU's HDMI/DP audio device (exact
+        # PCI address of mini's GPU audio function). ACP otherwise picks
+        # hdmi-stereo, downmixing Moonlight's 5.1 stream to 2ch before it
+        # reaches the TV/soundbar.
+        {
+          matches = [{"device.name" = "alsa_card.pci-0000_c5_00.1";}];
+          actions.update-props = {
+            "device.profile" = "output:hdmi-surround";
+          };
+        }
       ];
       # Output at full line level (like a set-top box); pipewire's default of
       # 0.4 makes the TV/soundbar very quiet. Volume is controlled downstream
