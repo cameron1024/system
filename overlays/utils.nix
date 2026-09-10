@@ -60,14 +60,6 @@ final: prev: {
       ];
   });
 
-  mistral-vibe = prev.mistral-vibe.overridePythonAttrs (oldAttrs: {
-    disabledTests =
-      (oldAttrs.disabledTests or [])
-      ++ [
-        # Races Textual widget mounting when the suite runs in parallel.
-        "test_skill_without_args_does_not_add_extra_text"
-      ];
-  });
 
   wrapWithNixGL = {
     name,

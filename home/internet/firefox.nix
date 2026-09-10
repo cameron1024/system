@@ -1,7 +1,7 @@
 {pkgs, ...}: let
   package = with pkgs;
     if stdenv.isLinux
-    then (wrapFirefox (firefox-unwrapped.override {pipewireSupport = true;}) {})
+    then (wrapFirefox (firefox-unwrapped.override {withPipewire = true;}) {})
     else firefox;
 in {
   programs.firefox = {
