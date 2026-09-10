@@ -49,65 +49,87 @@ in
         ];
 
         config = let
-          lux = ids.homeAssistant.entities.sensors.office.light;
-          presence = ids.homeAssistant.entities.sensors.office.presence;
-          lights = ids.homeAssistant.entities.lights.office;
+          sensors = ids.homeAssistant.entities.sensors;
+          lights' = ids.homeAssistant.entities.lights;
+
+          # Turn a room's lights on when presence is detected (and it's dark),
+          # off when the room is vacated.
+          lightsFollowPresence = {
+            slug, # used for the automation id/alias, e.g. "office"
+            name, # human-readable room name for the alias
+            presence,
+            lux,
+            lights,
+          }: {
+            id = "${slug}_lights_follow_presence";
+            alias = "${name} lights follow presence";
+            mode = "restart";
+            triggers = [
+              {
+                trigger = "state";
+                entity_id = presence;
+                to = "on";
+                id = "occupied";
+              }
+              {
+                trigger = "state";
+                entity_id = presence;
+                to = "off";
+                id = "vacated";
+              }
+            ];
+            actions = [
+              {
+                choose = [
+                  {
+                    conditions = [
+                      "{{ trigger.id == 'occupied' }}"
+                      {
+                        condition = "template";
+                        # Only light the room when it's actually dark (<50 lux,
+                        # tune to taste). Fails open: if the sensor is
+                        # unavailable/unknown, presence alone turns the lights on.
+                        value_template = "{{ states('${lux}') in ['unavailable', 'unknown'] or states('${lux}') | float(0) < 50 }}";
+                      }
+                    ];
+                    sequence = [
+                      {
+                        action = "light.turn_on";
+                        target.entity_id = lights;
+                      }
+                    ];
+                  }
+                  {
+                    conditions = "{{ trigger.id == 'vacated' }}";
+                    sequence = [
+                      {
+                        action = "light.turn_off";
+                        target.entity_id = lights;
+                      }
+                    ];
+                  }
+                ];
+              }
+            ];
+          };
         in {
           # Keep UI-editable automations alongside the Nix-managed ones below.
           "automation ui" = "!include automations.yaml";
           "automation nix" = [
-            {
-              id = "office_lights_follow_presence";
-              alias = "Office lights follow presence";
-              mode = "restart";
-              triggers = [
-                {
-                  trigger = "state";
-                  entity_id = presence;
-                  to = "on";
-                  id = "occupied";
-                }
-                {
-                  trigger = "state";
-                  entity_id = presence;
-                  to = "off";
-                  id = "vacated";
-                }
-              ];
-              actions = [
-                {
-                  choose = [
-                    {
-                      conditions = [
-                        "{{ trigger.id == 'occupied' }}"
-                        {
-                          condition = "template";
-                          # Only light the room when it's actually dark (<50 lux,
-                          # tune to taste). Fails open: if the sensor is
-                          # unavailable/unknown, presence alone turns the lights on.
-                          value_template = "{{ states('${lux}') in ['unavailable', 'unknown'] or states('${lux}') | float(0) < 50 }}";
-                        }
-                      ];
-                      sequence = [
-                        {
-                          action = "light.turn_on";
-                          target.entity_id = lights;
-                        }
-                      ];
-                    }
-                    {
-                      conditions = "{{ trigger.id == 'vacated' }}";
-                      sequence = [
-                        {
-                          action = "light.turn_off";
-                          target.entity_id = lights;
-                        }
-                      ];
-                    }
-                  ];
-                }
-              ];
-            }
+            (lightsFollowPresence {
+              slug = "office";
+              name = "Office";
+              presence = sensors.office.presence;
+              lux = sensors.office.light;
+              lights = lights'.office;
+            })
+            (lightsFollowPresence {
+              slug = "living_room";
+              name = "Living room";
+              presence = sensors.livingRoom.presence;
+              lux = sensors.livingRoom.light;
+              lights = lights'.livingRoom;
+            })
           ];
 
           default_config = { };

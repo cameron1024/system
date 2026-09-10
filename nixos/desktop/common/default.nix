@@ -90,7 +90,6 @@ with lib; {
       enable = true;
       type = "fcitx5";
       fcitx5.addons = with pkgs; [
-        fcitx5-mozc
         fcitx5-gtk
         qt6Packages.fcitx5-chinese-addons
       ];
@@ -107,10 +106,6 @@ with lib; {
           "Groups/0/Items/0"."Name" = "keyboard-gb";
           "Groups/0/Items/1" = {
             "Name" = "pinyin";
-            "Layout" = "gb";
-          };
-          "Groups/0/Items/2" = {
-            "Name" = "mozc";
             "Layout" = "gb";
           };
         };

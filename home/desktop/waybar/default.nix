@@ -12,9 +12,8 @@
     text = ''
       status=$(fcitx5-remote -n 2>/dev/null || echo "keyboard-gb")
       case "$status" in
-        "mozc") echo '{"text": "あ", "tooltip": "Mozc (Japanese)", "class": "mozc"}' ;;
         "pinyin"|"shuangpin") echo '{"text": "拼", "tooltip": "Pinyin (Chinese)", "class": "pinyin"}' ;;
-        "keyboard-gb") echo '{"text": "En", "tooltip": "English (GB)", "class": "english"}' ;;
+        "keyboard-gb") echo '{"text": "UK", "tooltip": "UK keyboard", "class": "english"}' ;;
         *) echo "{\"text\": \"$status\", \"tooltip\": \"$status\", \"class\": \"other\"}" ;;
       esac
     '';
