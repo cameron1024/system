@@ -2,7 +2,6 @@
   home.shellAliases = {
     "e" = "nvim";
     "ed" = "nvim +DiffviewOpen";
-    "nv" = "neovide --fork";
   };
 
   home.sessionVariables = {
@@ -17,17 +16,11 @@
 
   home.packages = with pkgs; [
     typst
-    neovide
 
     alejandra
     typstyle
     shfmt
     sql-formatter
     kdlfmt
-
-    imagemagick
-    mermaid-cli
-    ghostscript
-    d2
   ];
 }

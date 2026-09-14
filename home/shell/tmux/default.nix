@@ -6,7 +6,7 @@
       plugin = tmux-thumbs;
       extraConfig = ''
         set -g @thumbs-key f
-        set -g @thumbs-command 'echo -n {} | wl-copy'
+        set -g @thumbs-command 'printf %s {} | tmux load-buffer -w -'
         set -g @thumbs-regexp-1 'sha256-[a-zA-Z0-9/\+]{44}'
       '';
     }
@@ -35,6 +35,7 @@ in {
         set -g default-terminal "xterm-256color"
         set -ag terminal-overrides ",xterm-256color:RGB:Sxl"
 
+        set -s set-clipboard on
         set -s extended-keys on
         set -as terminal-features 'extkeys'
 

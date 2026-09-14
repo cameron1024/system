@@ -1,6 +1,5 @@
-{inputs, pkgs, ...}: {
+{pkgs, ...}: {
   imports = [
-    inputs.nixvim.homeModules.default
     {
       programs.nixvim.enable = true;
       programs.nixvim.vimdiffAlias = true;

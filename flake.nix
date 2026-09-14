@@ -194,6 +194,13 @@
     in
       walk root;
   in {
+    homeModules.server = {
+      imports = [
+        inputs.nixvim.homeModules.default
+        ./home/server.nix
+      ];
+    };
+
     homeConfigurations =
       builtins.listToAttrs
       (

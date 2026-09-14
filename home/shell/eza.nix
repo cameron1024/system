@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  inputs,
-  ...
-}: {
+{config, ...}: {
   programs.eza = {
     enable = true;
     icons = "auto";

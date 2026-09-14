@@ -1,8 +1,4 @@
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [television];
   programs.fish.interactiveShellInit = ''
     tv init fish | source

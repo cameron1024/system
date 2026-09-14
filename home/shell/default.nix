@@ -1,13 +1,9 @@
-{
-  pkgs,
-  lib,
-  osConfig, ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./fish
     ./nushell
     ./tmux
-    ./prompt  
+    ./prompt
     ./git
     ./zoxide.nix
     ./fzf.nix
@@ -52,59 +48,49 @@
       "ns" = "nix search nixpkgs";
     };
 
-    home.packages = with pkgs;
-      [
-        # general utilities
-        bash
-        ripgrep
-        killall
-        tree
-        fd
-        coreutils
-        gnumake
-        tokei
-        fzf
-        ast-grep
+    home.packages = with pkgs; [
+      # general utilities
+      bash
+      ripgrep
+      killall
+      tree
+      fd
+      coreutils
+      gnumake
+      tokei
+      fzf
+      ast-grep
 
-        #data stuff
-        sq
-        jq
-        yq
-        jaq
+      #data stuff
+      sq
+      jq
+      yq
+      jaq
 
-        # network stuff
-        trippy
-        hurl
-        gping
-        xh
-        speedtest-rs
+      # network stuff
+      trippy
+      hurl
+      gping
+      xh
+      speedtest-rs
 
-        # text stuff
-        sad
+      # text stuff
+      sad
 
-        ripdrag
+      awscli2
+      google-cloud-sdk
 
-        awscli2
-        google-cloud-sdk
+      comma
+      nix-index
 
-        comma
-        nix-index
+      fblog
+      asciinema
 
-        fblog
-        asciinema
+      procs
+      colorized-logs
+    ];
 
-        procs
-        colorized-logs
-      ]
-      ++ (lib.optionals (pkgs.stdenv.isLinux) [
-        wl-clipboard
-      ])
-      ++ (lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
-        pcmanfm
-        # gcc
-      ]);
-
-      programs.nix-index.enable = true;
-      programs.nix-index.enableFishIntegration = true;
+    programs.nix-index.enable = true;
+    programs.nix-index.enableFishIntegration = true;
   };
 }

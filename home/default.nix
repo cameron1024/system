@@ -1,17 +1,19 @@
 {
   pkgs,
+  inputs,
   config,
   lib,
+  osConfig ? null,
   ...
 }: {
   imports = [
+    inputs.nixvim.homeModules.default
     ./internet
     ./mac
-    ./neovim
-    ./neovim-env.nix
+    ./cli.nix
     # ./hyprland
     ./niri
-    ./shell
+
     ./terminal
     ./languages
     ./deploy
@@ -24,16 +26,27 @@
   home.homeDirectory = lib.mkDefault "/home/${config.home.username}";
   home.stateVersion = lib.mkDefault "25.05";
 
-  home.packages = with pkgs; (
-    if pkgs.stdenv.isLinux
-    then [
+  home.shellAliases.nv = "neovide --fork";
+
+  home.packages = with pkgs;
+    [
+      neovide
+      ripdrag
+      imagemagick
+      mermaid-cli
+      ghostscript
+      d2
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux [
       appimage-run
       zmk-studio
       rakudo
       speedread
+      wl-clipboard
     ]
-    else []
-  );
+    ++ lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
+      pcmanfm
+    ];
 
   programs.obs-studio.enable = true;
 }
