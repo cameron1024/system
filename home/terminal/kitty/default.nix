@@ -13,6 +13,7 @@
       }
     else pkgs.kitty;
 in {
+  home.packages = [pkgs.icat];
   programs.kitty.enable = true;
   programs.kitty.package = package;
   programs.kitty.themeFile = "everforest_dark_hard";
