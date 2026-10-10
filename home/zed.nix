@@ -4,6 +4,7 @@ lib.mkIf config.services'.desktop.enable {
     inputs.zed.packages.${pkgs.system}.default
     sentry-cli
     bubblewrap
+    claude-code
   ];
 
   home.sessionVariables = {

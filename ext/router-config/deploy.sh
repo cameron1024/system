@@ -35,6 +35,24 @@ do_install() {
         nano \
         tcpdump"
 
+    # DAWN (decentralized wifi steering, also on the Cudy AP -- see
+    # deploy_ap.sh) needs the full wpad: the default wpad-basic build lacks
+    # the 802.11k/v support DAWN drives via ubus. Swap requires removing
+    # basic first. umdns is how the DAWN nodes discover each other.
+    echo "=== Installing DAWN (full wpad swap) ==="
+    # Swapping wpad in place leaves netifd retrying against a hostapd ubus
+    # service that no longer exists (wifi stays down until the new daemon is
+    # started). Restart wpad and kick wifi so the radios come back.
+    ssh "$ROUTER" '
+        apk del wpad-basic-mbedtls || true
+        apk add wpad-mbedtls dawn umdns luci-app-dawn
+        /etc/init.d/umdns enable
+        /etc/init.d/dawn enable
+        /etc/init.d/wpad restart
+        sleep 3
+        wifi up
+    '
+
     echo "=== Done ==="
 }
 
@@ -68,17 +86,38 @@ do_set() {
         uci set wireless.default_radio1.encryption="sae-mixed"
     '
 
-    # Wifi roaming (802.11k/v) was tried here and reverted: wnm_sleep_mode in
-    # particular is known to break clients (drops/rekey failures, especially
-    # with sae-mixed). Ensure the options stay absent.
+    # 802.11k/v are on for DAWN: bss_transition is the mechanism it uses to
+    # steer clients between this router and the Cudy AP. wnm_sleep_mode stays
+    # off -- it broke clients when roaming was first tried here (drops/rekey
+    # failures, especially with sae-mixed). If drops return, the next suspect
+    # is ieee80211k; bss_transition alone is all DAWN strictly needs.
     ssh "$ROUTER" '
-        uci -q delete wireless.default_radio0.ieee80211k
-        uci -q delete wireless.default_radio0.bss_transition
+        uci set wireless.default_radio0.ieee80211k="1"
+        uci set wireless.default_radio0.bss_transition="1"
         uci -q delete wireless.default_radio0.wnm_sleep_mode
-        uci -q delete wireless.default_radio1.ieee80211k
-        uci -q delete wireless.default_radio1.bss_transition
+        uci set wireless.default_radio1.ieee80211k="1"
+        uci set wireless.default_radio1.bss_transition="1"
         uci -q delete wireless.default_radio1.wnm_sleep_mode
         true
+    '
+
+    # DAWN peers over TCP with umdns discovery (network_option 2). These
+    # settings are mirrored on the AP (deploy_ap.sh); both nodes must agree.
+    # Requires the dawn package (./deploy.sh install) so /etc/config/dawn
+    # exists.
+    #
+    # - bandwidth_threshold: clients moving less than this (Mbit/s) count as
+    #   idle and are eligible for steering; above it DAWN leaves them alone.
+    # - update_client/min_number_to_kick: evaluate every 4s, kick after 3
+    #   consecutive "other AP is better" verdicts (~12s reaction time).
+    # - set_hostapd_nr: feed DAWN's AP list into hostapd 802.11k neighbor
+    #   reports, so clients find the other AP faster in their own roam scans.
+    ssh "$ROUTER" '
+        uci set dawn.@network[0].network_option="2"
+        uci set dawn.global.bandwidth_threshold="50"
+        uci set dawn.global.min_number_to_kick="3"
+        uci set dawn.global.set_hostapd_nr="1"
+        uci set dawn.@times[0].update_client="4"
     '
 
     # https://www.waveform.com/tools/bufferbloat
@@ -476,6 +515,7 @@ do_apply() {
 
     echo "=== Committing ==="
     ssh "$ROUTER" '
+        uci commit dawn
         uci commit dhcp
         uci commit firewall
         uci commit network
@@ -502,10 +542,14 @@ do_apply() {
         /etc/init.d/firewall reload
         /etc/init.d/dnsmasq restart
         /etc/init.d/sqm restart
+        /etc/init.d/umdns restart
+        /etc/init.d/dawn restart
         /etc/init.d/network reload
         wifi reload
     '
     echo "Services reloaded (no reboot performed)."
+    echo "Verify DAWN peering (both BSSIDs should appear):"
+    echo "  ssh $ROUTER \"ubus call dawn get_network\""
 }
 
 case "${1:-}" in

@@ -93,18 +93,17 @@ in {
   fast = mkSystem {
     system = "x86_64-linux";
     homeModules = [
-      ({lib, ...}: {
+      {
         home.stateVersion = "25.05";
         services'.streamdeck.enable = true;
         
         programs'.deployment-tools.enable = true;
-
-        # No (working) bluetooth on this machine; see note in the system config.
-        services.blueman-applet.enable = lib.mkForce false;
-      })
+      }
     ];
     modules = [
       ./hardware/fast.nix
+      ./mt7927-bt-firmware.nix
+      ../ext/bolt_scroll
       ({pkgs, lib, ...}: {
         system.stateVersion = "25.05";
         services'.standardMachine.enable = true;
@@ -114,14 +113,6 @@ in {
         boot.loader.efi.efiSysMountPoint = "/boot";
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
 
-        # The onboard MT7927's BT firmware isn't in linux-firmware yet
-        # (redistribution unresolved: linux-firmware MR !946), so the adapter
-        # loops probe -> fw load fail -> USB reset ~2x/sec, spamming the
-        # journal and churning udev. BT is unused on this machine, so keep
-        # the driver from ever binding.
-        boot.blacklistedKernelModules = ["btusb" "btmtk"];
-        hardware.bluetooth.enable = lib.mkForce false;
-        services.blueman.enable = lib.mkForce false;
 
         networking.hostName = "fast";
 
@@ -137,10 +128,7 @@ in {
 
         programs.steam.enable = true;
 
-        services'.nix-cache.enable = true;
-        services'.nix-cache.secretKeyFile = "/home/cameron/nix-secret";
-
-        nix.settings.secret-key-files = ["/home/cameron/nix-secret"];
+        services'.bolt-scroll.enable = true;
 
         # udev rules for Elgato Stream Deck USB access (the HM module that drives
         # services'.streamdeck can't set system-level udev rules itself).

@@ -1,7 +1,7 @@
 {
   pkgs,
   lib,
-  nixosConfig,
+  nixosConfig ? null,
   ...
 }: {
   home.shellAliases = {

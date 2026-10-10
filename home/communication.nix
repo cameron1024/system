@@ -70,6 +70,8 @@ in
       slack
       discord
 
+      anki
+
       rquickshare
       deluge
       google-chrome
@@ -93,5 +95,6 @@ in
 
   home.sessionVariables = {
     PROTON_PASS_LINUX_KEYRING = "dbus";
+    ANKI_WAYLAND = "1";
   };
 }

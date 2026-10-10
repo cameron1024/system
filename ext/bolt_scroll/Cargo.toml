@@ -1,0 +1,8 @@
+[package]
+name = "bolt_scroll"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1"
+evdev = "0.13"

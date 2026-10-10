@@ -20,6 +20,40 @@ AP_CHANNEL_5G="${AP_CHANNEL_5G:-36}"
 # ssh-copy-id doesn't work out of the box).
 AP_SSH_PUBKEY="${AP_SSH_PUBKEY:-$HOME/.ssh/id_ed25519.pub}"
 
+# DAWN (decentralized wifi steering, also on the router -- see deploy.sh)
+# needs the full wpad: the default wpad-basic build lacks the 802.11k/v
+# support DAWN drives via ubus. umdns is how the DAWN nodes discover each
+# other. Recent OpenWrt uses apk, older releases opkg; handle both.
+do_install() {
+    echo "=== Installing DAWN (full wpad swap) ==="
+    if ssh "$AP" "command -v apk >/dev/null 2>&1"; then
+        ssh "$AP" '
+            apk update
+            apk del wpad-basic-mbedtls || true
+            apk add wpad-mbedtls dawn umdns luci-app-dawn
+        '
+    else
+        ssh "$AP" '
+            opkg update
+            opkg remove wpad-basic-mbedtls || true
+            opkg install wpad-mbedtls dawn umdns luci-app-dawn
+        '
+    fi
+
+    # Swapping wpad in place leaves netifd retrying against a hostapd ubus
+    # service that no longer exists (wifi stays down until the new daemon is
+    # started). Restart wpad and kick wifi so the radios come back.
+    ssh "$AP" '
+        /etc/init.d/umdns enable
+        /etc/init.d/dawn enable
+        /etc/init.d/wpad restart
+        sleep 3
+        wifi up
+    '
+
+    echo "=== Done ==="
+}
+
 do_set() {
     echo "=== Staging configuration ==="
 
@@ -70,17 +104,30 @@ do_set() {
         uci set wireless.default_radio1.encryption="sae-mixed"
     '
 
-    # Wifi roaming (802.11k/v) is kept off, matching the router (see
-    # deploy.sh: wnm_sleep_mode in particular broke clients). Ensure the
-    # options stay absent.
+    # 802.11k/v are on for DAWN, matching the router (see deploy.sh):
+    # bss_transition is the mechanism DAWN uses to steer clients between the
+    # two APs. wnm_sleep_mode stays off -- it broke clients when roaming was
+    # first tried (drops/rekey failures, especially with sae-mixed).
     ssh "$AP" '
-        uci -q delete wireless.default_radio0.ieee80211k
-        uci -q delete wireless.default_radio0.bss_transition
+        uci set wireless.default_radio0.ieee80211k="1"
+        uci set wireless.default_radio0.bss_transition="1"
         uci -q delete wireless.default_radio0.wnm_sleep_mode
-        uci -q delete wireless.default_radio1.ieee80211k
-        uci -q delete wireless.default_radio1.bss_transition
+        uci set wireless.default_radio1.ieee80211k="1"
+        uci set wireless.default_radio1.bss_transition="1"
         uci -q delete wireless.default_radio1.wnm_sleep_mode
         true
+    '
+
+    # DAWN peers over TCP with umdns discovery (network_option 2). These
+    # settings mirror the router (deploy.sh); both nodes must agree. See
+    # deploy.sh for what each option does. Requires the dawn package
+    # (./deploy_ap.sh install) so /etc/config/dawn exists.
+    ssh "$AP" '
+        uci set dawn.@network[0].network_option="2"
+        uci set dawn.global.bandwidth_threshold="50"
+        uci set dawn.global.min_number_to_kick="3"
+        uci set dawn.global.set_hostapd_nr="1"
+        uci set dawn.@times[0].update_client="4"
     '
 
     if [ -n "${ROUTER_SSID:-}" ]; then
@@ -134,6 +181,7 @@ do_apply() {
 
     echo "=== Committing ==="
     ssh "$AP" '
+        uci commit dawn
         uci commit system
         uci commit network
         uci commit wireless
@@ -151,10 +199,14 @@ do_apply() {
     echo "=== Reloading services (no reboot) ==="
     ssh "$AP" '
         /etc/init.d/system reload
+        /etc/init.d/umdns restart
+        /etc/init.d/dawn restart
         /etc/init.d/network reload
         wifi reload
     '
     echo "Services reloaded (no reboot performed)."
+    echo "Verify DAWN peering (both BSSIDs should appear):"
+    echo "  ssh $AP \"ubus call dawn get_network\""
 }
 
 # Install an SSH public key for root. Dropbear reads
@@ -189,17 +241,21 @@ do_show() {
             echo "== $i"
             iw dev "$i" station dump | grep -E "^Station|signal:" || true
         done
+        echo ---
+        echo "== dawn network (expect both APs)"
+        ubus call dawn get_network 2>/dev/null || echo "dawn not running"
     '
 }
 
 case "${1:-}" in
     keys)    do_keys ;;
+    install) do_install ;;
     set)     do_set ;;
     apply)   shift; do_apply "$@" ;;
     changes) ssh "$AP" "uci changes" ;;
     show)    do_show ;;
     *)
-        echo "Usage: ./deploy_ap.sh <keys|set|apply [--no-reboot]|changes|show>" >&2
+        echo "Usage: ./deploy_ap.sh <keys|install|set|apply [--no-reboot]|changes|show>" >&2
         exit 1
         ;;
 esac

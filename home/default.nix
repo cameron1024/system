@@ -15,7 +15,6 @@
     ./niri
 
     ./terminal
-    ./languages
     ./deploy
 
     ./communication.nix
@@ -32,16 +31,18 @@
     [
       neovide
       ripdrag
-      imagemagick
-      mermaid-cli
-      ghostscript
-      d2
+
+      # GUI profiler
+      (tracy.overrideAttrs (old: {
+        # GCC 16 no longer transitively includes <cstdint>
+        postPatch = (old.postPatch or "") + ''
+          sed -i '1i #include <cstdint>' server/tracy_robin_hood.h
+        '';
+      }))
     ]
     ++ lib.optionals pkgs.stdenv.isLinux [
       appimage-run
       zmk-studio
-      rakudo
-      speedread
       wl-clipboard
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && osConfig != null) [
