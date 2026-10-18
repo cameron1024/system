@@ -12,9 +12,9 @@
         if (pkgs.system == "x86_64-linux")
         then [
           # remarkable desktop is windows app
-          wineWowPackages.stable
-          bottles
-          rmapi
+          # wineWowPackages.stable
+          # bottles
+          # rmapi
         ]
         else []
       );
