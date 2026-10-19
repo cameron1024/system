@@ -124,6 +124,15 @@ with lib; {
     hardware.logitech.wireless.enable = true;
     hardware.logitech.wireless.enableGraphical = true; # Solaar GUI
 
+    # WebHID access for NuPhy keyboards (NuPhy IO web configurator). Must sort
+    # before 73-seat-late.rules, which applies uaccess ACLs; extraRules lands in
+    # 99-local.rules, which is too late.
+    services.udev.packages = [
+      (pkgs.writeTextDir "etc/udev/rules.d/70-nuphy.rules" ''
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="19f5", TAG+="uaccess"
+      '')
+    ];
+
     services.flatpak.enable = true;
     services.snap.enable = true;
 

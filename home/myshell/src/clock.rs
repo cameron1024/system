@@ -5,15 +5,20 @@
 //! absolute `CLOCK_REALTIME` timerfd: it fires immediately on resume, and `TFD_TIMER_CANCEL_ON_SET`
 //! wakes it early if the clock is stepped (NTP, manual set). Idle cost is one wakeup per minute.
 
-use futures::{StreamExt, channel::mpsc};
-use gpui::{Context, SharedString};
-use rustix::{
-    io::Errno,
-    time::{
-        ClockId, Itimerspec, TimerfdClockId, TimerfdFlags, TimerfdTimerFlags, Timespec,
-        clock_gettime, timerfd_create, timerfd_settime,
-    },
-};
+use futures::StreamExt;
+use futures::channel::mpsc;
+use gpui::Context;
+use gpui::SharedString;
+use rustix::io::Errno;
+use rustix::time::ClockId;
+use rustix::time::Itimerspec;
+use rustix::time::TimerfdClockId;
+use rustix::time::TimerfdFlags;
+use rustix::time::TimerfdTimerFlags;
+use rustix::time::Timespec;
+use rustix::time::clock_gettime;
+use rustix::time::timerfd_create;
+use rustix::time::timerfd_settime;
 
 pub struct Clock {
     text: SharedString,

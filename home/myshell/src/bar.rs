@@ -1,4 +1,12 @@
-use gpui::{Context, Entity, IntoElement, Render, Window, div, prelude::*, px, rgb};
+use gpui::Context;
+use gpui::Entity;
+use gpui::IntoElement;
+use gpui::Render;
+use gpui::Window;
+use gpui::div;
+use gpui::prelude::*;
+use gpui::px;
+use gpui::rgb;
 
 use crate::clock::Clock;
 

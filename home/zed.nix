@@ -5,6 +5,7 @@ lib.mkIf config.services'.desktop.enable {
     sentry-cli
     bubblewrap
     claude-code
+    pi-coding-agent
   ];
 
   home.sessionVariables = {

@@ -1,0 +1,2 @@
+# Unstable: requires `cargo +nightly fmt`. Stable rustfmt warns and ignores it.
+imports_granularity = "Item"

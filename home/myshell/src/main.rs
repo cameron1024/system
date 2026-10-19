@@ -1,13 +1,23 @@
 mod bar;
 mod clock;
 
-use gpui::{
-    App, AppContext, Bounds, WindowBackgroundAppearance, WindowBounds, WindowKind, WindowOptions,
-    layer_shell::{Anchor, KeyboardInteractivity, Layer, LayerShellOptions},
-    point, px, size,
-};
+use gpui::App;
+use gpui::AppContext;
+use gpui::Bounds;
+use gpui::WindowBackgroundAppearance;
+use gpui::WindowBounds;
+use gpui::WindowKind;
+use gpui::WindowOptions;
+use gpui::layer_shell::Anchor;
+use gpui::layer_shell::KeyboardInteractivity;
+use gpui::layer_shell::Layer;
+use gpui::layer_shell::LayerShellOptions;
+use gpui::point;
+use gpui::px;
+use gpui::size;
 
-use crate::{bar::Bar, clock::Clock};
+use crate::bar::Bar;
+use crate::clock::Clock;
 
 fn main() {
     gpui_platform::application().run(|cx: &mut App| {

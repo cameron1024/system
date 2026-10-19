@@ -87,10 +87,8 @@
         inherit system;
         config.allowUnfree = true;
       };
-      # home/myshell: dlopen'd at runtime by wayland-client / wgpu.
-      myshellRuntimeLibs = with pkgs; [wayland libxkbcommon vulkan-loader];
     in
-      pkgs.mkShell ({
+      pkgs.mkShell {
         packages =
           if system == "aarch64-darwin"
           then [
@@ -114,12 +112,20 @@
               sudo nixos-rebuild switch --flake .#$(hostname)
             '')
           ];
-      }
-      // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      };
+    # home/myshell: extends the default devshell with GPUI's build/runtime deps.
+    mkMyshellDevShell = {system}: let
+      pkgs = import inputs.nixpkgs {inherit system;};
+      # dlopen'd at runtime by wayland-client / wgpu.
+      runtimeLibs = with pkgs; [wayland libxkbcommon vulkan-loader];
+    in
+      pkgs.mkShell {
+        inputsFrom = [(mkDevShell {inherit system;})];
         nativeBuildInputs = with pkgs; [pkg-config];
-        buildInputs = with pkgs; [fontconfig freetype] ++ myshellRuntimeLibs;
-        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath myshellRuntimeLibs;
-      });
+        buildInputs = with pkgs; [fontconfig freetype] ++ runtimeLibs;
+        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
+        MYSHELL_DEVSHELL = 1;
+      };
     # Recursively wrap every script under `root` into a package. `.sh` files
     # become writeShellApplication, `.py` files become writePython3Bin, and
     # subdirectories become nested attrsets (e.g. scripts/foo/bar.sh ->
@@ -255,6 +261,7 @@
     };
 
     devShells."x86_64-linux".default = mkDevShell {system = "x86_64-linux";};
+    devShells."x86_64-linux".myshell = mkMyshellDevShell {system = "x86_64-linux";};
 
     devShells."aarch64-darwin".default = mkDevShell {system = "aarch64-darwin";};
 
