@@ -212,6 +212,39 @@ in {
         services'.reverse-proxy.enable = true;
         services'.moonlight-kiosk.enable = true;
 
+        services.librespeed = {
+          enable = true;
+          downloadIPDB = false;
+          frontend = {
+            enable = true;
+            contactEmail = "";
+            settings = {
+              telemetry_level = "disabled";
+              getIp_ispInfo = false;
+            };
+            servers = [
+              {
+                name = "mini";
+                server = "http://mini:8989/";
+              }
+            ];
+          };
+        };
+        networking.firewall.allowedTCPPorts = [8989];
+
+        # Prevent external requests even if LibreSpeed's defaults change.
+        systemd.services.librespeed.serviceConfig = {
+          IPAddressDeny = "any";
+          IPAddressAllow = [
+            "localhost"
+            "10.0.0.0/8"
+            "172.16.0.0/12"
+            "192.168.0.0/16"
+            "fc00::/7"
+            "fe80::/10"
+          ];
+        };
+
         programs.ssh.extraConfig = ''
           Host pi
             ForwardAgent yes

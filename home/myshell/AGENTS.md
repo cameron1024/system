@@ -2,6 +2,8 @@
 
 Custom Wayland shell environment
 
+Do not make a readme
+
 ## Useful commands:
 
 - `mask myshell run` - `cargo run` with the correct environment
@@ -24,5 +26,7 @@ Custom Wayland shell environment
 
 Since low idle resource consumption is the highest priority, I want to stress the importance of usin
 
+## Nix
 
+It is safe to assume this project will never be built without nix. This means it's safe to hardcode dependencies injected via env vars, which can be set in a devshell/nix build environment.
 

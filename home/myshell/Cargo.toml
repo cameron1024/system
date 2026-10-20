@@ -9,9 +9,13 @@ publish = false
 # Wayland only: no X11 backend compiled in.
 gpui = { git = "https://github.com/zed-industries/zed", rev = "bd747337d7be138834e20972b9e203c7b239cc47", default-features = false, features = ["wayland"] }
 gpui_platform = { git = "https://github.com/zed-industries/zed", rev = "bd747337d7be138834e20972b9e203c7b239cc47", features = ["wayland"] }
+async-io = "2"
+async-process = "2"
+async-stream = "0.3"
 futures = { version = "0.3", default-features = false, features = ["std"] }
 jiff = { version = "0.2", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 rustix = { version = "1", features = ["time"] }
+zbus = "5"
 
 # Zed's workspace patches don't propagate to git dependents, but GPUI relies on them.
 [patch.crates-io]

@@ -122,6 +122,7 @@
       pkgs.mkShell {
         inputsFrom = [(mkDevShell {inherit system;})];
         nativeBuildInputs = with pkgs; [pkg-config];
+        packages = with pkgs; [pulseaudio]; # pactl: event-driven volume source
         buildInputs = with pkgs; [fontconfig freetype] ++ runtimeLibs;
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
         MYSHELL_DEVSHELL = 1;
