@@ -89,7 +89,7 @@ in
         };
     };
 
-    # update-delta.sh installs these aliases separately so system builds never
+    # scripts/update-delta.sh installs these aliases separately so system builds never
     # need credentials or pre-seeded private Delta release assets.
     xdg.desktopEntries = {
       # The CLI package doesn't ship the handler created by Claude's own installer.
