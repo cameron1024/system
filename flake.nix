@@ -63,6 +63,8 @@
     handy.inputs.bun2nix.follows = "bun2nix";
 
     vicinae.url = "github:vicinaehq/vicinae";
+    # Must match system mesa's glibc, otherwise EGL fails to load and the server aborts
+    vicinae.inputs.nixpkgs.follows = "nixpkgs";
 
     streamcontroller.url = "github:Daaboulex/streamcontroller-nix";
     streamcontroller.inputs.nixpkgs.follows = "nixpkgs";
