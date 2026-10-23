@@ -5,6 +5,7 @@ edition = "2024"
 license = "GPL-3.0-or-later"
 publish = false
 
+
 [dependencies]
 # Wayland only: no X11 backend compiled in.
 gpui = { git = "https://github.com/zed-industries/zed", rev = "bd747337d7be138834e20972b9e203c7b239cc47", default-features = false, features = ["wayland"] }
@@ -15,6 +16,7 @@ async-stream = "0.3"
 futures = { version = "0.3", default-features = false, features = ["std"] }
 jiff = { version = "0.2", default-features = false, features = ["std", "tz-system", "tzdb-zoneinfo"] }
 rustix = { version = "1", features = ["time"] }
+serde_json = "1"
 zbus = "5"
 
 # Zed's workspace patches don't propagate to git dependents, but GPUI relies on them.
@@ -28,6 +30,16 @@ lto = "fat"
 codegen-units = 1
 panic = "abort"
 strip = true
+
+# Fast rebuilds of shell code without paying the runtime cost of unoptimized GPUI.
+[profile.release-fast]
+inherits = "release"
+opt-level = 1
+lto = false
+codegen-units = 16
+
+[profile.release-fast.package."*"]
+opt-level = 3
 
 [profile.dev.package.gpui_macros]
 opt-level = 3

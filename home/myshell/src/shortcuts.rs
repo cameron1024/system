@@ -1,9 +1,11 @@
 use futures::channel::mpsc::UnboundedSender;
 
+use crate::bar_module::Module;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Command {
     ToggleBar,
-    ToggleForeground,
+    Activate(Module),
 }
 
 struct Shortcuts {
@@ -16,8 +18,18 @@ impl Shortcuts {
         self.send(Command::ToggleBar)
     }
 
-    fn toggle_foreground(&self) -> zbus::fdo::Result<()> {
-        self.send(Command::ToggleForeground)
+    fn activate(&self, module: &str) -> zbus::fdo::Result<()> {
+        let module = match module {
+            "clock" => Module::Clock,
+            "power-profile" => Module::PowerProfile,
+            "volume" => Module::Volume,
+            _ => {
+                return Err(zbus::fdo::Error::InvalidArgs(format!(
+                    "unknown module: {module}"
+                )));
+            }
+        };
+        self.send(Command::Activate(module))
     }
 }
 

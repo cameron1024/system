@@ -12,19 +12,80 @@ use futures::future::select;
 use futures::io::AsyncBufReadExt;
 use futures::io::BufReader;
 
+use super::Data;
 use super::DataSource;
 use super::Result;
+use crate::command::command;
 
 pub struct Volume;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VolumeState {
     pub percent: u32,
     pub muted: bool,
+    pub output: String,
+    pub output_name: String,
+}
+
+impl Data<Volume> {
+    pub fn toggle_mute(&mut self, cx: &mut gpui::Context<Self>) {
+        let Some(mut target) = self.state.target.clone() else {
+            return;
+        };
+        target.muted = !target.muted;
+        self.request(
+            target.clone(),
+            async move {
+                command(
+                    "pactl",
+                    &[
+                        "set-sink-mute",
+                        &target.output_name,
+                        if target.muted { "1" } else { "0" },
+                    ],
+                )
+                .await?;
+                Ok(())
+            },
+            cx,
+        );
+    }
+
+    pub fn change_volume(&mut self, steps: i32, cx: &mut gpui::Context<Self>) {
+        let Some(mut target) = self.state.target.clone() else {
+            return;
+        };
+        target.percent =
+            (i64::from(target.percent) + i64::from(steps) * 5).clamp(0, i64::from(u32::MAX)) as u32;
+        self.request(
+            target.clone(),
+            async move {
+                command(
+                    "pactl",
+                    &[
+                        "set-sink-volume",
+                        &target.output_name,
+                        &format!("{}%", target.percent),
+                    ],
+                )
+                .await?;
+                Ok(())
+            },
+            cx,
+        );
+    }
 }
 
 impl DataSource for Volume {
     type Value = VolumeState;
+
+    fn reconcile_target(target: &mut Self::Value, known: &Self::Value) -> bool {
+        if target.output_name != known.output_name {
+            return false;
+        }
+        target.output.clone_from(&known.output);
+        true
+    }
 
     fn stream(self) -> impl Stream<Item = Result<VolumeState>> + Send + 'static {
         futures::stream::once(async {
@@ -128,29 +189,46 @@ async fn output(args: &[&str]) -> Result<String> {
 }
 
 async fn query() -> Result<VolumeState> {
-    let percent = parse_percent(&output(&["get-sink-volume", "@DEFAULT_SINK@"]).await?)?;
-    let mute = output(&["get-sink-mute", "@DEFAULT_SINK@"]).await?;
-    let muted = match mute.trim() {
-        "Mute: yes" => true,
-        "Mute: no" => false,
-        _ => return Err(io::Error::other(format!("invalid pactl mute output: {mute:?}")).into()),
-    };
-    Ok(VolumeState { percent, muted })
+    let default = output(&["get-default-sink"]).await?;
+    let sinks = output(&["--format=json", "list", "sinks"]).await?;
+    // A concurrent default change generates a server event, prompting another snapshot.
+    Ok(parse_sink(default.trim(), &sinks)?)
 }
 
-fn parse_percent(output: &str) -> io::Result<u32> {
-    let invalid = || io::Error::other(format!("invalid pactl volume output: {output:?}"));
-    let volume = output.trim().strip_prefix("Volume:").ok_or_else(invalid)?;
-    // Channel names/counts vary; use the loudest channel, preserving amplification above 100%.
+fn parse_sink(default: &str, output: &str) -> io::Result<VolumeState> {
+    let invalid = || io::Error::other("invalid pactl sink data or missing default sink");
+    let sinks: serde_json::Value = serde_json::from_str(output)
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))?;
+    let sink = sinks
+        .as_array()
+        .ok_or_else(invalid)?
+        .iter()
+        .find(|sink| sink["name"].as_str() == Some(default))
+        .ok_or_else(invalid)?;
+    let muted = sink["mute"].as_bool().ok_or_else(invalid)?;
+    let channels = sink["volume"].as_object().ok_or_else(invalid)?;
+    // PulseAudio's normal volume is 65536. Round just like pactl's text output,
+    // using the loudest channel and preserving amplification above 100%.
     let mut loudest = None;
-    for percent in volume
-        .split_whitespace()
-        .filter_map(|token| token.strip_suffix('%'))
-    {
-        let percent = percent.parse::<u32>().map_err(|_| invalid())?;
+    for channel in channels.values() {
+        let value = channel["value"].as_u64().ok_or_else(invalid)?;
+        let percent = value
+            .checked_mul(100)
+            .and_then(|value| value.checked_add(32768))
+            .and_then(|value| u32::try_from(value / 65536).ok())
+            .ok_or_else(invalid)?;
         loudest = Some(loudest.unwrap_or(0).max(percent));
     }
-    loudest.ok_or_else(invalid)
+    Ok(VolumeState {
+        percent: loudest.ok_or_else(invalid)?,
+        muted,
+        output_name: default.to_owned(),
+        output: sink["description"]
+            .as_str()
+            .filter(|description| !description.trim().is_empty())
+            .unwrap_or(default)
+            .to_owned(),
+    })
 }
 
 fn affects_volume(event: &str) -> bool {
@@ -164,21 +242,112 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parses_channels_and_amplification() {
+    fn selects_default_sink_with_coherent_state() {
+        let sinks = r#"[
+            {"name":"speakers","description":"Desk speakers","mute":false,
+             "volume":{"front-left":{"value":32768},"front-right":{"value":81920}}},
+            {"name":"headphones","description":"USB headphones","mute":true,
+             "volume":{"mono":{"value":0}}}
+        ]"#;
         assert_eq!(
-            parse_percent("Volume: mono: 0 / 0% / -inf dB\n").unwrap(),
-            0
+            parse_sink("speakers", sinks).unwrap(),
+            VolumeState {
+                percent: 125,
+                muted: false,
+                output: "Desk speakers".into(),
+                output_name: "speakers".into()
+            }
         );
         assert_eq!(
-            parse_percent(
-                "Volume: front-left: 32768 / 50% / -18.06 dB,   front-right: 81920 / 125% / 5.81 dB\n        balance 0.60\n",
-            )
-            .unwrap(),
-            125,
+            parse_sink("headphones", sinks).unwrap(),
+            VolumeState {
+                percent: 0,
+                muted: true,
+                output: "USB headphones".into(),
+                output_name: "headphones".into()
+            }
         );
-        for output in ["", "Volume: mono: 65536 / nope% / 0.00 dB", "Mute: no"] {
-            assert!(parse_percent(output).is_err());
+        assert!(parse_sink("missing", sinks).is_err());
+    }
+
+    #[test]
+    fn falls_back_to_name_and_rounds_volume() {
+        for description in ["", r#", "description":null"#, r#", "description":"""#] {
+            let sinks = format!(
+                r#"[{{"name":"default","mute":false,"volume":{{"mono":{{"value":65535}}}}{description}}}]"#
+            );
+            assert_eq!(
+                parse_sink("default", &sinks).unwrap(),
+                VolumeState {
+                    percent: 100,
+                    muted: false,
+                    output: "default".into(),
+                    output_name: "default".into()
+                }
+            );
         }
+    }
+
+    #[test]
+    fn rejects_invalid_sink_data() {
+        for sinks in [
+            "",
+            "not json",
+            "{}",
+            "[]",
+            r#"[{"name":"default","volume":{"mono":{"value":65536}}}]"#,
+            r#"[{"name":"default","mute":"yes","volume":{"mono":{"value":65536}}}]"#,
+            r#"[{"name":"default","mute":false,"volume":{}}]"#,
+            r#"[{"name":"default","mute":false,"volume":{"mono":{"value":"100%"}}}]"#,
+            r#"[{"name":"default","mute":false,"volume":{"mono":{"value":-1}}}]"#,
+            r#"[{"name":"default","mute":false,"volume":{"mono":{"value":18446744073709551615}}}]"#,
+        ] {
+            assert!(parse_sink("default", sinks).is_err(), "{sinks}");
+        }
+    }
+
+    #[test]
+    fn reconciles_description_without_changing_optimistic_controls() {
+        let mut target = VolumeState {
+            percent: 75,
+            muted: true,
+            output: "Old description".into(),
+            output_name: "speakers".into(),
+        };
+        let known = VolumeState {
+            percent: 50,
+            muted: false,
+            output: "New description".into(),
+            output_name: "speakers".into(),
+        };
+        assert!(Volume::reconcile_target(&mut target, &known));
+        assert_eq!(target.output, known.output);
+        assert_eq!(target.output_name, "speakers");
+        assert_eq!(target.percent, 75);
+        assert!(target.muted);
+        let confirmed = VolumeState {
+            percent: 75,
+            muted: true,
+            ..known
+        };
+        assert_eq!(target, confirmed);
+    }
+
+    #[test]
+    fn rejects_target_for_different_output_without_mutating_it() {
+        let mut target = VolumeState {
+            percent: 75,
+            muted: true,
+            output: "Shared description".into(),
+            output_name: "speakers".into(),
+        };
+        let original = target.clone();
+        let known = VolumeState {
+            output_name: "headphones".into(),
+            ..target.clone()
+        };
+        assert!(!Volume::reconcile_target(&mut target, &known));
+        assert_eq!(target, original);
     }
 
     #[test]

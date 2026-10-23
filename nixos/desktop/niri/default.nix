@@ -24,6 +24,16 @@ with lib; {
     programs.niri.enable = true;
     programs.niri.useNautilus = true;
 
+    xdg.portal.config.niri = {
+      # niri implements the Mutter ScreenCast API used by the GNOME backend.
+      "org.freedesktop.impl.portal.ScreenCast" = ["gnome"];
+      # Read appearance preferences from the same GSettings keys as GTK apps.
+      "org.freedesktop.impl.portal.Settings" = ["gtk"];
+      # GNOME advertises this, but its implementation requires GNOME Shell.
+      # Use niri bindings until a niri-compatible shortcut backend is available.
+      "org.freedesktop.impl.portal.GlobalShortcuts" = ["none"];
+    };
+
     services.power-profiles-daemon.enable = true;
     services.upower.enable = true;
     services.cpupower-gui.enable = true;

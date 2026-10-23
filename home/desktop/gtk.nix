@@ -10,6 +10,8 @@ with lib; {
   };
 
   config = lib.mkIf config.gtk'.enable {
+    dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
     gtk = {
       enable = true;
       gtk4.theme = config.gtk.theme;
@@ -30,8 +32,8 @@ with lib; {
       iconTheme.name = "Everforest-Dark";
       iconTheme.package = pkgs.everforest-gtk-theme;
       #
-      # gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
-      # gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+      gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+      gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
     };
   };
 }

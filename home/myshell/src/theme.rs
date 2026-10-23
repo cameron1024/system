@@ -46,14 +46,10 @@ pub mod palette {
     pub const STATUSLINE3: Rgba = rgb(0xe67e80);
 }
 
-pub const FOREGROUND_OVERLAY: Rgba = Rgba {
-    r: 0.,
-    g: 0.,
-    b: 0.,
-    a: 0.35,
-};
 pub const BACKGROUND: Rgba = palette::BG0;
 pub const FOREGROUND: Rgba = palette::FG;
+pub const MUTED: Rgba = palette::GREY1;
+
 pub const MODULE_HOVER: Rgba = palette::BG1;
 pub const POWER_ACCENT: Rgba = palette::ORANGE;
 pub const CLOCK_ACCENT: Rgba = palette::GREEN;

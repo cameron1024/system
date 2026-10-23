@@ -613,7 +613,10 @@ binds {
     XF86AudioRewind  allow-when-locked=true { spawn "playerctl" "position" "10-"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+B repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.ToggleBar"; }
-    Mod+C repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.ToggleForeground"; }
+    Super+C repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "clock"; }
+    Super+M repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "volume"; }
+    Super+P repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "power-profile"; }
+
     Mod+Escape { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "lockAndSuspend"; }
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+S { set-dynamic-cast-window; }

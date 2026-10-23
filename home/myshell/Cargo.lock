@@ -3076,6 +3076,7 @@ dependencies = [
  "gpui_platform",
  "jiff",
  "rustix",
+ "serde_json",
  "zbus",
 ]
 

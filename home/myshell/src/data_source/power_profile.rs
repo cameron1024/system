@@ -4,8 +4,10 @@ use futures::TryStreamExt;
 use zbus::fdo::PropertiesProxy;
 use zbus::proxy::CacheProperties;
 
+use super::Data;
 use super::DataSource;
 use super::Result;
+use crate::command::command;
 
 const INTERFACE: &str = "net.hadess.PowerProfiles";
 const PROPERTY: &str = "ActiveProfile";
@@ -18,6 +20,42 @@ pub enum Profile {
     Balanced,
     Performance,
     Unknown(String),
+}
+
+impl Profile {
+    fn next(&self) -> Self {
+        match self {
+            Self::PowerSaver => Self::Balanced,
+            Self::Balanced => Self::Performance,
+            Self::Performance | Self::Unknown(_) => Self::PowerSaver,
+        }
+    }
+
+    fn as_str(&self) -> &str {
+        match self {
+            Self::PowerSaver => "power-saver",
+            Self::Balanced => "balanced",
+            Self::Performance => "performance",
+            Self::Unknown(name) => name,
+        }
+    }
+}
+
+impl Data<PowerProfile> {
+    pub fn cycle(&mut self, cx: &mut gpui::Context<Self>) {
+        let Some(current) = self.state.target.as_ref() else {
+            return;
+        };
+        let target = current.next();
+        self.request(
+            target.clone(),
+            async move {
+                command("powerprofilesctl", &["set", target.as_str()]).await?;
+                Ok(())
+            },
+            cx,
+        );
+    }
 }
 
 impl From<String> for Profile {

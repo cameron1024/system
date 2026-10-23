@@ -31,19 +31,37 @@ sudo nixos-rebuild switch --flake .#"$(hostname)" "$@"
 
 > The experimental GPUI Wayland shell
 
-### myshell run
+### myshell run [cargo_args]
 
-> Run the shell
+> Run the shell; pass additional Cargo arguments as one quoted string after `--`
 
-```sh
-set -euo pipefail
-cd home/myshell
+**OPTIONS**
+* release
+    * flags: --release
+    * desc: Build and run with optimizations
+* release_fast
+    * flags: --release-fast
+    * desc: Optimize dependencies fully and shell code lightly for faster rebuilds
 
-# Needs the myshell devshell for pkg-config deps and LD_LIBRARY_PATH (wayland/vulkan).
-if [ -z "${MYSHELL_DEVSHELL:-}" ]; then
-  exec nix develop ../..#myshell -c cargo run
-fi
-cargo run
+Examples: `mask myshell run --release-fast`, `mask myshell run --release`, `mask myshell run -- '--offline --features feature-name'`.
+
+```python
+import os
+import shlex
+from pathlib import Path
+
+os.chdir(Path(os.environ["MASKFILE_DIR"]) / "home/myshell")
+command = ["cargo", "run"]
+if os.environ.get("release_fast") == "true":
+    if os.environ.get("release") == "true":
+        raise SystemExit("Choose either --release or --release-fast, not both")
+    command.extend(["--profile", "release-fast"])
+elif os.environ.get("release") == "true":
+    command.append("--release")
+command.extend(shlex.split(os.environ.get("cargo_args", "")))
+if not os.environ.get("MYSHELL_DEVSHELL"):
+    command = ["nix", "develop", "../..#myshell", "-c", *command]
+os.execvp(command[0], command)
 ```
 
 ### myshell fmt
@@ -57,16 +75,35 @@ cd home/myshell
 cargo +nightly fmt
 ```
 
-### myshell test
+### myshell test [cargo_args]
 
-> Run the shell's tests
+> Run the shell's tests; pass additional Cargo arguments as one quoted string after `--`
 
-```sh
-set -euo pipefail
-cd home/myshell
+**OPTIONS**
+* release
+    * flags: --release
+    * desc: Build and test with optimizations
+* release_fast
+    * flags: --release-fast
+    * desc: Optimize dependencies fully and shell code lightly for faster rebuilds
 
-if [ -z "${MYSHELL_DEVSHELL:-}" ]; then
-  exec nix develop ../..#myshell -c cargo test
-fi
-cargo test
+Examples: `mask myshell test --release-fast`, `mask myshell test --release`, `mask myshell test -- '--offline -- --nocapture'`.
+
+```python
+import os
+import shlex
+from pathlib import Path
+
+os.chdir(Path(os.environ["MASKFILE_DIR"]) / "home/myshell")
+command = ["cargo", "test"]
+if os.environ.get("release_fast") == "true":
+    if os.environ.get("release") == "true":
+        raise SystemExit("Choose either --release or --release-fast, not both")
+    command.extend(["--profile", "release-fast"])
+elif os.environ.get("release") == "true":
+    command.append("--release")
+command.extend(shlex.split(os.environ.get("cargo_args", "")))
+if not os.environ.get("MYSHELL_DEVSHELL"):
+    command = ["nix", "develop", "../..#myshell", "-c", *command]
+os.execvp(command[0], command)
 ```

@@ -1,9 +1,14 @@
+mod animated_icon;
 mod bar;
 mod bar_module;
+mod command;
 mod data_source;
+mod profile_icon;
 mod shell;
 mod shortcuts;
 mod theme;
+mod tooltip;
+mod volume_button;
 
 use futures::StreamExt;
 use futures::channel::mpsc;
@@ -17,7 +22,7 @@ fn main() {
         .with_quit_mode(gpui::QuitMode::Explicit)
         .run(|cx: &mut App| {
             let (sender, mut commands) = mpsc::unbounded();
-            let shell = cx.new(|cx| Shell::new(sender.clone(), cx));
+            let shell = cx.new(Shell::new);
             cx.spawn(async move |cx| {
                 // Wayland output announcements arrive after the application startup callback.
                 // Wait only during startup; there is no ongoing display polling.
