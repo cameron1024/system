@@ -23,15 +23,27 @@ use crate::bar::ModuleAction;
 use crate::bar::{self};
 use crate::bar_module::Module;
 use crate::data_source::Data;
+use crate::data_source::battery::Battery;
+use crate::data_source::brightness::Brightness;
 use crate::data_source::clock::Clock;
 use crate::data_source::power_profile::PowerProfile;
+use crate::data_source::system::System;
 use crate::data_source::volume::Volume;
 use crate::shortcuts::Command;
 
+/// Shared by every bar, so each source runs once regardless of the number of displays.
+#[derive(Clone)]
+pub struct Sources {
+    pub clock: Entity<Data<Clock>>,
+    pub power: Entity<Data<PowerProfile>>,
+    pub system: Entity<Data<System>>,
+    pub volume: Entity<Data<Volume>>,
+    pub brightness: Entity<Data<Brightness>>,
+    pub battery: Entity<Data<Battery>>,
+}
+
 pub struct Shell {
-    clock: Entity<Data<Clock>>,
-    power: Entity<Data<PowerProfile>>,
-    volume: Entity<Data<Volume>>,
+    sources: Sources,
     bars: Vec<WindowHandle<Bar>>,
     visible: bool,
     peek_timer: Option<Task<()>>,
@@ -41,33 +53,50 @@ pub struct Shell {
 
 impl Shell {
     pub fn new(cx: &mut Context<Self>) -> Self {
-        let clock = cx.new(|cx| Data::new(Clock, cx));
-        let power = cx.new(|cx| Data::new(PowerProfile, cx));
-        let volume = cx.new(|cx| Data::new(Volume, cx));
+        let (brightness, brightness_changed) = Brightness::new();
+        let sources = Sources {
+            clock: cx.new(|cx| Data::new(Clock, cx)),
+            power: cx.new(|cx| Data::new(PowerProfile, cx)),
+            system: cx.new(|cx| Data::new(System, cx)),
+            volume: cx.new(|cx| Data::new(Volume, cx)),
+            brightness: cx.new(|cx| Data::new(brightness, cx)),
+            battery: cx.new(|cx| Data::new(Battery, cx)),
+        };
         let (actions, mut receiver) = mpsc::unbounded::<ModuleAction>();
-        let action_power = power.clone();
-        let action_volume = volume.clone();
+        let targets = sources.clone();
         // Apply targets immediately on the UI; Data queues the actual writes in the background.
         let actions_task = cx.spawn(async move |_, cx| {
             while let Some(action) = receiver.next().await {
                 match action {
-                    ModuleAction::Click(Module::Clock) => {}
                     ModuleAction::Click(Module::PowerProfile) => {
-                        action_power.update(cx, |data, cx| data.cycle(cx));
+                        targets.power.update(cx, |data, cx| data.cycle(cx));
                     }
                     ModuleAction::Click(Module::Volume) => {
-                        action_volume.update(cx, |data, cx| data.toggle_mute(cx));
+                        targets.volume.update(cx, |data, cx| data.toggle_mute(cx));
                     }
-                    ModuleAction::Volume(steps) => {
-                        action_volume.update(cx, |data, cx| data.change_volume(steps, cx));
+                    ModuleAction::Adjust(Module::Volume, steps) => {
+                        targets
+                            .volume
+                            .update(cx, |data, cx| data.change_volume(steps, cx));
                     }
+                    ModuleAction::Click(Module::Brightness) => {
+                        let changed = brightness_changed.clone();
+                        targets
+                            .brightness
+                            .update(cx, |data, cx| data.cycle_brightness(changed, cx));
+                    }
+                    ModuleAction::Adjust(Module::Brightness, steps) => {
+                        let changed = brightness_changed.clone();
+                        targets
+                            .brightness
+                            .update(cx, |data, cx| data.change_brightness(steps, changed, cx));
+                    }
+                    ModuleAction::Click(_) | ModuleAction::Adjust(..) => {}
                 }
             }
         });
         Self {
-            clock,
-            power,
-            volume,
+            sources,
             bars: Vec::new(),
             visible: true,
             peek_timer: None,
@@ -87,34 +116,38 @@ impl Shell {
                     });
                 }
             }
-            Command::Activate(module) => {
-                let _ = self.actions.unbounded_send(ModuleAction::Click(module));
-                if self.visible {
-                    return;
-                }
-                for bar in &self.bars {
-                    let _ = bar.update(cx, |bar, window, cx| bar.peek(module, window, cx));
-                }
-                // Replacing the task cancels the old deadline; only one timer remains active.
-                self.peek_timer = Some(cx.spawn(async move |this, cx| {
-                    async_io::Timer::after(std::time::Duration::from_secs(3)).await;
-                    let _ = this.update(cx, |shell, cx| {
-                        if !shell.visible {
-                            for bar in &shell.bars {
-                                let _ = bar.update(cx, |bar, window, cx| bar.hide_peek(window, cx));
-                            }
-                        }
-                    });
-                }));
+            Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
+            Command::Adjust(module, steps) => {
+                self.act(ModuleAction::Adjust(module, steps), module, cx)
             }
         }
     }
 
+    /// Performs the action, briefly showing its module if the bar is hidden.
+    fn act(&mut self, action: ModuleAction, module: Module, cx: &mut Context<Self>) {
+        let _ = self.actions.unbounded_send(action);
+        if self.visible {
+            return;
+        }
+        for bar in &self.bars {
+            let _ = bar.update(cx, |bar, window, cx| bar.peek(module, window, cx));
+        }
+        // Replacing the task cancels the old deadline; only one timer remains active.
+        self.peek_timer = Some(cx.spawn(async move |this, cx| {
+            async_io::Timer::after(std::time::Duration::from_secs(3)).await;
+            let _ = this.update(cx, |shell, cx| {
+                if !shell.visible {
+                    for bar in &shell.bars {
+                        let _ = bar.update(cx, |bar, window, cx| bar.hide_peek(window, cx));
+                    }
+                }
+            });
+        }));
+    }
+
     pub fn show_bars(&mut self, cx: &mut Context<Self>) {
         for display in cx.displays() {
-            let clock = self.clock.clone();
-            let power = self.power.clone();
-            let volume = self.volume.clone();
+            let sources = self.sources.clone();
             let actions = self.actions.clone();
             match cx.open_window(
                 WindowOptions {
@@ -125,7 +158,10 @@ impl Shell {
                     inactive_frame_interval: None,
                     window_bounds: Some(WindowBounds::Windowed(Bounds {
                         origin: point(px(0.), px(0.)),
-                        size: size(px(0.), px(bar::HEIGHT)),
+                        // Non-zero width: GPUI sizes the viewport from these bounds if a
+                        // fractional scale arrives before the first configure, and a zero
+                        // width there is a fatal Wayland protocol error.
+                        size: size(display.bounds().size.width, px(bar::HEIGHT)),
                     })),
                     app_id: Some("myshell".into()),
                     window_background: WindowBackgroundAppearance::Transparent,
@@ -139,7 +175,7 @@ impl Shell {
                     }),
                     ..Default::default()
                 },
-                |_, cx| cx.new(|cx| Bar::new(clock, power, volume, actions, cx)),
+                |_, cx| cx.new(|cx| Bar::new(sources, actions, cx)),
             ) {
                 Ok(window) => self.bars.push(window),
                 Err(error) => eprintln!("opening bar: {error}"),

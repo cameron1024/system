@@ -4,24 +4,25 @@ use std::time::Instant;
 use futures::channel::mpsc;
 
 use gpui::Context;
+use gpui::Div;
 use gpui::Entity;
 use gpui::IntoElement;
 use gpui::Render;
-
+use gpui::Rgba;
+use gpui::ScrollWheelEvent;
+use gpui::Stateful;
 use gpui::Window;
 use gpui::div;
 use gpui::prelude::*;
 use gpui::px;
 
+use crate::animated_icon::Icon;
+use crate::animated_icon::static_icon;
 use crate::bar_module::Module;
 use crate::bar_module::bar_module;
-
-use crate::data_source::Data;
-
-use crate::data_source::clock::Clock;
-use crate::data_source::power_profile::PowerProfile;
-use crate::data_source::volume::Volume;
+use crate::battery_indicator::BatteryIndicator;
 use crate::profile_icon::ProfileIcon;
+use crate::shell::Sources;
 use crate::theme;
 use crate::volume_button::VolumeButton;
 
@@ -45,9 +46,10 @@ impl Slide {
 }
 
 pub struct Bar {
-    clock: Entity<Data<Clock>>,
+    sources: Sources,
     profile_icon: Entity<ProfileIcon>,
     volume_button: Entity<VolumeButton>,
+    battery: Entity<BatteryIndicator>,
     actions: mpsc::UnboundedSender<ModuleAction>,
     scroll_remainder: f32,
     visible: bool,
@@ -58,7 +60,7 @@ pub struct Bar {
 
 pub enum ModuleAction {
     Click(Module),
-    Volume(i32),
+    Adjust(Module, i32),
 }
 
 impl Bar {
@@ -112,25 +114,23 @@ impl Bar {
     }
 
     pub fn new(
-        clock: Entity<Data<Clock>>,
-        power_profile: Entity<Data<PowerProfile>>,
-        volume: Entity<Data<Volume>>,
+        sources: Sources,
         actions: mpsc::UnboundedSender<ModuleAction>,
         cx: &mut Context<Self>,
     ) -> Self {
-        cx.observe(&clock, |this, _, cx| {
-            if this.visible {
-                cx.notify();
-            }
-        })
-        .detach();
-        let profile_icon = cx.new(|cx| ProfileIcon::new(power_profile, cx));
-        let volume_button = cx.new(|cx| VolumeButton::new(volume, cx));
+        // Modules without their own view are rendered inline from these sources.
+        redraw_on(&sources.clock, cx);
+        redraw_on(&sources.system, cx);
+        redraw_on(&sources.brightness, cx);
+        let power = sources.power.clone();
+        let volume = sources.volume.clone();
+        let battery = sources.battery.clone();
 
         Self {
-            clock,
-            profile_icon,
-            volume_button,
+            sources,
+            profile_icon: cx.new(|cx| ProfileIcon::new(power, cx)),
+            volume_button: cx.new(|cx| VolumeButton::new(volume, cx)),
+            battery: cx.new(|cx| BatteryIndicator::new(battery, cx)),
             actions,
             scroll_remainder: 0.,
             visible: true,
@@ -139,6 +139,58 @@ impl Bar {
             reserved_space: HEIGHT as i32,
         }
     }
+
+    /// While peeking, other modules keep their layout space so the peeked one doesn't move.
+    fn module(&self, module: Module, content: impl IntoElement, accent: Rgba) -> Stateful<Div> {
+        bar_module(module.name(), content, accent)
+            .flex_shrink_0()
+            .when(
+                self.peek_module.is_some_and(|peek| peek != module),
+                |element| element.invisible(),
+            )
+    }
+
+    fn clickable(element: Stateful<Div>, module: Module, cx: &mut Context<Self>) -> Stateful<Div> {
+        element
+            .cursor_pointer()
+            .on_click(cx.listener(move |this, _, _, _| {
+                let _ = this.actions.unbounded_send(ModuleAction::Click(module));
+            }))
+    }
+
+    fn adjustable(element: Stateful<Div>, module: Module, cx: &mut Context<Self>) -> Stateful<Div> {
+        element.on_scroll_wheel(cx.listener(move |this, event: &ScrollWheelEvent, _, cx| {
+            // Accumulate smooth touchpad deltas; one line/notch is one step.
+            this.scroll_remainder += f32::from(event.delta.pixel_delta(px(24.)).y) / 24.;
+            let steps = this.scroll_remainder.trunc() as i32;
+            this.scroll_remainder -= steps as f32;
+            if steps != 0 {
+                let _ = this
+                    .actions
+                    .unbounded_send(ModuleAction::Adjust(module, steps));
+            }
+            cx.stop_propagation();
+        }))
+    }
+}
+
+fn redraw_on<T: 'static>(entity: &Entity<T>, cx: &mut Context<Bar>) {
+    cx.observe(entity, |this, _, cx| {
+        if this.visible {
+            cx.notify();
+        }
+    })
+    .detach();
+}
+
+fn labelled(icon: Icon, color: Rgba, label: String) -> Div {
+    div()
+        .flex()
+        .items_center()
+        .gap_1()
+        .text_color(color)
+        .child(static_icon(icon, color))
+        .child(label)
 }
 
 impl Render for Bar {
@@ -178,21 +230,91 @@ impl Render for Bar {
         } else if !self.visible {
             return div().size_full().into_any_element();
         }
-        let profile = self.profile_icon.clone();
-        let volume = self.volume_button.clone();
         // Detaching the builder cancels GPUI's pending and visible tooltip state on leave.
         // Its default tooltip hit test otherwise uses the stale last in-window position.
         let tooltips_enabled =
             window.is_window_hovered() && self.visible && self.peek_module.is_none();
-        let clock = self
-            .clock
+        let sources = &self.sources;
+        let clock = (sources.clock.read(cx).state.target.clone()).unwrap_or_else(|| "--:--".into());
+        // Coloured by usage; the disk shows free space but is coloured by used space.
+        let [cpu, memory, disk] = sources.system.read(cx).state.target.as_ref().map_or_else(
+            || ["--%", "--%", "--"].map(|label| (label.to_owned(), theme::SYSTEM_ACCENT)),
+            |stats| {
+                [
+                    (format!("{}%", stats.cpu), theme::usage(stats.cpu)),
+                    (format!("{}%", stats.memory), theme::usage(stats.memory)),
+                    (stats.disk_free_label(), theme::usage(stats.disk)),
+                ]
+            },
+        );
+        let brightness = sources
+            .brightness
             .read(cx)
             .state
             .target
-            .clone()
-            .unwrap_or_else(|| "--:--".into());
+            .as_ref()
+            .map_or_else(
+                || "--%".into(),
+                |brightness| format!("{}%", brightness.percent),
+            );
+        let separator = || {
+            div()
+                .w(px(1.))
+                .h(px(14.))
+                .bg(theme::SYSTEM_ACCENT.opacity(0.35))
+        };
+        let system = div()
+            .flex()
+            .items_center()
+            .gap_2()
+            .child(labelled(Icon::Cpu, cpu.1, cpu.0))
+            .child(separator())
+            .child(labelled(Icon::Memory, memory.1, memory.0))
+            .child(separator())
+            .child(labelled(Icon::Disk, disk.1, disk.0));
 
-        // Content-sized groups, with flexible spacers taking the remaining width.
+        let profile = self
+            .module(
+                Module::PowerProfile,
+                self.profile_icon.clone(),
+                theme::POWER_ACCENT,
+            )
+            .when(tooltips_enabled, |button| {
+                // Keep the popup alive through clicks while its button stays hovered.
+                button.hoverable_tooltip({
+                    let icon = self.profile_icon.clone();
+                    move |window, cx| ProfileIcon::tooltip(&icon, window, cx)
+                })
+            });
+        let volume = self
+            .module(
+                Module::Volume,
+                self.volume_button.clone(),
+                theme::VOLUME_ACCENT,
+            )
+            .when(tooltips_enabled, |button| {
+                button.hoverable_tooltip({
+                    let volume = self.volume_button.clone();
+                    move |window, cx| VolumeButton::tooltip(&volume, window, cx)
+                })
+            });
+        let system = self.module(Module::System, system, theme::SYSTEM_ACCENT);
+        let clock = self.module(Module::Clock, clock, theme::CLOCK_ACCENT);
+        let brightness = self.module(
+            Module::Brightness,
+            labelled(Icon::Sun, theme::BRIGHTNESS_ACCENT, brightness),
+            theme::BRIGHTNESS_ACCENT,
+        );
+        let battery = self.module(Module::Battery, self.battery.clone(), theme::BATTERY_ACCENT);
+
+        let profile = Self::clickable(profile, Module::PowerProfile, cx);
+        let volume = Self::clickable(volume, Module::Volume, cx);
+        let volume = Self::adjustable(volume, Module::Volume, cx);
+        let brightness = Self::clickable(brightness, Module::Brightness, cx);
+        let brightness = Self::adjustable(brightness, Module::Brightness, cx);
+
+        // Equal-basis sides keep the clock at the display's centre, whatever their contents.
+        let side = || div().flex_1().flex().items_center().gap_2();
         let content = div()
             .absolute()
             .top(px(-HEIGHT * (1. - progress)))
@@ -200,85 +322,23 @@ impl Render for Bar {
             .h(px(HEIGHT))
             .flex()
             .items_center()
+            .gap_2()
             .px_3()
             .text_color(theme::FOREGROUND)
             .font_family("Josefin Sans")
-            .text_size(px(14.));
-        let content = if let Some(module) = self.peek_module {
-            match module {
-                Module::Clock => {
-                    content
-                        .justify_center()
-                        .child(bar_module("clock", clock, theme::CLOCK_ACCENT))
-                }
-                Module::PowerProfile => content.justify_start().child(bar_module(
-                    "power-profile",
-                    profile,
-                    theme::POWER_ACCENT,
-                )),
-                Module::Volume => {
-                    content
-                        .justify_end()
-                        .child(bar_module("volume", volume, theme::VOLUME_ACCENT))
-                }
-            }
-        } else {
-            content
-                .bg(theme::BACKGROUND)
-                .child(
-                    div().flex().flex_shrink_0().child(
-                        bar_module("power-profile", profile, theme::POWER_ACCENT)
-                            .when(tooltips_enabled, |button| {
-                                // Keep the popup alive through clicks while its button stays hovered.
-                                button.hoverable_tooltip({
-                                    let icon = self.profile_icon.clone();
-                                    move |window, cx| ProfileIcon::tooltip(&icon, window, cx)
-                                })
-                            })
-                            .cursor_pointer()
-                            .on_click(cx.listener(|this, _, _, _| {
-                                let _ = this
-                                    .actions
-                                    .unbounded_send(ModuleAction::Click(Module::PowerProfile));
-                            })),
-                    ),
-                )
-                .child(div().flex_1())
-                .child(bar_module("clock", clock, theme::CLOCK_ACCENT).flex_shrink_0())
-                .child(div().flex_1())
-                .child(
-                    div().flex().flex_shrink_0().justify_end().child(
-                        bar_module("volume", volume, theme::VOLUME_ACCENT)
-                            .when(tooltips_enabled, |button| {
-                                button.hoverable_tooltip({
-                                    let volume = self.volume_button.clone();
-                                    move |window, cx| VolumeButton::tooltip(&volume, window, cx)
-                                })
-                            })
-                            .cursor_pointer()
-                            .on_click(cx.listener(|this, _, _, _| {
-                                let _ = this
-                                    .actions
-                                    .unbounded_send(ModuleAction::Click(Module::Volume));
-                            }))
-                            .on_scroll_wheel(cx.listener(
-                                |this, event: &gpui::ScrollWheelEvent, _, cx| {
-                                    // Accumulate smooth touchpad deltas; one line/notch is a 5% step.
-                                    this.scroll_remainder +=
-                                        f32::from(event.delta.pixel_delta(px(24.)).y) / 24.;
-                                    let steps = this.scroll_remainder.trunc() as i32;
-                                    this.scroll_remainder -= steps as f32;
-                                    if steps != 0 {
-                                        let _ = this
-                                            .actions
-                                            .unbounded_send(ModuleAction::Volume(steps));
-                                    }
-                                    cx.stop_propagation();
-                                },
-                            )),
-                    ),
-                )
-        };
+            .text_size(px(14.))
+            .when(self.peek_module.is_none(), |content| {
+                content.bg(theme::BACKGROUND)
+            })
+            .child(side().child(profile).child(system))
+            .child(clock)
+            .child(
+                side()
+                    .justify_end()
+                    .child(brightness)
+                    .child(battery)
+                    .child(volume),
+            );
         div()
             .size_full()
             .relative()

@@ -54,3 +54,17 @@ pub const MODULE_HOVER: Rgba = palette::BG1;
 pub const POWER_ACCENT: Rgba = palette::ORANGE;
 pub const CLOCK_ACCENT: Rgba = palette::GREEN;
 pub const VOLUME_ACCENT: Rgba = palette::BLUE;
+pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
+pub const BRIGHTNESS_ACCENT: Rgba = palette::YELLOW;
+pub const BATTERY_ACCENT: Rgba = palette::AQUA;
+pub const WARNING: Rgba = palette::ORANGE;
+pub const CRITICAL: Rgba = palette::RED;
+
+/// Resource usage: green below 40%, orange below 80%, red from 80%.
+pub fn usage(percent: u32) -> Rgba {
+    match percent {
+        0..40 => palette::GREEN,
+        40..80 => WARNING,
+        _ => CRITICAL,
+    }
+}

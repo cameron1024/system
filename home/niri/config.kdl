@@ -598,13 +598,18 @@ binds {
 
     Mod+Grave { spawn "kitten" "quick-access-terminal"; } 
 
-    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
-    XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    // Routed through myshell so changes peek the module when the bar is hidden.
+    // `--` stops gdbus parsing negative steps as options.
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Adjust" "--" "volume" "1"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Adjust" "--" "volume" "-1"; }
+    XF86AudioMute        allow-when-locked=true repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "volume"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
 
-    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "5%+"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Adjust" "--" "brightness" "1"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Adjust" "--" "brightness" "-1"; }
+
+    // Framework key (Fn+F12)
+    XF86AudioMedia repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "battery"; }
 
     XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
     XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }

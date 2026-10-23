@@ -6,6 +6,7 @@ use crate::bar_module::Module;
 pub enum Command {
     ToggleBar,
     Activate(Module),
+    Adjust(Module, i32),
 }
 
 struct Shortcuts {
@@ -19,17 +20,11 @@ impl Shortcuts {
     }
 
     fn activate(&self, module: &str) -> zbus::fdo::Result<()> {
-        let module = match module {
-            "clock" => Module::Clock,
-            "power-profile" => Module::PowerProfile,
-            "volume" => Module::Volume,
-            _ => {
-                return Err(zbus::fdo::Error::InvalidArgs(format!(
-                    "unknown module: {module}"
-                )));
-            }
-        };
-        self.send(Command::Activate(module))
+        self.send(Command::Activate(parse(module)?))
+    }
+
+    fn adjust(&self, module: &str, steps: i32) -> zbus::fdo::Result<()> {
+        self.send(Command::Adjust(parse(module)?, steps))
     }
 }
 
@@ -39,6 +34,13 @@ impl Shortcuts {
             .unbounded_send(command)
             .map_err(|error| zbus::fdo::Error::Failed(error.to_string()))
     }
+}
+
+fn parse(module: &str) -> zbus::fdo::Result<Module> {
+    Module::ALL
+        .into_iter()
+        .find(|candidate| candidate.name() == module)
+        .ok_or_else(|| zbus::fdo::Error::InvalidArgs(format!("unknown module: {module}")))
 }
 
 /// Keep the returned connection alive while receiving commands on the UI thread.

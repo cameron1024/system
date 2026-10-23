@@ -1,8 +1,11 @@
 //! Sources own their scheduling: subscribers await updates, never poll for them.
 //! A source may use a timer when its underlying data requires one (e.g. the clock).
 
+pub mod battery;
+pub mod brightness;
 pub mod clock;
 pub mod power_profile;
+pub mod system;
 pub mod volume;
 
 use std::future::Future;
@@ -13,6 +16,8 @@ use futures::StreamExt;
 use futures::channel::mpsc;
 use gpui::Context;
 use gpui::Task;
+use zbus::fdo::PropertiesProxy;
+use zbus::proxy::CacheProperties;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T> = std::result::Result<T, Error>;
@@ -29,6 +34,53 @@ pub trait DataSource: Send + 'static {
     fn reconcile_target(_target: &mut Self::Value, _known: &Self::Value) -> bool {
         true
     }
+}
+
+/// Subscribes before the caller's first read. Yields once immediately, then whenever one of
+/// `names` changes or the system service (re)appears, and an error while it is absent.
+pub async fn watch_properties(
+    destination: &'static str,
+    path: &'static str,
+    interface: &'static str,
+    names: &'static [&'static str],
+) -> Result<(
+    PropertiesProxy<'static>,
+    impl Stream<Item = Result<()>> + Send + 'static,
+)> {
+    let connection = zbus::Connection::system().await?;
+    let properties = PropertiesProxy::builder(&connection)
+        .destination(destination)?
+        .path(path)?
+        .cache_properties(CacheProperties::No)
+        .build()
+        .await?;
+    let changes = properties.receive_properties_changed().await?;
+    let owners = properties.inner().receive_owner_changed().await?;
+    let changes = changes.filter_map(move |signal| {
+        let relevant = signal.args().map(|args| {
+            args.interface_name().as_str() == interface
+                && names.iter().any(|name| {
+                    args.changed_properties().contains_key(name)
+                        || args.invalidated_properties().contains(name)
+                })
+        });
+        futures::future::ready(match relevant {
+            Ok(true) => Some(Ok(())),
+            Ok(false) => None,
+            Err(error) => Some(Err(error.into())),
+        })
+    });
+    let owners = owners.map(move |owner| {
+        owner.map(|_| ()).ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::NotConnected,
+                format!("{destination} unavailable"),
+            )
+            .into()
+        })
+    });
+    let updates = futures::stream::iter([Ok(())]).chain(futures::stream::select(changes, owners));
+    Ok((properties, updates))
 }
 
 /// The optimistic target and most recently observed source value.

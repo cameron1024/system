@@ -21,6 +21,15 @@ pub enum Icon {
     Scales,
     Speaker,
     Muted,
+    Cpu,
+    Memory,
+    Disk,
+    Sun,
+    BatteryEmpty,
+    BatteryLow,
+    BatteryMedium,
+    BatteryFull,
+    BatteryCharging,
     Unknown,
 }
 
@@ -32,9 +41,27 @@ impl Icon {
             Self::Scales => Some(include_bytes!("../assets/icons/scale.svg")),
             Self::Speaker => Some(include_bytes!("../assets/icons/volume-2.svg")),
             Self::Muted => Some(include_bytes!("../assets/icons/volume-x.svg")),
+            Self::Cpu => Some(include_bytes!("../assets/icons/cpu.svg")),
+            Self::Memory => Some(include_bytes!("../assets/icons/memory-stick.svg")),
+            Self::Disk => Some(include_bytes!("../assets/icons/hard-drive.svg")),
+            Self::Sun => Some(include_bytes!("../assets/icons/sun.svg")),
+            Self::BatteryEmpty => Some(include_bytes!("../assets/icons/battery.svg")),
+            Self::BatteryLow => Some(include_bytes!("../assets/icons/battery-low.svg")),
+            Self::BatteryMedium => Some(include_bytes!("../assets/icons/battery-medium.svg")),
+            Self::BatteryFull => Some(include_bytes!("../assets/icons/battery-full.svg")),
+            Self::BatteryCharging => Some(include_bytes!("../assets/icons/battery-charging.svg")),
             Self::Unknown => None,
         }
     }
+}
+
+/// An icon that never changes, so it needs no entity or transition state.
+pub fn static_icon(icon: Icon, color: Rgba) -> impl IntoElement {
+    svg()
+        .when_some(icon.data(), |svg, data| svg.data(data))
+        .size(px(SIZE))
+        .flex_shrink_0()
+        .text_color(color)
 }
 
 struct Layer {

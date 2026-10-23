@@ -61,7 +61,7 @@ in {
       }
     ];
     modules = [
-      inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
+      # inputs.nixos-hardware.nixosModules.framework-amd-ai-300-series
       ./hardware/framework.nix
       {
         system.stateVersion = "25.05";

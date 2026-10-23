@@ -1,12 +1,11 @@
 use futures::Stream;
 use futures::StreamExt;
 use futures::TryStreamExt;
-use zbus::fdo::PropertiesProxy;
-use zbus::proxy::CacheProperties;
 
 use super::Data;
 use super::DataSource;
 use super::Result;
+use super::watch_properties;
 use crate::command::command;
 
 const INTERFACE: &str = "net.hadess.PowerProfiles";
@@ -74,41 +73,19 @@ impl DataSource for PowerProfile {
 
     fn stream(self) -> impl Stream<Item = Result<Profile>> + Send + 'static {
         futures::stream::once(async {
-            let connection = zbus::Connection::system().await?;
-            let properties = PropertiesProxy::builder(&connection)
-                .destination(INTERFACE)?
-                .path("/net/hadess/PowerProfiles")?
-                .cache_properties(CacheProperties::No)
-                .build()
-                .await?;
-
-            // Subscribe before reading, including owner changes so restarts refresh the value.
-            let changes = properties.receive_properties_changed().await?;
-            let owners = properties.inner().receive_owner_changed().await?;
-            let changes = changes.map(|signal| -> Result<bool> {
-                let args = signal.args()?;
-                Ok(args.interface_name().as_str() == INTERFACE
-                    && (args.changed_properties().contains_key(PROPERTY)
-                        || args.invalidated_properties().contains(&PROPERTY)))
-            });
-            let owners = owners.map(|owner| -> Result<bool> {
-                owner.ok_or_else(|| {
-                    std::io::Error::new(
-                        std::io::ErrorKind::NotConnected,
-                        "power profile daemon unavailable",
-                    )
-                })?;
-                Ok(true)
-            });
-            let mut updates =
-                futures::stream::iter([Ok(true)]).chain(futures::stream::select(changes, owners));
-
+            let (properties, updates) = watch_properties(
+                INTERFACE,
+                "/net/hadess/PowerProfiles",
+                INTERFACE,
+                &[PROPERTY],
+            )
+            .await?;
             Ok::<_, super::Error>(async_stream::stream! {
+                futures::pin_mut!(updates);
                 let mut previous = None;
                 while let Some(update) = updates.next().await {
                     let result: Result<Profile> = match update {
-                        Ok(false) => continue,
-                        Ok(true) => async {
+                        Ok(()) => async {
                             // Read current state rather than replaying potentially stale signals.
                             let value = properties.get(INTERFACE.try_into()?, PROPERTY).await?;
                             Ok(Profile::from(String::try_from(value)?))

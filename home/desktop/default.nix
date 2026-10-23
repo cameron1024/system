@@ -88,6 +88,9 @@ in
           "x-scheme-handler/delta" = [ "delta-stable.desktop" ];
         };
     };
+    # Browsers and other apps routinely replace the managed symlink with their
+    # own copy; the declaration above is the source of truth.
+    xdg.configFile."mimeapps.list".force = true;
 
     # scripts/update-delta.sh installs these aliases separately so system builds never
     # need credentials or pre-seeded private Delta release assets.

@@ -1,6 +1,7 @@
 mod animated_icon;
 mod bar;
 mod bar_module;
+mod battery_indicator;
 mod command;
 mod data_source;
 mod profile_icon;

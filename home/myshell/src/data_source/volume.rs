@@ -6,7 +6,7 @@ use async_process::Child;
 use async_process::ChildStdout;
 use async_process::Command;
 use futures::Stream;
-use futures::TryStreamExt;
+
 use futures::future::Either;
 use futures::future::select;
 use futures::io::AsyncBufReadExt;
@@ -55,8 +55,10 @@ impl Data<Volume> {
         let Some(mut target) = self.state.target.clone() else {
             return;
         };
-        target.percent =
-            (i64::from(target.percent) + i64::from(steps) * 5).clamp(0, i64::from(u32::MAX)) as u32;
+        target.percent = target
+            .percent
+            .saturating_add_signed(steps.saturating_mul(5))
+            .min(100);
         self.request(
             target.clone(),
             async move {
@@ -88,24 +90,30 @@ impl DataSource for Volume {
     }
 
     fn stream(self) -> impl Stream<Item = Result<VolumeState>> + Send + 'static {
-        futures::stream::once(async {
-            let (mut child, mut events) = subscribe().await?;
-            Ok::<_, super::Error>(async_stream::stream! {
-                yield query().await;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    if let Err(error) = read_event(&mut child, &mut events, &mut line).await {
-                        yield Err(error);
-                        break;
-                    }
-                    if affects_volume(&line) {
+        async_stream::stream! {
+            loop {
+                match subscribe().await {
+                    Ok((mut child, mut events)) => {
                         yield query().await;
+                        let mut line = String::new();
+                        loop {
+                            line.clear();
+                            if let Err(error) = read_event(&mut child, &mut events, &mut line).await {
+                                yield Err(error);
+                                break;
+                            }
+                            if affects_volume(&line) {
+                                yield query().await;
+                            }
+                        }
                     }
+                    Err(error) => yield Err(error),
                 }
-            })
-        })
-        .try_flatten()
+                // The audio server restarts (e.g. on a system switch); a timer runs only while
+                // disconnected.
+                async_io::Timer::after(Duration::from_secs(1)).await;
+            }
+        }
     }
 }
 
