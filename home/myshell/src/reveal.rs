@@ -6,6 +6,53 @@ use std::time::Instant;
 
 const DURATION: Duration = Duration::from_millis(180);
 
+const TWEEN: Duration = Duration::from_millis(150);
+
+/// A value that eases to each new target from wherever it currently is (e.g. a height).
+pub struct Tween {
+    from: f32,
+    to: f32,
+    started: Instant,
+}
+
+impl Tween {
+    pub fn new(value: f32, now: Instant) -> Self {
+        Self {
+            from: value,
+            to: value,
+            started: now,
+        }
+    }
+
+    pub fn value(&self, now: Instant) -> f32 {
+        let t = now.saturating_duration_since(self.started).as_secs_f32() / TWEEN.as_secs_f32();
+        if t >= 1. {
+            return self.to;
+        }
+        // Cubic ease-out.
+        self.from + (self.to - self.from) * (1. - (1. - t).powi(3))
+    }
+
+    pub fn set(&mut self, to: f32, now: Instant) {
+        if (to - self.to).abs() > 1e-3 {
+            *self = Self {
+                from: self.value(now),
+                to,
+                started: now,
+            };
+        }
+    }
+
+    /// Jumps to `value`, e.g. while nothing using it is shown.
+    pub fn snap(&mut self, value: f32, now: Instant) {
+        *self = Self::new(value, now);
+    }
+
+    pub fn animating(&self, now: Instant) -> bool {
+        self.value(now) != self.to
+    }
+}
+
 /// Whether a body is shown, and its motion towards that state.
 pub struct Reveal {
     pub visible: bool,

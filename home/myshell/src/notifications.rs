@@ -3,6 +3,7 @@
 //! read. The dropdown pages through history in its order (unread first, then newest first).
 //! `entries` is always a prefix of that order, so the next page starts after its last entry.
 
+mod icon;
 mod store;
 
 use std::collections::HashMap;
@@ -318,9 +319,21 @@ impl Server {
         summary: String,
         body: String,
         actions: Vec<String>,
-        _hints: HashMap<String, OwnedValue>,
+        hints: HashMap<String, OwnedValue>,
         _expire_timeout: i32,
     ) -> zbus::fdo::Result<u32> {
+        let hint = |key: &str| {
+            hints
+                .get(key)
+                .and_then(|value| <&str>::try_from(&**value).ok())
+        };
+        // Raw image data ("image-data") isn't supported; senders usually also give a name.
+        let icon = icon::resolve(
+            hint("image-path").or(hint("image_path")),
+            &app_icon,
+            hint("desktop-entry"),
+            &app_name,
+        );
         let failed = |error: crate::data_source::Error| zbus::fdo::Error::Failed(error.to_string());
         // Actions are (key, label) pairs; clicking invokes "default", else the only action.
         let keys: Vec<&String> = actions.iter().step_by(2).collect();
@@ -337,6 +350,7 @@ impl Server {
             default_action,
             received_at: now(),
             read_at: None,
+            icon,
         };
         if replaces_id != 0
             && let Some((notification, was_read)) = (self.store)

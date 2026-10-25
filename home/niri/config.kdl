@@ -49,6 +49,15 @@ layer-rule {
   place-within-backdrop true
 }
 
+// myshell requests its own (shaped) blur; blur what's actually beneath it, not the wallpaper.
+layer-rule {
+  match namespace="^myshell-bar$"
+
+  background-effect {
+    xray false
+  }
+}
+
 debug { honor-xdg-activation-with-invalid-serial; }
 
 

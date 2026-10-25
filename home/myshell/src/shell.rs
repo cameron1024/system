@@ -74,8 +74,11 @@ impl Shell {
             notifications: cx.new(Notifications::new),
         };
         cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
+            // The toasts also show the bell while the bar is hidden, for exactly as long.
             if !shell.dropdown {
-                shell.peek(Module::Notifications, cx);
+                for bar in &shell.bars {
+                    let _ = bar.update(cx, |bar, _, cx| bar.show_toast(cx));
+                }
             }
         })
         .detach();
@@ -93,12 +96,17 @@ impl Shell {
                         targets
                             .notifications
                             .update(cx, |notifications, cx| match action {
-                                NotificationAction::MarkAllRead => notifications.mark_all_read(cx),
                                 NotificationAction::ToggleShowRead => {
                                     notifications.toggle_show_read(cx)
                                 }
                                 NotificationAction::LoadMore => notifications.load_more(),
+                                // Mark-all-read animates, so the bar applies it directly.
+                                NotificationAction::MarkAllRead
+                                | NotificationAction::CloseDropdown => {}
                             });
+                        if matches!(action, NotificationAction::CloseDropdown) {
+                            let _ = this.update(cx, |shell, cx| shell.set_dropdown(false, cx));
+                        }
                     }
                     ModuleAction::Click(Module::PowerProfile) => {
                         targets.power.update(cx, |data, cx| data.cycle(cx));

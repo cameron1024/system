@@ -13,6 +13,8 @@ use diesel_migrations::embed_migrations;
 
 use crate::data_source::Result;
 
+// History is disposable, so there is only ever one migration: edit it in place, rather than adding
+// more. A database with any other schema is deleted and recreated.
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 diesel::table! {
@@ -25,6 +27,7 @@ diesel::table! {
         default_action -> Nullable<Text>,
         received_at -> BigInt,
         read_at -> Nullable<BigInt>,
+        icon -> Nullable<Text>,
     }
 }
 
@@ -40,6 +43,8 @@ pub struct Notification {
     /// Unix milliseconds.
     pub received_at: i64,
     pub read_at: Option<i64>,
+    /// A resolved image file, if any.
+    pub icon: Option<String>,
 }
 
 /// A notification's place in the dropdown: unread first, then newest first.
@@ -66,6 +71,7 @@ pub struct NewNotification {
     pub received_at: i64,
     /// Always None: new and replaced notifications are unread.
     pub read_at: Option<i64>,
+    pub icon: Option<String>,
 }
 
 pub struct Store(Mutex<SqliteConnection>);
@@ -80,12 +86,40 @@ impl Store {
             .join("myshell");
         std::fs::create_dir_all(&dir)?;
         let path = dir.join("notifications.db");
-        let mut connection =
-            SqliteConnection::establish(path.to_str().ok_or("non-UTF-8 data directory")?)?;
+        let path = path.to_str().ok_or("non-UTF-8 data directory")?;
+        let connection = match Self::connect(path) {
+            Ok(connection) => connection,
+            Err(error) => {
+                eprintln!("recreating notification history ({error})");
+                for suffix in ["", "-wal", "-shm"] {
+                    let _ = std::fs::remove_file(format!("{path}{suffix}"));
+                }
+                Self::connect(path)?
+            }
+        };
+        Ok(Self(Mutex::new(connection)))
+    }
+
+    /// Fails if the database has any schema other than the current one.
+    fn connect(path: &str) -> Result<SqliteConnection> {
+        let mut connection = SqliteConnection::establish(path)?;
         // WAL keeps writes cheap; NORMAL is durable across application crashes.
         connection.batch_execute("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;")?;
+        let current: Vec<String> =
+            (diesel::migration::MigrationSource::<diesel::sqlite::Sqlite>::migrations(
+                &MIGRATIONS,
+            )?)
+            .iter()
+            .map(|migration| migration.name().version().to_string())
+            .collect();
+        let applied: Vec<String> = (connection.applied_migrations()?.iter())
+            .map(ToString::to_string)
+            .collect();
+        if !applied.is_empty() && applied != current {
+            return Err(format!("schema {applied:?} isn't {current:?}").into());
+        }
         connection.run_pending_migrations(MIGRATIONS)?;
-        Ok(Self(Mutex::new(connection)))
+        Ok(connection)
     }
 
     fn connection(&self) -> std::sync::MutexGuard<'_, SqliteConnection> {
@@ -197,6 +231,7 @@ mod tests {
                 default_action: None,
                 received_at: index,
                 read_at: None,
+                icon: None,
             };
             store.insert(&new).unwrap();
         }

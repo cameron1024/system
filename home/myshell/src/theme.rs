@@ -61,6 +61,11 @@ pub const SEPARATOR: Rgba = Rgba {
     ..palette::FG
 };
 
+pub const SCROLLBAR: Rgba = Rgba {
+    a: 0.3,
+    ..palette::FG
+};
+
 /// A translucent tint, so hovered modules stay part of the liquid.
 pub const MODULE_HOVER: Rgba = Rgba {
     a: 0.08,

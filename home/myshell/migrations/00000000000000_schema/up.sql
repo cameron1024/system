@@ -8,8 +8,11 @@ CREATE TABLE notifications (
     default_action TEXT,
     -- Unix milliseconds.
     received_at BIGINT NOT NULL,
-    -- Set when dismissed, acted on, or closed by the sender; NULL while unread.
-    dismissed_at BIGINT
+    -- NULL while unread.
+    read_at BIGINT,
+    -- A resolved image file, if any.
+    icon TEXT
 );
 
-CREATE INDEX notifications_unread ON notifications (received_at) WHERE dismissed_at IS NULL;
+-- The dropdown's order (unread first, then newest first), so pages are index range scans.
+CREATE INDEX notifications_order ON notifications ((read_at IS NOT NULL), received_at DESC, id DESC);

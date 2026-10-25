@@ -1,6 +1,7 @@
 use std::cell::Cell;
 use std::cell::RefCell;
 use std::ops::Range;
+use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Duration;
 use std::time::Instant;
@@ -14,16 +15,24 @@ use gpui::Div;
 use gpui::Entity;
 use gpui::IntoElement;
 use gpui::Pixels;
+use gpui::Task;
 
 use gpui::AnyElement;
 use gpui::App;
+use gpui::DispatchPhase;
+use gpui::MouseMoveEvent;
+use gpui::ObjectFit;
 use gpui::Render;
 use gpui::Rgba;
+use gpui::ScrollDelta;
 use gpui::ScrollWheelEvent;
 use gpui::Stateful;
+use gpui::TouchPhase;
+use gpui::UniformListScrollHandle;
 use gpui::Window;
 use gpui::canvas;
 use gpui::div;
+use gpui::img;
 use gpui::prelude::*;
 use gpui::px;
 use gpui::rems;
@@ -41,6 +50,7 @@ use crate::liquid;
 use crate::notifications::Notification;
 use crate::profile_icon::ProfileIcon;
 use crate::reveal::Reveal;
+use crate::reveal::Tween;
 use crate::scaled::scaled;
 use crate::shell::Sources;
 use crate::theme;
@@ -170,6 +180,34 @@ pub struct Bar {
     island: Rc<Cell<Option<Bounds<Pixels>>>>,
     surface_height: f32,
     removals: Vec<Removal>,
+    /// A notification being swiped horizontally, and how far.
+    swiping: Option<(i32, f32)>,
+    list_scroll: UniformListScrollHandle,
+    /// Opened with the bell or a shortcut, rather than by hovering the toast.
+    pinned: bool,
+    hover_open: bool,
+    /// The right section's bounds, recorded during prepaint: with the island, the contiguous
+    /// liquid that keeps a hovered-open dropdown open.
+    section: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// Where the toasts are drawn, if they are.
+    toast_area: Option<Bounds<Pixels>>,
+    /// Recent arrivals, each floating where it would be in the dropdown.
+    toasts: Vec<Toast>,
+    /// The toasts' background, in rows.
+    toast_rows: Tween,
+    /// The dropdown list's height, in rows.
+    list_rows: Tween,
+}
+
+/// A notification shown below the bar after arriving.
+struct Toast {
+    notification: Notification,
+    reveal: Reveal,
+    /// Its row in the dropdown, which it follows (e.g. sliding up when one above leaves).
+    row: Tween,
+    /// Its time ran out while the dropdown was hovered open, so it goes once that closes.
+    expired: bool,
+    timer: Option<Task<()>>,
 }
 
 pub enum ModuleAction {
@@ -183,6 +221,7 @@ pub enum NotificationAction {
     MarkAllRead,
     ToggleShowRead,
     LoadMore,
+    CloseDropdown,
 }
 
 impl Bar {
@@ -199,8 +238,144 @@ impl Bar {
     }
 
     pub fn set_dropdown(&mut self, open: bool, cx: &mut Context<Self>) {
+        self.pinned = open;
+        if !open {
+            self.hover_open = false;
+        }
+        self.sync_dropdown(cx);
+    }
+
+    fn sync_dropdown(&mut self, cx: &mut Context<Self>) {
+        let open = self.pinned || self.hover_open;
         self.dropdown.set(open, cx.reduce_motion(), Instant::now());
         cx.notify();
+    }
+
+    /// Shows the newest notification below the bar for a few seconds, below any still shown.
+    pub fn show_toast(&mut self, cx: &mut Context<Self>) {
+        let notifications = self.sources.notifications.read(cx);
+        let Some(newest) = notifications
+            .visible()
+            .first()
+            .filter(|entry| !entry.is_read())
+            .cloned()
+        else {
+            return;
+        };
+        // Each toast lasts a fixed time from when it arrived; updates don't extend it.
+        if (self.toasts.iter()).any(|toast| toast.notification.id == newest.id) {
+            return;
+        }
+        let now = Instant::now();
+        let mut reveal = Reveal::new(false, now);
+        reveal.set(true, cx.reduce_motion(), now);
+        let id = newest.id;
+        self.toasts.push(Toast {
+            notification: newest,
+            reveal,
+            row: Tween::new(0., now),
+            expired: false,
+            timer: Some(self.toast_timer(id, TOAST_DURATION, cx)),
+        });
+        cx.notify();
+    }
+
+    /// Hides the toast after `delay`, or once the dropdown stops being hovered open.
+    fn toast_timer(&self, id: i32, delay: Duration, cx: &mut Context<Self>) -> Task<()> {
+        cx.spawn(async move |this, cx| {
+            async_io::Timer::after(delay).await;
+            let _ = this.update(cx, |this, cx| {
+                if this.hover_open {
+                    if let Some(toast) =
+                        (this.toasts.iter_mut()).find(|toast| toast.notification.id == id)
+                    {
+                        toast.expired = true;
+                    }
+                } else {
+                    this.hide_toast(id, cx);
+                }
+            });
+        })
+    }
+
+    fn hide_toast(&mut self, id: i32, cx: &mut Context<Self>) {
+        let reduce_motion = cx.reduce_motion();
+        if let Some(toast) = (self.toasts.iter_mut()).find(|toast| toast.notification.id == id) {
+            toast.reveal.set(false, reduce_motion, Instant::now());
+            toast.timer = None;
+            cx.notify();
+        }
+    }
+
+    fn hide_toasts(&mut self, cx: &mut Context<Self>) {
+        let ids: Vec<i32> = (self.toasts.iter())
+            .map(|toast| toast.notification.id)
+            .collect();
+        for id in ids {
+            self.hide_toast(id, cx);
+        }
+    }
+
+    /// Hovering a toast expands the dropdown around it, until the pointer leaves the whole
+    /// contiguous liquid (the toasts, the dropdown, and the right section). Hit-testing the area
+    /// directly means gaps between elements (e.g. reaching for the controls) never count as
+    /// leaving.
+    fn pointer_moved(&mut self, position: gpui::Point<Pixels>, cx: &mut Context<Self>) {
+        let pad = px(BLOB_PAD_X);
+        let over_toasts = (self.toast_area).is_some_and(|area| area.contains(&position));
+        let over_island =
+            (self.island.get()).is_some_and(|island| island.dilate(pad).contains(&position));
+        let over_section = !self.bar.hidden()
+            && (self.section.get()).is_some_and(|section| {
+                // Only the bar-height strip: below the modules is empty, not liquid.
+                let strip = Bounds::new(
+                    gpui::point(section.left() - pad, px(0.)),
+                    gpui::size(section.size.width + pad * 2., px(HEIGHT)),
+                );
+                strip.contains(&position)
+            });
+        let toasting = self.toasts.iter().any(|toast| toast.reveal.visible);
+        if over_toasts && toasting && !self.hover_open && !self.pinned {
+            self.hover_open = true;
+            self.sync_dropdown(cx);
+        } else if self.hover_open && !over_toasts && !over_island && !over_section {
+            self.unhover(cx);
+        }
+    }
+
+    /// Closes the hovered-open dropdown. Toasts whose time ran out meanwhile leave one by one,
+    /// oldest first, rather than all at once.
+    fn unhover(&mut self, cx: &mut Context<Self>) {
+        if !self.hover_open {
+            return;
+        }
+        self.hover_open = false;
+        self.sync_dropdown(cx);
+        let mut expired: Vec<i32> = (self.toasts.iter())
+            .filter(|toast| toast.expired && toast.reveal.visible)
+            .map(|toast| toast.notification.id)
+            .collect();
+        // Ids increase with arrival.
+        expired.sort_unstable();
+        for (index, id) in expired.into_iter().enumerate() {
+            let delay = TOAST_LINGER + TOAST_STAGGER * index as u32;
+            let timer = self.toast_timer(id, delay, cx);
+            if let Some(toast) = (self.toasts.iter_mut()).find(|toast| toast.notification.id == id)
+            {
+                toast.timer = Some(timer);
+            }
+        }
+    }
+
+    /// Whether toasts are drawn: until the dropdown has fully opened beneath them.
+    fn toasts_shown(&self) -> bool {
+        !self.toasts.is_empty() && self.dropdown_progress < 1.
+    }
+
+    /// Whether a toast draws this notification's card, in place of the dropdown's.
+    fn toast_covers(&self, id: i32) -> bool {
+        self.toasts_shown()
+            && (self.toasts.iter()).any(|toast| toast.notification.id == id && toast.reveal.visible)
     }
 
     pub fn peek(&mut self, module: Module, cx: &mut Context<Self>) {
@@ -228,7 +403,10 @@ impl Bar {
 
     /// Whether anything is on screen, including animations.
     fn shown(&self) -> bool {
-        !self.bar.hidden() || !self.peeks.is_empty() || !self.dropdown.hidden()
+        !self.bar.hidden()
+            || !self.peeks.is_empty()
+            || !self.dropdown.hidden()
+            || !self.toasts.is_empty()
     }
 
     pub fn new(
@@ -265,6 +443,15 @@ impl Bar {
             island: Rc::default(),
             surface_height: HEIGHT,
             removals: Vec::new(),
+            swiping: None,
+            list_scroll: UniformListScrollHandle::new(),
+            pinned: false,
+            hover_open: false,
+            section: Rc::default(),
+            toast_area: None,
+            toasts: Vec::new(),
+            toast_rows: Tween::new(0., Instant::now()),
+            list_rows: Tween::new(0., Instant::now()),
         }
     }
 
@@ -376,12 +563,20 @@ impl Bar {
         let peek = (self.peek_progress.iter())
             .find(|(module, _)| *module == Module::Notifications)
             .map(|&(_, progress)| progress);
+        // With the bar hidden, the bell shows while peeked, while its dropdown is open, and for
+        // exactly as long as any toast (so they arrive and leave together).
+        let toasts = (self.toasts.iter())
+            .map(|toast| toast.reveal.progress(Instant::now()))
+            .fold(0., f32::max);
         let progress = if self.bar.hidden() {
-            peek.unwrap_or(0.).max(self.dropdown_progress)
+            peek.unwrap_or(0.).max(self.dropdown_progress).max(toasts)
         } else {
             self.bar_progress
         };
-        let shown = !self.bar.hidden() || peek.is_some() || !self.dropdown.hidden();
+        let shown = !self.bar.hidden()
+            || peek.is_some()
+            || !self.dropdown.hidden()
+            || !self.toasts.is_empty();
         let dropdown = self.dropdown_progress;
 
         let notifications = self.sources.notifications.read(cx);
@@ -412,14 +607,19 @@ impl Bar {
             .flex_shrink_0()
             .when(self.dropdown.visible, |bell| bell.bg(theme::SELECTED));
         let bell = Self::clickable(bell, Module::Notifications, cx);
+        // The controls are positioned over the header, so they never affect the island's width
+        // (which would jump as they appear or disappear). They go as soon as it starts closing.
         let header = div()
+            .relative()
             .flex()
-            .items_center()
-            .justify_between()
+            .justify_end()
             .min_w(px(DROPDOWN_WIDTH * dropdown))
-            .when(dropdown > 0., |header| {
+            .when(dropdown > 0. && self.dropdown.visible, |header| {
                 header.child(
                     div()
+                        .absolute()
+                        .left_0()
+                        .top_0()
                         .flex()
                         .items_center()
                         .gap_1()
@@ -443,7 +643,7 @@ impl Bar {
             })
             .child(bell);
 
-        let rows = self.list_rows(Instant::now(), cx);
+        let rows = self.list_rows.value(Instant::now());
         let island = self.island.clone();
         div()
             .id("notifications-island")
@@ -453,7 +653,9 @@ impl Bar {
             .flex_col()
             .items_end()
             .overflow_hidden()
-            .h(px(crate::bar_module::HEIGHT + list_height(rows) * dropdown))
+            .h(px(
+                crate::bar_module::HEIGHT + (TITLE_HEIGHT + list_height(rows)) * dropdown
+            ))
             .opacity(progress)
             .child(header)
             .when(dropdown > 0., |this| {
@@ -464,7 +666,26 @@ impl Bar {
                         .flex()
                         .justify_end()
                         .overflow_hidden()
-                        .child(self.notification_list(cx)),
+                        .child(
+                            div()
+                                .flex_shrink_0()
+                                .w(px(DROPDOWN_WIDTH))
+                                .flex()
+                                .flex_col()
+                                .child(
+                                    div()
+                                        .flex_shrink_0()
+                                        .h(px(TITLE_HEIGHT))
+                                        .px(px(LIST_PAD + 2.))
+                                        .flex()
+                                        .items_end()
+                                        .text_size(px(15.))
+                                        .font_weight(gpui::FontWeight::MEDIUM)
+                                        .text_color(theme::FOREGROUND)
+                                        .child("Notifications"),
+                                )
+                                .child(self.notification_list(cx)),
+                        ),
                 )
             })
             // Offset visually only, like other peeked modules.
@@ -515,13 +736,45 @@ impl Bar {
             .hover(|button| button.bg(theme::MODULE_HOVER))
             .when(selected, |button| button.bg(theme::SELECTED))
             .child(static_icon(icon, color))
-            .on_click(cx.listener(move |this, _, _, _| {
-                let _ = (this.actions).unbounded_send(ModuleAction::Notifications(action));
+            .on_click(cx.listener(move |this, _, _, cx| match action {
+                NotificationAction::MarkAllRead => this.mark_all_read(cx),
+                action => {
+                    let _ = (this.actions).unbounded_send(ModuleAction::Notifications(action));
+                }
             }))
     }
 
+    /// Every unread notification swipes away from the top, slightly staggered.
+    fn mark_all_read(&mut self, cx: &mut Context<Self>) {
+        let notifications = self.sources.notifications.read(cx);
+        let reappears = notifications.show_read;
+        let visible = notifications.visible();
+        let unread = visible.partition_point(|entry| !entry.is_read());
+        // Only those that could be on screen are animated; the rest just go.
+        let animated: Vec<Notification> = visible[..unread.min(MAX_STAGGERED)].to_vec();
+        let now = Instant::now();
+        for removal in &mut self.removals {
+            removal.index = removal.index.saturating_sub(unread);
+        }
+        // All their gaps sit above whatever is first afterwards, in order.
+        for (index, notification) in animated.into_iter().enumerate() {
+            self.removals.push(Removal {
+                index: 0,
+                notification,
+                started: now + STAGGER * index as u32,
+                reappears,
+                from: 0.,
+                direction: 1.,
+            });
+        }
+        self.hide_toasts(cx);
+        (self.sources.notifications)
+            .update(cx, |notifications, cx| notifications.mark_all_read(cx));
+        cx.notify();
+    }
+
     /// Rows the dropdown is sized for, including gaps still collapsing after removals.
-    fn list_rows(&self, now: Instant, cx: &App) -> f32 {
+    fn list_rows_target(&self, now: Instant, cx: &App) -> f32 {
         let visible = self.sources.notifications.read(cx).visible().len() as f32;
         let collapsing: f32 = (self.removals.iter())
             .filter(|removal| !removal.reappears)
@@ -530,10 +783,97 @@ impl Bar {
         visible + collapsing
     }
 
+    /// The toasts: each card at exactly where the dropdown draws it, on a shared background that
+    /// fades as the dropdown's liquid grows around them. Clicks work as in the dropdown.
+    /// Each toast card's bounds within the toasts' area (see `toast_bounds`), and its progress.
+    fn toast_cards(&self, now: Instant) -> impl Iterator<Item = (&Toast, Bounds<Pixels>, f32)> {
+        self.toasts.iter().map(move |toast| {
+            let progress = toast.reveal.progress(now);
+            let origin = gpui::point(
+                px(TOAST_PAD + TOAST_SLIDE * (1. - progress)),
+                px(TOAST_PAD + toast.row.value(now) * (ROW_HEIGHT + ROW_GAP)),
+            );
+            let size = gpui::size(px(CARD_WIDTH), px(ROW_HEIGHT));
+            (toast, Bounds::new(origin, size), progress)
+        })
+    }
+
+    /// The toasts: each card at exactly where the dropdown draws it. Each is its own pane of
+    /// glass (the liquid's tint, over blur) until the dropdown's liquid grows around it.
+    fn toasts_element(&self, width: Pixels, now: Instant, cx: &mut Context<Self>) -> Stateful<Div> {
+        let bounds = toast_bounds(width, self.toast_rows.value(now));
+        let timestamp = jiff::Timestamp::now();
+        let glass = 1. - self.dropdown_progress;
+        let cards: Vec<_> = (self.toast_cards(now).collect::<Vec<_>>().into_iter())
+            .map(|(toast, card, progress)| {
+                let id = toast.notification.id;
+                div()
+                    .id(("toast", id as usize))
+                    .group("notification")
+                    .absolute()
+                    .left(card.origin.x)
+                    .top(card.origin.y)
+                    .w(card.size.width)
+                    .h(card.size.height)
+                    .opacity(progress)
+                    .cursor_pointer()
+                    .child(
+                        div()
+                            .absolute()
+                            .inset_0()
+                            .rounded(px(8.))
+                            .bg(theme::BACKGROUND)
+                            .opacity(glass),
+                    )
+                    .child(
+                        notification_card(&toast.notification, timestamp, Tick::Space)
+                            .group_hover("notification", |card| card.bg(theme::MODULE_HOVER)),
+                    )
+                    .child(
+                        div()
+                            .id(("toast-mark-read", id as usize))
+                            .group("notification-tick")
+                            .absolute()
+                            .top(px((ROW_HEIGHT - TICK) / 2.))
+                            .right(px(TICK_INSET))
+                            .child(tick().group_hover("notification-tick", |tick| {
+                                tick.bg(theme::MODULE_HOVER)
+                            }))
+                            .on_click(cx.listener(move |this, _, _, cx| {
+                                cx.stop_propagation();
+                                this.hide_toast(id, cx);
+                                this.remove(id, false, cx);
+                            })),
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| this.remove(id, true, cx)))
+            })
+            .collect();
+        div()
+            .id("toasts")
+            .absolute()
+            .left(bounds.origin.x)
+            .top(bounds.origin.y)
+            .w(bounds.size.width)
+            .h(bounds.size.height)
+            .children(cards)
+    }
+
     /// Marks an unread notification read (and optionally acts on it), animating it out. The
     /// change applies before the next frame, so the next row's click targets are already where
     /// this one's were: rapid clicks never miss.
     fn remove(&mut self, id: i32, act: bool, cx: &mut Context<Self>) {
+        self.remove_from(id, act, 0., 1., cx);
+    }
+
+    /// As `remove`, with the card starting `from` pixels across and leaving in `direction`.
+    fn remove_from(
+        &mut self,
+        id: i32,
+        act: bool,
+        from: f32,
+        direction: f32,
+        cx: &mut Context<Self>,
+    ) {
         let notifications = self.sources.notifications.read(cx);
         let visible = notifications.visible();
         let Some(index) = visible.iter().position(|entry| entry.id == id) else {
@@ -553,6 +893,8 @@ impl Bar {
                 notification,
                 started: Instant::now(),
                 reappears,
+                from,
+                direction,
             });
         }
         (self.sources.notifications).update(cx, |notifications, cx| {
@@ -563,8 +905,12 @@ impl Bar {
             }
         });
         if act {
-            // Acting usually focuses the sender, so close the dropdown.
-            let _ = (self.actions).unbounded_send(ModuleAction::Click(Module::Notifications));
+            // Acting usually focuses the sender, so get out of the way.
+            let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
+            let _ = self.actions.unbounded_send(action);
+            self.hover_open = false;
+            self.hide_toasts(cx);
+            self.sync_dropdown(cx);
         }
         cx.notify();
     }
@@ -575,7 +921,7 @@ impl Bar {
         let now = Instant::now();
         let notifications = self.sources.notifications.read(cx);
         let visible = notifications.visible().len();
-        let height = px(list_height(self.list_rows(now, cx)));
+        let height = px(list_height(self.list_rows.value(now)));
         if visible == 0 && self.removals.is_empty() {
             return div()
                 .flex_shrink_0()
@@ -597,7 +943,7 @@ impl Bar {
         let count = (self.removals.iter())
             .map(|removal| removal.index + 1)
             .fold(visible, usize::max);
-        uniform_list(
+        let list = uniform_list(
             "notification-list",
             count,
             cx.processor(|this, range: Range<usize>, _, cx| {
@@ -623,13 +969,42 @@ impl Bar {
                     .collect::<Vec<_>>()
             }),
         )
+        .track_scroll(&self.list_scroll)
         .flex_shrink_0()
         .w(px(DROPDOWN_WIDTH))
         .h(height)
         .px(px(LIST_PAD))
         .pt(px(LIST_PAD - ROW_GAP))
-        .pb(px(LIST_PAD_BOTTOM))
-        .into_any_element()
+        .pb(px(LIST_PAD_BOTTOM));
+        div()
+            .relative()
+            .flex_shrink_0()
+            .child(list)
+            .children(self.scrollbar(f32::from(height)))
+            .into_any_element()
+    }
+
+    /// A thin thumb showing the list's position, if it scrolls. Scrolling re-renders the bar,
+    /// so it follows (from the last layout's offsets).
+    fn scrollbar(&self, height: f32) -> Option<Div> {
+        let scroll = &self.list_scroll.0.borrow().base_handle;
+        let max = f32::from(scroll.max_offset().y);
+        if max < 1. {
+            return None;
+        }
+        let track = height - 2. * SCROLLBAR_INSET;
+        let thumb = (track * height / (height + max)).max(24.);
+        let progress = (-f32::from(scroll.offset().y) / max).clamp(0., 1.);
+        Some(
+            div()
+                .absolute()
+                .right(px(SCROLLBAR_INSET))
+                .top(px(SCROLLBAR_INSET + (track - thumb) * progress))
+                .w(px(3.))
+                .h(px(thumb))
+                .rounded_full()
+                .bg(theme::SCROLLBAR),
+        )
     }
 
     /// A uniform-height slot, with click targets at its real position. Cards are drawn offset
@@ -658,9 +1033,11 @@ impl Bar {
                 notification_card(&removal.notification, timestamp, Tick::Icon)
                     .absolute()
                     .top(px(ROW_GAP + above))
-                    .left(px(DROPDOWN_WIDTH * 0.4 * swipe))
+                    .left(px(
+                        removal.from + removal.direction * DROPDOWN_WIDTH * 0.4 * swipe
+                    ))
                     .w(px(DROPDOWN_WIDTH - 2. * LIST_PAD))
-                    .opacity(1. - swipe)
+                    .opacity((1. - swipe) * swipe_opacity(removal.from))
             })
             .collect::<Vec<_>>();
         let slot = div().h(px(ROW_HEIGHT + ROW_GAP)).w_full().relative();
@@ -673,6 +1050,10 @@ impl Bar {
             .sum();
         let id = notification.id;
         let read = notification.is_read();
+        // Follows a horizontal swipe in progress.
+        let dragged = (self.swiping)
+            .filter(|(swiped, _)| *swiped == id)
+            .map_or(0., |(_, x)| x);
         let card = notification_card(
             &notification,
             timestamp,
@@ -680,11 +1061,14 @@ impl Bar {
         )
         .absolute()
         .top(px(ROW_GAP + offset))
-        .left_0()
-        .right_0()
+        .left(px(dragged))
+        .right(px(-dragged))
+        .when(dragged != 0., |card| card.opacity(swipe_opacity(dragged)))
         .group_hover("notification", |card| card.bg(theme::MODULE_HOVER))
         // Read notifications are greyed out.
-        .when(read, |card| card.opacity(0.55));
+        .when(read, |card| card.opacity(0.55))
+        // The toast draws this card, in the same place, until the dropdown has fully opened.
+        .when(self.toast_covers(id), |card| card.invisible());
         slot.id(("notification", id as usize))
             .group("notification")
             .cursor_pointer()
@@ -713,6 +1097,8 @@ impl Bar {
                             tick()
                                 .relative()
                                 .top(px(offset))
+                                .left(px(dragged))
+                                .when(dragged != 0., |tick| tick.opacity(swipe_opacity(dragged)))
                                 .group_hover("notification-tick", |tick| {
                                     tick.bg(theme::MODULE_HOVER)
                                 }),
@@ -725,11 +1111,61 @@ impl Bar {
                 )
             })
             .children(ghosts)
+            .when(!read, |slot| {
+                slot.on_scroll_wheel(
+                    cx.listener(move |this, event, _, cx| this.swipe(id, event, cx)),
+                )
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.remove(id, true, cx)))
+    }
+
+    /// A horizontal scroll over an unread notification drags it; far enough when the gesture
+    /// ends (or any notch of a horizontal wheel) marks it read, swiping it away that way.
+    /// Vertical scrolls are left to the list.
+    fn swipe(&mut self, id: i32, event: &ScrollWheelEvent, cx: &mut Context<Self>) {
+        let delta = event.delta.pixel_delta(px(ROW_HEIGHT));
+        let (dx, dy) = (f32::from(delta.x), f32::from(delta.y));
+        let active = self.swiping.filter(|(swiped, _)| *swiped == id);
+        if let ScrollDelta::Lines(_) = event.delta {
+            if dx.abs() > dy.abs() {
+                cx.stop_propagation();
+                self.remove_from(id, false, 0., dx.signum(), cx);
+            }
+            return;
+        }
+        let x = match active {
+            Some((_, x)) => x + dx,
+            // Only a mostly-horizontal start is a swipe.
+            None if dx.abs() > dy.abs() && dx != 0. => dx,
+            None => return,
+        };
+        cx.stop_propagation();
+        if event.touch_phase == TouchPhase::Ended {
+            self.swiping = None;
+            if x.abs() >= SWIPE_DISMISS {
+                self.remove_from(id, false, x, x.signum(), cx);
+            }
+        } else {
+            self.swiping = Some((id, x));
+        }
+        cx.notify();
     }
 }
 
+const SCROLLBAR_INSET: f32 = 4.;
+
+/// How far a notification must be swiped to be marked read.
+const SWIPE_DISMISS: f32 = 80.;
+
+/// Swiped cards fade as they move away.
+fn swipe_opacity(x: f32) -> f32 {
+    (1. - x.abs() / DROPDOWN_WIDTH).clamp(0., 1.)
+}
+
 const SWIPE: Duration = Duration::from_millis(120);
+/// Between consecutive rows when marking all read.
+const STAGGER: Duration = Duration::from_millis(30);
+const MAX_STAGGERED: usize = 12;
 const COLLAPSE: Duration = Duration::from_millis(120);
 const TICK: f32 = 28.;
 const TICK_INSET: f32 = 10.;
@@ -742,6 +1178,9 @@ struct Removal {
     started: Instant,
     /// It moves to the read section rather than disappearing.
     reappears: bool,
+    /// Where it starts (if it was being swiped), and which way it leaves.
+    from: f32,
+    direction: f32,
 }
 
 impl Removal {
@@ -787,6 +1226,38 @@ enum Tick {
 }
 
 /// A notification's visuals, without click targets.
+const APP_ICON: f32 = 32.;
+
+/// The sender's icon, or the first letter of its name.
+fn app_icon(notification: &Notification) -> AnyElement {
+    let initial: String = (notification.app_name.chars().next())
+        .map_or_else(String::new, |initial| initial.to_uppercase().collect());
+    let letter = move || {
+        div()
+            .size(px(APP_ICON))
+            .flex_shrink_0()
+            .rounded_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .bg(theme::NOTIFICATION_ACCENT.opacity(0.2))
+            .text_size(px(15.))
+            .font_weight(gpui::FontWeight::MEDIUM)
+            .text_color(theme::NOTIFICATION_ACCENT)
+            .child(initial.clone())
+            .into_any_element()
+    };
+    match &notification.icon {
+        Some(path) => img(PathBuf::from(path))
+            .size(px(APP_ICON))
+            .flex_shrink_0()
+            .object_fit(ObjectFit::Contain)
+            .with_fallback(letter)
+            .into_any_element(),
+        None => letter(),
+    }
+}
+
 fn notification_card(notification: &Notification, now: jiff::Timestamp, tick_: Tick) -> Div {
     // Notification text is plain (no body-markup capability), but may span lines.
     let line = |text: &str| text.replace('\n', " ");
@@ -814,6 +1285,7 @@ fn notification_card(notification: &Notification, now: jiff::Timestamp, tick_: T
             div()
                 .truncate()
                 .text_size(px(14.))
+                .font_weight(gpui::FontWeight::MEDIUM)
                 .text_color(theme::FOREGROUND)
                 .child(line(&notification.summary)),
         )
@@ -833,8 +1305,9 @@ fn notification_card(notification: &Notification, now: jiff::Timestamp, tick_: T
         .rounded(px(8.))
         .flex()
         .items_center()
-        .gap_2()
+        .gap_2p5()
         .bg(theme::CARD)
+        .child(app_icon(notification))
         .child(text)
         .map(|card| match tick_ {
             Tick::None => card,
@@ -891,15 +1364,57 @@ impl Render for Bar {
             .map(|(module, reveal)| (*module, reveal.progress(now)))
             .collect();
         self.bar_progress = self.bar.progress(now);
+        // A fast exit can leave without element hover events, but the window always learns the
+        // pointer left (and redraws), so a hover-opened dropdown can't get stuck open.
+        if self.hover_open && !window.is_window_hovered() {
+            self.unhover(cx);
+        }
         self.dropdown.settle(now);
         self.dropdown_progress = self.dropdown.progress(now);
 
+        // Toasts follow their notification's row in the dropdown, and slide out once it's read
+        // (e.g. elsewhere) or there's no room for it.
+        let reduce_motion = cx.reduce_motion();
+        let visible = self.sources.notifications.read(cx).visible();
+        for toast in &mut self.toasts {
+            toast.reveal.settle(now);
+            let row = (visible.iter())
+                .position(|entry| entry.id == toast.notification.id && !entry.is_read());
+            match row {
+                Some(row) if row < MAX_TOASTS => toast.row.set(row as f32, now),
+                _ if toast.reveal.visible => {
+                    toast.reveal.set(false, reduce_motion, now);
+                    toast.timer = None;
+                }
+                _ => {}
+            }
+        }
+        self.toasts.retain(|toast| !toast.reveal.hidden());
+        let toast_rows = (self.toasts.iter())
+            .filter(|toast| toast.reveal.visible)
+            .map(|toast| toast.row.value(now) + 1.)
+            .fold(0., f32::max);
+        if self.toasts.is_empty() {
+            self.toast_rows.snap(1., now);
+        } else if toast_rows > 0. {
+            self.toast_rows.set(toast_rows, now);
+        }
+        // The dropdown's height eases to fit its rows, except while closed.
+        let list_rows = self.list_rows_target(now, cx);
+        if self.dropdown.hidden() {
+            self.list_rows.snap(list_rows, now);
+        } else {
+            self.list_rows.set(list_rows, now);
+        }
+
         // The surface grows to fit the dropdown while it's shown. Its transparent remainder
         // passes input through, and the reserved space is set separately.
-        let surface_height = if self.dropdown.hidden() {
-            HEIGHT
-        } else {
+        let surface_height = if !self.dropdown.hidden() {
             HEIGHT + MAX_LIST_HEIGHT
+        } else if !self.toasts.is_empty() {
+            TOAST_TOP + MAX_TOASTS as f32 * (ROW_HEIGHT + ROW_GAP) + 2. * TOAST_PAD
+        } else {
+            HEIGHT
         };
         if self.surface_height != surface_height {
             let width = window.viewport_size().width;
@@ -917,6 +1432,10 @@ impl Render for Bar {
         self.removals.retain(|removal| !removal.done(now));
         if self.bar.animating()
             || self.dropdown.animating()
+            || self.toasts.iter().any(|toast| toast.reveal.animating())
+            || self.toasts.iter().any(|toast| toast.row.animating(now))
+            || self.toast_rows.animating(now)
+            || self.list_rows.animating(now)
             || !self.removals.is_empty()
             || self.peeks.iter().any(|(_, reveal)| reveal.animating())
         {
@@ -936,6 +1455,22 @@ impl Render for Bar {
         let input_bar = self.bar.visible;
         let input_island = self.dropdown.visible;
         let island = self.island.clone();
+        let width = window.viewport_size().width;
+        let toast = (self.toasts_shown()).then(|| self.toasts_element(width, now, cx));
+        let toast_bounds = toast
+            .is_some()
+            .then(|| toast_bounds(width, self.toast_rows.value(now)));
+        self.toast_area = toast_bounds;
+        let this = cx.entity();
+        // Blur behind each toast card. Blur can't fade, so it's only there while the card's
+        // glass is mostly opaque; without the glass over it, it would look like a hole.
+        let toast_blur: Vec<Bounds<Pixels>> = match toast_bounds {
+            Some(area) if self.dropdown_progress < 0.5 => (self.toast_cards(now))
+                .filter(|(_, _, progress)| *progress > 0.5)
+                .map(|(_, card, _)| card + area.origin)
+                .collect(),
+            _ => Vec::new(),
+        };
         // Detaching the builder cancels GPUI's pending and visible tooltip state on leave.
         // Its default tooltip hit test otherwise uses the stale last in-window position.
         let tooltips_enabled = window.is_window_hovered() && self.bar.visible;
@@ -1084,7 +1619,17 @@ impl Render for Bar {
         let left = self.section([profile, battery, cpu, memory, disk]);
         let center = self.section([clock]);
         let notifications = self.notifications_island(cx);
-        let right = self.section([caffeine, brightness, volume, notifications]);
+        let section = self.section.clone();
+        let right = self
+            .section([caffeine, brightness, volume, notifications])
+            .child(
+                canvas(
+                    move |bounds, _, _| section.set(Some(bounds)),
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .inset_0(),
+            );
         // Equal-basis sides keep the clock at the display's centre, whatever their contents.
         // Top-aligned, so the dropdown grows downwards.
         let side = || div().flex_1().flex().items_start();
@@ -1122,6 +1667,11 @@ impl Render for Bar {
                 canvas(
                     |_, _, _| {},
                     move |bounds, _, window, _| {
+                        window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
+                            if phase == DispatchPhase::Bubble {
+                                this.update(cx, |bar, cx| bar.pointer_moved(event.position, cx));
+                            }
+                        });
                         let mut input = Vec::with_capacity(2);
                         if input_bar {
                             input.push(Bounds::new(
@@ -1132,6 +1682,7 @@ impl Render for Bar {
                         if input_island && let Some(island) = island.get() {
                             input.push(island.dilate(px(BLOB_PAD_X)));
                         }
+                        input.extend(toast_bounds);
                         window.set_input_region(Some(&input));
                         let outlines: Vec<_> = (liquid.borrow().iter().copied())
                             .flat_map(|body| [blob(body), fillet(body)])
@@ -1141,7 +1692,11 @@ impl Render for Bar {
                             window.paint_path(path, theme::BACKGROUND);
                         }
                         if let Some(blur) = blur.borrow_mut().as_mut() {
-                            blur.set_region(liquid::rows(&outlines));
+                            let mut region = liquid::rows(&outlines);
+                            for card in &toast_blur {
+                                region.extend(rounded_rows(*card, 8.));
+                            }
+                            blur.set_region(region);
                         }
                     },
                 )
@@ -1149,8 +1704,66 @@ impl Render for Bar {
                 .inset_0(),
             )
             .child(content)
+            .children(toast)
+            // Everything, including the toasts outside the content row, uses the bar's font.
+            .font_family("Josefin Sans")
             .into_any_element()
     }
+}
+
+const TOAST_DURATION: Duration = Duration::from_secs(5);
+/// After the dropdown stops being hovered, before the first expired toast leaves, and then
+/// between each.
+const TOAST_LINGER: Duration = Duration::from_millis(400);
+const TOAST_STAGGER: Duration = Duration::from_millis(250);
+/// More toasts than this are still in the dropdown, just not shown below the bar.
+const MAX_TOASTS: usize = 4;
+/// Liquid around the toast's card.
+const TOAST_PAD: f32 = 8.;
+/// It slides in from (and out to) the right by this much.
+const TOAST_SLIDE: f32 = 48.;
+/// Above the dropdown's list, keeping the toast clear of the bar.
+const TITLE_HEIGHT: f32 = 28.;
+/// The dropdown's first card: below the bell, the title, the list's padding and the row's gap.
+const CARD_TOP: f32 = PAD_Y + crate::bar_module::HEIGHT + TITLE_HEIGHT + LIST_PAD;
+const TOAST_TOP: f32 = CARD_TOP - TOAST_PAD;
+const CARD_WIDTH: f32 = DROPDOWN_WIDTH - 2. * LIST_PAD;
+
+/// The toasts' area: around exactly where the dropdown draws its first `rows` cards. The
+/// dropdown is right-aligned at the bar's edge, so this doesn't depend on its layout.
+fn toast_bounds(width: Pixels, rows: f32) -> Bounds<Pixels> {
+    let card_left = f32::from(width) - EDGE_MARGIN - DROPDOWN_WIDTH + LIST_PAD;
+    Bounds::new(
+        gpui::point(px(card_left - TOAST_PAD), px(TOAST_TOP)),
+        gpui::size(
+            px(CARD_WIDTH + 2. * TOAST_PAD),
+            px(rows.max(1.) * (ROW_HEIGHT + ROW_GAP) - ROW_GAP + 2. * TOAST_PAD),
+        ),
+    )
+}
+
+/// A rounded rectangle as 1px rows, for the blur region.
+fn rounded_rows(bounds: Bounds<Pixels>, radius: f32) -> Vec<crate::blur::Rect> {
+    let [x, y, width, height] = [
+        bounds.origin.x,
+        bounds.origin.y,
+        bounds.size.width,
+        bounds.size.height,
+    ]
+    .map(f32::from);
+    (0..height.round() as i32)
+        .map(|row| {
+            let from_edge = (row as f32 + 0.5).min(height - row as f32 - 0.5);
+            let dy = (radius - from_edge).max(0.);
+            let inset = radius - (radius * radius - dy * dy).max(0.).sqrt();
+            (
+                (x + inset).round() as i32,
+                y.round() as i32 + row,
+                (width - 2. * inset).round() as i32,
+                1,
+            )
+        })
+        .collect()
 }
 
 #[cfg(test)]
