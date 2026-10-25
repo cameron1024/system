@@ -22,10 +22,12 @@ pub enum Module {
     Caffeine,
     Brightness,
     Battery,
+    Notifications,
 }
 
 impl Module {
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
+        Self::Notifications,
         Self::Caffeine,
         Self::Clock,
         Self::PowerProfile,
@@ -47,6 +49,7 @@ impl Module {
             Self::Disk => "disk",
             Self::Volume => "volume",
             Self::Caffeine => "caffeine",
+            Self::Notifications => "notifications",
             Self::Brightness => "brightness",
             Self::Battery => "battery",
         }

@@ -20,6 +20,7 @@ use gpui::size;
 
 use crate::bar::Bar;
 use crate::bar::ModuleAction;
+use crate::bar::NotificationAction;
 use crate::bar::{self};
 use crate::bar_module::Module;
 use crate::caffeine::Caffeine;
@@ -30,6 +31,8 @@ use crate::data_source::clock::Clock;
 use crate::data_source::power_profile::PowerProfile;
 use crate::data_source::system::System;
 use crate::data_source::volume::Volume;
+use crate::notifications::Arrived;
+use crate::notifications::Notifications;
 use crate::shortcuts::Command;
 
 /// Shared by every bar, so each source runs once regardless of the number of displays.
@@ -42,12 +45,14 @@ pub struct Sources {
     pub brightness: Entity<Data<Brightness>>,
     pub battery: Entity<Data<Battery>>,
     pub caffeine: Entity<Caffeine>,
+    pub notifications: Entity<Notifications>,
 }
 
 pub struct Shell {
     sources: Sources,
     bars: Vec<WindowHandle<Bar>>,
     visible: bool,
+    dropdown: bool,
     /// One hide deadline per peeked module. Finished timers linger until replaced or cleared,
     /// which bounds this by the number of modules.
     peek_timers: Vec<(Module, Task<()>)>,
@@ -66,13 +71,35 @@ impl Shell {
             brightness: cx.new(|cx| Data::new(brightness, cx)),
             battery: cx.new(|cx| Data::new(Battery, cx)),
             caffeine: cx.new(|_| Caffeine::default()),
+            notifications: cx.new(Notifications::new),
         };
+        cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
+            if !shell.dropdown {
+                shell.peek(Module::Notifications, cx);
+            }
+        })
+        .detach();
         let (actions, mut receiver) = mpsc::unbounded::<ModuleAction>();
         let targets = sources.clone();
         // Apply targets immediately on the UI; Data queues the actual writes in the background.
-        let actions_task = cx.spawn(async move |_, cx| {
+        let actions_task = cx.spawn(async move |this, cx| {
             while let Some(action) = receiver.next().await {
                 match action {
+                    ModuleAction::Click(Module::Notifications) => {
+                        let _ =
+                            this.update(cx, |shell, cx| shell.set_dropdown(!shell.dropdown, cx));
+                    }
+                    ModuleAction::Notifications(action) => {
+                        targets
+                            .notifications
+                            .update(cx, |notifications, cx| match action {
+                                NotificationAction::MarkAllRead => notifications.mark_all_read(cx),
+                                NotificationAction::ToggleShowRead => {
+                                    notifications.toggle_show_read(cx)
+                                }
+                                NotificationAction::LoadMore => notifications.load_more(),
+                            });
+                    }
                     ModuleAction::Click(Module::PowerProfile) => {
                         targets.power.update(cx, |data, cx| data.cycle(cx));
                     }
@@ -109,6 +136,7 @@ impl Shell {
             sources,
             bars: Vec::new(),
             visible: true,
+            dropdown: false,
             peek_timers: Vec::new(),
             actions,
             _actions_task: actions_task,
@@ -133,9 +161,24 @@ impl Shell {
         }
     }
 
-    /// Performs the action, briefly showing its module if the bar is hidden.
+    /// Performs the action, briefly showing its module if the bar is hidden. The notifications
+    /// module shows itself, with its dropdown.
     fn act(&mut self, action: ModuleAction, module: Module, cx: &mut Context<Self>) {
         let _ = self.actions.unbounded_send(action);
+        if module != Module::Notifications {
+            self.peek(module, cx);
+        }
+    }
+
+    fn set_dropdown(&mut self, open: bool, cx: &mut Context<Self>) {
+        self.dropdown = open;
+        for bar in &self.bars {
+            let _ = bar.update(cx, |bar, _, cx| bar.set_dropdown(open, cx));
+        }
+    }
+
+    /// Briefly shows a module if the bar is hidden.
+    fn peek(&mut self, module: Module, cx: &mut Context<Self>) {
         if self.visible {
             return;
         }

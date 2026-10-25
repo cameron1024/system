@@ -7,6 +7,7 @@ mod caffeine;
 mod command;
 mod data_source;
 mod liquid;
+mod notifications;
 mod profile_icon;
 mod reveal;
 mod scaled;

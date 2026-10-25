@@ -99,6 +99,22 @@ pub fn outline(x0: f32, x1: f32, bottom: f32, corners: Corners) -> Option<Outlin
     })
 }
 
+/// Fills the concave corner where a horizontal edge (to the left, at `y`) meets a vertical edge
+/// (below, at `x`), with the same curve as the flares. It overlaps both bodies slightly, so the
+/// union has no seams.
+pub fn fillet(x: f32, y: f32, radius: f32) -> Outline {
+    let r = radius;
+    Outline {
+        start: (x - r, y - 1.),
+        segments: vec![
+            Segment::Line((x - r, y)),
+            Segment::Cubic((x - r + r * K, y), (x, y + r * (1. - K)), (x, y + r)),
+            Segment::Line((x + 1., y + r)),
+            Segment::Line((x + 1., y - 1.)),
+        ],
+    }
+}
+
 /// One fill for all outlines. With the non-zero rule, overlapping shapes (e.g. adjacent peeks)
 /// merge into one body, rather than translucent overlaps painting darker.
 pub fn path(outlines: &[Outline]) -> Option<Path<Pixels>> {

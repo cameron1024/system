@@ -72,6 +72,19 @@ pub const VOLUME_ACCENT: Rgba = palette::BLUE;
 pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
 pub const BRIGHTNESS_ACCENT: Rgba = palette::YELLOW;
 pub const CAFFEINE_ACCENT: Rgba = palette::RED;
+pub const NOTIFICATION_ACCENT: Rgba = palette::PURPLE;
+
+/// A module whose dropdown is open.
+pub const SELECTED: Rgba = Rgba {
+    a: 0.14,
+    ..palette::FG
+};
+
+/// A notification in the dropdown.
+pub const CARD: Rgba = Rgba {
+    a: 0.05,
+    ..palette::FG
+};
 pub const BATTERY_ACCENT: Rgba = palette::AQUA;
 pub const WARNING: Rgba = palette::ORANGE;
 pub const CRITICAL: Rgba = palette::RED;

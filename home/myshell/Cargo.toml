@@ -18,6 +18,10 @@ jiff = { version = "0.2", default-features = false, features = ["std", "tz-syste
 rustix = { version = "1", features = ["fs", "time"] }
 serde_json = "1"
 zbus = "5"
+# Notification history. SQLite is bundled, so the devshell needs no system library.
+diesel = { version = "2", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel_migrations = { version = "2", features = ["sqlite"] }
+libsqlite3-sys = { version = "*", features = ["bundled"] }
 # Shaped blur via ext-background-effect, on GPUI's own Wayland connection (versions match GPUI's).
 raw-window-handle = "0.6"
 wayland-backend = { version = "0.3", features = ["client_system"] }
