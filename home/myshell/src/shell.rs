@@ -22,6 +22,7 @@ use crate::bar::Bar;
 use crate::bar::ModuleAction;
 use crate::bar::{self};
 use crate::bar_module::Module;
+use crate::caffeine::Caffeine;
 use crate::data_source::Data;
 use crate::data_source::battery::Battery;
 use crate::data_source::brightness::Brightness;
@@ -40,13 +41,16 @@ pub struct Sources {
     pub volume: Entity<Data<Volume>>,
     pub brightness: Entity<Data<Brightness>>,
     pub battery: Entity<Data<Battery>>,
+    pub caffeine: Entity<Caffeine>,
 }
 
 pub struct Shell {
     sources: Sources,
     bars: Vec<WindowHandle<Bar>>,
     visible: bool,
-    peek_timer: Option<Task<()>>,
+    /// One hide deadline per peeked module. Finished timers linger until replaced or cleared,
+    /// which bounds this by the number of modules.
+    peek_timers: Vec<(Module, Task<()>)>,
     actions: mpsc::UnboundedSender<ModuleAction>,
     _actions_task: Task<()>,
 }
@@ -61,6 +65,7 @@ impl Shell {
             volume: cx.new(|cx| Data::new(Volume, cx)),
             brightness: cx.new(|cx| Data::new(brightness, cx)),
             battery: cx.new(|cx| Data::new(Battery, cx)),
+            caffeine: cx.new(|_| Caffeine::default()),
         };
         let (actions, mut receiver) = mpsc::unbounded::<ModuleAction>();
         let targets = sources.clone();
@@ -78,6 +83,11 @@ impl Shell {
                         targets
                             .volume
                             .update(cx, |data, cx| data.change_volume(steps, cx));
+                    }
+                    ModuleAction::Click(Module::Caffeine) => {
+                        targets
+                            .caffeine
+                            .update(cx, |caffeine, cx| caffeine.toggle(cx));
                     }
                     ModuleAction::Click(Module::Brightness) => {
                         let changed = brightness_changed.clone();
@@ -99,7 +109,7 @@ impl Shell {
             sources,
             bars: Vec::new(),
             visible: true,
-            peek_timer: None,
+            peek_timers: Vec::new(),
             actions,
             _actions_task: actions_task,
         }
@@ -108,7 +118,7 @@ impl Shell {
     pub fn command(&mut self, command: Command, cx: &mut Context<Self>) {
         match command {
             Command::ToggleBar => {
-                self.peek_timer = None;
+                self.peek_timers.clear();
                 self.visible = !self.visible;
                 for bar in &self.bars {
                     let _ = bar.update(cx, |bar, window, cx| {
@@ -130,19 +140,21 @@ impl Shell {
             return;
         }
         for bar in &self.bars {
-            let _ = bar.update(cx, |bar, window, cx| bar.peek(module, window, cx));
+            let _ = bar.update(cx, |bar, _, cx| bar.peek(module, cx));
         }
-        // Replacing the task cancels the old deadline; only one timer remains active.
-        self.peek_timer = Some(cx.spawn(async move |this, cx| {
+        // Replacing a module's task cancels its old deadline; other peeks keep theirs.
+        self.peek_timers.retain(|(peeked, _)| *peeked != module);
+        let timer = cx.spawn(async move |this, cx| {
             async_io::Timer::after(std::time::Duration::from_secs(3)).await;
             let _ = this.update(cx, |shell, cx| {
                 if !shell.visible {
                     for bar in &shell.bars {
-                        let _ = bar.update(cx, |bar, window, cx| bar.hide_peek(window, cx));
+                        let _ = bar.update(cx, |bar, _, cx| bar.hide_peek(module, cx));
                     }
                 }
             });
-        }));
+        });
+        self.peek_timers.push((module, timer));
     }
 
     pub fn show_bars(&mut self, cx: &mut Context<Self>) {

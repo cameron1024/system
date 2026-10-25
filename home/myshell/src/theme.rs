@@ -46,16 +46,32 @@ pub mod palette {
     pub const STATUSLINE3: Rgba = rgb(0xe67e80);
 }
 
-pub const BACKGROUND: Rgba = palette::BG0;
+/// Darker than the palette's BG_DIM: near-black surfaces read as one liquid with the bezel.
+/// Translucent over the compositor's blur.
+pub const BACKGROUND: Rgba = Rgba {
+    a: 0.65,
+    ..rgb(0x151a1c)
+};
 pub const FOREGROUND: Rgba = palette::FG;
 pub const MUTED: Rgba = palette::GREY1;
 
-pub const MODULE_HOVER: Rgba = palette::BG1;
+/// Between modules within a section.
+pub const SEPARATOR: Rgba = Rgba {
+    a: 0.2,
+    ..palette::FG
+};
+
+/// A translucent tint, so hovered modules stay part of the liquid.
+pub const MODULE_HOVER: Rgba = Rgba {
+    a: 0.08,
+    ..palette::FG
+};
 pub const POWER_ACCENT: Rgba = palette::ORANGE;
 pub const CLOCK_ACCENT: Rgba = palette::GREEN;
 pub const VOLUME_ACCENT: Rgba = palette::BLUE;
 pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
 pub const BRIGHTNESS_ACCENT: Rgba = palette::YELLOW;
+pub const CAFFEINE_ACCENT: Rgba = palette::RED;
 pub const BATTERY_ACCENT: Rgba = palette::AQUA;
 pub const WARNING: Rgba = palette::ORANGE;
 pub const CRITICAL: Rgba = palette::RED;

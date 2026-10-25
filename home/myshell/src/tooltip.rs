@@ -54,7 +54,8 @@ pub fn below_bar<T: Render + 'static>(
             parent: window.window_handle(),
             anchor_rect: Bounds {
                 origin: point(window.mouse_position().x, px(0.)),
-                size: size(px(1.), window.viewport_size().height),
+                // The surface extends below the bar for peek animations; anchor to the bar.
+                size: size(px(1.), px(crate::bar::HEIGHT)),
             },
             anchor: PopupAnchor::BottomLeft,
             gravity: PopupGravity::BottomRight,
@@ -123,6 +124,39 @@ fn measure(element: &mut AnyElement, window: &mut Window, cx: &mut App) -> Size<
     )
 }
 
+/// A tooltip builder showing `label(source)`, kept up to date as the source changes.
+pub fn text_tooltip<S: 'static>(
+    source: &Entity<S>,
+    accent: Rgba,
+    label: fn(&S) -> String,
+) -> impl Fn(&mut Window, &mut App) -> AnyView + 'static {
+    let source = source.clone();
+    move |window, cx| {
+        let source = source.clone();
+        let content = cx.new(|cx| {
+            cx.observe(&source, |_, _, cx| cx.notify()).detach();
+            TextTooltip {
+                source,
+                accent,
+                label,
+            }
+        });
+        below_bar(content, window, cx)
+    }
+}
+
+struct TextTooltip<S> {
+    source: Entity<S>,
+    accent: Rgba,
+    label: fn(&S) -> String,
+}
+
+impl<S: 'static> Render for TextTooltip<S> {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        tooltip((self.label)(self.source.read(cx)), self.accent)
+    }
+}
+
 pub fn tooltip(text: impl Into<SharedString>, accent: Rgba) -> Div {
     let text: SharedString = text.into();
     div()
@@ -133,7 +167,7 @@ pub fn tooltip(text: impl Into<SharedString>, accent: Rgba) -> Div {
         .rounded(px(4.))
         .border_1()
         .border_color(accent)
-        .bg(theme::MODULE_HOVER)
+        .bg(theme::palette::BG0)
         .text_color(theme::FOREGROUND)
         .font_family("Josefin Sans")
         .text_size(px(14.))

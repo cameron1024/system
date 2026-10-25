@@ -29,6 +29,8 @@ impl Brightness {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BrightnessState {
     pub percent: u32,
+    /// The panel the backlight belongs to, e.g. "BOE NE135A1M-NY1".
+    pub display: String,
     device: String,
     max: u32,
 }
@@ -111,14 +113,60 @@ fn read() -> Result<BrightnessState> {
         Ok(std::fs::read_to_string(path.join(name))?.trim().parse()?)
     };
     let (raw, max) = (read("brightness")?, read("max_brightness")?);
+    let display = display_name(&path).unwrap_or_else(|| "Display".into());
     if max == 0 {
         return Err(io::Error::other("backlight max_brightness is 0").into());
     }
     Ok(BrightnessState {
         percent: to_percent(raw, max),
+        display,
         device: device.file_name().to_string_lossy().into_owned(),
         max,
     })
+}
+
+/// From the EDID of the connector the backlight belongs to (`device` links to it on DRM
+/// drivers): the manufacturer's PNP ID and the monitor name descriptor, falling back to the
+/// connector name (e.g. "eDP-1").
+fn display_name(backlight: &std::path::Path) -> Option<String> {
+    let connector = std::fs::canonicalize(backlight.join("device")).ok()?;
+    let fallback = || {
+        let name = connector.file_name()?.to_str()?;
+        // e.g. "card1-eDP-1".
+        Some(
+            name.split_once('-')
+                .map_or(name, |(_, rest)| rest)
+                .to_owned(),
+        )
+    };
+    let Ok(edid) = std::fs::read(connector.join("edid")) else {
+        return fallback();
+    };
+    edid_name(&edid).or_else(fallback)
+}
+
+fn edid_name(edid: &[u8]) -> Option<String> {
+    if edid.len() < 128 {
+        return None;
+    }
+    let id = u16::from_be_bytes([edid[8], edid[9]]);
+    let manufacturer: String = [10, 5, 0]
+        .map(|shift| char::from(b'@' + ((id >> shift) & 0x1f) as u8))
+        .into_iter()
+        .collect();
+    // Four 18-byte descriptors; tag 0xFC is the monitor name, newline-terminated.
+    let name = (54..126).step_by(18).find_map(|start| {
+        let descriptor = &edid[start..start + 18];
+        (descriptor[..3] == [0, 0, 0] && descriptor[3] == 0xfc).then(|| {
+            String::from_utf8_lossy(&descriptor[5..])
+                .split('\n')
+                .next()
+                .unwrap_or_default()
+                .trim()
+                .to_owned()
+        })
+    })?;
+    Some(format!("{manufacturer} {name}"))
 }
 
 fn next_preset(percent: u32) -> u32 {

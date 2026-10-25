@@ -3075,8 +3075,12 @@ dependencies = [
  "gpui",
  "gpui_platform",
  "jiff",
+ "raw-window-handle",
  "rustix",
  "serde_json",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
  "zbus",
 ]
 

@@ -8,10 +8,13 @@ use gpui::Rgba;
 use gpui::Window;
 use gpui::div;
 use gpui::prelude::*;
-use gpui::px;
+use gpui::relative;
+use gpui::rems;
 use gpui::svg;
 
-const SIZE: f32 = 18.;
+/// Icons are 1rem, matching the bar's text size (and scaling with it). Transitions are computed
+/// in these units, then applied as fractions of the slot.
+const SIZE: f32 = 16.;
 const DURATION: Duration = Duration::from_millis(100);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -25,6 +28,7 @@ pub enum Icon {
     Memory,
     Disk,
     Sun,
+    Coffee,
     BatteryEmpty,
     BatteryLow,
     BatteryMedium,
@@ -45,6 +49,7 @@ impl Icon {
             Self::Memory => Some(include_bytes!("../assets/icons/memory-stick.svg")),
             Self::Disk => Some(include_bytes!("../assets/icons/hard-drive.svg")),
             Self::Sun => Some(include_bytes!("../assets/icons/sun.svg")),
+            Self::Coffee => Some(include_bytes!("../assets/icons/coffee.svg")),
             Self::BatteryEmpty => Some(include_bytes!("../assets/icons/battery.svg")),
             Self::BatteryLow => Some(include_bytes!("../assets/icons/battery-low.svg")),
             Self::BatteryMedium => Some(include_bytes!("../assets/icons/battery-medium.svg")),
@@ -59,7 +64,7 @@ impl Icon {
 pub fn static_icon(icon: Icon, color: Rgba) -> impl IntoElement {
     svg()
         .when_some(icon.data(), |svg, data| svg.data(data))
-        .size(px(SIZE))
+        .size(rems(1.))
         .flex_shrink_0()
         .text_color(color)
 }
@@ -166,7 +171,7 @@ impl Render for AnimatedIcon {
             window.request_animation_frame();
         }
         let mut slot = div()
-            .size(px(SIZE))
+            .size(rems(1.))
             .flex_shrink_0()
             .relative()
             .overflow_hidden();
@@ -185,9 +190,9 @@ impl Render for AnimatedIcon {
             slot = slot.child(
                 div()
                     .absolute()
-                    .top(px(y))
+                    .top(relative(y / SIZE))
                     .left_0()
-                    .size(px(SIZE))
+                    .size_full()
                     .flex()
                     .items_center()
                     .justify_center()

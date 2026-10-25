@@ -9,21 +9,29 @@ use gpui::px;
 
 use crate::theme;
 
+pub const HEIGHT: f32 = 30.;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Module {
     Clock,
     PowerProfile,
-    System,
+    Cpu,
+    Memory,
+    Disk,
     Volume,
+    Caffeine,
     Brightness,
     Battery,
 }
 
 impl Module {
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 9] = [
+        Self::Caffeine,
         Self::Clock,
         Self::PowerProfile,
-        Self::System,
+        Self::Cpu,
+        Self::Memory,
+        Self::Disk,
         Self::Volume,
         Self::Brightness,
         Self::Battery,
@@ -34,8 +42,11 @@ impl Module {
         match self {
             Self::Clock => "clock",
             Self::PowerProfile => "power-profile",
-            Self::System => "system",
+            Self::Cpu => "cpu",
+            Self::Memory => "memory",
+            Self::Disk => "disk",
             Self::Volume => "volume",
+            Self::Caffeine => "caffeine",
             Self::Brightness => "brightness",
             Self::Battery => "battery",
         }
@@ -50,15 +61,12 @@ pub fn bar_module(
 ) -> Stateful<Div> {
     div()
         .id(id)
-        .px_2()
-        .h(px(26.))
+        .px_1p5()
+        .h(px(HEIGHT))
         .flex()
         .items_center()
         .rounded(px(4.))
-        .border_1()
-        .border_color(accent)
         .text_color(accent)
-        .bg(theme::BACKGROUND)
         .hover(|style| style.bg(theme::MODULE_HOVER))
         .child(content)
 }

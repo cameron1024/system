@@ -18,6 +18,11 @@ jiff = { version = "0.2", default-features = false, features = ["std", "tz-syste
 rustix = { version = "1", features = ["fs", "time"] }
 serde_json = "1"
 zbus = "5"
+# Shaped blur via ext-background-effect, on GPUI's own Wayland connection (versions match GPUI's).
+raw-window-handle = "0.6"
+wayland-backend = { version = "0.3", features = ["client_system"] }
+wayland-client = "0.31"
+wayland-protocols = { version = "0.32", features = ["client", "staging"] }
 
 # Zed's workspace patches don't propagate to git dependents, but GPUI relies on them.
 [patch.crates-io]

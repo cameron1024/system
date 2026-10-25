@@ -1,4 +1,5 @@
-use std::time::Duration;
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::time::Instant;
 
 use futures::channel::mpsc;
@@ -7,42 +8,90 @@ use gpui::Context;
 use gpui::Div;
 use gpui::Entity;
 use gpui::IntoElement;
+
 use gpui::Render;
 use gpui::Rgba;
 use gpui::ScrollWheelEvent;
 use gpui::Stateful;
 use gpui::Window;
+use gpui::canvas;
 use gpui::div;
 use gpui::prelude::*;
 use gpui::px;
+use gpui::rems;
 
 use crate::animated_icon::Icon;
 use crate::animated_icon::static_icon;
 use crate::bar_module::Module;
 use crate::bar_module::bar_module;
 use crate::battery_indicator::BatteryIndicator;
+use crate::blur::Blur;
+use crate::data_source::Data;
+use crate::data_source::DataSource;
+use crate::liquid;
 use crate::profile_icon::ProfileIcon;
+use crate::reveal::Reveal;
+use crate::scaled::scaled;
 use crate::shell::Sources;
 use crate::theme;
+use crate::tooltip::text_tooltip;
+
+type TooltipBuilder = Box<dyn Fn(&mut Window, &mut gpui::App) -> gpui::AnyView>;
 use crate::volume_button::VolumeButton;
 
-pub const HEIGHT: f32 = 32.;
-const SLIDE_DURATION: Duration = Duration::from_millis(100);
+pub const HEIGHT: f32 = 36.;
+/// Space between a section's (or peeked module's) edge and the liquid around it at rest.
+const BLOB_PAD_X: f32 = 12.;
+/// Keeps the outer sections' flares on screen at rest.
+const EDGE_MARGIN: f32 = BLOB_PAD_X + liquid::FLARE + 2.;
+/// A revealing body starts at this fraction of its width, and widens as it drops.
+const START_WIDTH: f32 = 0.4;
+/// Content scales in from this size as it fades in.
+const START_SCALE: f32 = 0.9;
 
-struct Slide {
-    started: Instant,
-    from: f32,
-    to: f32,
+/// A body of liquid behind some content, `progress` of the way through being revealed.
+#[derive(Clone, Copy)]
+struct Body {
+    left: f32,
+    right: f32,
+    progress: f32,
 }
 
-impl Slide {
-    fn progress(&self, now: Instant) -> f32 {
-        let t =
-            (now.duration_since(self.started).as_secs_f32() / SLIDE_DURATION.as_secs_f32()).min(1.);
-        // Exponential ease-out: sharp initial movement, then a short settling tail.
-        let eased = if t == 1. { 1. } else { 1. - (-10. * t).exp2() };
-        self.from + (self.to - self.from) * eased
-    }
+/// While revealing, a body starts narrow and bump-shaped (each side's flare and rounded bottom
+/// are equal quarter-ellipses, approximating a cosine), then widens and morphs into its resting
+/// shape as it drops.
+fn blob(body: Body) -> Option<liquid::Outline> {
+    let progress = body.progress.clamp(0., 1.);
+    let bottom = HEIGHT * progress;
+    let centre = (body.left + body.right) / 2.;
+    let rest_half = (body.right - body.left) / 2. + BLOB_PAD_X;
+    let half = rest_half * (START_WIDTH + (1. - START_WIDTH) * progress);
+    // From the bump (at 0) to the resting shape (at 1).
+    let morph = |bump: f32, rest: f32| bump + (rest - bump) * progress;
+    let flare_x = morph(half, liquid::FLARE);
+    let flare_y = morph(bottom / 2., liquid::FLARE.min(bottom / 2.));
+    let radius_y = bottom / 2.;
+    // A cosine's steepest run per unit of drop is 2 * width / (pi * height). Easing it to
+    // vertical as the body settles gives the resting shape's straight sides.
+    let slope = 2. * (flare_x + half) / (std::f32::consts::PI * bottom) * (1. - progress);
+    let inset = slope * (bottom - radius_y - flare_y);
+    liquid::outline(
+        centre - half,
+        centre + half,
+        bottom,
+        liquid::Corners {
+            flare_x,
+            flare_y,
+            radius_x: morph(half, HEIGHT / 2.).min(half - inset).max(0.),
+            radius_y,
+            slope,
+        },
+    )
+}
+
+/// How far the content row is slid up out of view.
+fn slide_offset(progress: f32) -> f32 {
+    -HEIGHT * (1. - progress)
 }
 
 pub struct Bar {
@@ -52,9 +101,17 @@ pub struct Bar {
     battery: Entity<BatteryIndicator>,
     actions: mpsc::UnboundedSender<ModuleAction>,
     scroll_remainder: f32,
-    visible: bool,
-    peek_module: Option<Module>,
-    slide: Option<Slide>,
+    bar: Reveal,
+    /// Modules shown on their own while the bar is hidden, each with its own animation.
+    peeks: Vec<(Module, Reveal)>,
+    /// The bar's and each peek's progress for the frame being rendered.
+    bar_progress: f32,
+    peek_progress: Vec<(Module, f32)>,
+    /// Written by each section (or peeked module) during prepaint, then read when painting
+    /// the liquid behind them.
+    liquid: Rc<RefCell<Vec<Body>>>,
+    /// Blur behind the liquid, if the compositor supports it. Created on the first frame.
+    blur: Option<Rc<RefCell<Option<Blur>>>>,
     reserved_space: i32,
 }
 
@@ -65,52 +122,43 @@ pub enum ModuleAction {
 
 impl Bar {
     pub fn set_visible(&mut self, visible: bool, window: &mut Window, cx: &mut Context<Self>) {
-        if self.peek_module.take().is_some() {
-            cx.notify();
+        // The full bar includes every module, so it replaces any peeks.
+        self.peeks.clear();
+        let (reduce_motion, now) = (cx.reduce_motion(), Instant::now());
+        if self.bar.set(visible, reduce_motion, now) {
+            self.scroll_remainder = 0.;
+            // Until the next frame, neither stale nor newly revealed content accepts clicks.
+            window.set_input_region(Some(&[]));
         }
-        self.animate_visibility(visible, window, cx);
-    }
-
-    pub fn peek(&mut self, module: Module, window: &mut Window, cx: &mut Context<Self>) {
-        if self.peek_module != Some(module) {
-            self.peek_module = Some(module);
-            cx.notify();
-        }
-        self.animate_visibility(true, window, cx);
-    }
-
-    pub fn hide_peek(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.peek_module.is_some() {
-            self.animate_visibility(false, window, cx);
-        }
-    }
-
-    fn animate_visibility(&mut self, visible: bool, window: &mut Window, cx: &mut Context<Self>) {
-        if self.visible == visible {
-            return;
-        }
-        let now = Instant::now();
-        let from = self.progress(now);
-        self.visible = visible;
-        self.slide = (!cx.reduce_motion()).then_some(Slide {
-            started: now,
-            from,
-            to: if visible { 1. } else { 0. },
-        });
-        self.scroll_remainder = 0.;
-        // Until the next frame, neither stale nor newly revealed content accepts clicks.
-        window.set_input_region(Some(&[]));
-
-        // Keep the surface and drawable full-sized: visibility never reconfigures the GPU.
         cx.notify();
     }
 
-    fn progress(&self, now: Instant) -> f32 {
-        self.slide
-            .as_ref()
-            .map_or(if self.visible { 1. } else { 0. }, |slide| {
-                slide.progress(now)
-            })
+    pub fn peek(&mut self, module: Module, cx: &mut Context<Self>) {
+        let (reduce_motion, now) = (cx.reduce_motion(), Instant::now());
+        match self.peeks.iter_mut().find(|(peeked, _)| *peeked == module) {
+            Some((_, reveal)) => {
+                reveal.set(true, reduce_motion, now);
+            }
+            None => {
+                let mut reveal = Reveal::new(false, now);
+                reveal.set(true, reduce_motion, now);
+                self.peeks.push((module, reveal));
+            }
+        }
+        cx.notify();
+    }
+
+    pub fn hide_peek(&mut self, module: Module, cx: &mut Context<Self>) {
+        let reduce_motion = cx.reduce_motion();
+        if let Some((_, reveal)) = self.peeks.iter_mut().find(|(peeked, _)| *peeked == module) {
+            reveal.set(false, reduce_motion, Instant::now());
+            cx.notify();
+        }
+    }
+
+    /// Whether anything is on screen, including animations.
+    fn shown(&self) -> bool {
+        !self.bar.hidden() || !self.peeks.is_empty()
     }
 
     pub fn new(
@@ -120,8 +168,9 @@ impl Bar {
     ) -> Self {
         // Modules without their own view are rendered inline from these sources.
         redraw_on(&sources.clock, cx);
-        redraw_on(&sources.system, cx);
+        redraw_on(&sources.system, cx); // CPU, memory and disk
         redraw_on(&sources.brightness, cx);
+        redraw_on(&sources.caffeine, cx);
         let power = sources.power.clone();
         let volume = sources.volume.clone();
         let battery = sources.battery.clone();
@@ -133,21 +182,85 @@ impl Bar {
             battery: cx.new(|cx| BatteryIndicator::new(battery, cx)),
             actions,
             scroll_remainder: 0.,
-            visible: true,
-            peek_module: None,
-            slide: None,
+            bar: Reveal::new(true, Instant::now()),
+            peeks: Vec::new(),
+            bar_progress: 1.,
+            peek_progress: Vec::new(),
+            liquid: Rc::default(),
+            blur: None,
             reserved_space: HEIGHT as i32,
         }
     }
 
-    /// While peeking, other modules keep their layout space so the peeked one doesn't move.
+    /// Content fades and scales in as it's revealed. While peeking, other modules keep their
+    /// layout space so the peeked one doesn't move.
     fn module(&self, module: Module, content: impl IntoElement, accent: Rgba) -> Stateful<Div> {
-        bar_module(module.name(), content, accent)
+        let peeked = (self.peek_progress.iter()).find(|(peeked, _)| *peeked == module);
+        let progress = match peeked {
+            _ if !self.bar.hidden() => self.bar_progress,
+            Some(&(_, progress)) => progress,
+            None => 0.,
+        };
+        let scale = START_SCALE + (1. - START_SCALE) * progress;
+        let element = bar_module(module.name(), scaled(scale, content), accent)
             .flex_shrink_0()
-            .when(
-                self.peek_module.is_some_and(|peek| peek != module),
-                |element| element.invisible(),
-            )
+            .opacity(progress);
+        match peeked {
+            _ if !self.bar.hidden() => element,
+            // Offset visually only, so neighbours never move.
+            Some(&(_, progress)) => element
+                .relative()
+                .top(px(slide_offset(progress)))
+                .child(self.liquid_anchor(progress)),
+            None => element.invisible(),
+        }
+    }
+
+    /// A group of modules with separators between them, sharing one body of liquid unless
+    /// modules are peeking.
+    fn section<const N: usize>(&self, modules: [Stateful<Div>; N]) -> Div {
+        let peeking = self.bar.hidden();
+        let mut section = div()
+            .flex()
+            .items_center()
+            .gap_1()
+            .when(!peeking, |section| {
+                section.child(self.liquid_anchor(self.bar_progress))
+            });
+        for (index, module) in modules.into_iter().enumerate() {
+            if index > 0 {
+                // Kept in layout while peeking, so peeked modules don't move.
+                section = section.child(
+                    div()
+                        .w(px(1.))
+                        .h(px(14.))
+                        .flex_shrink_0()
+                        .bg(theme::SEPARATOR)
+                        .opacity(self.bar_progress)
+                        .when(peeking, |separator| separator.invisible()),
+                );
+            }
+            section = section.child(module);
+        }
+        section
+    }
+
+    /// Records its parent's horizontal bounds, so a body `progress` of the way through being
+    /// revealed can be painted behind it.
+    fn liquid_anchor(&self, progress: f32) -> impl IntoElement {
+        let liquid = self.liquid.clone();
+        canvas(
+            move |bounds, _, _| {
+                liquid.borrow_mut().push(Body {
+                    left: f32::from(bounds.left()),
+                    right: f32::from(bounds.right()),
+                    progress,
+                })
+            },
+            |_, _, _, _| {},
+        )
+        .absolute()
+        .inset_0()
     }
 
     fn clickable(element: Stateful<Div>, module: Module, cx: &mut Context<Self>) -> Stateful<Div> {
@@ -176,7 +289,7 @@ impl Bar {
 
 fn redraw_on<T: 'static>(entity: &Entity<T>, cx: &mut Context<Bar>) {
     cx.observe(entity, |this, _, cx| {
-        if this.visible {
+        if this.shown() {
             cx.notify();
         }
     })
@@ -196,46 +309,59 @@ fn labelled(icon: Icon, color: Rgba, label: String) -> Div {
 impl Render for Bar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let now = Instant::now();
-        if cx.reduce_motion()
-            || self
-                .slide
-                .as_ref()
-                .is_some_and(|slide| now.duration_since(slide.started) >= SLIDE_DURATION)
-        {
-            self.slide = None;
+        self.bar.settle(now);
+        for (_, reveal) in &mut self.peeks {
+            reveal.settle(now);
         }
-        let progress = self.progress(now);
-        // Layer-shell exclusive zones are integer logical pixels. Avoid redundant commits
-        // during the easing tail; the surface and GPU drawable remain full-sized.
-        let reserved_space = if self.peek_module.is_some() {
-            0
-        } else {
-            (HEIGHT * progress).round() as i32
-        };
+        self.peeks.retain(|(_, reveal)| !reveal.hidden());
+        self.peek_progress = (self.peeks.iter())
+            .map(|(module, reveal)| (*module, reveal.progress(now)))
+            .collect();
+        self.bar_progress = self.bar.progress(now);
+
+        // Layer-shell exclusive zones are whole logical pixels, so this only commits when the
+        // rounded height changes.
+        let reserved_space = (HEIGHT * self.bar_progress).round() as i32;
         if self.reserved_space != reserved_space {
             window.set_exclusive_zone(px(reserved_space as f32));
             self.reserved_space = reserved_space;
         }
         let input = gpui::Bounds {
             origin: gpui::point(px(0.), px(0.)),
-            size: gpui::size(window.viewport_size().width, px(HEIGHT * progress)),
+            size: gpui::size(window.viewport_size().width, px(HEIGHT)),
         };
-        window.set_input_region(Some(if self.visible && self.peek_module.is_none() {
+        window.set_input_region(Some(if self.bar.visible {
             std::slice::from_ref(&input)
         } else {
             &[]
         }));
-        if self.slide.is_some() {
+        if self.bar.animating() || self.peeks.iter().any(|(_, reveal)| reveal.animating()) {
             window.request_animation_frame();
-        } else if !self.visible {
+        }
+        let blur = (self.blur)
+            .get_or_insert_with(|| Rc::new(RefCell::new(Blur::new(window))))
+            .clone();
+        if !self.shown() {
+            if let Some(blur) = blur.borrow_mut().as_mut() {
+                blur.set_region(Vec::new());
+            }
             return div().size_full().into_any_element();
         }
         // Detaching the builder cancels GPUI's pending and visible tooltip state on leave.
         // Its default tooltip hit test otherwise uses the stale last in-window position.
-        let tooltips_enabled =
-            window.is_window_hovered() && self.visible && self.peek_module.is_none();
+        let tooltips_enabled = window.is_window_hovered() && self.bar.visible;
         let sources = &self.sources;
-        let clock = (sources.clock.read(cx).state.target.clone()).unwrap_or_else(|| "--:--".into());
+        let clock = (sources.clock.read(cx).state.target.as_ref())
+            .map_or_else(|| "--:--".into(), |clock| clock.time.clone());
+        let tooltip = |element: Stateful<Div>, tooltip: TooltipBuilder| {
+            element.when(tooltips_enabled, |element| {
+                element.hoverable_tooltip(tooltip)
+            })
+        };
+        // Labels for tooltips, from each source's latest value.
+        fn label<S: DataSource>(data: &Data<S>, label: impl Fn(&S::Value) -> String) -> String {
+            data.state.target.as_ref().map_or_else(|| "…".into(), label)
+        }
         // Coloured by usage; the disk shows free space but is coloured by used space.
         let [cpu, memory, disk] = sources.system.read(cx).state.target.as_ref().map_or_else(
             || ["--%", "--%", "--"].map(|label| (label.to_owned(), theme::SYSTEM_ACCENT)),
@@ -257,21 +383,6 @@ impl Render for Bar {
                 || "--%".into(),
                 |brightness| format!("{}%", brightness.percent),
             );
-        let separator = || {
-            div()
-                .w(px(1.))
-                .h(px(14.))
-                .bg(theme::SYSTEM_ACCENT.opacity(0.35))
-        };
-        let system = div()
-            .flex()
-            .items_center()
-            .gap_2()
-            .child(labelled(Icon::Cpu, cpu.1, cpu.0))
-            .child(separator())
-            .child(labelled(Icon::Memory, memory.1, memory.0))
-            .child(separator())
-            .child(labelled(Icon::Disk, disk.1, disk.0));
 
         let profile = self
             .module(
@@ -298,51 +409,140 @@ impl Render for Bar {
                     move |window, cx| VolumeButton::tooltip(&volume, window, cx)
                 })
             });
-        let system = self.module(Module::System, system, theme::SYSTEM_ACCENT);
-        let clock = self.module(Module::Clock, clock, theme::CLOCK_ACCENT);
-        let brightness = self.module(
-            Module::Brightness,
-            labelled(Icon::Sun, theme::BRIGHTNESS_ACCENT, brightness),
-            theme::BRIGHTNESS_ACCENT,
+        let [cpu, memory, disk] = [
+            (Module::Cpu, Icon::Cpu, cpu),
+            (Module::Memory, Icon::Memory, memory),
+            (Module::Disk, Icon::Disk, disk),
+        ]
+        .map(|(module, icon, (label, color))| {
+            self.module(module, labelled(icon, color, label), color)
+        });
+        let cpu = tooltip(
+            cpu,
+            Box::new(text_tooltip(
+                &sources.system,
+                theme::SYSTEM_ACCENT,
+                |data| label(data, |stats| stats.cpu_temperature_label()),
+            )),
         );
-        let battery = self.module(Module::Battery, self.battery.clone(), theme::BATTERY_ACCENT);
+        let memory = tooltip(
+            memory,
+            Box::new(text_tooltip(
+                &sources.system,
+                theme::SYSTEM_ACCENT,
+                |data| label(data, |stats| stats.memory_label()),
+            )),
+        );
+        let clock = tooltip(
+            self.module(Module::Clock, clock, theme::CLOCK_ACCENT),
+            Box::new(text_tooltip(&sources.clock, theme::CLOCK_ACCENT, |data| {
+                label(data, |clock| clock.date.clone())
+            })),
+        );
+        let brightness = tooltip(
+            self.module(
+                Module::Brightness,
+                labelled(Icon::Sun, theme::BRIGHTNESS_ACCENT, brightness),
+                theme::BRIGHTNESS_ACCENT,
+            ),
+            Box::new(text_tooltip(
+                &sources.brightness,
+                theme::BRIGHTNESS_ACCENT,
+                |data| label(data, |brightness| brightness.display.clone()),
+            )),
+        );
+        let battery = tooltip(
+            self.module(Module::Battery, self.battery.clone(), theme::BATTERY_ACCENT),
+            Box::new(text_tooltip(
+                &sources.battery,
+                theme::BATTERY_ACCENT,
+                |data| label(data, |battery| battery.time_label()),
+            )),
+        );
 
         let profile = Self::clickable(profile, Module::PowerProfile, cx);
         let volume = Self::clickable(volume, Module::Volume, cx);
         let volume = Self::adjustable(volume, Module::Volume, cx);
+        // Muted while off, so it reads as a toggle.
+        let caffeine_color = if sources.caffeine.read(cx).active {
+            theme::CAFFEINE_ACCENT
+        } else {
+            theme::MUTED
+        };
+        let caffeine = self.module(
+            Module::Caffeine,
+            static_icon(Icon::Coffee, caffeine_color),
+            caffeine_color,
+        );
+        let caffeine = tooltip(
+            caffeine,
+            Box::new(text_tooltip(
+                &sources.caffeine,
+                theme::CAFFEINE_ACCENT,
+                |caffeine| {
+                    if caffeine.active {
+                        "Caffeine enabled".into()
+                    } else {
+                        "Caffeine disabled".into()
+                    }
+                },
+            )),
+        );
+        let caffeine = Self::clickable(caffeine, Module::Caffeine, cx);
         let brightness = Self::clickable(brightness, Module::Brightness, cx);
         let brightness = Self::adjustable(brightness, Module::Brightness, cx);
 
+        let left = self.section([profile, battery, cpu, memory, disk]);
+        let center = self.section([clock]);
+        let right = self.section([caffeine, brightness, volume]);
         // Equal-basis sides keep the clock at the display's centre, whatever their contents.
-        let side = || div().flex_1().flex().items_center().gap_2();
+        let side = || div().flex_1().flex().items_center();
+        // While peeking, the row stays put and each peeked module is offset on its own.
+        let offset = if self.bar.hidden() {
+            0.
+        } else {
+            slide_offset(self.bar_progress)
+        };
         let content = div()
             .absolute()
-            .top(px(-HEIGHT * (1. - progress)))
+            .top(px(offset))
             .w_full()
             .h(px(HEIGHT))
             .flex()
             .items_center()
             .gap_2()
-            .px_3()
+            .px(px(EDGE_MARGIN))
             .text_color(theme::FOREGROUND)
             .font_family("Josefin Sans")
-            .text_size(px(14.))
-            .when(self.peek_module.is_none(), |content| {
-                content.bg(theme::BACKGROUND)
-            })
-            .child(side().child(profile).child(system))
-            .child(clock)
-            .child(
-                side()
-                    .justify_end()
-                    .child(brightness)
-                    .child(battery)
-                    .child(volume),
-            );
+            // Rem-based, so `scaled` can scale it.
+            .text_size(rems(1.))
+            .child(side().child(left))
+            .child(center)
+            .child(side().justify_end().child(right));
+        self.liquid.borrow_mut().clear();
+        let liquid = self.liquid.clone();
         div()
             .size_full()
             .relative()
             .overflow_hidden()
+            // Painted first, so it sits behind the content whose bounds it follows.
+            .child(
+                canvas(
+                    |_, _, _| {},
+                    move |_, _, window, _| {
+                        let outlines: Vec<_> =
+                            liquid.borrow().iter().copied().filter_map(blob).collect();
+                        if let Some(path) = liquid::path(&outlines) {
+                            window.paint_path(path, theme::BACKGROUND);
+                        }
+                        if let Some(blur) = blur.borrow_mut().as_mut() {
+                            blur.set_region(liquid::rows(&outlines));
+                        }
+                    },
+                )
+                .absolute()
+                .inset_0(),
+            )
             .child(content)
             .into_any_element()
     }
@@ -353,26 +553,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn slide_timing_and_reversal_are_continuous() {
-        let start = Instant::now();
-        let slide = Slide {
-            started: start,
-            from: 0.,
-            to: 1.,
-        };
-        assert_eq!(slide.progress(start), 0.);
-        assert_eq!(slide.progress(start + SLIDE_DURATION / 2), 0.96875);
-        assert_eq!(slide.progress(start + SLIDE_DURATION), 1.);
-        assert_eq!(slide.progress(start + SLIDE_DURATION * 2), 1.);
-
-        let reversed_at = start + Duration::from_millis(100);
-        let from = slide.progress(reversed_at);
-        let reverse = Slide {
-            started: reversed_at,
-            from,
-            to: 0.,
-        };
-        assert_eq!(reverse.progress(reversed_at), from);
-        assert_eq!(reverse.progress(reversed_at + SLIDE_DURATION), 0.);
+    fn liquid_has_no_sharp_corners_at_any_progress() {
+        let mut failures = Vec::new();
+        for step in 0..=200 {
+            let progress = step as f32 / 200.;
+            // Below 6px tall, every curve is a pixel or two across, so even a correct
+            // semicircle turns more than the threshold within the 2px window.
+            if HEIGHT * progress < 6. {
+                continue;
+            }
+            for width in [20., 400.] {
+                let body = Body {
+                    left: 100.,
+                    right: 100. + width,
+                    progress,
+                };
+                let Some(outline) = blob(body) else {
+                    continue;
+                };
+                let corners = liquid::tests::sharp_corners(&outline, 2., 60.);
+                if let Some(worst) = corners.iter().max_by(|a, b| a.0.total_cmp(&b.0)) {
+                    failures.push(format!(
+                        "width {width}, progress {progress:.3}: {:.0}° at ({:.1}, {:.1})",
+                        worst.0, worst.1.0, worst.1.1
+                    ));
+                }
+            }
+        }
+        assert!(failures.is_empty(), "{}", failures.join("\n"));
     }
 }

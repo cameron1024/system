@@ -19,10 +19,37 @@ use super::Result;
 
 pub struct Clock;
 
-impl DataSource for Clock {
-    type Value = String;
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ClockState {
+    /// e.g. "09:41".
+    pub time: String,
+    /// e.g. "Monday 1st Jan 2025".
+    pub date: String,
+}
 
-    fn stream(self) -> impl Stream<Item = Result<String>> + Send + 'static {
+fn format(now: &jiff::Zoned) -> ClockState {
+    let day = now.day();
+    let suffix = match (day % 10, day % 100) {
+        (_, 11..=13) => "th",
+        (1, _) => "st",
+        (2, _) => "nd",
+        (3, _) => "rd",
+        _ => "th",
+    };
+    ClockState {
+        time: now.strftime("%H:%M").to_string(),
+        date: format!(
+            "{} {day}{suffix} {}",
+            now.strftime("%A"),
+            now.strftime("%b %Y")
+        ),
+    }
+}
+
+impl DataSource for Clock {
+    type Value = ClockState;
+
+    fn stream(self) -> impl Stream<Item = Result<ClockState>> + Send + 'static {
         async_stream::try_stream! {
             let fd = Async::new(timerfd_create(
                 TimerfdClockId::Realtime,
@@ -47,7 +74,7 @@ impl DataSource for Clock {
                     Err(Errno::CANCELED) => continue,
                     Err(error) => Err(error)?,
                 }
-                yield jiff::Zoned::now().strftime("%H:%M").to_string();
+                yield format(&jiff::Zoned::now());
 
                 let mut buf = [0; 8];
                 match fd.read_with(|fd| rustix::io::read(fd, &mut buf).map_err(Into::into)).await {
