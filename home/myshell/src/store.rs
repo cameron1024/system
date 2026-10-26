@@ -1,5 +1,5 @@
-//! Notification history in SQLite. Every call is a short indexed query; callers keep them off
-//! the UI thread.
+//! Notification history and persisted values in SQLite. Every call is a short indexed query;
+//! callers keep them off the UI thread, except for reads at startup.
 
 use std::cmp::Reverse;
 use std::path::PathBuf;
@@ -13,8 +13,8 @@ use diesel_migrations::embed_migrations;
 
 use crate::data_source::Result;
 
-// History is disposable, so there is only ever one migration: edit it in place, rather than adding
-// more. A database with any other schema is deleted and recreated.
+// History is disposable, so there is only ever one migration: edit it in place (bumping its
+// version), rather than adding more. A database with any other schema is deleted and recreated.
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 diesel::table! {
@@ -28,6 +28,13 @@ diesel::table! {
         received_at -> BigInt,
         read_at -> Nullable<BigInt>,
         icon -> Nullable<Text>,
+    }
+}
+
+diesel::table! {
+    persisted (key) {
+        key -> Text,
+        value -> Text,
     }
 }
 
@@ -203,6 +210,27 @@ impl Store {
     pub fn mark_all_read(&self, at: i64) -> Result<()> {
         diesel::update(notifications::table.filter(notifications::read_at.is_null()))
             .set(notifications::read_at.eq(at))
+            .execute(&mut *self.connection())?;
+        Ok(())
+    }
+
+    pub fn get(&self, key: &str) -> Result<Option<serde_json::Value>> {
+        let value: Option<String> = persisted::table
+            .find(key)
+            .select(persisted::value)
+            .first(&mut *self.connection())
+            .optional()?;
+        Ok(value
+            .map(|value| serde_json::from_str(&value))
+            .transpose()?)
+    }
+
+    pub fn set(&self, key: &str, value: &serde_json::Value) -> Result<()> {
+        diesel::replace_into(persisted::table)
+            .values((
+                persisted::key.eq(key),
+                persisted::value.eq(value.to_string()),
+            ))
             .execute(&mut *self.connection())?;
         Ok(())
     }

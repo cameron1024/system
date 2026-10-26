@@ -9,6 +9,7 @@ pub mod system;
 pub mod volume;
 
 use std::future::Future;
+use std::sync::Arc;
 
 use futures::SinkExt;
 use futures::Stream;
@@ -19,11 +20,21 @@ use gpui::Task;
 use zbus::fdo::PropertiesProxy;
 use zbus::proxy::CacheProperties;
 
+use crate::store::Store;
+
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait DataSource: Send + 'static {
     type Value: Clone + PartialEq + Send + 'static;
+
+    /// Caches availability under this key, so it's known immediately at the next startup.
+    const PERSISTENCE_KEY: Option<&str> = None;
+
+    /// Checked once at startup, before streaming. An unavailable source's module is hidden.
+    fn is_available() -> impl Future<Output = bool> + Send {
+        async { true }
+    }
 
     /// Emit the initial value, then updates. Errors may be recoverable; keep reading until EOF.
     /// Dropping the stream releases its resources.
@@ -164,29 +175,55 @@ impl<T: Clone + PartialEq> State<T> {
 pub struct Data<S: DataSource> {
     pub state: State<S::Value>,
     pub error: Option<String>,
+    /// Until checked: the persisted availability, if any, else true.
+    pub available: bool,
     _task: Task<()>,
     write_task: Option<Task<()>>,
 }
 
 impl<S: DataSource> Data<S> {
-    pub fn new(source: S, cx: &mut Context<Self>) -> Self {
-        // Bounded delivery provides backpressure if the UI can't keep up.
-        let (mut sender, mut updates) = mpsc::channel(1);
-        let producer = cx.background_executor().spawn(async move {
-            let stream = source.stream();
-            futures::pin_mut!(stream);
-            while let Some(update) = stream.next().await {
-                if let Err(error) = &update {
-                    eprintln!("{}: {error}", std::any::type_name::<S>());
-                }
-                if sender.send(update).await.is_err() {
-                    break;
-                }
-            }
-        });
+    pub fn new(source: S, store: Option<Arc<Store>>, cx: &mut Context<Self>) -> Self {
+        let persisted = (S::PERSISTENCE_KEY.zip(store.as_ref()))
+            .and_then(|(key, store)| store.get(key).ok().flatten())
+            .and_then(|value| value.as_bool());
+        let executor = cx.background_executor().clone();
         let task = cx.spawn(async move |this, cx| {
+            let available = executor
+                .spawn(async move {
+                    let available = S::is_available().await;
+                    if let Some((key, store)) = S::PERSISTENCE_KEY.zip(store)
+                        && persisted != Some(available)
+                        && let Err(error) = store.set(key, &available.into())
+                    {
+                        eprintln!("persisting {key}: {error}");
+                    }
+                    available
+                })
+                .await;
+            let updated = this.update(cx, |this, cx| {
+                if this.available != available {
+                    this.available = available;
+                    cx.notify();
+                }
+            });
+            if updated.is_err() || !available {
+                return;
+            }
+            // Bounded delivery provides backpressure if the UI can't keep up.
+            let (mut sender, mut updates) = mpsc::channel(1);
             // Dropping the UI subscription also cancels the producer and its resources.
-            let _producer = producer;
+            let _producer = executor.spawn(async move {
+                let stream = source.stream();
+                futures::pin_mut!(stream);
+                while let Some(update) = stream.next().await {
+                    if let Err(error) = &update {
+                        eprintln!("{}: {error}", std::any::type_name::<S>());
+                    }
+                    if sender.send(update).await.is_err() {
+                        break;
+                    }
+                }
+            });
             while let Some(update) = updates.next().await {
                 if this
                     .update(cx, |this, cx| {
@@ -219,6 +256,7 @@ impl<S: DataSource> Data<S> {
         Self {
             state: State::default(),
             error: None,
+            available: persisted.unwrap_or(true),
             _task: task,
             write_task: None,
         }

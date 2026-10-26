@@ -13,6 +13,7 @@ mod reveal;
 mod scaled;
 mod shell;
 mod shortcuts;
+mod store;
 mod theme;
 mod tooltip;
 mod volume_button;

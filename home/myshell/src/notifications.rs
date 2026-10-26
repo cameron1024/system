@@ -4,7 +4,6 @@
 //! `entries` is always a prefix of that order, so the next page starts after its last entry.
 
 mod icon;
-mod store;
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -17,11 +16,11 @@ use gpui::Task;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::OwnedValue;
 
-use self::store::Key;
-use self::store::NewNotification;
-pub use self::store::Notification;
-use self::store::Store;
-use self::store::now;
+use crate::store::Key;
+use crate::store::NewNotification;
+pub use crate::store::Notification;
+use crate::store::Store;
+use crate::store::now;
 
 const PATH: &str = "/org/freedesktop/Notifications";
 const PAGE: i64 = 50;
@@ -72,11 +71,7 @@ enum Signal {
 }
 
 impl Notifications {
-    pub fn new(cx: &mut Context<Self>) -> Self {
-        let store = Store::open()
-            .inspect_err(|error| eprintln!("notification history unavailable: {error}"))
-            .ok()
-            .map(Arc::new);
+    pub fn new(store: Option<Arc<Store>>, cx: &mut Context<Self>) -> Self {
         let unread = (store.as_ref())
             .and_then(|store| store.unread_count().ok())
             .unwrap_or(0);

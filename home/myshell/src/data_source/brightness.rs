@@ -11,6 +11,7 @@ use super::Data;
 use super::DataSource;
 use super::Result;
 
+const BACKLIGHT: &str = "/sys/class/backlight";
 const STEP: i32 = 10;
 const PRESETS: [u32; 4] = [10, 30, 70, 100];
 
@@ -99,13 +100,19 @@ impl Data<Brightness> {
 impl DataSource for Brightness {
     type Value = BrightnessState;
 
+    const PERSISTENCE_KEY: Option<&str> = Some("brightness.available");
+
+    async fn is_available() -> bool {
+        std::fs::read_dir(BACKLIGHT).is_ok_and(|mut devices| devices.next().is_some())
+    }
+
     fn stream(self) -> impl Stream<Item = Result<BrightnessState>> + Send + 'static {
         futures::stream::once(futures::future::ready(read())).chain(self.changed.map(|()| read()))
     }
 }
 
 fn read() -> Result<BrightnessState> {
-    let device = std::fs::read_dir("/sys/class/backlight")?
+    let device = std::fs::read_dir(BACKLIGHT)?
         .next()
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "no backlight device"))??;
     let path = device.path();

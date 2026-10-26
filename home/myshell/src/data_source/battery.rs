@@ -9,6 +9,9 @@ use super::DataSource;
 use super::Result;
 use super::watch_properties;
 
+const DESTINATION: &str = "org.freedesktop.UPower";
+// UPower's aggregate of all batteries, so there's no device discovery.
+const PATH: &str = "/org/freedesktop/UPower/devices/DisplayDevice";
 const INTERFACE: &str = "org.freedesktop.UPower.Device";
 
 pub struct Battery;
@@ -46,12 +49,31 @@ impl BatteryState {
 impl DataSource for Battery {
     type Value = BatteryState;
 
+    const PERSISTENCE_KEY: Option<&str> = Some("battery.available");
+
+    /// The display device exists without batteries, but isn't present.
+    async fn is_available() -> bool {
+        let present = async {
+            let connection = zbus::Connection::system().await?;
+            let properties = PropertiesProxy::builder(&connection)
+                .destination(DESTINATION)?
+                .path(PATH)?
+                .build()
+                .await?;
+            let present = properties.get(INTERFACE.try_into()?, "IsPresent").await?;
+            Ok::<_, super::Error>(bool::try_from(present)?)
+        };
+        present
+            .await
+            .inspect_err(|error| eprintln!("battery availability: {error}"))
+            .unwrap_or(false)
+    }
+
     fn stream(self) -> impl Stream<Item = Result<BatteryState>> + Send + 'static {
         futures::stream::once(async {
-            // UPower's aggregate of all batteries, so there's no device discovery.
             let (properties, updates) = watch_properties(
-                "org.freedesktop.UPower",
-                "/org/freedesktop/UPower/devices/DisplayDevice",
+                DESTINATION,
+                PATH,
                 INTERFACE,
                 &["Percentage", "State", "TimeToEmpty", "TimeToFull"],
             )

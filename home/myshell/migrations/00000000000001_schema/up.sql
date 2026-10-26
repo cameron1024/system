@@ -16,3 +16,9 @@ CREATE TABLE notifications (
 
 -- The dropdown's order (unread first, then newest first), so pages are index range scans.
 CREATE INDEX notifications_order ON notifications ((read_at IS NOT NULL), received_at DESC, id DESC);
+
+-- JSON values cached across restarts, e.g. whether a data source is available.
+CREATE TABLE persisted (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
+);

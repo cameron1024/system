@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use futures::StreamExt;
 use futures::channel::mpsc;
 use gpui::AppContext;
@@ -34,6 +36,7 @@ use crate::data_source::volume::Volume;
 use crate::notifications::Arrived;
 use crate::notifications::Notifications;
 use crate::shortcuts::Command;
+use crate::store::Store;
 
 /// Shared by every bar, so each source runs once regardless of the number of displays.
 #[derive(Clone)]
@@ -62,16 +65,20 @@ pub struct Shell {
 
 impl Shell {
     pub fn new(cx: &mut Context<Self>) -> Self {
+        let store = Store::open()
+            .inspect_err(|error| eprintln!("database unavailable: {error}"))
+            .ok()
+            .map(Arc::new);
         let (brightness, brightness_changed) = Brightness::new();
         let sources = Sources {
-            clock: cx.new(|cx| Data::new(Clock, cx)),
-            power: cx.new(|cx| Data::new(PowerProfile, cx)),
-            system: cx.new(|cx| Data::new(System, cx)),
-            volume: cx.new(|cx| Data::new(Volume, cx)),
-            brightness: cx.new(|cx| Data::new(brightness, cx)),
-            battery: cx.new(|cx| Data::new(Battery, cx)),
+            clock: cx.new(|cx| Data::new(Clock, store.clone(), cx)),
+            power: cx.new(|cx| Data::new(PowerProfile, store.clone(), cx)),
+            system: cx.new(|cx| Data::new(System, store.clone(), cx)),
+            volume: cx.new(|cx| Data::new(Volume, store.clone(), cx)),
+            brightness: cx.new(|cx| Data::new(brightness, store.clone(), cx)),
+            battery: cx.new(|cx| Data::new(Battery, store.clone(), cx)),
             caffeine: cx.new(|_| Caffeine::default()),
-            notifications: cx.new(Notifications::new),
+            notifications: cx.new(|cx| Notifications::new(store, cx)),
         };
         cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
             // The toasts also show the bell while the bar is hidden, for exactly as long.

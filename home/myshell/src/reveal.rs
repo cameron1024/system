@@ -13,6 +13,7 @@ pub struct Tween {
     from: f32,
     to: f32,
     started: Instant,
+    duration: Duration,
 }
 
 impl Tween {
@@ -21,11 +22,17 @@ impl Tween {
             from: value,
             to: value,
             started: now,
+            duration: TWEEN,
         }
     }
 
+    pub fn with_duration(self, duration: Duration) -> Self {
+        Self { duration, ..self }
+    }
+
     pub fn value(&self, now: Instant) -> f32 {
-        let t = now.saturating_duration_since(self.started).as_secs_f32() / TWEEN.as_secs_f32();
+        let t =
+            now.saturating_duration_since(self.started).as_secs_f32() / self.duration.as_secs_f32();
         if t >= 1. {
             return self.to;
         }
@@ -39,13 +46,14 @@ impl Tween {
                 from: self.value(now),
                 to,
                 started: now,
+                duration: self.duration,
             };
         }
     }
 
     /// Jumps to `value`, e.g. while nothing using it is shown.
     pub fn snap(&mut self, value: f32, now: Instant) {
-        *self = Self::new(value, now);
+        *self = Self::new(value, now).with_duration(self.duration);
     }
 
     pub fn animating(&self, now: Instant) -> bool {
