@@ -157,6 +157,29 @@ impl<S: 'static> Render for TextTooltip<S> {
     }
 }
 
+/// A tooltip builder showing fixed text.
+pub fn static_tooltip(
+    text: SharedString,
+    accent: Rgba,
+) -> impl Fn(&mut Window, &mut App) -> AnyView + 'static {
+    move |window, cx| {
+        let text = text.clone();
+        let content = cx.new(|_| StaticTooltip { text, accent });
+        below_bar(content, window, cx)
+    }
+}
+
+struct StaticTooltip {
+    text: SharedString,
+    accent: Rgba,
+}
+
+impl Render for StaticTooltip {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        tooltip(self.text.clone(), self.accent)
+    }
+}
+
 pub fn tooltip(text: impl Into<SharedString>, accent: Rgba) -> Div {
     let text: SharedString = text.into();
     div()

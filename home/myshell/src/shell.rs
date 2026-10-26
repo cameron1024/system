@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use futures::StreamExt;
 use futures::channel::mpsc;
 use gpui::AppContext;
@@ -32,11 +30,12 @@ use crate::data_source::brightness::Brightness;
 use crate::data_source::clock::Clock;
 use crate::data_source::power_profile::PowerProfile;
 use crate::data_source::system::System;
+use crate::data_source::tray::Tray;
 use crate::data_source::volume::Volume;
 use crate::notifications::Arrived;
 use crate::notifications::Notifications;
 use crate::shortcuts::Command;
-use crate::store::Store;
+use crate::store::Database;
 
 /// Shared by every bar, so each source runs once regardless of the number of displays.
 #[derive(Clone)]
@@ -47,6 +46,7 @@ pub struct Sources {
     pub volume: Entity<Data<Volume>>,
     pub brightness: Entity<Data<Brightness>>,
     pub battery: Entity<Data<Battery>>,
+    pub tray: Entity<Data<Tray>>,
     pub caffeine: Entity<Caffeine>,
     pub notifications: Entity<Notifications>,
 }
@@ -64,21 +64,20 @@ pub struct Shell {
 }
 
 impl Shell {
-    pub fn new(cx: &mut Context<Self>) -> Self {
-        let store = Store::open()
-            .inspect_err(|error| eprintln!("database unavailable: {error}"))
-            .ok()
-            .map(Arc::new);
+    pub fn new(database: Database, cx: &mut Context<Self>) -> Self {
+        let db = &database;
         let (brightness, brightness_changed) = Brightness::new();
         let sources = Sources {
-            clock: cx.new(|cx| Data::new(Clock, store.clone(), cx)),
-            power: cx.new(|cx| Data::new(PowerProfile, store.clone(), cx)),
-            system: cx.new(|cx| Data::new(System, store.clone(), cx)),
-            volume: cx.new(|cx| Data::new(Volume, store.clone(), cx)),
-            brightness: cx.new(|cx| Data::new(brightness, store.clone(), cx)),
-            battery: cx.new(|cx| Data::new(Battery, store.clone(), cx)),
+            clock: cx.new(|cx| Data::new(Clock, db, cx)),
+            power: cx.new(|cx| Data::new(PowerProfile, db, cx)),
+            system: cx.new(|cx| Data::new(System, db, cx)),
+            volume: cx.new(|cx| Data::new(Volume, db, cx)),
+            brightness: cx.new(|cx| Data::new(brightness, db, cx)),
+            battery: cx.new(|cx| Data::new(Battery, db, cx)),
+            tray: cx.new(|cx| Data::new(Tray, db, cx)),
             caffeine: cx.new(|_| Caffeine::default()),
-            notifications: cx.new(|cx| Notifications::new(store, cx)),
+            notifications: cx
+                .new(|cx| Notifications::new(database.store.clone(), database.unread, cx)),
         };
         cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
             // The toasts also show the bell while the bar is hidden, for exactly as long.

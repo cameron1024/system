@@ -44,7 +44,7 @@ in {
         ];
       };
     };
-    services.caffeine.enable = true;
-    home.packages = [pkgs.caffeine-ng laptopSuspend];
+    # The shell's caffeine module holds a logind idle inhibitor, which hypridle respects.
+    home.packages = [laptopSuspend];
   };
 }

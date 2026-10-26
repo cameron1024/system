@@ -1,8 +1,10 @@
 //! Notification history and persisted values in SQLite. Every call is a short indexed query;
-//! callers keep them off the UI thread, except for reads at startup.
+//! callers keep them off the UI thread.
 
 use std::cmp::Reverse;
+use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::Mutex;
 
 use diesel::connection::SimpleConnection;
@@ -82,6 +84,44 @@ pub struct NewNotification {
 }
 
 pub struct Store(Mutex<SqliteConnection>);
+
+/// The store, and what the shell reads from it at startup. Opened in the background while the
+/// shell waits for displays, so it's ready before the first frame.
+pub struct Database {
+    pub store: Option<Arc<Store>>,
+    pub unread: usize,
+    persisted: HashMap<String, serde_json::Value>,
+}
+
+impl Database {
+    pub fn open() -> Self {
+        let store = Store::open()
+            .inspect_err(|error| eprintln!("database unavailable: {error}"))
+            .ok();
+        let (unread, persisted) = match &store {
+            Some(store) => (
+                read("unread count", store.unread_count()),
+                read("persisted values", store.persisted()),
+            ),
+            None => Default::default(),
+        };
+        Self {
+            store: store.map(Arc::new),
+            unread,
+            persisted,
+        }
+    }
+
+    pub fn persisted(&self, key: &str) -> Option<&serde_json::Value> {
+        self.persisted.get(key)
+    }
+}
+
+fn read<T: Default>(what: &str, result: Result<T>) -> T {
+    result
+        .inspect_err(|error| eprintln!("reading {what}: {error}"))
+        .unwrap_or_default()
+}
 
 impl Store {
     /// `$XDG_DATA_HOME/myshell/notifications.db`, created and migrated if needed.
@@ -214,15 +254,11 @@ impl Store {
         Ok(())
     }
 
-    pub fn get(&self, key: &str) -> Result<Option<serde_json::Value>> {
-        let value: Option<String> = persisted::table
-            .find(key)
-            .select(persisted::value)
-            .first(&mut *self.connection())
-            .optional()?;
-        Ok(value
-            .map(|value| serde_json::from_str(&value))
-            .transpose()?)
+    fn persisted(&self) -> Result<HashMap<String, serde_json::Value>> {
+        let rows: Vec<(String, String)> = persisted::table.load(&mut *self.connection())?;
+        (rows.into_iter())
+            .map(|(key, value)| Ok((key, serde_json::from_str(&value)?)))
+            .collect()
     }
 
     pub fn set(&self, key: &str, value: &serde_json::Value) -> Result<()> {

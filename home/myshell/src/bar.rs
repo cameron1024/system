@@ -12,10 +12,15 @@ use gpui::Bounds;
 
 use gpui::Context;
 use gpui::Div;
+use gpui::ElementId;
 use gpui::Entity;
 use gpui::IntoElement;
+use gpui::MouseButton;
+use gpui::MouseDownEvent;
 use gpui::Pixels;
+use gpui::SharedString;
 use gpui::Task;
+use gpui::WindowHandle;
 
 use gpui::AnyElement;
 use gpui::App;
@@ -46,15 +51,20 @@ use crate::battery_indicator::BatteryIndicator;
 use crate::blur::Blur;
 use crate::data_source::Data;
 use crate::data_source::DataSource;
+use crate::data_source::tray::TrayItem;
 use crate::liquid;
 use crate::notifications::Notification;
+use crate::outside_click;
+use crate::outside_click::OutsideClick;
 use crate::profile_icon::ProfileIcon;
 use crate::reveal::Reveal;
 use crate::reveal::Tween;
 use crate::scaled::scaled;
 use crate::shell::Sources;
 use crate::theme;
+use crate::tooltip::static_tooltip;
 use crate::tooltip::text_tooltip;
+use crate::tray;
 
 type TooltipBuilder = Box<dyn Fn(&mut Window, &mut gpui::App) -> gpui::AnyView>;
 use crate::volume_button::VolumeButton;
@@ -85,6 +95,13 @@ const LIST_PAD: f32 = 12.;
 const LIST_PAD_BOTTOM: f32 = BLOB_PAD_X + LIST_PAD - PAD_Y;
 const MAX_LIST_HEIGHT: f32 = 480.;
 
+const TRAY_MENU_WIDTH: f32 = 320.;
+
+/// A tray menu's height below the module, at rest.
+fn tray_body(menu: &[crate::data_source::tray::MenuEntry]) -> f32 {
+    LIST_PAD / 2. + tray::menu_height(menu) + LIST_PAD_BOTTOM
+}
+
 fn list_height(rows: f32) -> f32 {
     // The empty state takes one row.
     let rows = rows.max(1.);
@@ -99,8 +116,8 @@ struct Body {
     right: f32,
     height: f32,
     progress: f32,
-    /// Joins a bar-height body on its left with a concave fillet.
-    fillet: bool,
+    /// Joins bar-height bodies on its left and right with concave fillets.
+    fillets: [bool; 2],
 }
 
 /// While revealing, a body starts narrow and bump-shaped (each side's flare and rounded bottom
@@ -135,19 +152,20 @@ fn blob(body: Body) -> Option<liquid::Outline> {
     )
 }
 
-/// For a body taller than the bar, joined on its left to the bar-height body beside it.
-fn fillet(body: Body) -> Option<liquid::Outline> {
+/// For a body taller than the bar, joined to the bar-height bodies beside it.
+fn fillets(body: Body) -> impl Iterator<Item = liquid::Outline> {
     let progress = body.progress.clamp(0., 1.);
     let neighbour_bottom = HEIGHT * progress;
     let radius = liquid::FLARE.min((body.height * progress - neighbour_bottom) / 2.);
-    if !body.fillet || radius < 0.5 {
-        return None;
-    }
-    // Matches blob's left side.
+    // Matches blob's sides.
     let centre = (body.left + body.right) / 2.;
     let half = ((body.right - body.left) / 2. + BLOB_PAD_X)
         * (START_WIDTH + (1. - START_WIDTH) * progress);
-    Some(liquid::fillet(centre - half, neighbour_bottom, radius))
+    [(centre - half, true), (centre + half, false)]
+        .into_iter()
+        .zip(body.fillets)
+        .filter(move |(_, joined)| *joined && radius >= 0.5)
+        .map(move |((x, left), _)| liquid::fillet(x, neighbour_bottom, radius, left))
 }
 
 /// How far the content row is slid up out of view.
@@ -184,6 +202,14 @@ pub struct Bar {
     removals: Vec<Removal>,
     /// A notification being swiped horizontally, and how far.
     swiping: Option<(i32, f32)>,
+    /// The key of the item whose tray menu is shown (including while closing).
+    tray_menu: Option<String>,
+    tray_reveal: Reveal,
+    tray_progress: f32,
+    /// The open tray menu's bounds, recorded during prepaint for the input region.
+    tray_island: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// Watches for clicks outside the shell while a group is open.
+    outside_click: Option<WindowHandle<OutsideClick>>,
     /// After a swipe dismisses a notification, the time of the latest scroll event. Swipes are
     /// ignored until scrolling stops, so one long scroll can't dismiss the rows sliding up.
     swipe_blocked: Option<Instant>,
@@ -237,6 +263,9 @@ impl Bar {
     pub fn set_visible(&mut self, visible: bool, window: &mut Window, cx: &mut Context<Self>) {
         // The full bar includes every module, so it replaces any peeks.
         self.peeks.clear();
+        if !visible {
+            self.close_tray_menu(cx);
+        }
         let (reduce_motion, now) = (cx.reduce_motion(), Instant::now());
         if self.bar.set(visible, reduce_motion, now) {
             self.scroll_remainder = 0.;
@@ -254,10 +283,48 @@ impl Bar {
         self.sync_dropdown(cx);
     }
 
+    /// Only one group (the notifications dropdown or a tray menu) is open at once.
     fn sync_dropdown(&mut self, cx: &mut Context<Self>) {
         let open = self.pinned || self.hover_open;
         self.dropdown.set(open, cx.reduce_motion(), Instant::now());
+        if open {
+            self.close_tray_menu(cx);
+        }
+        self.sync_outside_click(cx);
         cx.notify();
+    }
+
+    /// While a group is open, clicks outside the shell close it. Call while handling the press
+    /// that may open one (see `outside_click`); it stops watching if none opens.
+    fn watch_outside_clicks(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.outside_click.is_some() {
+            return;
+        }
+        let Some((handle, root)) = outside_click::open(window, cx) else {
+            return;
+        };
+        // Released when the compositor dismisses it, or when it's no longer needed.
+        cx.observe_release(&root, |this, _, cx| {
+            this.outside_click = None;
+            this.close_tray_menu(cx);
+            if this.pinned {
+                let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
+                let _ = this.actions.unbounded_send(action);
+            }
+        })
+        .detach();
+        self.outside_click = Some(handle);
+    }
+
+    fn sync_outside_click(&mut self, cx: &mut Context<Self>) {
+        if self.pinned || self.tray_reveal.visible {
+            return;
+        }
+        if let Some(handle) = self.outside_click.take() {
+            cx.defer(move |cx| {
+                let _ = handle.update(cx, |_, window, _| window.remove_window());
+            });
+        }
     }
 
     /// Shows the newest notification below the bar for a few seconds, below any still shown.
@@ -424,6 +491,7 @@ impl Bar {
         redraw_on(&sources.brightness, cx);
         redraw_on(&sources.caffeine, cx);
         redraw_on(&sources.notifications, cx);
+        redraw_on(&sources.tray, cx);
         // The battery indicator redraws itself; the bar only needs to when it appears or goes.
         let mut battery_available = sources.battery.read(cx).available;
         cx.observe(&sources.battery, move |_, battery, cx| {
@@ -459,6 +527,11 @@ impl Bar {
             removals: Vec::new(),
             swiping: None,
             swipe_blocked: None,
+            tray_menu: None,
+            tray_reveal: Reveal::new(false, Instant::now()),
+            tray_progress: 0.,
+            tray_island: Rc::default(),
+            outside_click: None,
             list_scroll: UniformListScrollHandle::new(),
             pinned: false,
             hover_open: false,
@@ -473,33 +546,239 @@ impl Bar {
         }
     }
 
-    /// Content fades and scales in as it's revealed. While peeking, other modules keep their
-    /// layout space so the peeked one doesn't move.
     fn module(&self, module: Module, content: impl IntoElement, accent: Rgba) -> Stateful<Div> {
-        let peeked = (self.peek_progress.iter()).find(|(peeked, _)| *peeked == module);
+        let peeked = (self.peek_progress.iter())
+            .find(|(peeked, _)| *peeked == module)
+            .map(|&(_, progress)| progress);
+        self.revealed(module.name(), peeked, content, accent)
+    }
+
+    /// Content fades and scales in as it's revealed. While peeking (`peeked` is its progress),
+    /// other modules keep their layout space so the peeked one doesn't move.
+    fn revealed(
+        &self,
+        id: impl Into<ElementId>,
+        peeked: Option<f32>,
+        content: impl IntoElement,
+        accent: Rgba,
+    ) -> Stateful<Div> {
         let progress = match peeked {
             _ if !self.bar.hidden() => self.bar_progress,
-            Some(&(_, progress)) => progress,
+            Some(progress) => progress,
             None => 0.,
         };
         let scale = START_SCALE + (1. - START_SCALE) * progress;
-        let element = bar_module(module.name(), scaled(scale, content), accent)
+        let element = bar_module(id, scaled(scale, content), accent)
             .flex_shrink_0()
             .opacity(progress);
         match peeked {
             _ if !self.bar.hidden() => element,
             // Offset visually only, so neighbours never move.
-            Some(&(_, progress)) => element
+            Some(progress) => element
                 .relative()
                 .top(px(slide_offset(progress)))
-                .child(self.liquid_anchor(progress, None, false)),
+                .child(self.liquid_anchor(progress, None, [false; 2])),
             None => element.invisible(),
+        }
+    }
+
+    /// A tray item, as a module. Clicking opens its menu, which it grows into like the
+    /// notifications module: it widens to show its title, and the menu drops below. Right-clicking
+    /// activates it (e.g. raising a window). `first` in its section, nothing is joined on its left.
+    fn tray_module(
+        &self,
+        item: TrayItem,
+        first: bool,
+        tooltips_enabled: bool,
+        cx: &mut Context<Self>,
+    ) -> Stateful<Div> {
+        let accent = if item.attention {
+            theme::WARNING
+        } else if tray::unread(&item).is_some() {
+            // Like the notifications module with unread notifications.
+            theme::NOTIFICATION_ACCENT
+        } else {
+            theme::TRAY_ACCENT
+        };
+        let open = self.tray_menu.as_deref() == Some(&item.key);
+        let progress = if open { self.tray_progress } else { 0. };
+        let title: SharedString = item.title.clone().into();
+        let (toggled, activated) = (item.clone(), item.clone());
+        let module = self
+            .revealed(
+                ElementId::Name(item.key.clone().into()),
+                None,
+                tray::content(&item, accent),
+                accent,
+            )
+            .when(open && self.tray_reveal.visible, |module| {
+                module.bg(theme::SELECTED)
+            })
+            .when(tooltips_enabled && !open, |module| {
+                module.hoverable_tooltip(static_tooltip(title.clone(), accent))
+            })
+            .cursor_pointer()
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, _, window, cx| this.watch_outside_clicks(window, cx)),
+            )
+            .on_click(cx.listener(move |this, _, _, cx| this.toggle_tray_menu(&toggled, cx)))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, _, _, cx| {
+                    this.close_tray_menu(cx);
+                    if !activated.activates {
+                        return;
+                    }
+                    let item = activated.clone();
+                    cx.background_executor()
+                        .spawn(async move {
+                            if let Err(error) = item.activate().await {
+                                eprintln!("tray item {}: {error}", item.key);
+                            }
+                        })
+                        .detach();
+                }),
+            );
+        // Its own presses (opening it, or choosing an entry) mustn't close it first.
+        let island = div()
+            .id(ElementId::Name(format!("{}-island", item.key).into()))
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Right, |_, _, cx| cx.stop_propagation());
+        if progress == 0. {
+            return island.child(module);
+        }
+        // The title fills the space left of the module, clipped to it as the header widens. With
+        // no width of its own, it never affects the island's.
+        let header = div()
+            .flex()
+            .min_w(px(TRAY_MENU_WIDTH * progress))
+            .child(
+                // Padding goes inside: even at zero width, it would take space.
+                div()
+                    .w_0()
+                    .flex_grow(1.)
+                    .h(px(crate::bar_module::HEIGHT))
+                    .overflow_hidden()
+                    .when(self.tray_reveal.visible, |slot| {
+                        slot.child(
+                            div()
+                                .size_full()
+                                .pl(px(LIST_PAD - 2.))
+                                .pr_1()
+                                .flex()
+                                .items_center()
+                                .whitespace_nowrap()
+                                .text_color(theme::FOREGROUND)
+                                .opacity(progress)
+                                // Clipped while opening; truncated if it's too long once open.
+                                .child(
+                                    div()
+                                        .when(progress >= 1., |title| title.truncate())
+                                        .child(title),
+                                ),
+                        )
+                    }),
+            )
+            .child(module);
+        let this = cx.entity().downgrade();
+        let chosen = item.clone();
+        let on_click: tray::OnClick = Rc::new(move |id, _, cx| {
+            let item = chosen.clone();
+            cx.background_executor()
+                .spawn(async move {
+                    if let Err(error) = item.menu_clicked(id).await {
+                        eprintln!("tray menu {}: {error}", item.key);
+                    }
+                })
+                .detach();
+            let _ = this.update(cx, |bar, cx| bar.close_tray_menu(cx));
+        });
+        let bounds = self.tray_island.clone();
+        island
+            // Room between the title and the module before. Nothing after it moves, so neither
+            // does the item's own module.
+            .ml(px(LIST_PAD * progress))
+            .flex()
+            .flex_col()
+            .items_end()
+            .overflow_hidden()
+            .h(px(
+                crate::bar_module::HEIGHT + tray_body(&item.menu) * progress
+            ))
+            .child(header)
+            .child(
+                // Clipped to the animated width; the menu itself stays full width.
+                div()
+                    .w(px(TRAY_MENU_WIDTH * progress))
+                    .flex()
+                    .justify_end()
+                    .overflow_hidden()
+                    .child(
+                        div()
+                            .flex_shrink_0()
+                            .w(px(TRAY_MENU_WIDTH))
+                            .flex()
+                            .flex_col()
+                            .px(px(LIST_PAD / 2.))
+                            .pt(px(LIST_PAD / 2.))
+                            .opacity(progress)
+                            .children(tray::rows(&item.menu, 0, &on_click)),
+                    ),
+            )
+            .child(self.liquid_anchor(self.bar_progress, None, [!first, true]))
+            .child(
+                canvas(
+                    move |bounds_, _, _| bounds.set(Some(bounds_)),
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .inset_0(),
+            )
+    }
+
+    fn toggle_tray_menu(&mut self, item: &TrayItem, cx: &mut Context<Self>) {
+        let (reduce_motion, now) = (cx.reduce_motion(), Instant::now());
+        if self.tray_menu.as_deref() == Some(&item.key) {
+            let visible = !self.tray_reveal.visible;
+            self.tray_reveal.set(visible, reduce_motion, now);
+        } else {
+            // Another item's menu goes at once.
+            self.tray_menu = Some(item.key.clone());
+            self.tray_reveal = Reveal::new(false, now);
+            self.tray_reveal.set(true, reduce_motion, now);
+        }
+        if self.tray_reveal.visible && self.pinned {
+            let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
+            let _ = self.actions.unbounded_send(action);
+        }
+        self.sync_outside_click(cx);
+        if self.tray_reveal.visible {
+            let item = item.clone();
+            cx.background_executor()
+                .spawn(async move {
+                    if let Err(error) = item.menu_opened().await {
+                        eprintln!("tray menu {}: {error}", item.key);
+                    }
+                })
+                .detach();
+        }
+        cx.notify();
+    }
+
+    fn close_tray_menu(&mut self, cx: &mut Context<Self>) {
+        if self
+            .tray_reveal
+            .set(false, cx.reduce_motion(), Instant::now())
+        {
+            self.sync_outside_click(cx);
+            cx.notify();
         }
     }
 
     /// A group of modules (skipping any that are None) with separators between them, sharing one
     /// body of liquid unless modules are peeking.
-    fn section<const N: usize>(&self, modules: [Option<Stateful<Div>>; N]) -> Div {
+    fn section(&self, modules: impl IntoIterator<Item = Option<Stateful<Div>>>) -> Div {
         let peeking = self.bar.hidden();
         // Top-aligned, so a dropdown in the section grows downwards without moving the rest.
         let mut section = div()
@@ -508,7 +787,7 @@ impl Bar {
             .gap_1()
             .when(!peeking, |section| {
                 // Always bar-height: a dropdown's taller body joins it with a fillet.
-                section.child(self.liquid_anchor(self.bar_progress, Some(HEIGHT), false))
+                section.child(self.liquid_anchor(self.bar_progress, Some(HEIGHT), [false; 2]))
             });
         for (index, module) in modules.into_iter().flatten().enumerate() {
             if index > 0 {
@@ -531,8 +810,13 @@ impl Bar {
 
     /// Records its parent's horizontal bounds, so a body `progress` of the way through being
     /// revealed can be painted behind it. Its height is `height`, or else the parent's. With
-    /// `fillet`, its left side joins a bar-height body beside it smoothly.
-    fn liquid_anchor(&self, progress: f32, height: Option<f32>, fillet: bool) -> impl IntoElement {
+    /// `fillets`, its left and right sides join bar-height bodies beside them smoothly.
+    fn liquid_anchor(
+        &self,
+        progress: f32,
+        height: Option<f32>,
+        fillets: [bool; 2],
+    ) -> impl IntoElement {
         let liquid = self.liquid.clone();
         canvas(
             move |bounds, _, _| {
@@ -541,7 +825,7 @@ impl Bar {
                     right: f32::from(bounds.right()),
                     height: height.unwrap_or(f32::from(bounds.size.height) + 2. * PAD_Y),
                     progress,
-                    fillet,
+                    fillets,
                 })
             },
             |_, _, _, _| {},
@@ -624,7 +908,10 @@ impl Bar {
         let bell = bar_module(Module::Notifications.name(), scaled(scale, bell), color)
             .flex_shrink_0()
             .when(self.dropdown.visible, |bell| bell.bg(theme::SELECTED));
-        let bell = Self::clickable(bell, Module::Notifications, cx);
+        let bell = Self::clickable(bell, Module::Notifications, cx).on_mouse_down(
+            MouseButton::Left,
+            cx.listener(|this, _, window, cx| this.watch_outside_clicks(window, cx)),
+        );
         // The controls are positioned over the header, so they never affect the island's width
         // (which would jump as they appear or disappear). They go as soon as it starts closing.
         let header = div()
@@ -714,7 +1001,7 @@ impl Bar {
                 if shown {
                     // Joined to the right section's body, unless peeking on its own.
                     let fillet = !self.bar.hidden();
-                    this.child(self.liquid_anchor(progress, None, fillet))
+                    this.child(self.liquid_anchor(progress, None, [fillet, false]))
                         .child(
                             canvas(
                                 move |bounds, _, _| island.set(Some(bounds)),
@@ -801,6 +1088,14 @@ impl Bar {
         cx.notify();
     }
 
+    /// For notifications' times, in the clock's time zone: looking up the system's here, on the
+    /// UI thread, could read the time zone database.
+    fn zoned_now(&self, cx: &App) -> jiff::Zoned {
+        let zone = (self.sources.clock.read(cx).state.target.as_ref())
+            .map_or(jiff::tz::TimeZone::UTC, |clock| clock.zone.clone());
+        jiff::Timestamp::now().to_zoned(zone)
+    }
+
     /// Rows the dropdown is sized for, including gaps still collapsing after removals.
     fn list_rows_target(&self, now: Instant, cx: &App) -> f32 {
         let visible = self.sources.notifications.read(cx).visible().len() as f32;
@@ -830,7 +1125,7 @@ impl Bar {
     /// glass (the liquid's tint, over blur) until the dropdown's liquid grows around it.
     fn toasts_element(&self, width: Pixels, now: Instant, cx: &mut Context<Self>) -> Stateful<Div> {
         let bounds = toast_bounds(width, self.toast_rows.value(now));
-        let timestamp = jiff::Timestamp::now();
+        let timestamp = self.zoned_now(cx);
         let glass = 1. - self.dropdown_progress;
         let cards: Vec<_> = (self.toast_cards(now).collect::<Vec<_>>().into_iter())
             .map(|(toast, card, progress)| {
@@ -854,7 +1149,7 @@ impl Bar {
                             .opacity(glass),
                     )
                     .child(
-                        notification_card(&toast.notification, timestamp, Tick::Space)
+                        notification_card(&toast.notification, &timestamp, Tick::Space)
                             .group_hover("notification", |card| card.bg(theme::MODULE_HOVER)),
                     )
                     .child(
@@ -978,7 +1273,7 @@ impl Bar {
             count,
             cx.processor(|this, range: Range<usize>, _, cx| {
                 let now = Instant::now();
-                let timestamp = jiff::Timestamp::now();
+                let timestamp = this.zoned_now(cx);
                 let notifications = this.sources.notifications.read(cx);
                 let visible = notifications.visible();
                 if range.end + LOAD_AHEAD >= visible.len() && notifications.wants_more() {
@@ -994,7 +1289,7 @@ impl Bar {
                 (rows.into_iter().zip(range))
                     .map(|(notification, index)| {
                         let separated = index == first_read && index > 0;
-                        this.notification_row(notification, index, separated, now, timestamp, cx)
+                        this.notification_row(notification, index, separated, now, &timestamp, cx)
                     })
                     .collect::<Vec<_>>()
             }),
@@ -1045,7 +1340,7 @@ impl Bar {
         index: usize,
         separated: bool,
         now: Instant,
-        timestamp: jiff::Timestamp,
+        timestamp: &jiff::Zoned,
         cx: &mut Context<Self>,
     ) -> Stateful<Div> {
         // Each removal is drawn where it was: below the gaps of those before it.
@@ -1294,7 +1589,7 @@ fn app_icon(notification: &Notification) -> AnyElement {
     }
 }
 
-fn notification_card(notification: &Notification, now: jiff::Timestamp, tick_: Tick) -> Div {
+fn notification_card(notification: &Notification, now: &jiff::Zoned, tick_: Tick) -> Div {
     const GAP: f32 = 10.;
     // Notification text is plain (no body-markup capability), but may span lines.
     let line = |text: &str| text.replace('\n', " ");
@@ -1357,17 +1652,17 @@ fn notification_card(notification: &Notification, now: jiff::Timestamp, tick_: T
 }
 
 /// e.g. "now", "5m ago", "3h ago", "Oct 22".
-fn relative_time(received_at: i64, now: jiff::Timestamp) -> String {
+fn relative_time(received_at: i64, now: &jiff::Zoned) -> String {
     let Ok(received) = jiff::Timestamp::from_millisecond(received_at) else {
         return String::new();
     };
-    let minutes = (now.as_second() - received.as_second()) / 60;
+    let minutes = (now.timestamp().as_second() - received.as_second()) / 60;
     match minutes {
         ..1 => "now".into(),
         1..60 => format!("{minutes}m ago"),
         60..1440 => format!("{}h ago", minutes / 60),
         _ => received
-            .to_zoned(jiff::tz::TimeZone::system())
+            .to_zoned(now.time_zone().clone())
             .strftime("%b %-d")
             .to_string(),
     }
@@ -1395,6 +1690,7 @@ fn labelled(icon: Icon, color: Rgba, label: String) -> Div {
 impl Render for Bar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let now = Instant::now();
+
         self.bar.settle(now);
         for (_, reveal) in &mut self.peeks {
             reveal.settle(now);
@@ -1421,6 +1717,20 @@ impl Render for Bar {
         }
         self.dropdown.settle(now);
         self.dropdown_progress = self.dropdown.progress(now);
+        self.tray_reveal.settle(now);
+        self.tray_progress = self.tray_reveal.progress(now);
+
+        // The open tray menu's height, for the surface. It goes if its item does.
+        let tray_height = (self.tray_menu.as_ref())
+            .filter(|_| !self.tray_reveal.hidden())
+            .and_then(|key| {
+                let items = self.sources.tray.read(cx).state.target.as_deref()?;
+                let item = items.iter().find(|item| item.key == *key)?;
+                Some(HEIGHT + tray_body(&item.menu))
+            });
+        if tray_height.is_none() {
+            self.tray_menu = None;
+        }
 
         // Toasts follow their notification's row in the dropdown, and slide out once it's read
         // (e.g. elsewhere) or there's no room for it.
@@ -1464,7 +1774,9 @@ impl Render for Bar {
             TOAST_TOP + MAX_TOASTS as f32 * (ROW_HEIGHT + ROW_GAP) + 2. * TOAST_PAD
         } else {
             HEIGHT
-        };
+        }
+        .max(tray_height.unwrap_or(0.).ceil());
+
         if self.surface_height != surface_height {
             let width = window.viewport_size().width;
             window.resize(gpui::size(width, px(surface_height)));
@@ -1489,6 +1801,7 @@ impl Render for Bar {
         if resized
             || self.bar.animating()
             || self.dropdown.animating()
+            || self.tray_reveal.animating()
             || self.toasts.iter().any(|toast| toast.reveal.animating())
             || self.toasts.iter().any(|toast| toast.row.animating(now))
             || self.toast_rows.animating(now)
@@ -1515,6 +1828,8 @@ impl Render for Bar {
         let input_bar = self.bar.visible;
         let input_island = self.dropdown.visible;
         let island = self.island.clone();
+        let input_tray = self.tray_reveal.visible;
+        let tray_island = self.tray_island.clone();
         let width = window.viewport_size().width;
         let toast = (self.toasts_shown()).then(|| self.toasts_element(width, now, cx));
         let toast_bounds = toast
@@ -1688,17 +2003,21 @@ impl Render for Bar {
 
         let battery = sources.battery.read(cx).available.then_some(battery);
         let brightness = sources.brightness.read(cx).available.then_some(brightness);
+        let tray: Vec<TrayItem> = (sources.tray.read(cx).state.target.clone()).unwrap_or_default();
+        let tray: Vec<_> = (tray.into_iter().enumerate())
+            .map(|(index, item)| self.tray_module(item, index == 0, tooltips_enabled, cx))
+            .collect();
         let left = self.section([Some(profile), battery, Some(cpu), Some(memory), Some(disk)]);
         let center = self.section([Some(clock)]);
         let notifications = self.notifications_island(cx);
         let section = self.section.clone();
         let right = self
-            .section([
+            .section((tray.into_iter().map(Some)).chain([
                 Some(caffeine),
                 brightness,
                 Some(volume),
                 Some(notifications),
-            ])
+            ]))
             .child(
                 canvas(
                     move |bounds, _, _| section.set(Some(bounds)),
@@ -1750,6 +2069,14 @@ impl Render for Bar {
                                 bar.update(cx, |bar, cx| bar.pointer_moved(event.position, cx));
                             }
                         });
+                        // Presses elsewhere in the bar close the tray menu; the compositor
+                        // closes it for presses in other apps. Tray items stop propagation.
+                        let bar = this.clone();
+                        window.on_mouse_event(move |_: &MouseDownEvent, phase, _, cx| {
+                            if phase == DispatchPhase::Bubble {
+                                bar.update(cx, |bar, cx| bar.close_tray_menu(cx));
+                            }
+                        });
                         // Before the rows' handlers, which check it. Any scroll counts, wherever.
                         window.on_mouse_event(move |_: &ScrollWheelEvent, phase, _, cx| {
                             if phase == DispatchPhase::Capture {
@@ -1771,13 +2098,15 @@ impl Render for Bar {
                         if input_island && let Some(island) = island.get() {
                             input.push(island.dilate(px(BLOB_PAD_X)));
                         }
+                        if input_tray && let Some(island) = tray_island.get() {
+                            input.push(island.dilate(px(BLOB_PAD_X)));
+                        }
                         input.extend(toast_area);
                         if !resized {
                             window.set_input_region(Some(&input));
                         }
                         let outlines: Vec<_> = (liquid.borrow().iter().copied())
-                            .flat_map(|body| [blob(body), fillet(body)])
-                            .flatten()
+                            .flat_map(|body| blob(body).into_iter().chain(fillets(body)))
                             .collect();
                         if let Some(path) = liquid::path(&outlines) {
                             window.paint_path(path, theme::BACKGROUND);
@@ -1877,7 +2206,7 @@ mod tests {
                     right: 100. + width,
                     height,
                     progress,
-                    fillet: false,
+                    fillets: [false; 2],
                 };
                 let Some(outline) = blob(body) else {
                     continue;

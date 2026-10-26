@@ -6,8 +6,10 @@ mod blur;
 mod caffeine;
 mod command;
 mod data_source;
+mod icon_theme;
 mod liquid;
 mod notifications;
+mod outside_click;
 mod profile_icon;
 mod reveal;
 mod scaled;
@@ -16,6 +18,7 @@ mod shortcuts;
 mod store;
 mod theme;
 mod tooltip;
+mod tray;
 mod volume_button;
 
 use futures::StreamExt;
@@ -24,13 +27,14 @@ use gpui::App;
 use gpui::AppContext;
 
 use crate::shell::Shell;
+use crate::store::Database;
 
 fn main() {
     gpui_platform::application()
         .with_quit_mode(gpui::QuitMode::Explicit)
         .run(|cx: &mut App| {
             let (sender, mut commands) = mpsc::unbounded();
-            let shell = cx.new(Shell::new);
+            let database = cx.background_executor().spawn(async { Database::open() });
             cx.spawn(async move |cx| {
                 // Wayland output announcements arrive after the application startup callback.
                 // Wait only during startup; there is no ongoing display polling.
@@ -42,7 +46,10 @@ fn main() {
                     );
                     async_io::Timer::after(std::time::Duration::from_millis(10)).await;
                 }
+                let database = database.await;
+                let shell = cx.new(|cx| Shell::new(database, cx));
                 shell.update(cx, |shell, cx| shell.show_bars(cx));
+
                 // Retain the connection and shell for the entire application lifetime.
                 let _connection = match shortcuts::listen(sender).await {
                     Ok(connection) => Some(connection),

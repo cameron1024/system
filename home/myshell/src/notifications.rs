@@ -3,8 +3,6 @@
 //! read. The dropdown pages through history in its order (unread first, then newest first).
 //! `entries` is always a prefix of that order, so the next page starts after its last entry.
 
-mod icon;
-
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -71,10 +69,8 @@ enum Signal {
 }
 
 impl Notifications {
-    pub fn new(store: Option<Arc<Store>>, cx: &mut Context<Self>) -> Self {
-        let unread = (store.as_ref())
-            .and_then(|store| store.unread_count().ok())
-            .unwrap_or(0);
+    /// `unread` is the count in the store, read in the background at startup.
+    pub fn new(store: Option<Arc<Store>>, unread: usize, cx: &mut Context<Self>) -> Self {
         let (events, mut received) = mpsc::unbounded();
         let (writes, pending) = mpsc::unbounded();
         let server = match store {
@@ -323,7 +319,7 @@ impl Server {
                 .and_then(|value| <&str>::try_from(&**value).ok())
         };
         // Raw image data ("image-data") isn't supported; senders usually also give a name.
-        let icon = icon::resolve(
+        let icon = crate::icon_theme::resolve(
             hint("image-path").or(hint("image_path")),
             &app_icon,
             hint("desktop-entry"),

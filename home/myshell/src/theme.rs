@@ -78,6 +78,8 @@ pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
 pub const BRIGHTNESS_ACCENT: Rgba = palette::YELLOW;
 pub const CAFFEINE_ACCENT: Rgba = palette::RED;
 pub const NOTIFICATION_ACCENT: Rgba = palette::PURPLE;
+/// Tray icons come from other apps, so they're neutral rather than claiming an accent.
+pub const TRAY_ACCENT: Rgba = palette::FG;
 
 /// A module whose dropdown is open.
 pub const SELECTED: Rgba = Rgba {

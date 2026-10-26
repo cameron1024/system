@@ -39,6 +39,10 @@ pub enum Icon {
     BatteryMedium,
     BatteryFull,
     BatteryCharging,
+    Hand,
+    Mouse,
+    Bluetooth,
+    Slack,
     Unknown,
 }
 
@@ -65,6 +69,10 @@ impl Icon {
             Self::BatteryMedium => Some(include_bytes!("../assets/icons/battery-medium.svg")),
             Self::BatteryFull => Some(include_bytes!("../assets/icons/battery-full.svg")),
             Self::BatteryCharging => Some(include_bytes!("../assets/icons/battery-charging.svg")),
+            Self::Hand => Some(include_bytes!("../assets/icons/hand.svg")),
+            Self::Mouse => Some(include_bytes!("../assets/icons/mouse.svg")),
+            Self::Bluetooth => Some(include_bytes!("../assets/icons/bluetooth.svg")),
+            Self::Slack => Some(include_bytes!("../assets/icons/slack.svg")),
             Self::Unknown => None,
         }
     }

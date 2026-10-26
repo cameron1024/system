@@ -6,10 +6,10 @@ pub mod brightness;
 pub mod clock;
 pub mod power_profile;
 pub mod system;
+pub mod tray;
 pub mod volume;
 
 use std::future::Future;
-use std::sync::Arc;
 
 use futures::SinkExt;
 use futures::Stream;
@@ -20,7 +20,7 @@ use gpui::Task;
 use zbus::fdo::PropertiesProxy;
 use zbus::proxy::CacheProperties;
 
-use crate::store::Store;
+use crate::store::Database;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T> = std::result::Result<T, Error>;
@@ -182,10 +182,11 @@ pub struct Data<S: DataSource> {
 }
 
 impl<S: DataSource> Data<S> {
-    pub fn new(source: S, store: Option<Arc<Store>>, cx: &mut Context<Self>) -> Self {
-        let persisted = (S::PERSISTENCE_KEY.zip(store.as_ref()))
-            .and_then(|(key, store)| store.get(key).ok().flatten())
+    pub fn new(source: S, database: &Database, cx: &mut Context<Self>) -> Self {
+        let persisted = (S::PERSISTENCE_KEY)
+            .and_then(|key| database.persisted(key))
             .and_then(|value| value.as_bool());
+        let store = database.store.clone();
         let executor = cx.background_executor().clone();
         let task = cx.spawn(async move |this, cx| {
             let available = executor

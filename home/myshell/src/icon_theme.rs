@@ -1,5 +1,5 @@
-//! Resolves a notification's icon to a file, following (a simplified version of) the
-//! freedesktop icon theme spec: the GTK icon theme, what it inherits, then hicolor.
+//! Resolves icons to files, following (a simplified version of) the freedesktop icon theme spec:
+//! the GTK icon theme, what it inherits, then hicolor.
 
 use std::path::Path;
 use std::path::PathBuf;
@@ -28,7 +28,7 @@ pub fn resolve(
         if path.starts_with('/') {
             Path::new(path).is_file().then(|| path.to_owned())
         } else {
-            lookup(icon)
+            lookup(icon, false)
         }
     })
 }
@@ -120,11 +120,11 @@ fn themes() -> &'static [(PathBuf, Vec<String>)] {
 }
 
 /// The first theme with the icon wins; within it, the largest (scalable counts as largest),
-/// preferring SVG. Symbolic (monochrome) icons are skipped.
-fn lookup(name: &str) -> Option<String> {
+/// preferring SVG. Symbolic (monochrome) directories are skipped unless `symbolic`.
+pub fn lookup(name: &str, symbolic: bool) -> Option<String> {
     for (theme, directories) in themes() {
         let mut best: Option<((u32, bool), PathBuf)> = None;
-        for directory in directories.iter().filter(|dir| !dir.contains("symbolic")) {
+        for directory in (directories.iter()).filter(|dir| symbolic || !dir.contains("symbolic")) {
             for extension in ["svg", "png"] {
                 let path = theme.join(directory).join(format!("{name}.{extension}"));
                 if !path.is_file() {

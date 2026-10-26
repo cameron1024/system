@@ -99,11 +99,23 @@ pub fn outline(x0: f32, x1: f32, bottom: f32, corners: Corners) -> Option<Outlin
     })
 }
 
-/// Fills the concave corner where a horizontal edge (to the left, at `y`) meets a vertical edge
-/// (below, at `x`), with the same curve as the flares. It overlaps both bodies slightly, so the
-/// union has no seams.
-pub fn fillet(x: f32, y: f32, radius: f32) -> Outline {
+/// Fills the concave corner where a horizontal edge (at `y`, to the left of `x` if `left`, else
+/// to its right) meets a vertical edge (below, at `x`), with the same curve as the flares. It
+/// overlaps both bodies slightly, so the union has no seams.
+pub fn fillet(x: f32, y: f32, radius: f32, left: bool) -> Outline {
     let r = radius;
+    if !left {
+        // Mirrored, and reversed so it winds like every other outline (the fill is non-zero).
+        return Outline {
+            start: (x - 1., y - 1.),
+            segments: vec![
+                Segment::Line((x - 1., y + r)),
+                Segment::Line((x, y + r)),
+                Segment::Cubic((x, y + r * (1. - K)), (x + r - r * K, y), (x + r, y)),
+                Segment::Line((x + r, y - 1.)),
+            ],
+        };
+    }
     Outline {
         start: (x - r, y - 1.),
         segments: vec![

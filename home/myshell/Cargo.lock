@@ -3222,6 +3222,7 @@ dependencies = [
  "futures",
  "gpui",
  "gpui_platform",
+ "image",
  "jiff",
  "libsqlite3-sys",
  "raw-window-handle",
