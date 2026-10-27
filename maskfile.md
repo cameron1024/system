@@ -48,9 +48,12 @@ Examples: `mask myshell run --release-fast`, `mask myshell run --release`, `mask
 ```python
 import os
 import shlex
+import subprocess
 from pathlib import Path
 
 os.chdir(Path(os.environ["MASKFILE_DIR"]) / "home/myshell")
+# GPUI is built from a local checkout with patches/*.patch applied.
+subprocess.run(["patches/gpui.sh"], check=True)
 command = ["cargo", "run"]
 if os.environ.get("release_fast") == "true":
     if os.environ.get("release") == "true":
@@ -92,9 +95,12 @@ Examples: `mask myshell test --release-fast`, `mask myshell test --release`, `ma
 ```python
 import os
 import shlex
+import subprocess
 from pathlib import Path
 
 os.chdir(Path(os.environ["MASKFILE_DIR"]) / "home/myshell")
+# GPUI is built from a local checkout with patches/*.patch applied.
+subprocess.run(["patches/gpui.sh"], check=True)
 command = ["cargo", "test"]
 if os.environ.get("release_fast") == "true":
     if os.environ.get("release") == "true":

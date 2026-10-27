@@ -43,6 +43,8 @@ pub enum Icon {
     Mouse,
     Bluetooth,
     Slack,
+    Search,
+    Close,
     Unknown,
 }
 
@@ -73,6 +75,8 @@ impl Icon {
             Self::Mouse => Some(include_bytes!("../assets/icons/mouse.svg")),
             Self::Bluetooth => Some(include_bytes!("../assets/icons/bluetooth.svg")),
             Self::Slack => Some(include_bytes!("../assets/icons/slack.svg")),
+            Self::Search => Some(include_bytes!("../assets/icons/search.svg")),
+            Self::Close => Some(include_bytes!("../assets/icons/x.svg")),
             Self::Unknown => None,
         }
     }

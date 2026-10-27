@@ -33,7 +33,8 @@ pub fn resolve(
     })
 }
 
-fn data_dirs() -> &'static [PathBuf] {
+/// XDG data directories, most important first.
+pub fn data_dirs() -> &'static [PathBuf] {
     static DIRS: OnceLock<Vec<PathBuf>> = OnceLock::new();
     DIRS.get_or_init(|| {
         let home = std::env::home_dir().unwrap_or_default();
@@ -90,29 +91,36 @@ fn themes() -> &'static [(PathBuf, Vec<String>)] {
                 continue;
             }
             seen.push(theme.clone());
+            // The first index.theme describes the theme in every base (e.g. a Nix profile's
+            // hicolor icons, whose index.theme is only in the system's).
+            let Some(index) = (bases.iter()).find_map(|base| {
+                std::fs::read_to_string(base.join(&theme).join("index.theme")).ok()
+            }) else {
+                continue;
+            };
+            let list = |key: &str| -> Vec<String> {
+                index
+                    .lines()
+                    .find_map(|line| line.strip_prefix(key))
+                    .map(|value| {
+                        value
+                            .split(',')
+                            .map(|item| item.trim().to_owned())
+                            .collect()
+                    })
+                    .unwrap_or_default()
+            };
+            // Inherited themes come after this one, but before hicolor.
+            let at = queue.len().saturating_sub(1);
+            for parent in list("Inherits=").into_iter().rev() {
+                queue.insert(at.min(queue.len()), parent);
+            }
+            let directories = list("Directories=");
             for base in &bases {
                 let dir = base.join(&theme);
-                let Ok(index) = std::fs::read_to_string(dir.join("index.theme")) else {
-                    continue;
-                };
-                let list = |key: &str| -> Vec<String> {
-                    index
-                        .lines()
-                        .find_map(|line| line.strip_prefix(key))
-                        .map(|value| {
-                            value
-                                .split(',')
-                                .map(|item| item.trim().to_owned())
-                                .collect()
-                        })
-                        .unwrap_or_default()
-                };
-                // Inherited themes come after this one, but before hicolor.
-                let at = queue.len().saturating_sub(1);
-                for parent in list("Inherits=").into_iter().rev() {
-                    queue.insert(at.min(queue.len()), parent);
+                if dir.is_dir() {
+                    themes.push((dir, directories.clone()));
                 }
-                themes.push((dir, list("Directories=")));
             }
         }
         themes
@@ -156,6 +164,48 @@ pub fn lookup(name: &str, symbolic: bool) -> Option<String> {
                 .flatten()
         })
     })
+}
+
+/// An icon file (SVG or raster) rendered at `size` pixels square, for `img`. GPUI's own loading
+/// renders SVGs at twice their intrinsic size (often 256px) and caches them for good, which is
+/// slow and costs about a megabyte per icon; this costs `size`² × 4 bytes. Reads and renders, so
+/// keep it off the UI thread.
+pub fn render(path: &str, size: u32) -> Option<std::sync::Arc<gpui::RenderImage>> {
+    let bytes = std::fs::read(path).ok()?;
+    let mut image = if path.ends_with(".svg") {
+        let tree = resvg::usvg::Tree::from_data(&bytes, &resvg::usvg::Options::default()).ok()?;
+        let (width, height) = (tree.size().width(), tree.size().height());
+        let scale = size as f32 / width.max(height);
+        // Centred, if it isn't square.
+        let transform = resvg::tiny_skia::Transform::from_scale(scale, scale).post_translate(
+            (size as f32 - width * scale) / 2.,
+            (size as f32 - height * scale) / 2.,
+        );
+        let mut pixmap = resvg::tiny_skia::Pixmap::new(size, size)?;
+        resvg::render(&tree, transform, &mut pixmap.as_mut());
+        let mut pixels = pixmap.take();
+        // Premultiplied; GPUI's images aren't.
+        for pixel in pixels.chunks_exact_mut(4) {
+            let alpha = u16::from(pixel[3]);
+            if alpha > 0 {
+                for channel in &mut pixel[..3] {
+                    *channel = (u16::from(*channel) * 255 / alpha).min(255) as u8;
+                }
+            }
+        }
+        image::RgbaImage::from_raw(size, size, pixels)?
+    } else {
+        // Keeps its aspect ratio, within `size`.
+        (image::load_from_memory(&bytes).ok()?)
+            .resize(size, size, image::imageops::FilterType::Triangle)
+            .into_rgba8()
+    };
+    // GPUI's images are BGRA.
+    for pixel in image.chunks_exact_mut(4) {
+        pixel.swap(0, 2);
+    }
+    let image = gpui::RenderImage::new(vec![image::Frame::new(image)]);
+    Some(std::sync::Arc::new(image))
 }
 
 fn desktop_entry_icon(entry: &str) -> Option<String> {

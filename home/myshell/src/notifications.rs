@@ -63,8 +63,11 @@ enum Write {
     Signal(Signal),
 }
 
+/// An XDG activation token for the click acting on a notification, once the compositor sends it.
+pub type Activation = Option<futures::channel::oneshot::Receiver<String>>;
+
 enum Signal {
-    ActionInvoked(i32, String),
+    ActionInvoked(i32, String, Activation),
     Closed(i32, u32),
 }
 
@@ -118,6 +121,11 @@ impl Notifications {
     /// Whether there are more pages, and none is loading.
     pub fn wants_more(&self) -> bool {
         !self.loading && !self.exhausted
+    }
+
+    /// Whether every notification has been loaded.
+    pub fn exhausted(&self) -> bool {
+        self.exhausted
     }
 
     /// Loads the next page, unless one is loading or there are no more.
@@ -185,13 +193,15 @@ impl Notifications {
         let _ = self.writes.unbounded_send(write);
     }
 
-    /// Invokes the notification's action (if it has one) and marks it read.
-    pub fn act(&mut self, id: i32, cx: &mut Context<Self>) {
+    /// Invokes the notification's action (if it has one) and marks it read. With `activation`,
+    /// the sender may raise its window: many apps (e.g. Electron ones, like Slack) only do with a
+    /// token.
+    pub fn act(&mut self, id: i32, activation: Activation, cx: &mut Context<Self>) {
         if let Some(action) = (self.entries.iter())
             .find(|entry| entry.id == id)
             .and_then(|entry| entry.default_action.clone())
         {
-            self.write(Write::Signal(Signal::ActionInvoked(id, action)));
+            self.write(Write::Signal(Signal::ActionInvoked(id, action, activation)));
         }
         self.mark_read(id, cx);
     }
@@ -280,7 +290,22 @@ async fn serve(
 async fn emit(connection: &zbus::Connection, signal: Signal) -> crate::data_source::Result<()> {
     let emitter = SignalEmitter::new(connection, PATH)?;
     match signal {
-        Signal::ActionInvoked(id, action) => {
+        Signal::ActionInvoked(id, action, activation) => {
+            // The spec sends the token first. Waiting for it delays later writes, so not long.
+            let token = activation.map(|token| {
+                futures::future::select(
+                    token,
+                    Box::pin(async_io::Timer::after(std::time::Duration::from_millis(
+                        200,
+                    ))),
+                )
+            });
+            if let Some(futures::future::Either::Left((Ok(token), _))) = match token {
+                Some(token) => Some(token.await),
+                None => None,
+            } {
+                Server::activation_token(&emitter, id as u32, &token).await?;
+            }
             Server::action_invoked(&emitter, id as u32, &action).await?
         }
         Signal::Closed(id, reason) => {
@@ -380,6 +405,13 @@ impl Server {
         emitter: &SignalEmitter<'_>,
         id: u32,
         reason: u32,
+    ) -> zbus::Result<()>;
+
+    #[zbus(signal)]
+    async fn activation_token(
+        emitter: &SignalEmitter<'_>,
+        id: u32,
+        activation_token: &str,
     ) -> zbus::Result<()>;
 
     #[zbus(signal)]

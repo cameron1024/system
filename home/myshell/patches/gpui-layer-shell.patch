@@ -1,0 +1,229 @@
+diff --git a/crates/gpui/src/platform.rs b/crates/gpui/src/platform.rs
+index c03653e..2741151 100644
+--- a/crates/gpui/src/platform.rs
++++ b/crates/gpui/src/platform.rs
+@@ -1016,6 +1016,13 @@ pub trait PlatformWindow: HasWindowHandle + HasDisplayHandle {
+     fn set_exclusive_zone(&self, _zone: Pixels) {}
+     #[cfg(all(target_os = "linux", feature = "wayland"))]
+     fn set_exclusive_edge(&self, _edge: layer_shell::Anchor) {}
++    #[cfg(all(target_os = "linux", feature = "wayland"))]
++    fn set_keyboard_interactivity(&self, _interactivity: layer_shell::KeyboardInteractivity) {}
++    #[cfg(all(target_os = "linux", feature = "wayland"))]
++    fn request_activation_token(&self) -> Option<futures::channel::oneshot::Receiver<String>> {
++        None
++    }
++
+     fn set_input_region(&self, _region: Option<&[Bounds<Pixels>]>) {}
+     fn window_decorations(&self) -> Decorations {
+         Decorations::Server
+diff --git a/crates/gpui/src/window.rs b/crates/gpui/src/window.rs
+index 52d729f..c11145e 100644
+--- a/crates/gpui/src/window.rs
++++ b/crates/gpui/src/window.rs
+@@ -2398,6 +2398,29 @@ impl Window {
+         self.platform_window.set_exclusive_edge(edge);
+     }
+ 
++    /// Change how a layer-shell surface receives keyboard input, e.g. to take the keyboard
++    /// while a launcher's search field is shown. (Wayland layer-shell windows only)
++    #[cfg(all(target_os = "linux", feature = "wayland"))]
++    pub fn set_keyboard_interactivity(
++        &self,
++        interactivity: crate::layer_shell::KeyboardInteractivity,
++    ) {
++        self.platform_window
++            .set_keyboard_interactivity(interactivity);
++    }
++
++    /// Requests an XDG activation token for the latest click on this window, which another
++    /// client can use to raise its own window (e.g. a notification server passing it to the app
++    /// whose notification was clicked). None if the compositor doesn't support activation.
++    /// (Wayland only)
++    #[cfg(all(target_os = "linux", feature = "wayland"))]
++    pub fn request_activation_token(
++        &self,
++    ) -> Option<futures::channel::oneshot::Receiver<String>> {
++        self.platform_window.request_activation_token()
++    }
++
++
+     /// Start an interactive window resize operation if this window is resizable.
+     pub fn start_window_resize(&self, edge: ResizeEdge) {
+         if self.is_resizable {
+diff --git a/crates/gpui_linux/src/linux/wayland/client.rs b/crates/gpui_linux/src/linux/wayland/client.rs
+index 469eb44..38bd4a9 100644
+--- a/crates/gpui_linux/src/linux/wayland/client.rs
++++ b/crates/gpui_linux/src/linux/wayland/client.rs
+@@ -506,6 +506,8 @@ pub(crate) enum PendingActivation {
+     Path(PathBuf),
+     /// A window from ourselves to raise.
+     Window(ObjectId),
++    /// For the caller, e.g. to pass to another client.
++    Token(futures::channel::oneshot::Sender<String>),
+ }
+ 
+ impl WaylandClientState {
+@@ -620,6 +622,11 @@ impl WaylandClientStatePtr {
+             Some(PendingActivation::Window(window));
+     }
+ 
++    pub(crate) fn set_pending_token(&self, sender: futures::channel::oneshot::Sender<String>) {
++        self.0.upgrade().unwrap().borrow_mut().pending_activation =
++            Some(PendingActivation::Token(sender));
++    }
++
+     pub fn enable_ime(&self) {
+         let client = self.get_client();
+         let mut state = client.borrow_mut();
+@@ -1751,6 +1758,9 @@ impl Dispatch<xdg_activation_token_v1::XdgActivationTokenV1, ()> for WaylandClie
+                 Some(PendingActivation::Path(path)) => {
+                     reveal_path_internal(executor, path, Some(token))
+                 }
++                Some(PendingActivation::Token(sender)) => {
++                    let _ = sender.send(token);
++                }
+                 Some(PendingActivation::Window(window)) => {
+                     let Some(window) = get_window(&mut state, &window) else {
+                         return;
+diff --git a/crates/gpui_linux/src/linux/wayland/window.rs b/crates/gpui_linux/src/linux/wayland/window.rs
+index 3f2671d..ff987e6 100644
+--- a/crates/gpui_linux/src/linux/wayland/window.rs
++++ b/crates/gpui_linux/src/linux/wayland/window.rs
+@@ -38,7 +38,7 @@ use gpui::{
+     PlatformWindow, Point, PromptButton, PromptLevel, RequestFrameOptions, ResizeEdge, Scene, Size,
+     Tiling, WindowAppearance, WindowBackgroundAppearance, WindowBounds, WindowControlArea,
+     WindowControls, WindowDecorations, WindowKind, WindowParams, WindowVisibility,
+-    layer_shell::{Anchor, LayerShellNotSupportedError},
++    layer_shell::{Anchor, KeyboardInteractivity, LayerShellNotSupportedError},
+     popup::PopupOptions,
+     px, size,
+ };
+@@ -107,6 +107,12 @@ pub struct WaylandWindowState {
+     appearance: WindowAppearance,
+     blur: Option<org_kde_kwin_blur::OrgKdeKwinBlur>,
+     viewport: Option<wp_viewport::WpViewport>,
++    /// A viewport destination for the next presented frame, whose buffer has the new size.
++    /// Applied earlier, any commit in between (e.g. of an input region) would show the old
++    /// buffer stretched to it.
++    pending_viewport: Option<(i32, i32)>,
++    /// The viewport destination last presented with.
++    viewport_destination: Option<(i32, i32)>,
+     outputs: HashMap<ObjectId, Output>,
+     display: Option<(ObjectId, Output)>,
+     globals: Globals,
+@@ -503,6 +509,20 @@ impl WaylandSurfaceState {
+         }
+     }
+ 
++    fn set_keyboard_interactivity(&self, interactivity: KeyboardInteractivity) -> bool {
++        if let WaylandSurfaceState::LayerShell(WaylandLayerSurfaceState { layer_surface, .. }) =
++            self
++        {
++            layer_surface.set_keyboard_interactivity(
++                super::layer_shell::wayland_keyboard_interactivity(interactivity),
++            );
++            true
++        } else {
++            false
++        }
++    }
++
++
+     fn destroy(&mut self) {
+         match self {
+             WaylandSurfaceState::Xdg(WaylandXdgSurfaceState {
+@@ -606,6 +626,8 @@ impl WaylandWindowState {
+             app_id: options.app_id,
+             blur: None,
+             viewport,
++            pending_viewport: None,
++            viewport_destination: None,
+             globals,
+             outputs: HashMap::default(),
+             display: None,
+@@ -1493,12 +1515,10 @@ impl WaylandWindowStatePtr {
+             self.callbacks.borrow_mut().resize = Some(fun);
+         }
+ 
+-        {
+-            let state = self.state.borrow();
+-            if let Some(viewport) = &state.viewport {
+-                viewport
+-                    .set_destination(f32::from(size.width) as i32, f32::from(size.height) as i32);
+-            }
++        let mut state = self.state.borrow_mut();
++        if state.viewport.is_some() {
++            state.pending_viewport =
++                Some((f32::from(size.width) as i32, f32::from(size.height) as i32));
+         }
+     }
+ 
+@@ -1803,6 +1823,19 @@ impl PlatformWindow for WaylandWindow {
+         }
+     }
+ 
++    fn request_activation_token(&self) -> Option<futures::channel::oneshot::Receiver<String>> {
++        let state = self.borrow();
++        let activation = state.globals.activation.as_ref()?;
++        let (sender, receiver) = futures::channel::oneshot::channel();
++        state.client.set_pending_token(sender);
++        let token = activation.get_activation_token(&state.globals.qh, ());
++        let serial = state.client.get_serial(SerialKind::MousePress);
++        token.set_serial(serial.as_raw(), &state.globals.seat);
++        token.set_surface(&state.surface);
++        token.commit();
++        Some(receiver)
++    }
++
+     fn request_attention(&self) {}
+ 
+     fn is_active(&self) -> bool {
+@@ -1965,10 +1998,28 @@ impl PlatformWindow for WaylandWindow {
+             let callback = state.surface.frame(&state.globals.qh, state.surface.id());
+             state.pending_frame_callback = Some(callback);
+         }
++        // Committed with this frame's buffer, which has the new size.
++        if let Some((width, height)) = state.pending_viewport
++            && let Some(viewport) = &state.viewport
++        {
++            viewport.set_destination(width, height);
++        }
+         if state.renderer.draw(scene) {
++            if let Some(destination) = state.pending_viewport.take() {
++                state.viewport_destination = Some(destination);
++            }
+             state.presentation = PresentationState::Presented;
+             self.0.frame_loop.set(FrameLoop::AwaitingCallback);
+         } else {
++            // Nothing was presented, so later commits still carry the old buffer.
++            if state.pending_viewport.is_some()
++                && let Some(viewport) = &state.viewport
++            {
++                match state.viewport_destination {
++                    Some((width, height)) => viewport.set_destination(width, height),
++                    None => viewport.set_destination(-1, -1),
++                }
++            }
+             state.presentation = state.presentation.failed();
+             self.0.frame_loop.set(FrameLoop::PresentationFailed);
+         }
+@@ -2049,6 +2100,19 @@ impl PlatformWindow for WaylandWindow {
+         }
+     }
+ 
++    fn set_keyboard_interactivity(&self, interactivity: KeyboardInteractivity) {
++        let state = self.borrow();
++        if state
++            .surface_state
++            .set_keyboard_interactivity(interactivity)
++        {
++            // Commit to apply it immediately, otherwise it only takes effect
++            // on the next frame.
++            state.surface.commit();
++        }
++    }
++
++
+     fn set_input_region(&self, region: Option<&[Bounds<Pixels>]>) {
+         let state = self.borrow();
+         match region {

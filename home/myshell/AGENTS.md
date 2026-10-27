@@ -10,6 +10,8 @@ Do not make a readme
 - `mask myshell test` - `cargo test` with the correct environment
 - `mask myshell fmt` - `cargo fmt` with the correct nightly rustfmt
 
+GPUI is built from `vendor/zed` (gitignored): `patches/gpui.sh` checks out the pinned rev and applies `patches/*.patch`, and the run/test commands run it first. Edit GPUI there, then regenerate the patch (see the script).
+
 ## Goals (in order)
 
 - Low idle resource consumption (CPU, RAM, battery, etc.)

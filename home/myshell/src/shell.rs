@@ -1,5 +1,6 @@
 use futures::StreamExt;
 use futures::channel::mpsc;
+use gpui::AnyWindowHandle;
 use gpui::AppContext;
 use gpui::Bounds;
 use gpui::Context;
@@ -32,6 +33,7 @@ use crate::data_source::power_profile::PowerProfile;
 use crate::data_source::system::System;
 use crate::data_source::tray::Tray;
 use crate::data_source::volume::Volume;
+use crate::launcher::Launcher;
 use crate::notifications::Arrived;
 use crate::notifications::Notifications;
 use crate::shortcuts::Command;
@@ -49,6 +51,7 @@ pub struct Sources {
     pub tray: Entity<Data<Tray>>,
     pub caffeine: Entity<Caffeine>,
     pub notifications: Entity<Notifications>,
+    pub launcher: Entity<Launcher>,
 }
 
 pub struct Shell {
@@ -78,6 +81,7 @@ impl Shell {
             caffeine: cx.new(|_| Caffeine::default()),
             notifications: cx
                 .new(|cx| Notifications::new(database.store.clone(), database.unread, cx)),
+            launcher: cx.new(|_| Launcher::new()),
         };
         cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
             // The toasts also show the bell while the bar is hidden, for exactly as long.
@@ -142,6 +146,9 @@ impl Shell {
                             .brightness
                             .update(cx, |data, cx| data.change_brightness(steps, changed, cx));
                     }
+                    ModuleAction::ToggleLauncher(window) => {
+                        let _ = this.update(cx, |shell, cx| shell.toggle_launcher(window, cx));
+                    }
                     ModuleAction::Click(_) | ModuleAction::Adjust(..) => {}
                 }
             }
@@ -168,6 +175,32 @@ impl Shell {
                     });
                 }
             }
+            Command::ToggleLauncher => {
+                // Wayland doesn't say which display is focused, so ask niri, or else use the
+                // first.
+                cx.spawn(async move |this, cx| {
+                    let focused = crate::niri::focused_output().await;
+                    let _ = this.update(cx, |shell, cx| {
+                        let bar = (shell.bars.iter())
+                            .find(|bar| {
+                                let origin = bar.update(cx, |_, window, cx| {
+                                    window.display(cx).map(|display| display.bounds().origin)
+                                });
+                                origin.ok().flatten().zip(focused).is_some_and(
+                                    |(origin, (x, y))| {
+                                        (f32::from(origin.x), f32::from(origin.y)) == (x, y)
+                                    },
+                                )
+                            })
+                            .or(shell.bars.first())
+                            .copied();
+                        if let Some(bar) = bar {
+                            shell.toggle_launcher(bar.into(), cx);
+                        }
+                    });
+                })
+                .detach();
+            }
             Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
             Command::Adjust(module, steps) => {
                 self.act(ModuleAction::Adjust(module, steps), module, cx)
@@ -181,6 +214,17 @@ impl Shell {
         let _ = self.actions.unbounded_send(action);
         if module != Module::Notifications {
             self.peek(module, cx);
+        }
+    }
+
+    /// Opens the launcher on `window`'s bar, closing it elsewhere, or closes it if it's open there.
+    fn toggle_launcher(&mut self, window: AnyWindowHandle, cx: &mut Context<Self>) {
+        for bar in &self.bars {
+            let target = bar.window_id() == window.window_id();
+            let _ = bar.update(cx, |bar, _, cx| {
+                let open = target && !bar.launcher_open();
+                bar.set_launcher(open, cx);
+            });
         }
     }
 
@@ -236,7 +280,8 @@ impl Shell {
                     window_background: WindowBackgroundAppearance::Transparent,
                     kind: WindowKind::LayerShell(LayerShellOptions {
                         namespace: "myshell-bar".into(),
-                        layer: Layer::Top,
+                        // Above fullscreen windows too (niri draws the top layer below them).
+                        layer: Layer::Overlay,
                         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,
                         exclusive_zone: Some(px(bar::HEIGHT)),
                         keyboard_interactivity: KeyboardInteractivity::None,
@@ -244,7 +289,7 @@ impl Shell {
                     }),
                     ..Default::default()
                 },
-                |_, cx| cx.new(|cx| Bar::new(sources, actions, cx)),
+                |window, cx| cx.new(|cx| Bar::new(sources, actions, window, cx)),
             ) {
                 Ok(window) => self.bars.push(window),
                 Err(error) => eprintln!("opening bar: {error}"),

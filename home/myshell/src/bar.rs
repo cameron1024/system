@@ -14,6 +14,7 @@ use gpui::Context;
 use gpui::Div;
 use gpui::ElementId;
 use gpui::Entity;
+use gpui::FocusHandle;
 use gpui::IntoElement;
 use gpui::MouseButton;
 use gpui::MouseDownEvent;
@@ -53,6 +54,7 @@ use crate::data_source::Data;
 use crate::data_source::DataSource;
 use crate::data_source::tray::TrayItem;
 use crate::liquid;
+use crate::notifications::Activation;
 use crate::notifications::Notification;
 use crate::outside_click;
 use crate::outside_click::OutsideClick;
@@ -68,6 +70,8 @@ use crate::tray;
 
 type TooltipBuilder = Box<dyn Fn(&mut Window, &mut gpui::App) -> gpui::AnyView>;
 use crate::volume_button::VolumeButton;
+
+mod launcher_island;
 
 pub const HEIGHT: f32 = 36.;
 /// Space between a section's (or peeked module's) edge and the liquid around it at rest.
@@ -118,6 +122,8 @@ struct Body {
     progress: f32,
     /// Joins bar-height bodies on its left and right with concave fillets.
     fillets: [bool; 2],
+    /// Those bodies' progress, which may differ (e.g. an open dropdown stays while the bar hides).
+    neighbours: f32,
 }
 
 /// While revealing, a body starts narrow and bump-shaped (each side's flare and rounded bottom
@@ -155,7 +161,8 @@ fn blob(body: Body) -> Option<liquid::Outline> {
 /// For a body taller than the bar, joined to the bar-height bodies beside it.
 fn fillets(body: Body) -> impl Iterator<Item = liquid::Outline> {
     let progress = body.progress.clamp(0., 1.);
-    let neighbour_bottom = HEIGHT * progress;
+    // With no neighbour left, this is exactly the blob's own flare, so it can stay.
+    let neighbour_bottom = HEIGHT * body.neighbours.clamp(0., 1.);
     let radius = liquid::FLARE.min((body.height * progress - neighbour_bottom) / 2.);
     // Matches blob's sides.
     let centre = (body.left + body.right) / 2.;
@@ -197,8 +204,6 @@ pub struct Bar {
     /// The notifications island's bounds, recorded during prepaint for the input region.
     island: Rc<Cell<Option<Bounds<Pixels>>>>,
     surface_height: f32,
-    /// The viewport size of the last frame drawn.
-    viewport: gpui::Size<Pixels>,
     removals: Vec<Removal>,
     /// A notification being swiped horizontally, and how far.
     swiping: Option<(i32, f32)>,
@@ -210,6 +215,15 @@ pub struct Bar {
     tray_island: Rc<Cell<Option<Bounds<Pixels>>>>,
     /// Watches for clicks outside the shell while a group is open.
     outside_click: Option<WindowHandle<OutsideClick>>,
+    launcher: Reveal,
+    launcher_progress: f32,
+    /// It was opened with the bar hidden, so it slides down whole rather than growing.
+    launcher_slides: bool,
+    /// The launcher's results' height, in rows.
+    launcher_rows: Tween,
+    launcher_focus: FocusHandle,
+    /// How the window takes the keyboard: for the launcher, and while handing over from it.
+    launcher_keyboard: gpui::layer_shell::KeyboardInteractivity,
     /// After a swipe dismisses a notification, the time of the latest scroll event. Swipes are
     /// ignored until scrolling stops, so one long scroll can't dismiss the rows sliding up.
     swipe_blocked: Option<Instant>,
@@ -229,8 +243,10 @@ pub struct Bar {
     toast_timer: Option<Task<()>>,
     /// The pointer is over the shell's UI (its input region).
     hovered: bool,
-    /// Scrolls the list back to the top as a hovered-open dropdown closes.
-    scroll_back: Option<Tween>,
+    /// Eases the list's scroll offset, e.g. back to the top as a hovered-open dropdown closes.
+    scroll_tween: Option<Tween>,
+    /// The read notifications were just shown, so the list scrolls to the first (once loaded).
+    scroll_to_read: bool,
     /// The toasts' background, in rows.
     toast_rows: Tween,
     /// The dropdown list's height, in rows.
@@ -249,6 +265,8 @@ pub enum ModuleAction {
     Click(Module),
     Adjust(Module, i32),
     Notifications(NotificationAction),
+    /// On the bar in this window.
+    ToggleLauncher(gpui::AnyWindowHandle),
 }
 
 #[derive(Clone, Copy)]
@@ -288,6 +306,7 @@ impl Bar {
         let open = self.pinned || self.hover_open;
         self.dropdown.set(open, cx.reduce_motion(), Instant::now());
         if open {
+            self.set_launcher(false, cx);
             self.close_tray_menu(cx);
         }
         self.sync_outside_click(cx);
@@ -303,9 +322,12 @@ impl Bar {
         let Some((handle, root)) = outside_click::open(window, cx) else {
             return;
         };
+
         // Released when the compositor dismisses it, or when it's no longer needed.
         cx.observe_release(&root, |this, _, cx| {
             this.outside_click = None;
+            // e.g. to release the keyboard.
+            cx.notify();
             this.close_tray_menu(cx);
             if this.pinned {
                 let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
@@ -413,7 +435,9 @@ impl Bar {
                 strip.contains(&position)
             });
         let toasting = self.toasts.iter().any(|toast| toast.reveal.visible);
-        if over_toasts && toasting && !self.hover_open && !self.pinned {
+        // The launcher takes input everywhere while open; moving over the toasts mustn't close it.
+        let launching = self.launcher.visible;
+        if over_toasts && toasting && !self.hover_open && !self.pinned && !launching {
             self.hover_open = true;
             self.sync_dropdown(cx);
         } else if self.hover_open && !over_toasts && !over_island && !over_section {
@@ -429,12 +453,18 @@ impl Bar {
         }
         self.hover_open = false;
         self.sync_dropdown(cx);
+        self.scroll_to_read = false;
+        self.scroll_list(0.);
+    }
+
+    /// Eases the list's scroll offset to `to` (negative, scrolling down).
+    fn scroll_list(&mut self, to: f32) {
         let offset = f32::from(self.list_scroll.0.borrow().base_handle.offset().y);
-        if offset < 0. {
+        if (offset - to).abs() >= 0.5 {
             let now = Instant::now();
-            let mut tween = Tween::new(offset, now).with_duration(SCROLL_BACK);
-            tween.set(0., now);
-            self.scroll_back = Some(tween);
+            let mut tween = Tween::new(offset, now).with_duration(SCROLL_EASE);
+            tween.set(to, now);
+            self.scroll_tween = Some(tween);
         }
     }
 
@@ -477,14 +507,24 @@ impl Bar {
         !self.bar.hidden()
             || !self.peeks.is_empty()
             || !self.dropdown.hidden()
+            || !self.launcher.hidden()
             || !self.toasts.is_empty()
     }
 
     pub fn new(
         sources: Sources,
         actions: mpsc::UnboundedSender<ModuleAction>,
+        window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
+        // e.g. clicking another window while the launcher has the keyboard.
+        cx.observe_window_activation(window, |this, window, cx| {
+            if !window.is_window_active() {
+                this.set_launcher(false, cx);
+            }
+        })
+        .detach();
+        redraw_on(&sources.launcher, cx);
         // Modules without their own view are rendered inline from these sources.
         redraw_on(&sources.clock, cx);
         redraw_on(&sources.system, cx); // CPU, memory and disk
@@ -523,7 +563,6 @@ impl Bar {
             dropdown_progress: 0.,
             island: Rc::default(),
             surface_height: HEIGHT,
-            viewport: gpui::Size::default(),
             removals: Vec::new(),
             swiping: None,
             swipe_blocked: None,
@@ -532,6 +571,12 @@ impl Bar {
             tray_progress: 0.,
             tray_island: Rc::default(),
             outside_click: None,
+            launcher: Reveal::new(false, Instant::now()),
+            launcher_progress: 0.,
+            launcher_slides: false,
+            launcher_rows: Tween::new(1., Instant::now()),
+            launcher_focus: cx.focus_handle(),
+            launcher_keyboard: gpui::layer_shell::KeyboardInteractivity::None,
             list_scroll: UniformListScrollHandle::new(),
             pinned: false,
             hover_open: false,
@@ -540,7 +585,8 @@ impl Bar {
             toasts: Vec::new(),
             toast_timer: None,
             hovered: false,
-            scroll_back: None,
+            scroll_tween: None,
+            scroll_to_read: false,
             toast_rows: Tween::new(0., Instant::now()),
             list_rows: Tween::new(0., Instant::now()),
         }
@@ -551,6 +597,16 @@ impl Bar {
             .find(|(peeked, _)| *peeked == module)
             .map(|&(_, progress)| progress);
         self.revealed(module.name(), peeked, content, accent)
+    }
+
+    /// How far the content row is slid up: with the bar. While peeking, it stays put and each
+    /// peeked module (or open group) is offset on its own, countering this.
+    fn row_offset(&self) -> f32 {
+        if self.bar.hidden() {
+            0.
+        } else {
+            slide_offset(self.bar_progress)
+        }
     }
 
     /// Content fades and scales in as it's revealed. While peeking (`peeked` is its progress),
@@ -748,6 +804,9 @@ impl Bar {
             self.tray_reveal = Reveal::new(false, now);
             self.tray_reveal.set(true, reduce_motion, now);
         }
+        if self.tray_reveal.visible {
+            self.set_launcher(false, cx);
+        }
         if self.tray_reveal.visible && self.pinned {
             let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
             let _ = self.actions.unbounded_send(action);
@@ -818,6 +877,8 @@ impl Bar {
         fillets: [bool; 2],
     ) -> impl IntoElement {
         let liquid = self.liquid.clone();
+        // Fillets join the section's body, which follows the bar.
+        let neighbours = self.bar_progress;
         canvas(
             move |bounds, _, _| {
                 liquid.borrow_mut().push(Body {
@@ -826,6 +887,7 @@ impl Bar {
                     height: height.unwrap_or(f32::from(bounds.size.height) + 2. * PAD_Y),
                     progress,
                     fillets,
+                    neighbours,
                 })
             },
             |_, _, _, _| {},
@@ -870,10 +932,12 @@ impl Bar {
         let toasts = (self.toasts.iter())
             .map(|toast| toast.reveal.progress(Instant::now()))
             .fold(0., f32::max);
+        // An open dropdown holds it in place while the bar shows or hides around it.
+        let hold = self.dropdown_progress.max(toasts);
         let progress = if self.bar.hidden() {
-            peek.unwrap_or(0.).max(self.dropdown_progress).max(toasts)
+            peek.unwrap_or(0.).max(hold)
         } else {
-            self.bar_progress
+            self.bar_progress.max(hold)
         };
         let shown = !self.bar.hidden()
             || peek.is_some()
@@ -993,10 +1057,9 @@ impl Bar {
                         ),
                 )
             })
-            // Offset visually only, like other peeked modules.
-            .when(self.bar.hidden(), |this| {
-                this.relative().top(px(slide_offset(progress)))
-            })
+            // Offset visually only, like other peeked modules, and against the content row's.
+            .relative()
+            .top(px(slide_offset(progress) - self.row_offset()))
             .map(|this| {
                 if shown {
                     // Joined to the right section's body, unless peeking on its own.
@@ -1044,9 +1107,33 @@ impl Bar {
             .on_click(cx.listener(move |this, _, _, cx| match action {
                 NotificationAction::MarkAllRead => this.mark_all_read(cx),
                 action => {
+                    if let NotificationAction::ToggleShowRead = action {
+                        this.scroll_to_read = !this.sources.notifications.read(cx).show_read;
+                    }
                     let _ = (this.actions).unbounded_send(ModuleAction::Notifications(action));
                 }
             }))
+    }
+
+    /// Once the read notifications are shown, eases the list to the first, loading pages until
+    /// it's found (or there are none).
+    fn scroll_to_first_read(&mut self, cx: &mut Context<Self>) {
+        let notifications = self.sources.notifications.read(cx);
+        if !notifications.show_read {
+            // The toggle hasn't applied yet.
+            return;
+        }
+        let visible = notifications.visible();
+        let first_read = visible.partition_point(|entry| !entry.is_read());
+        if first_read < visible.len() {
+            self.scroll_to_read = false;
+            self.scroll_list(-(first_read as f32) * (ROW_HEIGHT + ROW_GAP));
+        } else if notifications.exhausted() {
+            self.scroll_to_read = false;
+        } else if notifications.wants_more() {
+            let action = ModuleAction::Notifications(NotificationAction::LoadMore);
+            let _ = self.actions.unbounded_send(action);
+        }
     }
 
     /// Unread notifications on screen swipe away from the top, slightly staggered. The rest just
@@ -1165,10 +1252,12 @@ impl Bar {
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.hide_toast(id, cx);
-                                this.remove(id, false, cx);
+                                this.remove(id, None, cx);
                             })),
                     )
-                    .on_click(cx.listener(move |this, _, _, cx| this.remove(id, true, cx)))
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.remove(id, Some(window.request_activation_token()), cx)
+                    }))
             })
             .collect();
         div()
@@ -1184,7 +1273,9 @@ impl Bar {
     /// Marks an unread notification read (and optionally acts on it), animating it out. The
     /// change applies before the next frame, so the next row's click targets are already where
     /// this one's were: rapid clicks never miss.
-    fn remove(&mut self, id: i32, act: bool, cx: &mut Context<Self>) {
+    /// With `act`, the notification is acted on (letting the sender raise its window, if given a
+    /// token).
+    fn remove(&mut self, id: i32, act: Option<Activation>, cx: &mut Context<Self>) {
         self.remove_from(id, act, 0., 1., cx);
     }
 
@@ -1192,7 +1283,7 @@ impl Bar {
     fn remove_from(
         &mut self,
         id: i32,
-        act: bool,
+        act: Option<Activation>,
         from: f32,
         direction: f32,
         cx: &mut Context<Self>,
@@ -1220,14 +1311,15 @@ impl Bar {
                 direction,
             });
         }
+        let acted = act.is_some();
         (self.sources.notifications).update(cx, |notifications, cx| {
-            if act {
-                notifications.act(id, cx)
+            if let Some(activation) = act {
+                notifications.act(id, activation, cx)
             } else {
                 notifications.mark_read(id, cx)
             }
         });
-        if act {
+        if acted {
             // Acting usually focuses the sender, so get out of the way.
             let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
             let _ = self.actions.unbounded_send(action);
@@ -1431,7 +1523,7 @@ impl Bar {
                         .on_click(cx.listener(move |this, _, _, cx| {
                             // The tick is inside the row, which would otherwise act too.
                             cx.stop_propagation();
-                            this.remove(id, false, cx);
+                            this.remove(id, None, cx);
                         })),
                 )
             })
@@ -1441,7 +1533,9 @@ impl Bar {
                     cx.listener(move |this, event, _, cx| this.swipe(id, event, cx)),
                 )
             })
-            .on_click(cx.listener(move |this, _, _, cx| this.remove(id, true, cx)))
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.remove(id, Some(window.request_activation_token()), cx)
+            }))
     }
 
     /// A horizontal scroll over an unread notification drags it; far enough when the gesture
@@ -1457,7 +1551,7 @@ impl Bar {
         if let ScrollDelta::Lines(_) = event.delta {
             if dx.abs() > dy.abs() {
                 cx.stop_propagation();
-                self.remove_from(id, false, 0., dx.signum(), cx);
+                self.remove_from(id, None, 0., dx.signum(), cx);
                 self.swipe_blocked = Some(Instant::now());
             }
             return;
@@ -1472,7 +1566,7 @@ impl Bar {
         if event.touch_phase == TouchPhase::Ended {
             self.swiping = None;
             if x.abs() >= SWIPE_DISMISS {
-                self.remove_from(id, false, x, x.signum(), cx);
+                self.remove_from(id, None, x, x.signum(), cx);
                 self.swipe_blocked = Some(Instant::now());
             }
         } else {
@@ -1708,15 +1802,28 @@ impl Render for Bar {
             self.unhover(cx);
             self.restart_toast_timer(cx);
         }
-        if let Some(tween) = &self.scroll_back {
+        if self.scroll_to_read {
+            self.scroll_to_first_read(cx);
+        }
+        if let Some(tween) = &self.scroll_tween {
             let offset = gpui::point(px(0.), px(tween.value(now)));
             self.list_scroll.0.borrow().base_handle.set_offset(offset);
             if !tween.animating(now) {
-                self.scroll_back = None;
+                self.scroll_tween = None;
             }
         }
         self.dropdown.settle(now);
         self.dropdown_progress = self.dropdown.progress(now);
+        self.launcher.settle(now);
+        self.launcher_progress = self.launcher.progress(now);
+        // The results' height eases to fit them, except while closed.
+        let rows =
+            (self.sources.launcher.read(cx).result_count()).clamp(1, crate::launcher::VISIBLE);
+        if self.launcher.hidden() {
+            self.launcher_rows.snap(rows as f32, now);
+        } else {
+            self.launcher_rows.set(rows as f32, now);
+        }
         self.tray_reveal.settle(now);
         self.tray_progress = self.tray_reveal.progress(now);
 
@@ -1768,7 +1875,12 @@ impl Render for Bar {
 
         // The surface grows to fit the dropdown while it's shown. Its transparent remainder
         // passes input through, and the reserved space is set separately.
-        let surface_height = if !self.dropdown.hidden() {
+        let surface_height = if !self.launcher.hidden() {
+            // Covering the display, so clicks anywhere else on it close the launcher.
+            (window.display(cx)).map_or(HEIGHT + MAX_LIST_HEIGHT, |display| {
+                f32::from(display.bounds().size.height)
+            })
+        } else if !self.dropdown.hidden() {
             HEIGHT + MAX_LIST_HEIGHT
         } else if !self.toasts.is_empty() {
             TOAST_TOP + MAX_TOASTS as f32 * (ROW_HEIGHT + ROW_GAP) + 2. * TOAST_PAD
@@ -1783,31 +1895,26 @@ impl Render for Bar {
             self.surface_height = surface_height;
         }
 
-        // GPUI sets a resized surface's viewport destination after the frame that requested it,
-        // to apply with the next commit. Setting the input region or exclusive zone commits
-        // immediately, which in the first frame at the new size would stretch the previous
-        // frame's buffer to it. So that frame leaves them to the next.
-        let viewport = window.viewport_size();
-        let resized = std::mem::replace(&mut self.viewport, viewport) != viewport;
-
         // Layer-shell exclusive zones are whole logical pixels, so this only commits when the
         // rounded height changes.
         let reserved_space = (HEIGHT * self.bar_progress).round() as i32;
-        if self.reserved_space != reserved_space && !resized {
+        if self.reserved_space != reserved_space {
             window.set_exclusive_zone(px(reserved_space as f32));
             self.reserved_space = reserved_space;
         }
         self.removals.retain(|removal| !removal.done(now));
-        if resized
-            || self.bar.animating()
+        self.sync_launcher_window(window, cx);
+        if self.bar.animating()
             || self.dropdown.animating()
             || self.tray_reveal.animating()
+            || self.launcher.animating()
+            || self.launcher_rows.animating(now)
             || self.toasts.iter().any(|toast| toast.reveal.animating())
             || self.toasts.iter().any(|toast| toast.row.animating(now))
             || self.toast_rows.animating(now)
             || self.list_rows.animating(now)
             || !self.removals.is_empty()
-            || self.scroll_back.is_some()
+            || self.scroll_tween.is_some()
             || self.peeks.iter().any(|(_, reveal)| reveal.animating())
         {
             window.request_animation_frame();
@@ -1816,9 +1923,7 @@ impl Render for Bar {
             .get_or_insert_with(|| Rc::new(RefCell::new(Blur::new(window))))
             .clone();
         if !self.shown() {
-            if !resized {
-                window.set_input_region(Some(&[]));
-            }
+            window.set_input_region(Some(&[]));
             if let Some(blur) = blur.borrow_mut().as_mut() {
                 blur.set_region(Vec::new());
             }
@@ -1830,6 +1935,7 @@ impl Render for Bar {
         let island = self.island.clone();
         let input_tray = self.tray_reveal.visible;
         let tray_island = self.tray_island.clone();
+        let input_everywhere = self.launcher.visible;
         let width = window.viewport_size().width;
         let toast = (self.toasts_shown()).then(|| self.toasts_element(width, now, cx));
         let toast_bounds = toast
@@ -1942,12 +2048,7 @@ impl Render for Bar {
                 |data| label(data, |stats| stats.memory_label()),
             )),
         );
-        let clock = tooltip(
-            self.module(Module::Clock, clock, theme::CLOCK_ACCENT),
-            Box::new(text_tooltip(&sources.clock, theme::CLOCK_ACCENT, |data| {
-                label(data, |clock| clock.date.clone())
-            })),
-        );
+
         let brightness = tooltip(
             self.module(
                 Module::Brightness,
@@ -2008,7 +2109,7 @@ impl Render for Bar {
             .map(|(index, item)| self.tray_module(item, index == 0, tooltips_enabled, cx))
             .collect();
         let left = self.section([Some(profile), battery, Some(cpu), Some(memory), Some(disk)]);
-        let center = self.section([Some(clock)]);
+        let center = self.section([Some(self.launcher_island(clock, tooltips_enabled, now, cx))]);
         let notifications = self.notifications_island(cx);
         let section = self.section.clone();
         let right = self
@@ -2029,12 +2130,7 @@ impl Render for Bar {
         // Equal-basis sides keep the clock at the display's centre, whatever their contents.
         // Top-aligned, so the dropdown grows downwards.
         let side = || div().flex_1().flex().items_start();
-        // While peeking, the row stays put and each peeked module is offset on its own.
-        let offset = if self.bar.hidden() {
-            0.
-        } else {
-            slide_offset(self.bar_progress)
-        };
+        let offset = self.row_offset();
         let content = div()
             .absolute()
             .top(px(offset))
@@ -2074,7 +2170,10 @@ impl Render for Bar {
                         let bar = this.clone();
                         window.on_mouse_event(move |_: &MouseDownEvent, phase, _, cx| {
                             if phase == DispatchPhase::Bubble {
-                                bar.update(cx, |bar, cx| bar.close_tray_menu(cx));
+                                bar.update(cx, |bar, cx| {
+                                    bar.close_tray_menu(cx);
+                                    bar.set_launcher(false, cx);
+                                });
                             }
                         });
                         // Before the rows' handlers, which check it. Any scroll counts, wherever.
@@ -2101,10 +2200,11 @@ impl Render for Bar {
                         if input_tray && let Some(island) = tray_island.get() {
                             input.push(island.dilate(px(BLOB_PAD_X)));
                         }
-                        input.extend(toast_area);
-                        if !resized {
-                            window.set_input_region(Some(&input));
+                        if input_everywhere {
+                            input.push(bounds);
                         }
+                        input.extend(toast_area);
+                        window.set_input_region(Some(&input));
                         let outlines: Vec<_> = (liquid.borrow().iter().copied())
                             .flat_map(|body| blob(body).into_iter().chain(fillets(body)))
                             .collect();
@@ -2132,8 +2232,8 @@ impl Render for Bar {
 }
 
 const TOAST_DURATION: Duration = Duration::from_secs(5);
-/// For the list to scroll back to the top after a hovered-open dropdown closes.
-const SCROLL_BACK: Duration = Duration::from_millis(400);
+/// For the list to ease to a position, e.g. back to the top after a hovered-open dropdown closes.
+const SCROLL_EASE: Duration = Duration::from_millis(400);
 /// Between each toast leaving.
 const TOAST_STAGGER: Duration = Duration::from_millis(250);
 /// More toasts than this are still in the dropdown, just not shown below the bar.
@@ -2207,6 +2307,7 @@ mod tests {
                     height,
                     progress,
                     fillets: [false; 2],
+                    neighbours: progress,
                 };
                 let Some(outline) = blob(body) else {
                     continue;

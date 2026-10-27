@@ -596,7 +596,8 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Backslash { spawn "hexecute"; }
 
-    Mod+Space hotkey-overlay-title="Launcher" { spawn "vicinae" "open"; }
+    Mod+Space hotkey-overlay-title="Launcher" repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.ToggleLauncher"; }
+    // Mod+Space hotkey-overlay-title="Launcher" { spawn "vicinae" "open"; }
     // Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
     Mod+Alt+Space hotkey-overlay-title="Speak" {  spawn "pkill" "-USR2" "-n" "handy"; }
     Mod+N hotkey-overlay-title="Notifications" repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "notifications"; }

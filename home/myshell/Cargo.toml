@@ -29,6 +29,35 @@ raw-window-handle = "0.6"
 wayland-backend = { version = "0.3", features = ["client_system"] }
 wayland-client = "0.31"
 wayland-protocols = { version = "0.32", features = ["client", "staging"] }
+nucleo-matcher = "0.3"
+resvg = { version = "0.46", default-features = false }
+
+# GPUI with local patches (patches/*.patch), applied to a checkout of the rev above by
+# patches/gpui.sh, which `mask myshell run` and `mask myshell test` run first. Every crate from
+# Zed's repository is listed, so none is built twice (once from git, once locally).
+[patch."https://github.com/zed-industries/zed"]
+collections = { path = "vendor/zed/crates/collections" }
+derive_refineable = { path = "vendor/zed/crates/refineable/derive_refineable" }
+gpui = { path = "vendor/zed/crates/gpui" }
+gpui_apple = { path = "vendor/zed/crates/gpui_apple" }
+gpui_linux = { path = "vendor/zed/crates/gpui_linux" }
+gpui_macos = { path = "vendor/zed/crates/gpui_macos" }
+gpui_macros = { path = "vendor/zed/crates/gpui_macros" }
+gpui_platform = { path = "vendor/zed/crates/gpui_platform" }
+gpui_shared_string = { path = "vendor/zed/crates/gpui_shared_string" }
+gpui_util = { path = "vendor/zed/crates/gpui_util" }
+gpui_web = { path = "vendor/zed/crates/gpui_web" }
+gpui_wgpu = { path = "vendor/zed/crates/gpui_wgpu" }
+gpui_windows = { path = "vendor/zed/crates/gpui_windows" }
+http_client = { path = "vendor/zed/crates/http_client" }
+perf = { path = "vendor/zed/tooling/perf" }
+refineable = { path = "vendor/zed/crates/refineable" }
+scheduler = { path = "vendor/zed/crates/scheduler" }
+sum_tree = { path = "vendor/zed/crates/sum_tree" }
+util_macros = { path = "vendor/zed/crates/util_macros" }
+zlog = { path = "vendor/zed/crates/zlog" }
+ztracing = { path = "vendor/zed/crates/ztracing" }
+ztracing_macro = { path = "vendor/zed/crates/ztracing_macro" }
 
 # Zed's workspace patches don't propagate to git dependents, but GPUI relies on them.
 [patch.crates-io]

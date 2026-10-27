@@ -5,6 +5,7 @@ use crate::bar_module::Module;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Command {
     ToggleBar,
+    ToggleLauncher,
     Activate(Module),
     Adjust(Module, i32),
 }
@@ -17,6 +18,11 @@ struct Shortcuts {
 impl Shortcuts {
     fn toggle_bar(&self) -> zbus::fdo::Result<()> {
         self.send(Command::ToggleBar)
+    }
+
+    /// On the focused display.
+    fn toggle_launcher(&self) -> zbus::fdo::Result<()> {
+        self.send(Command::ToggleLauncher)
     }
 
     fn activate(&self, module: &str) -> zbus::fdo::Result<()> {
