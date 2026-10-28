@@ -1818,7 +1818,7 @@ impl Render for Bar {
         self.launcher_progress = self.launcher.progress(now);
         // The results' height eases to fit them, except while closed.
         let rows =
-            (self.sources.launcher.read(cx).result_count()).clamp(1, crate::launcher::VISIBLE);
+            (self.sources.launcher.read(cx).results().len()).clamp(1, crate::launcher::VISIBLE);
         if self.launcher.hidden() {
             self.launcher_rows.snap(rows as f32, now);
         } else {

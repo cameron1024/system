@@ -247,6 +247,20 @@ impl Store {
         Ok(changed > 0)
     }
 
+    /// Marks read every unread notification from `app_name` with this summary. Returns their IDs.
+    pub fn mark_read_matching(&self, app_name: &str, summary: &str, at: i64) -> Result<Vec<i32>> {
+        use self::notifications::dsl;
+        Ok(diesel::update(
+            notifications::table
+                .filter(dsl::read_at.is_null())
+                .filter(dsl::app_name.eq(app_name))
+                .filter(dsl::summary.eq(summary)),
+        )
+        .set(dsl::read_at.eq(at))
+        .returning(dsl::id)
+        .get_results(&mut *self.connection())?)
+    }
+
     pub fn mark_all_read(&self, at: i64) -> Result<()> {
         diesel::update(notifications::table.filter(notifications::read_at.is_null()))
             .set(notifications::read_at.eq(at))

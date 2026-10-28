@@ -34,6 +34,7 @@ use crate::data_source::system::System;
 use crate::data_source::tray::Tray;
 use crate::data_source::volume::Volume;
 use crate::launcher::Launcher;
+use crate::launcher::Mode;
 use crate::notifications::Arrived;
 use crate::notifications::Notifications;
 use crate::shortcuts::Command;
@@ -57,6 +58,8 @@ pub struct Sources {
 pub struct Shell {
     sources: Sources,
     bars: Vec<WindowHandle<Bar>>,
+    /// Each bar's display's UUID, which GPUI derives from its Wayland output name.
+    bar_displays: Vec<Option<uuid::Uuid>>,
     visible: bool,
     dropdown: bool,
     /// One hide deadline per peeked module. Finished timers linger until replaced or cleared,
@@ -147,7 +150,8 @@ impl Shell {
                             .update(cx, |data, cx| data.change_brightness(steps, changed, cx));
                     }
                     ModuleAction::ToggleLauncher(window) => {
-                        let _ = this.update(cx, |shell, cx| shell.toggle_launcher(window, cx));
+                        let _ =
+                            this.update(cx, |shell, cx| shell.toggle_launcher(window, None, cx));
                     }
                     ModuleAction::Click(_) | ModuleAction::Adjust(..) => {}
                 }
@@ -156,6 +160,7 @@ impl Shell {
         Self {
             sources,
             bars: Vec::new(),
+            bar_displays: Vec::new(),
             visible: true,
             dropdown: false,
             peek_timers: Vec::new(),
@@ -175,32 +180,13 @@ impl Shell {
                     });
                 }
             }
-            Command::ToggleLauncher => {
-                // Wayland doesn't say which display is focused, so ask niri, or else use the
-                // first.
-                cx.spawn(async move |this, cx| {
-                    let focused = crate::niri::focused_output().await;
-                    let _ = this.update(cx, |shell, cx| {
-                        let bar = (shell.bars.iter())
-                            .find(|bar| {
-                                let origin = bar.update(cx, |_, window, cx| {
-                                    window.display(cx).map(|display| display.bounds().origin)
-                                });
-                                origin.ok().flatten().zip(focused).is_some_and(
-                                    |(origin, (x, y))| {
-                                        (f32::from(origin.x), f32::from(origin.y)) == (x, y)
-                                    },
-                                )
-                            })
-                            .or(shell.bars.first())
-                            .copied();
-                        if let Some(bar) = bar {
-                            shell.toggle_launcher(bar.into(), cx);
-                        }
-                    });
-                })
-                .detach();
-            }
+            Command::ToggleLauncher(mode) => self.on_focused_bar(cx, move |shell, bar, cx| {
+                shell.toggle_launcher(bar.into(), mode, cx);
+            }),
+            Command::Menu(menu) => self.on_focused_bar(cx, move |shell, bar, cx| {
+                shell.close_launcher_except(bar.into(), cx);
+                let _ = bar.update(cx, |bar, _, cx| bar.open_menu(menu, cx));
+            }),
             Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
             Command::Adjust(module, steps) => {
                 self.act(ModuleAction::Adjust(module, steps), module, cx)
@@ -217,14 +203,61 @@ impl Shell {
         }
     }
 
-    /// Opens the launcher on `window`'s bar, closing it elsewhere, or closes it if it's open there.
-    fn toggle_launcher(&mut self, window: AnyWindowHandle, cx: &mut Context<Self>) {
-        for bar in &self.bars {
-            let target = bar.window_id() == window.window_id();
-            let _ = bar.update(cx, |bar, _, cx| {
-                let open = target && !bar.launcher_open();
-                bar.set_launcher(open, cx);
+    /// Runs `f` with the focused display's bar (with niri's focus-follows-mouse, the one with the
+    /// pointer). Wayland doesn't say which display is focused, so this asks niri, or else uses the
+    /// first.
+    fn on_focused_bar(
+        &mut self,
+        cx: &mut Context<Self>,
+        f: impl FnOnce(&mut Self, WindowHandle<Bar>, &mut Context<Self>) + 'static,
+    ) {
+        cx.spawn(async move |this, cx| {
+            // As GPUI derives display UUIDs from output names.
+            let focused = (crate::niri::focused_output().await)
+                .map(|name| uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_DNS, name.as_bytes()));
+
+            let _ = this.update(cx, |shell, cx| {
+                let bar = (shell.bars.iter().zip(&shell.bar_displays))
+                    .find(|(_, display)| focused.is_some() && **display == focused)
+                    .map(|(bar, _)| bar)
+                    .or(shell.bars.first())
+                    .copied();
+                if let Some(bar) = bar {
+                    f(shell, bar, cx);
+                }
             });
+        })
+        .detach();
+    }
+
+    /// Opens the launcher on `window`'s bar (in `mode`, if given), closing it elsewhere, or closes
+    /// it if it's open there (and already in `mode`).
+    fn toggle_launcher(
+        &mut self,
+        window: AnyWindowHandle,
+        mode: Option<Mode>,
+        cx: &mut Context<Self>,
+    ) {
+        // Closed elsewhere first: the launcher's state is shared, and closing resets it.
+        self.close_launcher_except(window, cx);
+        let launcher = self.sources.launcher.clone();
+        let switch = mode.is_some_and(|mode| launcher.read(cx).mode().0 != mode);
+        if let Some(bar) = (self.bars.iter()).find(|bar| bar.window_id() == window.window_id()) {
+            let _ = bar.update(cx, |bar, _, cx| {
+                let open = switch || !bar.launcher_open();
+                bar.set_launcher(open, cx);
+                if let Some(mode) = mode.filter(|_| open) {
+                    launcher.update(cx, |launcher, cx| launcher.set_mode(mode, cx));
+                }
+            });
+        }
+    }
+
+    fn close_launcher_except(&mut self, window: AnyWindowHandle, cx: &mut Context<Self>) {
+        for bar in &self.bars {
+            if bar.window_id() != window.window_id() {
+                let _ = bar.update(cx, |bar, _, cx| bar.set_launcher(false, cx));
+            }
         }
     }
 
@@ -291,7 +324,10 @@ impl Shell {
                 },
                 |window, cx| cx.new(|cx| Bar::new(sources, actions, window, cx)),
             ) {
-                Ok(window) => self.bars.push(window),
+                Ok(window) => {
+                    self.bars.push(window);
+                    self.bar_displays.push(display.uuid().ok());
+                }
                 Err(error) => eprintln!("opening bar: {error}"),
             }
         }

@@ -239,7 +239,7 @@ fn arguments(exec: &str, name: &str, icon: &str, path: &str) -> Vec<String> {
         .collect()
 }
 
-fn executable(program: &str) -> bool {
+pub fn executable(program: &str) -> bool {
     if program.contains('/') {
         return Path::new(program).is_file();
     }
@@ -248,32 +248,52 @@ fn executable(program: &str) -> bool {
 }
 
 impl App {
-    /// Starts it in its own systemd scope, as the systemd XDG integration recommends, so it
-    /// isn't part of the shell (e.g. stopped when the shell restarts).
     pub fn launch(&self) -> Result<()> {
-        let mut arguments = self.exec.clone();
         if self.terminal {
-            let terminal = std::env::var("TERMINAL").unwrap_or_else(|_| "xdg-terminal-exec".into());
-            arguments.splice(0..0, [terminal, "-e".into()]);
+            spawn_in_terminal(&self.id, &self.name, &self.exec)
+        } else {
+            spawn(&self.id, &self.name, &self.exec)
         }
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .subsec_nanos();
-        let unit = format!("app-myshell-{}-{nanos:x}.scope", unit_escape(&self.id));
-        // The app runs as this child (systemd-run execs it). Once dropped, async-process reaps it
-        // when it exits, without waiting here.
-        async_process::Command::new("systemd-run")
-            .args(["--user", "--scope", "--collect", "--quiet"])
-            .arg(format!("--unit={unit}"))
-            .arg(format!("--description={}", self.name))
-            .arg("--")
-            .args(&arguments)
-            .stdin(async_process::Stdio::null())
-            .stdout(async_process::Stdio::null())
-            .spawn()?;
-        Ok(())
     }
+}
+
+/// Starts a program in its own systemd scope, as the systemd XDG integration recommends, so it
+/// isn't part of the shell (e.g. stopped when the shell restarts). `id` names the scope.
+pub fn spawn(id: &str, description: &str, arguments: &[String]) -> Result<()> {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .subsec_nanos();
+    let unit = format!("app-myshell-{}-{nanos:x}.scope", unit_escape(id));
+    // The program runs as this child (systemd-run execs it). Once dropped, async-process reaps
+    // it when it exits, without waiting here.
+    async_process::Command::new("systemd-run")
+        .args(["--user", "--scope", "--collect", "--quiet"])
+        .arg(format!("--unit={unit}"))
+        .arg(format!("--description={description}"))
+        .arg("--")
+        .args(arguments)
+        .stdin(async_process::Stdio::null())
+        .stdout(async_process::Stdio::null())
+        .spawn()?;
+    Ok(())
+}
+
+/// As `spawn`, in a new terminal window: `$TERMINAL`, else the first of a few common ones
+/// installed. They all take the command after `-e`.
+pub fn spawn_in_terminal(id: &str, description: &str, arguments: &[String]) -> Result<()> {
+    let terminal = std::env::var("TERMINAL")
+        .ok()
+        .or_else(|| {
+            ["ghostty", "kitty", "alacritty", "foot", "xdg-terminal-exec"]
+                .into_iter()
+                .find(|terminal| executable(terminal))
+                .map(str::to_owned)
+        })
+        .ok_or("no terminal found")?;
+    let mut command = vec![terminal, "-e".into()];
+    command.extend_from_slice(arguments);
+    spawn(id, description, &command)
 }
 
 /// Like `systemd-escape`: unit names allow only a few characters, and dashes separate fields.

@@ -18,6 +18,7 @@ in
     ./audio.nix
     ./gtk.nix
     ./lock
+    ./myshell.nix
     # ./noctalia.nix
     ./one-password.nix
     ./picker.nix

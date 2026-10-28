@@ -30,7 +30,10 @@ wayland-backend = { version = "0.3", features = ["client_system"] }
 wayland-client = "0.31"
 wayland-protocols = { version = "0.32", features = ["client", "staging"] }
 nucleo-matcher = "0.3"
+emojis = "0.9"
 resvg = { version = "0.46", default-features = false }
+uuid = { version = "1", features = ["v5"] }
+secrecy = "0.10"
 
 # GPUI with local patches (patches/*.patch), applied to a checkout of the rev above by
 # patches/gpui.sh, which `mask myshell run` and `mask myshell test` run first. Every crate from

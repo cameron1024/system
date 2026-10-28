@@ -96,6 +96,12 @@ with lib; {
       fcitx5.waylandFrontend = true;
       fcitx5.settings = {
         globalOptions."Hotkey/TriggerKeys"."0" = "Super+slash";
+        # Their popups (clipboard history on Ctrl+;, quick phrase on Super+; and Super+`) are
+        # unwanted, and steal myshell's binds.
+        globalOptions."Behavior/DisabledAddons" = {
+          "0" = "clipboard";
+          "1" = "quickphrase";
+        };
         inputMethod = {
           "GroupOrder"."0" = "Default";
           "Groups/0" = {

@@ -45,6 +45,15 @@ pub enum Icon {
     Slack,
     Search,
     Close,
+    Sparkles,
+    Apps,
+    Terminal,
+    Key,
+    FileSearch,
+    Dollar,
+    Calculator,
+    Smile,
+    List,
     Unknown,
 }
 
@@ -77,6 +86,15 @@ impl Icon {
             Self::Slack => Some(include_bytes!("../assets/icons/slack.svg")),
             Self::Search => Some(include_bytes!("../assets/icons/search.svg")),
             Self::Close => Some(include_bytes!("../assets/icons/x.svg")),
+            Self::Sparkles => Some(include_bytes!("../assets/icons/sparkles.svg")),
+            Self::Apps => Some(include_bytes!("../assets/icons/layout-grid.svg")),
+            Self::Terminal => Some(include_bytes!("../assets/icons/square-terminal.svg")),
+            Self::Key => Some(include_bytes!("../assets/icons/key-round.svg")),
+            Self::FileSearch => Some(include_bytes!("../assets/icons/file-search.svg")),
+            Self::Dollar => Some(include_bytes!("../assets/icons/dollar-sign.svg")),
+            Self::Calculator => Some(include_bytes!("../assets/icons/calculator.svg")),
+            Self::Smile => Some(include_bytes!("../assets/icons/smile.svg")),
+            Self::List => Some(include_bytes!("../assets/icons/list.svg")),
             Self::Unknown => None,
         }
     }

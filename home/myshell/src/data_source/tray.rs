@@ -550,7 +550,7 @@ fn resolve_icon((name, theme_path, pixmaps): &IconSource) -> Option<TrayIcon> {
     silhouette(
         *width as u32,
         *height as u32,
-        data.chunks_exact(4).map(|pixel| pixel[0]),
+        data.as_chunks::<4>().0.iter().map(|pixel| pixel[0]),
     )
 }
 

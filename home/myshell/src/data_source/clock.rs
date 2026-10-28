@@ -25,6 +25,10 @@ pub struct ClockState {
     pub time: String,
     /// e.g. "Monday 1st Jan 2025".
     pub date: String,
+    /// e.g. "Monday".
+    pub weekday: String,
+    /// e.g. "01/01/2025".
+    pub numeric_date: String,
     /// Finding the system time zone can read the time zone database, so it's done here, in the
     /// background, for the UI to use too.
     pub zone: jiff::tz::TimeZone,
@@ -46,6 +50,8 @@ fn format(now: &jiff::Zoned) -> ClockState {
             now.strftime("%A"),
             now.strftime("%b %Y")
         ),
+        weekday: now.strftime("%A").to_string(),
+        numeric_date: now.strftime("%d/%m/%Y").to_string(),
         zone: now.time_zone().clone(),
     }
 }

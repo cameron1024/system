@@ -50,7 +50,7 @@ impl EventEmitter<Arrived> for Notifications {}
 enum Event {
     Added(Notification),
     Replaced(Notification, bool),
-    /// By the sender; carries whether it was unread.
+    /// Read elsewhere (e.g. by the sender); carries whether it was unread.
     Closed(i32, bool),
     Loaded(Option<Key>, Vec<Notification>),
 }
@@ -58,6 +58,8 @@ enum Event {
 /// Applied in order by one background task, so writes and page loads can't race.
 enum Write {
     MarkRead(i32, i64),
+    /// Every unread notification from the app with the summary.
+    MarkConversationRead(String, String, i64),
     MarkAllRead(i64),
     Load(Option<Key>),
     Signal(Signal),
@@ -196,14 +198,23 @@ impl Notifications {
     /// Invokes the notification's action (if it has one) and marks it read. With `activation`,
     /// the sender may raise its window: many apps (e.g. Electron ones, like Slack) only do with a
     /// token.
+    ///
+    /// Slack doesn't close notifications once they're read, but its summary names the
+    /// conversation (e.g. "[workspace] in #channel"), so the rest of the conversation's are marked
+    /// read too.
     pub fn act(&mut self, id: i32, activation: Activation, cx: &mut Context<Self>) {
-        if let Some(action) = (self.entries.iter())
-            .find(|entry| entry.id == id)
-            .and_then(|entry| entry.default_action.clone())
-        {
+        let Some(entry) = self.entries.iter().find(|entry| entry.id == id) else {
+            return;
+        };
+        if let Some(action) = entry.default_action.clone() {
             self.write(Write::Signal(Signal::ActionInvoked(id, action, activation)));
         }
+        let conversation =
+            (entry.app_name == "Slack").then(|| (entry.app_name.clone(), entry.summary.clone()));
         self.mark_read(id, cx);
+        if let Some((app_name, summary)) = conversation {
+            self.write(Write::MarkConversationRead(app_name, summary, now()));
+        }
     }
 
     pub fn mark_read(&mut self, id: i32, cx: &mut Context<Self>) {
@@ -272,6 +283,18 @@ async fn serve(
     while let Some(write) = writes.next().await {
         let result = match write {
             Write::MarkRead(id, at) => store.mark_read(id, at).map(drop),
+            Write::MarkConversationRead(app_name, summary, at) => {
+                let ids = store.mark_read_matching(&app_name, &summary, at);
+                for &id in ids.iter().flatten() {
+                    let _ = events.unbounded_send(Event::Closed(id, true));
+                    if let Some(connection) = &connection
+                        && let Err(error) = emit(connection, Signal::Closed(id, DISMISSED)).await
+                    {
+                        eprintln!("notifications: {error}");
+                    }
+                }
+                ids.map(drop)
+            }
             Write::MarkAllRead(at) => store.mark_all_read(at),
             Write::Load(after) => store.page(after, PAGE).map(|page| {
                 let _ = events.unbounded_send(Event::Loaded(after, page));

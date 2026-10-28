@@ -1,18 +1,21 @@
 //! The launcher, which the clock grows into like the notifications module into its dropdown: the
-//! clock slides to the right of a widening header (controls on its left), and a search field and
-//! results drop below. While it's open, the bar takes the keyboard.
+//! clock slides to the right of a widening header (the mode selector on its left, and the mode's
+//! name in the middle), and a search field and results drop below. While it's open, the bar takes
+//! the keyboard.
 
 use gpui::KeyDownEvent;
 use gpui::layer_shell::KeyboardInteractivity;
 
 use super::*;
-use crate::desktop_entry::App as DesktopApp;
+use crate::launcher::Entry;
 use crate::launcher::ICON_SIZE;
 use crate::launcher::Launcher;
+use crate::launcher::Menu;
+use crate::launcher::Mode;
 use crate::launcher::Motion;
 use crate::launcher::VISIBLE;
 
-const WIDTH: f32 = 560.;
+const WIDTH: f32 = 640.;
 const SEARCH_HEIGHT: f32 = 40.;
 const RESULT_HEIGHT: f32 = 46.;
 
@@ -33,6 +36,10 @@ impl Bar {
             return;
         }
 
+        if !open {
+            (self.sources.launcher).update(cx, |launcher, _| launcher.close());
+        }
+
         if open {
             self.launcher_slides = !self.bar.visible;
             self.close_tray_menu(cx);
@@ -44,9 +51,15 @@ impl Bar {
                 self.hover_open = false;
                 (self.dropdown).set(self.pinned, cx.reduce_motion(), Instant::now());
             }
-            (self.sources.launcher).update(cx, |launcher, cx| launcher.open(cx));
+            (self.sources.launcher).update(cx, |launcher, cx| launcher.open(None, cx));
         }
         cx.notify();
+    }
+
+    /// Opens the launcher (or starts again, if it's open) with `myshell-menu`'s options.
+    pub fn open_menu(&mut self, menu: Menu, cx: &mut Context<Self>) {
+        self.set_launcher(true, cx);
+        (self.sources.launcher).update(cx, |launcher, cx| launcher.open(Some(menu), cx));
     }
 
     /// While the launcher is open, the bar has the keyboard (focused on the launcher).
@@ -87,9 +100,12 @@ impl Bar {
         match (keystroke.key.as_str(), control) {
             ("escape", _) => self.set_launcher(false, cx),
             ("enter", _) => self.launch(None, cx),
-            ("up", _) | ("p", true) => with(cx, &|l, cx| l.select(-1, cx)),
-            ("down", _) | ("n", true) => with(cx, &|l, cx| l.select(1, cx)),
-            ("tab", _) => with(cx, &|l, cx| l.select(if shift { -1 } else { 1 }, cx)),
+            // Ctrl-h/j/k/l are the arrow keys, as in vim.
+            ("h", true) => with(cx, &|l, cx| l.move_to(Motion::Left, shift, cx)),
+            ("l", true) => with(cx, &|l, cx| l.move_to(Motion::Right, shift, cx)),
+            ("up", _) | ("p", true) | ("k", true) => with(cx, &|l, cx| l.select(-1, cx)),
+            ("down", _) | ("n", true) | ("j", true) => with(cx, &|l, cx| l.select(1, cx)),
+            ("tab", _) => with(cx, &|l, cx| l.cycle_mode(if shift { -1 } else { 1 }, cx)),
             ("left", _) => with(cx, &|l, cx| l.move_to(back, shift, cx)),
             ("right", _) => with(cx, &|l, cx| l.move_to(forward, shift, cx)),
             ("home", _) => with(cx, &|l, cx| l.move_to(Motion::Start, shift, cx)),
@@ -137,20 +153,7 @@ impl Bar {
 
     /// The result at `index`, or else the selected one, then closes.
     fn launch(&mut self, index: Option<usize>, cx: &mut Context<Self>) {
-        let launcher = self.sources.launcher.read(cx);
-        let app = match index {
-            Some(index) => launcher.results().nth(index),
-            None => launcher.selected_app(),
-        };
-        if let Some(app) = app.cloned() {
-            cx.background_executor()
-                .spawn(async move {
-                    if let Err(error) = app.launch() {
-                        eprintln!("launching {}: {error}", app.id);
-                    }
-                })
-                .detach();
-        }
+        (self.sources.launcher).update(cx, |launcher, cx| launcher.choose(index, cx));
         self.set_launcher(false, cx);
     }
 
@@ -176,33 +179,110 @@ impl Bar {
         };
         let shown = !self.bar.hidden() || peek.is_some() || !self.launcher.hidden();
         let scale = START_SCALE + (1. - START_SCALE) * progress;
-        let clock = bar_module(
-            Module::Clock.name(),
-            scaled(scale, time),
-            theme::CLOCK_ACCENT,
-        )
-        .flex_shrink_0()
-        .when(self.launcher.visible, |clock| clock.bg(theme::SELECTED))
-        .when(tooltips_enabled && !self.launcher.visible, |clock| {
-            clock.hoverable_tooltip(text_tooltip(
-                &self.sources.clock,
+        let expanded = self.launcher.visible;
+        // Expanded, the date shows beside the time: "Monday · 01/01/2025 · 09:41".
+        let date = (expanded)
+            .then(|| self.sources.clock.read(cx).state.target.as_ref())
+            .flatten()
+            .map(|clock| (clock.weekday.clone(), clock.numeric_date.clone()));
+        let dot = || div().text_color(theme::MUTED).opacity(open).child("·");
+        let time = div()
+            .flex()
+            .items_center()
+            .gap_2()
+            .when_some(date, |time, (weekday, date)| {
+                let muted = |text| div().text_color(theme::MUTED).opacity(open).child(text);
+                time.child(muted(weekday))
+                    .child(dot())
+                    .child(muted(date))
+                    .child(dot())
+            })
+            .child(time);
+        let clock = if expanded {
+            // Just the time: closing is the button beside it.
+            div()
+                .id(Module::Clock.name())
+                .px_1p5()
+                .h(px(crate::bar_module::HEIGHT))
+                .flex()
+                .flex_shrink_0()
+                .items_center()
+                .text_color(theme::CLOCK_ACCENT)
+                .child(scaled(scale, time))
+        } else {
+            bar_module(
+                Module::Clock.name(),
+                scaled(scale, time),
                 theme::CLOCK_ACCENT,
-                |data| {
-                    (data.state.target.as_ref())
-                        .map_or_else(|| "…".into(), |clock| clock.date.clone())
-                },
-            ))
-        })
-        .cursor_pointer()
-        .on_click(cx.listener(|this, _, window, _| {
-            let action = ModuleAction::ToggleLauncher(window.window_handle());
-            let _ = this.actions.unbounded_send(action);
-        }));
+            )
+            .flex_shrink_0()
+            .when(tooltips_enabled, |clock| {
+                clock.hoverable_tooltip(text_tooltip(
+                    &self.sources.clock,
+                    theme::CLOCK_ACCENT,
+                    |data| {
+                        (data.state.target.as_ref())
+                            .map_or_else(|| "…".into(), |clock| clock.date.clone())
+                    },
+                ))
+            })
+            .cursor_pointer()
+            .on_click(cx.listener(|this, _, window, _| {
+                let action = ModuleAction::ToggleLauncher(window.window_handle());
+                let _ = this.actions.unbounded_send(action);
+            }))
+        };
+        // Grows in with the header, so it doesn't widen the island all at once.
+        let close = (expanded && open > 0.).then(|| {
+            div()
+                .w(px((crate::bar_module::HEIGHT + 4.) * open))
+                .flex_shrink_0()
+                .flex()
+                .justify_end()
+                .overflow_hidden()
+                .opacity(open)
+                .child(
+                    div()
+                        .id("launcher-close")
+                        .size(px(crate::bar_module::HEIGHT))
+                        .flex_shrink_0()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded(px(4.))
+                        .cursor_pointer()
+                        .hover(|button| button.bg(theme::MODULE_HOVER))
+                        .child(static_icon(Icon::Close, theme::MUTED))
+                        .on_click(cx.listener(|this, _, _, cx| this.set_launcher(false, cx))),
+                )
+        });
         // The controls fill the space left of the clock, clipped to it as the header widens.
         // With no width of their own, they never affect the island's.
+        let launcher = self.sources.launcher.read(cx);
+        let (mode, _) = launcher.mode();
+        let title = launcher.prompt().unwrap_or(mode.name()).to_owned();
+        let selector = (mode != Mode::Menu).then(|| {
+            div().flex().items_center().gap_1().children(
+                Mode::SELECTABLE.map(|option| self.launcher_mode(option, option == mode, cx)),
+            )
+        });
         let header = div()
+            .relative()
             .flex()
             .min_w(px(WIDTH * open))
+            .when(self.launcher.visible && open > 0., |header| {
+                header.child(
+                    div()
+                        .absolute()
+                        .inset_0()
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .opacity(open)
+                        .text_color(theme::FOREGROUND)
+                        .child(title),
+                )
+            })
             .child(
                 div()
                     .w_0()
@@ -217,15 +297,12 @@ impl Bar {
                                 .flex()
                                 .items_center()
                                 .opacity(open)
-                                .child(self.launcher_control(
-                                    "launcher-close",
-                                    Icon::Close,
-                                    cx.listener(|this, _, _, cx| this.set_launcher(false, cx)),
-                                )),
+                                .children(selector),
                         )
                     }),
             )
-            .child(clock);
+            .child(clock)
+            .children(close);
         let rows = self.launcher_rows.value(now);
         div()
             .id("launcher-island")
@@ -264,14 +341,19 @@ impl Bar {
             })
     }
 
-    fn launcher_control(
-        &self,
-        id: &'static str,
-        icon: Icon,
-        on_click: impl Fn(&gpui::ClickEvent, &mut Window, &mut App) + 'static,
-    ) -> Stateful<Div> {
+    /// A mode in the selector, which switches to it (keeping what's typed).
+    fn launcher_mode(&self, mode: Mode, selected: bool, cx: &mut Context<Self>) -> Stateful<Div> {
+        let tooltip = match mode.prefix() {
+            Some(prefix) => format!("{} ({prefix})", mode.name()),
+            None => mode.name().to_owned(),
+        };
+        let color = if selected {
+            theme::CLOCK_ACCENT
+        } else {
+            theme::MUTED
+        };
         div()
-            .id(id)
+            .id(("launcher-mode", mode as usize))
             .size(px(crate::bar_module::HEIGHT))
             .flex()
             .items_center()
@@ -279,13 +361,18 @@ impl Bar {
             .rounded(px(4.))
             .cursor_pointer()
             .hover(|button| button.bg(theme::MODULE_HOVER))
-            .child(static_icon(icon, theme::FOREGROUND))
-            .on_click(on_click)
+            .when(selected, |button| button.bg(theme::SELECTED))
+            .child(static_icon(mode.icon(), color))
+            .hoverable_tooltip(static_tooltip(tooltip.into(), theme::CLOCK_ACCENT))
+            .on_click(cx.listener(move |this, _, _, cx| {
+                (this.sources.launcher).update(cx, |launcher, cx| launcher.set_mode(mode, cx))
+            }))
     }
 
     fn launcher_body(&self, cx: &mut Context<Self>) -> Div {
         let launcher = self.sources.launcher.read(cx);
         let query = launcher.query.clone();
+        let (mode, _) = launcher.mode();
         let selection = launcher.selection();
         let caret_first = launcher.cursor == selection.start;
         let caret = || {
@@ -331,13 +418,13 @@ impl Bar {
                     .when(!caret_first, |field| field.child(caret()))
                     .child(text(selection.end..query.len()))
                     .when(query.is_empty(), |field| {
-                        field.child(div().text_color(theme::MUTED).child("Search apps"))
+                        field.child(div().text_color(theme::MUTED).child(mode.placeholder()))
                     }),
             );
-        let results: Vec<(usize, DesktopApp)> = (launcher.results().enumerate())
+        let results: Vec<(usize, Entry)> = (launcher.results().iter().enumerate())
             .skip(launcher.scroll)
             .take(VISIBLE)
-            .map(|(index, app)| (index, app.clone()))
+            .map(|(index, entry)| (index, entry.clone()))
             .collect();
         let selected = launcher.selected;
         let empty = (results.is_empty()).then(|| {
@@ -349,12 +436,11 @@ impl Bar {
                 .justify_center()
                 .text_size(px(14.))
                 .text_color(theme::MUTED)
-                .child(if !launcher.scanned {
-                    "Loading apps…"
-                } else if query.is_empty() {
-                    "No apps"
-                } else {
-                    "No matches"
+                .child(match mode {
+                    Mode::Auto | Mode::Desktop if !launcher.scanned => "Loading…",
+                    Mode::Files | Mode::Calculator if launcher.mode().1.is_empty() => "",
+                    Mode::Menu => "No matches: Enter chooses what's typed",
+                    _ => "No matches",
                 })
         });
         div()
@@ -367,22 +453,22 @@ impl Bar {
             .opacity(self.launcher_expand())
             .child(search)
             .child(div().h(px(LIST_PAD / 2.)).flex_shrink_0())
-            .children(
-                results
-                    .into_iter()
-                    .map(|(index, app)| self.launcher_result(index, &app, index == selected, cx)),
-            )
+            .children(results.into_iter().map(|(index, entry)| {
+                self.launcher_result(index, &entry, index == selected, mode == Mode::Auto, cx)
+            }))
             .children(empty)
     }
 
     fn launcher_result(
         &self,
         index: usize,
-        app: &DesktopApp,
+        entry: &Entry,
         selected: bool,
+        // In auto mode, each result shows which mode it's from.
+        tagged: bool,
         cx: &mut Context<Self>,
     ) -> Stateful<Div> {
-        let initial: String = (app.name.chars().next())
+        let initial: String = (entry.name.chars().next())
             .map_or_else(String::new, |initial| initial.to_uppercase().collect());
         let letter = move || {
             div()
@@ -398,13 +484,31 @@ impl Bar {
                 .child(initial.clone())
                 .into_any_element()
         };
-        let icon = match &app.icon {
-            Some(icon) => img(gpui::ImageSource::Render(icon.clone()))
+        let icon = match (&entry.icon, entry.mode) {
+            (_, Mode::Emoji) => div()
+                .size(px(ICON_SIZE))
+                .flex_shrink_0()
+                .flex()
+                .items_center()
+                .justify_center()
+                .font_family("Noto Color Emoji")
+                .text_size(px(22.))
+                .child(entry.emoji().unwrap_or_default().to_owned())
+                .into_any_element(),
+            (Some(icon), _) => img(gpui::ImageSource::Render(icon.clone()))
                 .size(px(ICON_SIZE))
                 .flex_shrink_0()
                 .object_fit(ObjectFit::Contain)
                 .into_any_element(),
-            None => letter(),
+            (None, Mode::Desktop | Mode::Menu) => letter(),
+            (None, mode) => div()
+                .size(px(ICON_SIZE))
+                .flex_shrink_0()
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(static_icon(mode.icon(), theme::MUTED))
+                .into_any_element(),
         };
         div()
             .id(("launcher-result", index))
@@ -421,6 +525,7 @@ impl Bar {
             .child(icon)
             .child(
                 div()
+                    .flex_1()
                     .min_w_0()
                     .flex()
                     .flex_col()
@@ -429,18 +534,27 @@ impl Bar {
                             .truncate()
                             .text_size(px(15.))
                             .text_color(theme::FOREGROUND)
-                            .child(app.name.clone()),
+                            .child(entry.name.clone()),
                     )
-                    .when(!app.description.is_empty(), |text| {
+                    .when(!entry.description.is_empty(), |text| {
                         text.child(
                             div()
                                 .truncate()
                                 .text_size(px(12.))
                                 .text_color(theme::MUTED)
-                                .child(app.description.clone()),
+                                .child(entry.description.clone()),
                         )
                     }),
             )
+            .when(tagged, |row| {
+                row.child(
+                    div()
+                        .flex_shrink_0()
+                        .text_size(px(12.))
+                        .text_color(theme::MUTED)
+                        .child(entry.mode.name()),
+                )
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.launch(Some(index), cx)))
     }
 }

@@ -3,8 +3,9 @@
 use futures::AsyncBufReadExt;
 use futures::AsyncWriteExt;
 
-/// The focused output's logical position. None if niri isn't running, or on any failure.
-pub async fn focused_output() -> Option<(f32, f32)> {
+/// The focused output's name, e.g. "DP-2" (with focus-follows-mouse, the one with the pointer).
+/// None if niri isn't running, or on any failure.
+pub async fn focused_output() -> Option<String> {
     let path = std::env::var_os("NIRI_SOCKET")?;
     let stream = async_io::Async::<std::os::unix::net::UnixStream>::connect(path)
         .await
@@ -16,6 +17,5 @@ pub async fn focused_output() -> Option<(f32, f32)> {
         .await
         .ok()?;
     let reply: serde_json::Value = serde_json::from_str(&reply).ok()?;
-    let logical = &reply["Ok"]["FocusedOutput"]["logical"];
-    Some((logical["x"].as_f64()? as f32, logical["y"].as_f64()? as f32))
+    Some(reply["Ok"]["FocusedOutput"]["name"].as_str()?.to_owned())
 }

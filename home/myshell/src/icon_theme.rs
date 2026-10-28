@@ -185,11 +185,11 @@ pub fn render(path: &str, size: u32) -> Option<std::sync::Arc<gpui::RenderImage>
         resvg::render(&tree, transform, &mut pixmap.as_mut());
         let mut pixels = pixmap.take();
         // Premultiplied; GPUI's images aren't.
-        for pixel in pixels.chunks_exact_mut(4) {
+        for pixel in pixels.as_chunks_mut::<4>().0 {
             let alpha = u16::from(pixel[3]);
-            if alpha > 0 {
-                for channel in &mut pixel[..3] {
-                    *channel = (u16::from(*channel) * 255 / alpha).min(255) as u8;
+            for channel in &mut pixel[..3] {
+                if let Some(value) = (u16::from(*channel) * 255).checked_div(alpha) {
+                    *channel = value.min(255) as u8;
                 }
             }
         }
@@ -201,7 +201,7 @@ pub fn render(path: &str, size: u32) -> Option<std::sync::Arc<gpui::RenderImage>
             .into_rgba8()
     };
     // GPUI's images are BGRA.
-    for pixel in image.chunks_exact_mut(4) {
+    for pixel in image.as_chunks_mut::<4>().0 {
         pixel.swap(0, 2);
     }
     let image = gpui::RenderImage::new(vec![image::Frame::new(image)]);

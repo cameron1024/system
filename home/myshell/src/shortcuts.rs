@@ -1,11 +1,17 @@
 use futures::channel::mpsc::UnboundedSender;
+use futures::channel::oneshot;
 
 use crate::bar_module::Module;
+use crate::launcher::Menu;
+use crate::launcher::Mode;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum Command {
     ToggleBar,
-    ToggleLauncher,
+    /// Toggles the launcher, or (if given a mode and open in another) switches to that mode.
+    ToggleLauncher(Option<Mode>),
+    /// Shows options in the launcher on the focused display, like dmenu.
+    Menu(Menu),
     Activate(Module),
     Adjust(Module, i32),
 }
@@ -22,7 +28,30 @@ impl Shortcuts {
 
     /// On the focused display.
     fn toggle_launcher(&self) -> zbus::fdo::Result<()> {
-        self.send(Command::ToggleLauncher)
+        self.send(Command::ToggleLauncher(None))
+    }
+
+    /// On the focused display, in `mode` (by name, e.g. "emoji").
+    fn toggle_launcher_mode(&self, mode: &str) -> zbus::fdo::Result<()> {
+        let mode = (Mode::SELECTABLE.into_iter())
+            .find(|candidate| candidate.name().eq_ignore_ascii_case(mode))
+            .ok_or_else(|| zbus::fdo::Error::InvalidArgs(format!("unknown mode: {mode}")))?;
+        self.send(Command::ToggleLauncher(Some(mode)))
+    }
+
+    /// Replies with the chosen option (or what was typed, if none matched), once chosen. Fails
+    /// if the launcher closes without a choice. `prompt` titles it, unless empty.
+    async fn menu(&self, prompt: String, options: Vec<String>) -> zbus::fdo::Result<String> {
+        let (reply, choice) = oneshot::channel();
+        let prompt = (!prompt.is_empty()).then_some(prompt);
+        self.send(Command::Menu(Menu {
+            prompt,
+            options,
+            reply,
+        }))?;
+        choice
+            .await
+            .map_err(|_| zbus::fdo::Error::Failed("cancelled".into()))
     }
 
     fn activate(&self, module: &str) -> zbus::fdo::Result<()> {

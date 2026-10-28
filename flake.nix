@@ -128,6 +128,8 @@
         buildInputs = with pkgs; [fontconfig freetype] ++ runtimeLibs;
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
         MYSHELL_DEVSHELL = 1;
+        # Built into the shell (`env!`), so it doesn't depend on what's on PATH at runtime.
+        MYSHELL_QALC = "${pkgs.libqalculate}/bin/qalc";
       };
     # Recursively wrap every script under `root` into a package. `.sh` files
     # become writeShellApplication, `.py` files become writePython3Bin, and
