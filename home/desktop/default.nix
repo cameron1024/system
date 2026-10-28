@@ -106,6 +106,7 @@ in
       delta-trunk = {
         name = "Delta Trunk";
         exec = "delta open %U";
+        icon = "dev.zed.DeltaTrunk";
         terminal = false;
         categories = [ "Development" "IDE" "TextEditor" ];
         mimeType = [ "x-scheme-handler/delta-trunk" ];
@@ -114,6 +115,7 @@ in
       delta-stable = {
         name = "Delta";
         exec = "delta-stable open %U";
+        icon = "dev.zed.Delta";
         terminal = false;
         categories = [ "Development" "IDE" "TextEditor" ];
         mimeType = [ "x-scheme-handler/delta" ];

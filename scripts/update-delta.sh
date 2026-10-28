@@ -57,6 +57,13 @@ LAUNCHERS="$(nix build --no-link --print-out-paths --impure --expr "
       mkdir -p \$out/bin
       ln -s \${trunk}/bin/delta \$out/bin/delta
       ln -s \${stable}/bin/delta \$out/bin/delta-stable
+      # Their icons are named per channel, so they don't conflict.
+      for package in \${trunk} \${stable}; do
+        (cd \$package/share && find icons -type f) | while read -r icon; do
+          mkdir -p \$out/share/\$(dirname \$icon)
+          ln -s \$package/share/\$icon \$out/share/\$icon
+        done
+      done
     ''
 ")"
 
