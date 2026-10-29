@@ -64,7 +64,7 @@ pub fn emoji() -> Vec<Entry> {
                 Mode::Emoji,
                 name,
                 shortcodes.clone(),
-                Action::Copy(emoji.as_str().to_owned()),
+                Action::Emoji(emoji.as_str().to_owned()),
             );
             entry.extra = shortcodes;
             entry
@@ -322,7 +322,23 @@ pub async fn copy(text: String) -> Result<()> {
     let mut stdin = child.stdin.take().ok_or("no stdin")?;
     stdin.write_all(text.as_bytes()).await?;
     drop(stdin);
-    child.status().await?;
+    if !child.status().await?.success() {
+        return Err("wl-copy failed".into());
+    }
+    Ok(())
+}
+
+/// Types text into the focused window.
+pub async fn type_text(text: String) -> Result<()> {
+    // Set by the devshell.
+    let status = async_process::Command::new(env!("MYSHELL_WTYPE"))
+        .args(["--", &text])
+        .stdin(async_process::Stdio::null())
+        .status()
+        .await?;
+    if !status.success() {
+        return Err("wtype failed".into());
+    }
     Ok(())
 }
 

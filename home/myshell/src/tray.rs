@@ -21,6 +21,7 @@ use crate::data_source::tray::EntryKind;
 use crate::data_source::tray::MenuEntry;
 use crate::data_source::tray::TrayIcon;
 use crate::data_source::tray::TrayItem;
+use crate::fade::background;
 use crate::theme;
 
 /// Matched against each item's id and title, case-insensitively.
@@ -135,8 +136,13 @@ pub fn rows(entries: &[MenuEntry], depth: usize, on_click: &OnClick) -> Vec<AnyE
         }
         let checked = matches!(entry.kind, EntryKind::Check(true) | EntryKind::Radio(true));
         let submenu = !entry.children.is_empty();
+        let interactive = !submenu && entry.enabled;
         let row = div()
             .id(("tray-menu", entry.id as usize))
+            .when(interactive, |row| {
+                row.relative()
+                    .child(background("background").radius(px(6.)))
+            })
             .h(px(ROW_HEIGHT))
             .flex_shrink_0()
             .pl(px(8. + INDENT * depth as f32))
@@ -152,13 +158,12 @@ pub fn rows(entries: &[MenuEntry], depth: usize, on_click: &OnClick) -> Vec<AnyE
                 }))
             })
             .child(div().truncate().child(entry.label.clone()));
-        let row = if submenu || !entry.enabled {
+        let row = if !interactive {
             row.text_color(theme::MUTED)
         } else {
             let (on_click, id) = (on_click.clone(), entry.id);
             row.text_color(theme::FOREGROUND)
                 .cursor_pointer()
-                .hover(|row| row.bg(theme::MODULE_HOVER))
                 .on_click(move |_, window, cx| on_click(id, window, cx))
         };
         rows.push(row.into_any_element());

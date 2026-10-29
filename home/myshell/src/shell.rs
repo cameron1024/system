@@ -36,6 +36,7 @@ use crate::data_source::volume::Volume;
 use crate::launcher::Launcher;
 use crate::launcher::Mode;
 use crate::notifications::Arrived;
+use crate::notifications::DO_NOT_DISTURB_KEY;
 use crate::notifications::Notifications;
 use crate::shortcuts::Command;
 use crate::store::Database;
@@ -82,18 +83,25 @@ impl Shell {
             battery: cx.new(|cx| Data::new(Battery, db, cx)),
             tray: cx.new(|cx| Data::new(Tray, db, cx)),
             caffeine: cx.new(|_| Caffeine::default()),
-            notifications: cx
-                .new(|cx| Notifications::new(database.store.clone(), database.unread, cx)),
+            notifications: cx.new(|cx| {
+                let do_not_disturb = (database.persisted(DO_NOT_DISTURB_KEY))
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false);
+                Notifications::new(database.store.clone(), database.unread, do_not_disturb, cx)
+            }),
             launcher: cx.new(|_| Launcher::new()),
         };
-        cx.subscribe(&sources.notifications, |shell, _, _: &Arrived, cx| {
-            // The toasts also show the bell while the bar is hidden, for exactly as long.
-            if !shell.dropdown {
-                for bar in &shell.bars {
-                    let _ = bar.update(cx, |bar, _, cx| bar.show_toast(cx));
+        cx.subscribe(
+            &sources.notifications,
+            |shell, notifications, _: &Arrived, cx| {
+                // The toasts also show the bell while the bar is hidden, for exactly as long.
+                if !shell.dropdown && !notifications.read(cx).do_not_disturb {
+                    for bar in &shell.bars {
+                        let _ = bar.update(cx, |bar, _, cx| bar.show_toast(cx));
+                    }
                 }
-            }
-        })
+            },
+        )
         .detach();
         let (actions, mut receiver) = mpsc::unbounded::<ModuleAction>();
         let targets = sources.clone();
@@ -187,6 +195,19 @@ impl Shell {
                 shell.close_launcher_except(bar.into(), cx);
                 let _ = bar.update(cx, |bar, _, cx| bar.open_menu(menu, cx));
             }),
+            Command::ToggleDoNotDisturb => {
+                let notifications = self.sources.notifications.clone();
+                notifications.update(cx, |notifications, cx| {
+                    notifications.toggle_do_not_disturb(cx)
+                });
+                if notifications.read(cx).do_not_disturb {
+                    for bar in &self.bars {
+                        let _ = bar.update(cx, |bar, _, cx| bar.hide_toasts(cx));
+                    }
+                }
+                // Shows the new state while the bar is hidden.
+                self.peek(Module::Notifications, cx);
+            }
             Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
             Command::Adjust(module, steps) => {
                 self.act(ModuleAction::Adjust(module, steps), module, cx)

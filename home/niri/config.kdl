@@ -602,6 +602,7 @@ binds {
     // Mod+Space hotkey-overlay-title="Launcher" {  spawn "sherlock"; }
     Mod+Alt+Space hotkey-overlay-title="Speak" {  spawn "pkill" "-USR2" "-n" "handy"; }
     Mod+N hotkey-overlay-title="Notifications" repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "notifications"; }
+    Mod+Shift+N hotkey-overlay-title="Do Not Disturb" repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.ToggleDoNotDisturb"; }
     Mod+Shift+Backspace hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return hotkey-overlay-title="Terminal" { spawn "kitty" "tmux"; }
     Mod+Shift+Return hotkey-overlay-title="Firefox" { spawn "firefox"; }

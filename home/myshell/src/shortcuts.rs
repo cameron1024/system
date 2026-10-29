@@ -14,6 +14,7 @@ pub enum Command {
     Menu(Menu),
     Activate(Module),
     Adjust(Module, i32),
+    ToggleDoNotDisturb,
 }
 
 struct Shortcuts {
@@ -52,6 +53,10 @@ impl Shortcuts {
         choice
             .await
             .map_err(|_| zbus::fdo::Error::Failed("cancelled".into()))
+    }
+
+    fn toggle_do_not_disturb(&self) -> zbus::fdo::Result<()> {
+        self.send(Command::ToggleDoNotDisturb)
     }
 
     fn activate(&self, module: &str) -> zbus::fdo::Result<()> {

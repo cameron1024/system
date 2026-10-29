@@ -21,6 +21,7 @@ use crate::store::Store;
 use crate::store::now;
 
 const PATH: &str = "/org/freedesktop/Notifications";
+pub const DO_NOT_DISTURB_KEY: &str = "do-not-disturb";
 const PAGE: i64 = 50;
 
 /// NotificationClosed reasons, from the specification.
@@ -35,6 +36,8 @@ pub struct Notifications {
     /// In the whole history, not just `entries`.
     unread: usize,
     pub show_read: bool,
+    /// Notifications still arrive (into the dropdown), but don't pop up. Persisted.
+    pub do_not_disturb: bool,
     /// The last entry ever loaded. Entries that move after it (e.g. when read) are dropped, as
     /// they'll be loaded again in their new place.
     cursor: Option<Key>,
@@ -61,6 +64,7 @@ enum Write {
     /// Every unread notification from the app with the summary.
     MarkConversationRead(String, String, i64),
     MarkAllRead(i64),
+    SetDoNotDisturb(bool),
     Load(Option<Key>),
     Signal(Signal),
 }
@@ -74,8 +78,14 @@ enum Signal {
 }
 
 impl Notifications {
-    /// `unread` is the count in the store, read in the background at startup.
-    pub fn new(store: Option<Arc<Store>>, unread: usize, cx: &mut Context<Self>) -> Self {
+    /// `unread` is the count in the store, read in the background at startup, as is
+    /// `do_not_disturb`.
+    pub fn new(
+        store: Option<Arc<Store>>,
+        unread: usize,
+        do_not_disturb: bool,
+        cx: &mut Context<Self>,
+    ) -> Self {
         let (events, mut received) = mpsc::unbounded();
         let (writes, pending) = mpsc::unbounded();
         let server = match store {
@@ -95,6 +105,7 @@ impl Notifications {
             entries: Vec::new(),
             unread,
             show_read: false,
+            do_not_disturb,
             cursor: None,
             exhausted: false,
             loading: false,
@@ -136,6 +147,12 @@ impl Notifications {
             self.loading = true;
             self.write(Write::Load(self.cursor));
         }
+    }
+
+    pub fn toggle_do_not_disturb(&mut self, cx: &mut Context<Self>) {
+        self.do_not_disturb = !self.do_not_disturb;
+        self.write(Write::SetDoNotDisturb(self.do_not_disturb));
+        cx.notify();
     }
 
     pub fn toggle_show_read(&mut self, cx: &mut Context<Self>) {
@@ -296,6 +313,7 @@ async fn serve(
                 ids.map(drop)
             }
             Write::MarkAllRead(at) => store.mark_all_read(at),
+            Write::SetDoNotDisturb(on) => store.set(DO_NOT_DISTURB_KEY, &on.into()),
             Write::Load(after) => store.page(after, PAGE).map(|page| {
                 let _ = events.unbounded_send(Event::Loaded(after, page));
             }),

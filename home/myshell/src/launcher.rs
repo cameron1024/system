@@ -6,7 +6,10 @@
 
 mod sources;
 
+pub use sources::type_text;
+
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -151,8 +154,8 @@ impl Entry {
 
     /// The emoji itself, for an emoji entry.
     pub fn emoji(&self) -> Option<&str> {
-        match (&self.action, self.mode) {
-            (Action::Copy(emoji), Mode::Emoji) => Some(emoji),
+        match &self.action {
+            Action::Emoji(emoji) => Some(emoji),
             _ => None,
         }
     }
@@ -177,9 +180,19 @@ enum Action {
     /// The vault's share ID (if known) and the item's ID.
     Password(Option<String>, String),
     Copy(String),
+    /// Typed into the window that had the keyboard, or copied.
+    Emoji(String),
     Open(PathBuf),
     /// Answers `myshell-menu`.
     Choose(String),
+}
+
+/// What choosing an entry leaves for the bar to do.
+pub enum Chosen {
+    /// Resolves to whether it was copied.
+    Copied(Task<bool>),
+    /// To type into the window that had the keyboard, once it has it again.
+    Type(String),
 }
 
 /// A `myshell-menu` request: its prompt, and where to send the choice. Dropping it cancels.
@@ -416,8 +429,13 @@ impl Launcher {
     }
 
     /// Runs the entry at `index` (or the selected one). With none, a menu returns the query, as
-    /// dmenu does.
-    pub fn choose(&mut self, index: Option<usize>, cx: &mut Context<Self>) {
+    /// dmenu does. With `copy`, an emoji is copied rather than typed.
+    pub fn choose(
+        &mut self,
+        index: Option<usize>,
+        copy: bool,
+        cx: &mut Context<Self>,
+    ) -> Option<Chosen> {
         let entry = self.results.get(index.unwrap_or(self.selected)).cloned();
         let (mode, text) = self.mode();
         let arguments = match mode {
@@ -430,7 +448,7 @@ impl Launcher {
         let choice = match entry {
             Some(entry) => entry.action,
             None if mode == Mode::Menu => Action::Choose(text.to_owned()),
-            None => return,
+            None => return None,
         };
         let run = |result: crate::data_source::Result<()>| {
             if let Err(error) = result {
@@ -438,22 +456,32 @@ impl Launcher {
             }
         };
         let executor = cx.background_executor().clone();
+        let copied =
+            |copy: Pin<Box<dyn Future<Output = crate::data_source::Result<()>> + Send>>| {
+                Some(Chosen::Copied(executor.spawn(async move {
+                    let result = copy.await;
+                    let copied = result.is_ok();
+                    run(result);
+                    copied
+                })))
+            };
         match choice {
             Action::App(app) => run(app.launch()),
             Action::Program(path) => run(sources::run_program(&path, &arguments)),
             Action::Open(path) => run(sources::open(&path)),
-            Action::Copy(text) => executor
-                .spawn(async move { run(sources::copy(text).await) })
-                .detach(),
-            Action::Password(share, item) => executor
-                .spawn(async move { run(sources::copy_password(share, item).await) })
-                .detach(),
+            Action::Copy(text) => return copied(Box::pin(sources::copy(text))),
+            Action::Emoji(text) if copy => return copied(Box::pin(sources::copy(text))),
+            Action::Emoji(text) => return Some(Chosen::Type(text)),
+            Action::Password(share, item) => {
+                return copied(Box::pin(sources::copy_password(share, item)));
+            }
             Action::Choose(text) => {
                 if let Some((_, reply)) = self.menu.take() {
                     let _ = reply.send(text);
                 }
             }
         }
+        None
     }
 
     pub fn selection(&self) -> std::ops::Range<usize> {

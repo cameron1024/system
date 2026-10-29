@@ -7,7 +7,7 @@ use gpui::div;
 use gpui::prelude::*;
 use gpui::px;
 
-use crate::theme;
+use crate::fade::background;
 
 pub const HEIGHT: f32 = 30.;
 
@@ -56,20 +56,24 @@ impl Module {
     }
 }
 
-/// A styled module that retains GPUI's standard click and scroll listener builders.
+/// A styled module that retains GPUI's standard click and scroll listener builders. Its
+/// background fades in while hovered, and rests tinted while `selected` (e.g. open).
 pub fn bar_module(
     id: impl Into<ElementId>,
     content: impl IntoElement,
     accent: Rgba,
+    selected: bool,
 ) -> Stateful<Div> {
+    let id = id.into();
     div()
-        .id(id)
+        .id(id.clone())
+        .relative()
         .px_1p5()
         .h(px(HEIGHT))
         .flex()
         .items_center()
         .rounded(px(4.))
         .text_color(accent)
-        .hover(|style| style.bg(theme::MODULE_HOVER))
+        .child(background(id).selected(selected))
         .child(content)
 }

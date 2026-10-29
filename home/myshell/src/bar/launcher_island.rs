@@ -7,6 +7,9 @@ use gpui::KeyDownEvent;
 use gpui::layer_shell::KeyboardInteractivity;
 
 use super::*;
+use crate::fade::background;
+use crate::fade::tinted;
+use crate::launcher::Chosen;
 use crate::launcher::Entry;
 use crate::launcher::ICON_SIZE;
 use crate::launcher::Launcher;
@@ -18,6 +21,8 @@ use crate::launcher::VISIBLE;
 const WIDTH: f32 = 640.;
 const SEARCH_HEIGHT: f32 = 40.;
 const RESULT_HEIGHT: f32 = 46.;
+/// "Copied", below the clock.
+pub(super) const COPIED_HEIGHT: f32 = 20.;
 
 /// Below the clock, at rest: the search field, then `rows` results (or a message).
 fn body_height(rows: f32) -> f32 {
@@ -99,7 +104,8 @@ impl Bar {
         };
         match (keystroke.key.as_str(), control) {
             ("escape", _) => self.set_launcher(false, cx),
-            ("enter", _) => self.launch(None, cx),
+            // Ctrl-Enter copies an emoji, rather than typing it.
+            ("enter", copy) => self.launch(None, copy, cx),
             // Ctrl-h/j/k/l are the arrow keys, as in vim.
             ("h", true) => with(cx, &|l, cx| l.move_to(Motion::Left, shift, cx)),
             ("l", true) => with(cx, &|l, cx| l.move_to(Motion::Right, shift, cx)),
@@ -152,9 +158,42 @@ impl Bar {
     }
 
     /// The result at `index`, or else the selected one, then closes.
-    fn launch(&mut self, index: Option<usize>, cx: &mut Context<Self>) {
-        (self.sources.launcher).update(cx, |launcher, cx| launcher.choose(index, cx));
+    fn launch(&mut self, index: Option<usize>, copy: bool, cx: &mut Context<Self>) {
+        let chosen =
+            (self.sources.launcher).update(cx, |launcher, cx| launcher.choose(index, copy, cx));
         self.set_launcher(false, cx);
+        match chosen {
+            Some(Chosen::Copied(copied)) => cx
+                .spawn(async move |this, cx| {
+                    if copied.await {
+                        let _ = this.update(cx, |this, cx| this.show_copied(cx));
+                    }
+                })
+                .detach(),
+            // Typed once the keyboard is back with the window that had it (see `Bar::new`).
+            // Dropped if it never is, rather than typed somewhere unexpected later.
+            Some(Chosen::Type(text)) => {
+                let expiry = cx.spawn(async |this, cx| {
+                    async_io::Timer::after(Duration::from_secs(1)).await;
+                    let _ = this.update(cx, |this, _| this.pending_type = None);
+                });
+                self.pending_type = Some((text, expiry));
+            }
+            None => {}
+        }
+    }
+
+    /// Shows "Copied" below the clock for a moment.
+    fn show_copied(&mut self, cx: &mut Context<Self>) {
+        self.copied.set(true, cx.reduce_motion(), Instant::now());
+        self.copied_timer = cx.spawn(async |this, cx| {
+            async_io::Timer::after(Duration::from_secs(1)).await;
+            let _ = this.update(cx, |this, cx| {
+                this.copied.set(false, cx.reduce_motion(), Instant::now());
+                cx.notify();
+            });
+        });
+        cx.notify();
     }
 
     /// The clock module, and the launcher it grows into. With the bar hidden, it shows (sliding
@@ -170,14 +209,18 @@ impl Bar {
             .find(|(module, _)| *module == Module::Clock)
             .map(|&(_, progress)| progress);
         let open = self.launcher_expand();
-        // Open, it stays in place while the bar shows or hides around it.
-        let hold = self.launcher_progress;
+        let copied = self.copied_progress;
+        // Open (or showing "Copied"), it stays in place while the bar shows or hides around it.
+        let hold = self.launcher_progress.max(copied);
         let progress = if self.bar.hidden() {
             peek.unwrap_or(0.).max(hold)
         } else {
             self.bar_progress.max(hold)
         };
-        let shown = !self.bar.hidden() || peek.is_some() || !self.launcher.hidden();
+        let shown = !self.bar.hidden()
+            || peek.is_some()
+            || !self.launcher.hidden()
+            || !self.copied.hidden();
         let scale = START_SCALE + (1. - START_SCALE) * progress;
         let expanded = self.launcher.visible;
         // Expanded, the date shows beside the time: "Monday · 01/01/2025 · 09:41".
@@ -214,6 +257,7 @@ impl Bar {
                 Module::Clock.name(),
                 scaled(scale, time),
                 theme::CLOCK_ACCENT,
+                false,
             )
             .flex_shrink_0()
             .when(tooltips_enabled, |clock| {
@@ -244,6 +288,7 @@ impl Bar {
                 .child(
                     div()
                         .id("launcher-close")
+                        .relative()
                         .size(px(crate::bar_module::HEIGHT))
                         .flex_shrink_0()
                         .flex()
@@ -251,7 +296,7 @@ impl Bar {
                         .justify_center()
                         .rounded(px(4.))
                         .cursor_pointer()
-                        .hover(|button| button.bg(theme::MODULE_HOVER))
+                        .child(background("background"))
                         .child(static_icon(Icon::Close, theme::MUTED))
                         .on_click(cx.listener(|this, _, _, cx| this.set_launcher(false, cx))),
                 )
@@ -315,7 +360,9 @@ impl Bar {
             .flex_col()
             .items_center()
             .overflow_hidden()
-            .h(px(crate::bar_module::HEIGHT + body_height(rows) * open))
+            .h(px(crate::bar_module::HEIGHT
+                + body_height(rows) * open
+                + COPIED_HEIGHT * copied))
             .opacity(progress)
             .child(header)
             .when(open > 0., |island| {
@@ -327,6 +374,24 @@ impl Bar {
                         .justify_center()
                         .overflow_hidden()
                         .child(self.launcher_body(cx)),
+                )
+            })
+            .when(copied > 0., |island| {
+                island.child(
+                    div()
+                        .h(px(COPIED_HEIGHT * copied))
+                        .flex_shrink_0()
+                        .overflow_hidden()
+                        .opacity(copied)
+                        .child(
+                            div()
+                                .h(px(COPIED_HEIGHT))
+                                .flex()
+                                .items_center()
+                                .text_size(px(12.))
+                                .text_color(theme::CLOCK_ACCENT)
+                                .child("Copied"),
+                        ),
                 )
             })
             // Offset visually only, like other peeked modules, and against the content row's.
@@ -354,15 +419,17 @@ impl Bar {
         };
         div()
             .id(("launcher-mode", mode as usize))
+            .relative()
             .size(px(crate::bar_module::HEIGHT))
             .flex()
             .items_center()
             .justify_center()
             .rounded(px(4.))
             .cursor_pointer()
-            .hover(|button| button.bg(theme::MODULE_HOVER))
-            .when(selected, |button| button.bg(theme::SELECTED))
-            .child(static_icon(mode.icon(), color))
+            .child(background("background").selected(selected))
+            .child(tinted("icon", color, move |color| {
+                static_icon(mode.icon(), color)
+            }))
             .hoverable_tooltip(static_tooltip(tooltip.into(), theme::CLOCK_ACCENT))
             .on_click(cx.listener(move |this, _, _, cx| {
                 (this.sources.launcher).update(cx, |launcher, cx| launcher.set_mode(mode, cx))
@@ -520,8 +587,8 @@ impl Bar {
             .gap_2p5()
             .rounded(px(8.))
             .cursor_pointer()
-            .when(selected, |row| row.bg(theme::SELECTED))
-            .hover(|row| row.bg(theme::MODULE_HOVER))
+            .relative()
+            .child(background("background").selected(selected).radius(px(8.)))
             .child(icon)
             .child(
                 div()
@@ -555,6 +622,6 @@ impl Bar {
                         .child(entry.mode.name()),
                 )
             })
-            .on_click(cx.listener(move |this, _, _, cx| this.launch(Some(index), cx)))
+            .on_click(cx.listener(move |this, _, _, cx| this.launch(Some(index), false, cx)))
     }
 }

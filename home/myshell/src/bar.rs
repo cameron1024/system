@@ -18,6 +18,7 @@ use gpui::FocusHandle;
 use gpui::IntoElement;
 use gpui::MouseButton;
 use gpui::MouseDownEvent;
+use gpui::MouseUpEvent;
 use gpui::Pixels;
 use gpui::SharedString;
 use gpui::Task;
@@ -44,6 +45,7 @@ use gpui::px;
 use gpui::rems;
 use gpui::uniform_list;
 
+use crate::animated_icon::AnimatedIcon;
 use crate::animated_icon::Icon;
 use crate::animated_icon::static_icon;
 use crate::bar_module::Module;
@@ -53,14 +55,19 @@ use crate::blur::Blur;
 use crate::data_source::Data;
 use crate::data_source::DataSource;
 use crate::data_source::tray::TrayItem;
+use crate::fade::Fade;
+use crate::fade::background;
+use crate::fade::tinted;
 use crate::liquid;
 use crate::notifications::Activation;
 use crate::notifications::Notification;
+use crate::notifications::Notifications;
 use crate::outside_click;
 use crate::outside_click::OutsideClick;
 use crate::profile_icon::ProfileIcon;
 use crate::reveal::Reveal;
 use crate::reveal::Tween;
+use crate::scaled::REM;
 use crate::scaled::scaled;
 use crate::shell::Sources;
 use crate::theme;
@@ -98,6 +105,8 @@ const LIST_PAD: f32 = 12.;
 /// Matches the liquid's margin at the sides (BLOB_PAD_X + LIST_PAD) to its margin at the bottom.
 const LIST_PAD_BOTTOM: f32 = BLOB_PAD_X + LIST_PAD - PAD_Y;
 const MAX_LIST_HEIGHT: f32 = 480.;
+/// The notifications dropdown at its tallest, including the bar.
+const MAX_DROPDOWN_HEIGHT: f32 = HEIGHT + TITLE_HEIGHT + MAX_LIST_HEIGHT;
 
 const TRAY_MENU_WIDTH: f32 = 320.;
 
@@ -183,6 +192,12 @@ fn slide_offset(progress: f32) -> f32 {
 pub struct Bar {
     sources: Sources,
     profile_icon: Entity<ProfileIcon>,
+    /// The bell, its colour, and how far its unread count shows (keeping the last count while
+    /// it goes).
+    bell_icon: Entity<AnimatedIcon>,
+    bell_color: Fade,
+    bell_count: Tween,
+    bell_count_text: SharedString,
     volume_button: Entity<VolumeButton>,
     battery: Entity<BatteryIndicator>,
     actions: mpsc::UnboundedSender<ModuleAction>,
@@ -207,6 +222,11 @@ pub struct Bar {
     removals: Vec<Removal>,
     /// A notification being swiped horizontally, and how far.
     swiping: Option<(i32, f32)>,
+    /// A press on an unread notification, which becomes a swipe if dragged sideways: its ID,
+    /// where it started, and whether it's become one.
+    drag: Option<(i32, gpui::Point<Pixels>, bool)>,
+    /// A drag just ended, so the release isn't also a click.
+    dragged: bool,
     /// The key of the item whose tray menu is shown (including while closing).
     tray_menu: Option<String>,
     tray_reveal: Reveal,
@@ -217,6 +237,12 @@ pub struct Bar {
     outside_click: Option<WindowHandle<OutsideClick>>,
     launcher: Reveal,
     launcher_progress: f32,
+    /// "Copied" below the clock, after the launcher copies something.
+    copied: Reveal,
+    copied_progress: f32,
+    copied_timer: Task<()>,
+    /// An emoji to type once the keyboard returns to the window that had it, and its expiry.
+    pending_type: Option<(String, Task<()>)>,
     /// It was opened with the bar hidden, so it slides down whole rather than growing.
     launcher_slides: bool,
     /// The launcher's results' height, in rows.
@@ -403,7 +429,7 @@ impl Bar {
         }
     }
 
-    fn hide_toasts(&mut self, cx: &mut Context<Self>) {
+    pub fn hide_toasts(&mut self, cx: &mut Context<Self>) {
         let ids: Vec<i32> = (self.toasts.iter())
             .map(|toast| toast.notification.id)
             .collect();
@@ -508,6 +534,7 @@ impl Bar {
             || !self.peeks.is_empty()
             || !self.dropdown.hidden()
             || !self.launcher.hidden()
+            || !self.copied.hidden()
             || !self.toasts.is_empty()
     }
 
@@ -521,6 +548,14 @@ impl Bar {
         cx.observe_window_activation(window, |this, window, cx| {
             if !window.is_window_active() {
                 this.set_launcher(false, cx);
+                if let Some((text, _)) = this.pending_type.take() {
+                    cx.background_spawn(async move {
+                        if let Err(error) = crate::launcher::type_text(text).await {
+                            eprintln!("launcher: {error}");
+                        }
+                    })
+                    .detach();
+                }
             }
         })
         .detach();
@@ -544,10 +579,24 @@ impl Bar {
         let power = sources.power.clone();
         let volume = sources.volume.clone();
         let battery = sources.battery.clone();
+        cx.observe(&sources.notifications, |this, notifications, cx| {
+            let bell = bell(notifications.read(cx));
+            this.set_bell(bell, cx);
+        })
+        .detach();
+        let (bell_icon, bell_color, bell_count) = bell(sources.notifications.read(cx));
 
         Self {
             sources,
             profile_icon: cx.new(|cx| ProfileIcon::new(power, cx)),
+            bell_icon: cx.new(|_| AnimatedIcon::new(bell_icon, bell_color).upward()),
+            bell_color: Fade::new(bell_color),
+            bell_count: Tween::new(f32::from(u8::from(bell_count.is_some())), Instant::now())
+                .with_duration(Duration::from_millis(100)),
+            bell_count_text: bell_count
+                .map(|count| count.to_string())
+                .unwrap_or_default()
+                .into(),
             volume_button: cx.new(|cx| VolumeButton::new(volume, cx)),
             battery: cx.new(|cx| BatteryIndicator::new(battery, cx)),
             actions,
@@ -565,6 +614,8 @@ impl Bar {
             surface_height: HEIGHT,
             removals: Vec::new(),
             swiping: None,
+            drag: None,
+            dragged: false,
             swipe_blocked: None,
             tray_menu: None,
             tray_reveal: Reveal::new(false, Instant::now()),
@@ -573,6 +624,10 @@ impl Bar {
             outside_click: None,
             launcher: Reveal::new(false, Instant::now()),
             launcher_progress: 0.,
+            copied: Reveal::new(false, Instant::now()),
+            copied_progress: 0.,
+            copied_timer: Task::ready(()),
+            pending_type: None,
             launcher_slides: false,
             launcher_rows: Tween::new(1., Instant::now()),
             launcher_focus: cx.focus_handle(),
@@ -596,7 +651,7 @@ impl Bar {
         let peeked = (self.peek_progress.iter())
             .find(|(peeked, _)| *peeked == module)
             .map(|&(_, progress)| progress);
-        self.revealed(module.name(), peeked, content, accent)
+        self.revealed(module.name(), peeked, content, accent, false)
     }
 
     /// How far the content row is slid up: with the bar. While peeking, it stays put and each
@@ -617,6 +672,7 @@ impl Bar {
         peeked: Option<f32>,
         content: impl IntoElement,
         accent: Rgba,
+        selected: bool,
     ) -> Stateful<Div> {
         let progress = match peeked {
             _ if !self.bar.hidden() => self.bar_progress,
@@ -624,7 +680,7 @@ impl Bar {
             None => 0.,
         };
         let scale = START_SCALE + (1. - START_SCALE) * progress;
-        let element = bar_module(id, scaled(scale, content), accent)
+        let element = bar_module(id, scaled(scale, content), accent, selected)
             .flex_shrink_0()
             .opacity(progress);
         match peeked {
@@ -660,16 +716,22 @@ impl Bar {
         let progress = if open { self.tray_progress } else { 0. };
         let title: SharedString = item.title.clone().into();
         let (toggled, activated) = (item.clone(), item.clone());
+        let content = {
+            let item = item.clone();
+            tinted(
+                ElementId::Name(format!("{}-content", item.key).into()),
+                accent,
+                move |accent| tray::content(&item, accent),
+            )
+        };
         let module = self
             .revealed(
                 ElementId::Name(item.key.clone().into()),
                 None,
-                tray::content(&item, accent),
+                content,
                 accent,
+                open && self.tray_reveal.visible,
             )
-            .when(open && self.tray_reveal.visible, |module| {
-                module.bg(theme::SELECTED)
-            })
             .when(tooltips_enabled && !open, |module| {
                 module.hoverable_tooltip(static_tooltip(title.clone(), accent))
             })
@@ -920,10 +982,39 @@ impl Bar {
     }
 }
 
+/// The bell's icon, colour, and unread count (if shown). Do not disturb hides the count, and
+/// greys it out.
+fn bell(notifications: &Notifications) -> (Icon, Rgba, Option<usize>) {
+    match (notifications.do_not_disturb, notifications.unread()) {
+        (true, _) => (Icon::BellOff, theme::MUTED, None),
+        (false, 0) => (Icon::Bell, theme::MUTED, None),
+        (false, unread) => (Icon::BellDot, theme::NOTIFICATION_ACCENT, Some(unread)),
+    }
+}
+
 impl Bar {
+    fn set_bell(
+        &mut self,
+        (icon, color, count): (Icon, Rgba, Option<usize>),
+        cx: &mut Context<Self>,
+    ) {
+        let (now, reduce_motion) = (Instant::now(), cx.reduce_motion());
+        (self.bell_icon).update(cx, |bell, cx| bell.set(icon, color, cx));
+        self.bell_color.set(color, now, reduce_motion);
+        if let Some(count) = count {
+            self.bell_count_text = count.to_string().into();
+        }
+        let shown = f32::from(u8::from(count.is_some()));
+        if reduce_motion {
+            self.bell_count.snap(shown, now);
+        } else {
+            self.bell_count.set(shown, now);
+        }
+    }
+
     /// The notifications module, which grows into a dropdown. Its controls take the space the
     /// rest of the section slides out of.
-    fn notifications_island(&self, cx: &mut Context<Self>) -> Stateful<Div> {
+    fn notifications_island(&self, window: &mut Window, cx: &mut Context<Self>) -> Stateful<Div> {
         let peek = (self.peek_progress.iter())
             .find(|(module, _)| *module == Module::Notifications)
             .map(|&(_, progress)| progress);
@@ -946,32 +1037,44 @@ impl Bar {
         let dropdown = self.dropdown_progress;
 
         let notifications = self.sources.notifications.read(cx);
-        let unread = notifications.unread();
 
         let show_read = notifications.show_read;
-        let color = if unread > 0 {
-            theme::NOTIFICATION_ACCENT
-        } else {
-            theme::MUTED
-        };
+        let now = Instant::now();
+        let color = self.bell_color.value(now);
+        // The count's width (with the gap before it) eases in and out, keeping its last value.
+        let count_shown = self.bell_count.value(now);
+        let count = (count_shown > 0.).then(|| {
+            let text = self.bell_count_text.clone();
+            let run = gpui::TextRun {
+                len: text.len(),
+                font: gpui::font("Josefin Sans"),
+                color: color.into(),
+                background_color: None,
+                underline: None,
+                strikethrough: None,
+            };
+            let width = (window.text_system()).shape_line(text.clone(), px(REM), &[run], None);
+            div()
+                .w(rems((0.25 + f32::from(width.width) / REM) * count_shown))
+                .flex_shrink_0()
+                .overflow_hidden()
+                .opacity(count_shown)
+                .child(div().pl_1().whitespace_nowrap().child(text))
+        });
         let bell = div()
             .flex()
             .items_center()
-            .gap_1()
             .text_color(color)
-            .child(static_icon(
-                if unread > 0 {
-                    Icon::BellDot
-                } else {
-                    Icon::Bell
-                },
-                color,
-            ))
-            .when(unread > 0, |bell| bell.child(unread.to_string()));
+            .child(self.bell_icon.clone())
+            .children(count);
         let scale = START_SCALE + (1. - START_SCALE) * progress;
-        let bell = bar_module(Module::Notifications.name(), scaled(scale, bell), color)
-            .flex_shrink_0()
-            .when(self.dropdown.visible, |bell| bell.bg(theme::SELECTED));
+        let bell = bar_module(
+            Module::Notifications.name(),
+            scaled(scale, bell),
+            color,
+            self.dropdown.visible,
+        )
+        .flex_shrink_0();
         let bell = Self::clickable(bell, Module::Notifications, cx).on_mouse_down(
             MouseButton::Left,
             cx.listener(|this, _, window, cx| this.watch_outside_clicks(window, cx)),
@@ -1095,15 +1198,15 @@ impl Bar {
         };
         div()
             .id(id)
+            .relative()
             .size(px(crate::bar_module::HEIGHT))
             .flex()
             .items_center()
             .justify_center()
             .rounded(px(4.))
             .cursor_pointer()
-            .hover(|button| button.bg(theme::MODULE_HOVER))
-            .when(selected, |button| button.bg(theme::SELECTED))
-            .child(static_icon(icon, color))
+            .child(background("background").selected(selected))
+            .child(tinted("icon", color, move |color| static_icon(icon, color)))
             .on_click(cx.listener(move |this, _, _, cx| match action {
                 NotificationAction::MarkAllRead => this.mark_all_read(cx),
                 action => {
@@ -1219,7 +1322,6 @@ impl Bar {
                 let id = toast.notification.id;
                 div()
                     .id(("toast", id as usize))
-                    .group("notification")
                     .absolute()
                     .left(card.origin.x)
                     .top(card.origin.y)
@@ -1235,20 +1337,19 @@ impl Bar {
                             .bg(theme::BACKGROUND)
                             .opacity(glass),
                     )
-                    .child(
-                        notification_card(&toast.notification, &timestamp, Tick::Space)
-                            .group_hover("notification", |card| card.bg(theme::MODULE_HOVER)),
-                    )
+                    .child(notification_card(
+                        &toast.notification,
+                        &timestamp,
+                        Tick::Space,
+                        true,
+                    ))
                     .child(
                         div()
                             .id(("toast-mark-read", id as usize))
-                            .group("notification-tick")
                             .absolute()
                             .top(px((ROW_HEIGHT - TICK) / 2.))
                             .right(px(TICK_INSET))
-                            .child(tick().group_hover("notification-tick", |tick| {
-                                tick.bg(theme::MODULE_HOVER)
-                            }))
+                            .child(tick(true))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.hide_toast(id, cx);
@@ -1360,7 +1461,7 @@ impl Bar {
             .map(|removal| removal.index + 1)
             .fold(visible, usize::max)
             .max(self.removals.len());
-        let list = uniform_list(
+        let mut list = uniform_list(
             "notification-list",
             count,
             cx.processor(|this, range: Range<usize>, _, cx| {
@@ -1393,6 +1494,8 @@ impl Bar {
         .px(px(LIST_PAD))
         .pt(px(LIST_PAD - ROW_GAP))
         .pb(px(LIST_PAD_BOTTOM));
+        // Otherwise GPUI scrolls a vertical list with horizontal deltas (e.g. a swipe's).
+        list.style().restrict_scroll_to_axis = Some(true);
         div()
             .relative()
             .flex_shrink_0()
@@ -1447,7 +1550,7 @@ impl Bar {
                     .map(|other| other.gap(now))
                     .sum();
                 let swipe = removal.swipe(now);
-                notification_card(&removal.notification, timestamp, Tick::Icon)
+                notification_card(&removal.notification, timestamp, Tick::Icon, false)
                     .absolute()
                     .top(px(ROW_GAP + above))
                     .left(px(
@@ -1475,19 +1578,18 @@ impl Bar {
             &notification,
             timestamp,
             if read { Tick::None } else { Tick::Space },
+            true,
         )
         .absolute()
         .top(px(ROW_GAP + offset))
         .left(px(dragged))
         .right(px(-dragged))
         .when(dragged != 0., |card| card.opacity(swipe_opacity(dragged)))
-        .group_hover("notification", |card| card.bg(theme::MODULE_HOVER))
         // Read notifications are greyed out.
         .when(read, |card| card.opacity(0.55))
         // The toast draws this card, in the same place, until the dropdown has fully opened.
         .when(self.toast_covers(id), |card| card.invisible());
         slot.id(("notification", id as usize))
-            .group("notification")
             .cursor_pointer()
             .when(separated, |slot| {
                 slot.child(
@@ -1505,20 +1607,15 @@ impl Bar {
                 slot.child(
                     div()
                         .id(("mark-read", id as usize))
-                        .group("notification-tick")
                         .absolute()
                         .top(px(ROW_GAP + (ROW_HEIGHT - TICK) / 2.))
                         .right(px(TICK_INSET))
                         .size(px(TICK))
                         .child(
-                            tick()
-                                .relative()
+                            tick(true)
                                 .top(px(offset))
                                 .left(px(dragged))
-                                .when(dragged != 0., |tick| tick.opacity(swipe_opacity(dragged)))
-                                .group_hover("notification-tick", |tick| {
-                                    tick.bg(theme::MODULE_HOVER)
-                                }),
+                                .when(dragged != 0., |tick| tick.opacity(swipe_opacity(dragged))),
                         )
                         .on_click(cx.listener(move |this, _, _, cx| {
                             // The tick is inside the row, which would otherwise act too.
@@ -1532,9 +1629,18 @@ impl Bar {
                 slot.on_scroll_wheel(
                     cx.listener(move |this, event, _, cx| this.swipe(id, event, cx)),
                 )
+                .on_mouse_down(
+                    MouseButton::Left,
+                    cx.listener(move |this, event: &MouseDownEvent, _, _| {
+                        this.drag = Some((id, event.position, false));
+                        this.dragged = false;
+                    }),
+                )
             })
             .on_click(cx.listener(move |this, _, window, cx| {
-                this.remove(id, Some(window.request_activation_token()), cx)
+                if !std::mem::take(&mut this.dragged) {
+                    this.remove(id, Some(window.request_activation_token()), cx)
+                }
             }))
     }
 
@@ -1542,11 +1648,15 @@ impl Bar {
     /// ends (or any notch of a horizontal wheel) marks it read, swiping it away that way.
     /// Vertical scrolls are left to the list.
     fn swipe(&mut self, id: i32, event: &ScrollWheelEvent, cx: &mut Context<Self>) {
-        if self.swipe_blocked.is_some() {
-            return;
-        }
         let delta = event.delta.pixel_delta(px(ROW_HEIGHT));
         let (dx, dy) = (f32::from(delta.x), f32::from(delta.y));
+        if self.swipe_blocked.is_some() {
+            // The rest of a swipe that dismissed a row mustn't scroll the list either.
+            if dx.abs() > dy.abs() {
+                cx.stop_propagation();
+            }
+            return;
+        }
         let active = self.swiping.filter(|(swiped, _)| *swiped == id);
         if let ScrollDelta::Lines(_) = event.delta {
             if dx.abs() > dy.abs() {
@@ -1574,7 +1684,53 @@ impl Bar {
         }
         cx.notify();
     }
+
+    /// A press on an unread notification dragged sideways swipes it, like a scroll does.
+    /// Dragged mostly vertically first, it's just a press.
+    fn drag_moved(&mut self, event: &MouseMoveEvent, cx: &mut Context<Self>) {
+        let Some((id, start, active)) = self.drag else {
+            return;
+        };
+        // Released without us seeing it (e.g. while another surface had the pointer).
+        if event.pressed_button != Some(MouseButton::Left) {
+            self.drag = None;
+            return;
+        }
+        let delta = event.position - start;
+        let (dx, dy) = (f32::from(delta.x), f32::from(delta.y));
+        if !active {
+            if dx.abs().max(dy.abs()) < DRAG_START {
+                return;
+            }
+            if dy.abs() >= dx.abs() {
+                self.drag = None;
+                return;
+            }
+            self.drag = Some((id, start, true));
+        }
+        self.swiping = Some((id, dx));
+        cx.notify();
+    }
+
+    /// Far enough, a drag marks its notification read, swiping it away; otherwise it returns.
+    /// Either way, the release isn't a click.
+    fn drag_released(&mut self, cx: &mut Context<Self>) {
+        let Some((id, _, true)) = self.drag.take() else {
+            return;
+        };
+        self.dragged = true;
+        let x = (self.swiping.take())
+            .filter(|(swiped, _)| *swiped == id)
+            .map_or(0., |(_, x)| x);
+        if x.abs() >= SWIPE_DISMISS {
+            self.remove_from(id, None, x, x.signum(), cx);
+        }
+        cx.notify();
+    }
 }
+
+/// A press must move this far before it's a drag.
+const DRAG_START: f32 = 6.;
 
 const SCROLLBAR_INSET: f32 = 4.;
 
@@ -1632,14 +1788,17 @@ impl Removal {
     }
 }
 
-/// The tick's visual; its click target is separate (see `notification_row`).
-fn tick() -> Div {
+/// The tick's visual; its click target is separate (see `notification_row`). With `hover`, it's
+/// highlighted while hovered.
+fn tick(hover: bool) -> Div {
     div()
+        .relative()
         .size(px(TICK))
         .flex()
         .items_center()
         .justify_center()
         .rounded(px(4.))
+        .when(hover, |tick| tick.child(background("tick-background")))
         .child(static_icon(Icon::Check, theme::MUTED))
 }
 
@@ -1683,7 +1842,13 @@ fn app_icon(notification: &Notification) -> AnyElement {
     }
 }
 
-fn notification_card(notification: &Notification, now: &jiff::Zoned, tick_: Tick) -> Div {
+/// With `hover`, it's highlighted while hovered (including over its tick).
+fn notification_card(
+    notification: &Notification,
+    now: &jiff::Zoned,
+    tick_: Tick,
+    hover: bool,
+) -> Div {
     const GAP: f32 = 10.;
     // Notification text is plain (no body-markup capability), but may span lines.
     let line = |text: &str| text.replace('\n', " ");
@@ -1735,13 +1900,23 @@ fn notification_card(notification: &Notification, now: &jiff::Zoned, tick_: Tick
         .flex()
         .items_center()
         .gap(px(GAP))
-        .bg(theme::CARD)
+        .map(|card| {
+            if hover {
+                card.relative().child(
+                    background("card-background")
+                        .rest(theme::CARD)
+                        .radius(px(8.)),
+                )
+            } else {
+                card.bg(theme::CARD)
+            }
+        })
         .child(app_icon(notification))
         .child(text)
         .map(|card| match tick_ {
             Tick::None => card,
             Tick::Space => card.child(div().flex_shrink_0().size(px(TICK))),
-            Tick::Icon => card.child(tick()),
+            Tick::Icon => card.child(tick(false)),
         })
 }
 
@@ -1816,6 +1991,8 @@ impl Render for Bar {
         self.dropdown_progress = self.dropdown.progress(now);
         self.launcher.settle(now);
         self.launcher_progress = self.launcher.progress(now);
+        self.copied.settle(now);
+        self.copied_progress = self.copied.progress(now);
         // The results' height eases to fit them, except while closed.
         let rows =
             (self.sources.launcher.read(cx).results().len()).clamp(1, crate::launcher::VISIBLE);
@@ -1877,17 +2054,22 @@ impl Render for Bar {
         // passes input through, and the reserved space is set separately.
         let surface_height = if !self.launcher.hidden() {
             // Covering the display, so clicks anywhere else on it close the launcher.
-            (window.display(cx)).map_or(HEIGHT + MAX_LIST_HEIGHT, |display| {
+            (window.display(cx)).map_or(MAX_DROPDOWN_HEIGHT, |display| {
                 f32::from(display.bounds().size.height)
             })
         } else if !self.dropdown.hidden() {
-            HEIGHT + MAX_LIST_HEIGHT
+            MAX_DROPDOWN_HEIGHT
         } else if !self.toasts.is_empty() {
             TOAST_TOP + MAX_TOASTS as f32 * (ROW_HEIGHT + ROW_GAP) + 2. * TOAST_PAD
         } else {
             HEIGHT
         }
-        .max(tray_height.unwrap_or(0.).ceil());
+        .max(tray_height.unwrap_or(0.).ceil())
+        .max(if self.copied.hidden() {
+            0.
+        } else {
+            HEIGHT + launcher_island::COPIED_HEIGHT
+        });
 
         if self.surface_height != surface_height {
             let width = window.viewport_size().width;
@@ -1908,6 +2090,9 @@ impl Render for Bar {
             || self.dropdown.animating()
             || self.tray_reveal.animating()
             || self.launcher.animating()
+            || self.copied.animating()
+            || self.bell_color.animating(now)
+            || self.bell_count.animating(now)
             || self.launcher_rows.animating(now)
             || self.toasts.iter().any(|toast| toast.reveal.animating())
             || self.toasts.iter().any(|toast| toast.row.animating(now))
@@ -2030,7 +2215,10 @@ impl Render for Bar {
             (Module::Disk, Icon::Disk, disk),
         ]
         .map(|(module, icon, (label, color))| {
-            self.module(module, labelled(icon, color, label), color)
+            let content = tinted(module.name(), color, move |color| {
+                labelled(icon, color, label)
+            });
+            self.module(module, content, color)
         });
         let cpu = tooltip(
             cpu,
@@ -2081,7 +2269,9 @@ impl Render for Bar {
         };
         let caffeine = self.module(
             Module::Caffeine,
-            static_icon(Icon::Coffee, caffeine_color),
+            tinted("caffeine-icon", caffeine_color, |color| {
+                static_icon(Icon::Coffee, color)
+            }),
             caffeine_color,
         );
         let caffeine = tooltip(
@@ -2110,7 +2300,7 @@ impl Render for Bar {
             .collect();
         let left = self.section([Some(profile), battery, Some(cpu), Some(memory), Some(disk)]);
         let center = self.section([Some(self.launcher_island(clock, tooltips_enabled, now, cx))]);
-        let notifications = self.notifications_island(cx);
+        let notifications = self.notifications_island(window, cx);
         let section = self.section.clone();
         let right = self
             .section((tray.into_iter().map(Some)).chain([
@@ -2162,7 +2352,17 @@ impl Render for Bar {
                         let bar = this.clone();
                         window.on_mouse_event(move |event: &MouseMoveEvent, phase, _, cx| {
                             if phase == DispatchPhase::Bubble {
-                                bar.update(cx, |bar, cx| bar.pointer_moved(event.position, cx));
+                                bar.update(cx, |bar, cx| {
+                                    bar.pointer_moved(event.position, cx);
+                                    bar.drag_moved(event, cx);
+                                });
+                            }
+                        });
+                        // Before the rows' click handlers, which check whether it was a drag.
+                        let bar = this.clone();
+                        window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
+                            if phase == DispatchPhase::Capture {
+                                bar.update(cx, |bar, cx| bar.drag_released(cx));
                             }
                         });
                         // Presses elsewhere in the bar close the tray menu; the compositor

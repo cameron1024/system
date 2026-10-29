@@ -7,6 +7,7 @@ mod caffeine;
 mod command;
 mod data_source;
 mod desktop_entry;
+mod fade;
 mod icon_theme;
 mod launcher;
 mod liquid;

@@ -12,6 +12,8 @@ use gpui::relative;
 use gpui::rems;
 use gpui::svg;
 
+use crate::fade::Fade;
+
 /// Icons are 1rem, matching the bar's text size (and scaling with it). Transitions are computed
 /// in these units, then applied as fractions of the slot.
 const SIZE: f32 = 16.;
@@ -31,6 +33,7 @@ pub enum Icon {
     Coffee,
     Bell,
     BellDot,
+    BellOff,
     Check,
     CheckCheck,
     History,
@@ -72,6 +75,7 @@ impl Icon {
             Self::Coffee => Some(include_bytes!("../assets/icons/coffee.svg")),
             Self::Bell => Some(include_bytes!("../assets/icons/bell.svg")),
             Self::BellDot => Some(include_bytes!("../assets/icons/bell-dot.svg")),
+            Self::BellOff => Some(include_bytes!("../assets/icons/bell-off.svg")),
             Self::Check => Some(include_bytes!("../assets/icons/check.svg")),
             Self::CheckCheck => Some(include_bytes!("../assets/icons/check-check.svg")),
             Self::History => Some(include_bytes!("../assets/icons/history.svg")),
@@ -119,6 +123,8 @@ struct Motion {
     target: Icon,
     layers: Vec<Layer>,
     started: Option<Instant>,
+    /// 1 moves icons down; -1, up.
+    direction: f32,
 }
 
 impl Motion {
@@ -131,6 +137,14 @@ impl Motion {
                 to: 0.,
             }],
             started: None,
+            direction: 1.,
+        }
+    }
+
+    fn settled(&self) -> Self {
+        Self {
+            direction: self.direction,
+            ..Self::new(self.target)
         }
     }
 
@@ -148,49 +162,56 @@ impl Motion {
         if self.target == target {
             return false;
         }
+        self.target = target;
         if reduce_motion {
-            *self = Self::new(target);
+            *self = self.settled();
             return true;
         }
-        // Retain the visible parts of interrupted transitions, continuing all old layers down.
+        // Retain the visible parts of interrupted transitions, continuing all old layers on.
+        let exit = SIZE * self.direction;
         self.layers = self
             .positions(now)
             .filter(|(_, y)| *y > -SIZE && *y < SIZE)
             .map(|(icon, from)| Layer {
                 icon,
                 from,
-                to: SIZE,
+                to: exit,
             })
             .collect();
         self.layers.push(Layer {
             icon: target,
-            from: -SIZE,
+            from: -exit,
             to: 0.,
         });
-        self.target = target;
         self.started = Some(now);
         true
     }
 }
 
-/// A fixed-size, clipped icon slot. New icons enter from above; old icons leave below.
+/// A fixed-size, clipped icon slot. New icons enter from above; old icons leave below (or the
+/// reverse, if `upward`). Its colour fades alongside.
 pub struct AnimatedIcon {
     motion: Motion,
-    color: Rgba,
+    color: Fade,
 }
 
 impl AnimatedIcon {
     pub fn new(icon: Icon, color: Rgba) -> Self {
         Self {
             motion: Motion::new(icon),
-            color,
+            color: Fade::new(color),
         }
     }
 
+    pub fn upward(mut self) -> Self {
+        self.motion.direction = -1.;
+        self
+    }
+
     pub fn set(&mut self, icon: Icon, color: Rgba, cx: &mut Context<Self>) {
-        let changed = self.motion.change(icon, Instant::now(), cx.reduce_motion());
-        if changed || self.color != color {
-            self.color = color;
+        let (now, reduce_motion) = (Instant::now(), cx.reduce_motion());
+        let moved = self.motion.change(icon, now, reduce_motion);
+        if self.color.set(color, now, reduce_motion) || moved {
             cx.notify();
         }
     }
@@ -205,11 +226,12 @@ impl Render for AnimatedIcon {
                 .started
                 .is_some_and(|start| now.duration_since(start) >= DURATION)
         {
-            self.motion = Motion::new(self.motion.target);
+            self.motion = self.motion.settled();
         }
-        if self.motion.started.is_some() {
+        if self.motion.started.is_some() || self.color.animating(now) {
             window.request_animation_frame();
         }
+        let color = self.color.value(now);
         let mut slot = div()
             .size(rems(1.))
             .flex_shrink_0()
@@ -223,9 +245,9 @@ impl Render for AnimatedIcon {
                 Some(data) => svg()
                     .data(data)
                     .size_full()
-                    .text_color(self.color)
+                    .text_color(color)
                     .into_any_element(),
-                None => div().text_color(self.color).child("?").into_any_element(),
+                None => div().text_color(color).child("?").into_any_element(),
             };
             slot = slot.child(
                 div()

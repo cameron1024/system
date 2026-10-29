@@ -15,7 +15,7 @@ use gpui::Window;
 use gpui::px;
 
 /// The rem size at a scale of 1.
-const REM: f32 = 16.;
+pub const REM: f32 = 16.;
 
 pub fn scaled(scale: f32, child: impl IntoElement) -> Scaled {
     Scaled {

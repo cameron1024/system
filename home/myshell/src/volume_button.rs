@@ -69,11 +69,12 @@ impl VolumeButton {
 }
 
 impl Render for VolumeButton {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let value = self.source.read(cx).state.target.as_ref();
         let text = value.map_or_else(|| "--%".into(), |state| format!("{}%", state.percent));
+        let color = color(value);
         div()
-            .text_color(color(value))
+            .text_color(crate::fade::color("volume-text", color, window, cx))
             .flex()
             .items_center()
             .gap_1()

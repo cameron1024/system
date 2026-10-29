@@ -130,6 +130,7 @@
         MYSHELL_DEVSHELL = 1;
         # Built into the shell (`env!`), so it doesn't depend on what's on PATH at runtime.
         MYSHELL_QALC = "${pkgs.libqalculate}/bin/qalc";
+        MYSHELL_WTYPE = "${pkgs.wtype}/bin/wtype";
       };
     # Recursively wrap every script under `root` into a package. `.sh` files
     # become writeShellApplication, `.py` files become writePython3Bin, and
