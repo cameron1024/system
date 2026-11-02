@@ -47,6 +47,7 @@ impl Bar {
 
         if open {
             self.launcher_slides = !self.bar.visible;
+            self.set_wifi(false, cx);
             self.close_tray_menu(cx);
             if self.pinned {
                 let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
@@ -70,7 +71,7 @@ impl Bar {
     /// While the launcher is open, the bar has the keyboard (focused on the launcher).
     pub(super) fn sync_launcher_window(&mut self, window: &mut Window, cx: &mut App) {
         use KeyboardInteractivity::*;
-        let keyboard = if self.launcher.visible {
+        let keyboard = if self.launcher.visible || self.wifi_password.is_some() {
             Exclusive
         } else if self.launcher_keyboard != None && self.outside_click.is_some() {
             // Handing over to a group watching for outside clicks: niri ends a popup grab
@@ -83,7 +84,11 @@ impl Bar {
         if keyboard != self.launcher_keyboard {
             window.set_keyboard_interactivity(keyboard);
             if keyboard == Exclusive {
-                self.launcher_focus.focus(window, cx);
+                if let Some(input) = &self.wifi_password {
+                    input.update(cx, |input, cx| input.focus(window, cx));
+                } else {
+                    self.launcher_focus.focus(window, cx);
+                }
             }
         }
         self.launcher_keyboard = keyboard;

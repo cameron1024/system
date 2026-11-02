@@ -25,6 +25,7 @@ mod theme;
 mod tooltip;
 mod tray;
 mod volume_button;
+mod wifi_password;
 
 use futures::StreamExt;
 use futures::channel::mpsc;

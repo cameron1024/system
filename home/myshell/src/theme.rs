@@ -74,6 +74,7 @@ pub const MODULE_HOVER: Rgba = Rgba {
 pub const POWER_ACCENT: Rgba = palette::ORANGE;
 pub const CLOCK_ACCENT: Rgba = palette::GREEN;
 pub const VOLUME_ACCENT: Rgba = palette::BLUE;
+pub const WIFI_ACCENT: Rgba = palette::GREEN;
 pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
 pub const BRIGHTNESS_ACCENT: Rgba = palette::YELLOW;
 pub const CAFFEINE_ACCENT: Rgba = palette::RED;

@@ -7,6 +7,7 @@ use std::time::Instant;
 use gpui::AnyElement;
 use gpui::App;
 use gpui::ElementId;
+use gpui::Entity;
 use gpui::IntoElement;
 use gpui::Pixels;
 use gpui::RenderOnce;
@@ -135,6 +136,7 @@ pub fn background(id: impl Into<ElementId>) -> Background {
         rest: None,
         hover: Some(theme::MODULE_HOVER),
         radius: px(4.),
+        shared: None,
     }
 }
 
@@ -144,9 +146,34 @@ pub struct Background {
     rest: Option<Rgba>,
     hover: Option<Rgba>,
     radius: Pixels,
+    shared: Option<(Entity<HoverFade>, ElementId)>,
+}
+
+/// Hover continuity when one visible background replaces another.
+pub struct HoverFade {
+    hovered: bool,
+    fade: Fade,
+    owner: Option<ElementId>,
+}
+
+impl HoverFade {
+    pub fn new(rest: Rgba) -> Self {
+        Self {
+            hovered: false,
+            fade: Fade::new(rest),
+            owner: None,
+        }
+    }
 }
 
 impl Background {
+    /// Only the visible copy should claim this state. Late events from the previous copy
+    /// are ignored after ownership passes to its replacement.
+    pub fn shared(mut self, state: Entity<HoverFade>, owner: impl Into<ElementId>) -> Self {
+        self.shared = Some((state, owner.into()));
+        self
+    }
+
     pub fn rest(mut self, color: Rgba) -> Self {
         self.rest = Some(color);
         self
@@ -168,6 +195,37 @@ impl Background {
 
 impl RenderOnce for Background {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        if let Some((state, owner)) = self.shared {
+            let now = Instant::now();
+            let reduce_motion = cx.reduce_motion();
+            let color = state.update(cx, |state, _| {
+                state.owner = Some(owner.clone());
+                let target = self
+                    .hover
+                    .filter(|_| state.hovered)
+                    .or(self.rest)
+                    .unwrap_or(TRANSPARENT);
+                state.fade.set(target, now, reduce_motion);
+                if state.fade.animating(now) {
+                    window.request_animation_frame();
+                }
+                state.fade.value(now)
+            });
+            return div()
+                .id(self.id)
+                .absolute()
+                .inset_0()
+                .rounded(self.radius)
+                .bg(color)
+                .on_hover(move |is_hovered, _, cx| {
+                    state.update(cx, |state, cx| {
+                        if state.owner.as_ref() == Some(&owner) && state.hovered != *is_hovered {
+                            state.hovered = *is_hovered;
+                            cx.notify();
+                        }
+                    });
+                });
+        }
         let (hovered, color) = window.with_element_namespace(self.id.clone(), |window| {
             let hovered = window.use_keyed_state("hovered", cx, |_, _| false);
             let target = (self.hover)

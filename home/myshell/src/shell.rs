@@ -33,6 +33,7 @@ use crate::data_source::power_profile::PowerProfile;
 use crate::data_source::system::System;
 use crate::data_source::tray::Tray;
 use crate::data_source::volume::Volume;
+use crate::data_source::wifi::Wifi;
 use crate::launcher::Launcher;
 use crate::launcher::Mode;
 use crate::notifications::Arrived;
@@ -48,6 +49,7 @@ pub struct Sources {
     pub power: Entity<Data<PowerProfile>>,
     pub system: Entity<Data<System>>,
     pub volume: Entity<Data<Volume>>,
+    pub wifi: Entity<Data<Wifi>>,
     pub brightness: Entity<Data<Brightness>>,
     pub battery: Entity<Data<Battery>>,
     pub tray: Entity<Data<Tray>>,
@@ -80,6 +82,7 @@ impl Shell {
             power: cx.new(|cx| Data::new(PowerProfile, db, cx)),
             system: cx.new(|cx| Data::new(System, db, cx)),
             volume: cx.new(|cx| Data::new(Volume, db, cx)),
+            wifi: cx.new(|cx| Data::new(Wifi, db, cx)),
             brightness: cx.new(|cx| Data::new(brightness, db, cx)),
             battery: cx.new(|cx| Data::new(Battery, db, cx)),
             tray: cx.new(|cx| Data::new(Tray, db, cx)),
@@ -141,6 +144,9 @@ impl Shell {
                     }
                     ModuleAction::Click(Module::PowerProfile) => {
                         targets.power.update(cx, |data, cx| data.cycle(cx));
+                    }
+                    ModuleAction::ToggleWifi => {
+                        targets.wifi.update(cx, |data, cx| data.toggle_enabled(cx));
                     }
                     ModuleAction::Click(Module::Volume) => {
                         targets.volume.update(cx, |data, cx| data.toggle_mute(cx));
@@ -207,6 +213,10 @@ impl Shell {
                 let _ = bar.update(cx, |bar, _, cx| bar.open_menu(menu, cx));
             }),
             Command::ToggleDoNotDisturb => self.toggle_do_not_disturb(cx),
+            Command::OpenWifi => self.on_focused_bar(cx, |_, bar, cx| {
+                let _ = bar.update(cx, |bar, window, cx| bar.open_wifi(window, cx));
+            }),
+            Command::ToggleWifi => self.act(ModuleAction::ToggleWifi, Module::Wifi, cx),
             Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
             Command::Adjust(module, steps) => {
                 self.act(ModuleAction::Adjust(module, steps), module, cx)

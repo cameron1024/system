@@ -1,5 +1,6 @@
 use std::cell::Cell;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::ops::Range;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -57,6 +58,7 @@ use crate::data_source::Data;
 use crate::data_source::DataSource;
 use crate::data_source::tray::TrayItem;
 use crate::fade::Fade;
+use crate::fade::HoverFade;
 use crate::fade::background;
 use crate::fade::tinted;
 use crate::liquid;
@@ -90,6 +92,8 @@ const EDGE_MARGIN: f32 = BLOB_PAD_X + liquid::FLARE + 2.;
 const START_WIDTH: f32 = 0.4;
 /// Content scales in from this size as it fades in.
 const START_SCALE: f32 = 0.9;
+const HEADER_ICON_GAP: f32 = 3.;
+const HEADER_CLOSE_SLOT: f32 = crate::bar_module::HEIGHT + HEADER_ICON_GAP;
 /// Liquid above and below a module.
 const PAD_Y: f32 = (HEIGHT - crate::bar_module::HEIGHT) / 2.;
 
@@ -109,6 +113,8 @@ const MAX_LIST_HEIGHT: f32 = 480.;
 /// The notifications dropdown at its tallest, including the bar.
 const MAX_DROPDOWN_HEIGHT: f32 = HEIGHT + TITLE_HEIGHT + MAX_LIST_HEIGHT;
 
+const WIFI_WIDTH: f32 = 380.;
+const WIFI_BODY_HEIGHT: f32 = 340.;
 const TRAY_MENU_WIDTH: f32 = 320.;
 
 /// A tray menu's height below the module, at rest.
@@ -194,6 +200,7 @@ fn slide_offset(progress: f32) -> f32 {
 }
 
 pub struct Bar {
+    notification_hovers: RefCell<HashMap<i32, Entity<HoverFade>>>,
     sources: Sources,
     profile_icon: Entity<ProfileIcon>,
     /// The bell, its colour, and how far its unread count shows (keeping the last count while
@@ -202,12 +209,25 @@ pub struct Bar {
     bell_color: Fade,
     bell_count: Tween,
     bell_count_text: SharedString,
-    /// 0 normally, 1 in do not disturb: which name shows while open.
+    /// 0 normally, 1 in do not disturb: which bell icon shows.
     bell_mode: Tween,
-    /// Each mode's name and bell's width, in rems: normal, then do not disturb.
-    bell_layers: [Rc<std::cell::Cell<f32>>; 2],
-    /// The closed bell's width, which the close button takes.
+    /// Main module widths, reserving space beside each animated close slot.
     bell_width: Rc<std::cell::Cell<f32>>,
+    wifi_width: Rc<Cell<f32>>,
+    wifi: Reveal,
+    wifi_progress: f32,
+    wifi_auto_scan: bool,
+    wifi_scan_task: Option<Task<()>>,
+    wifi_scan_error: Option<String>,
+    wifi_selected: Option<crate::data_source::wifi::WifiNetwork>,
+    wifi_password: Option<Entity<crate::wifi_password::WifiPassword>>,
+    wifi_connect_task: Option<Task<()>>,
+    wifi_connect_error: bool,
+    wifi_password_reveal: Reveal,
+    wifi_scroll: gpui::ScrollHandle,
+    wifi_scroll_bounds: Rc<Cell<Option<Bounds<Pixels>>>>,
+    wifi_scroll_drag: bool,
+    wifi_island: Rc<Cell<Option<Bounds<Pixels>>>>,
     volume_button: Entity<VolumeButton>,
     battery: Entity<BatteryIndicator>,
     actions: mpsc::UnboundedSender<ModuleAction>,
@@ -304,6 +324,7 @@ struct Toast {
 
 pub enum ModuleAction {
     Click(Module),
+    ToggleWifi,
     Adjust(Module, i32),
     Notifications(NotificationAction),
     /// On the bar in this window.
@@ -324,6 +345,7 @@ impl Bar {
         // The full bar includes every module, so it replaces any peeks.
         self.peeks.clear();
         if !visible {
+            self.set_wifi(false, cx);
             self.close_tray_menu(cx);
         }
         let (reduce_motion, now) = (cx.reduce_motion(), Instant::now());
@@ -348,6 +370,7 @@ impl Bar {
         let open = self.pinned || self.hover_open;
         self.dropdown.set(open, cx.reduce_motion(), Instant::now());
         if open {
+            self.set_wifi(false, cx);
             self.set_launcher(false, cx);
             self.close_tray_menu(cx);
         }
@@ -371,6 +394,7 @@ impl Bar {
             // e.g. to release the keyboard.
             cx.notify();
             this.close_tray_menu(cx);
+            this.set_wifi(false, cx);
             if this.pinned {
                 let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
                 let _ = this.actions.unbounded_send(action);
@@ -381,7 +405,7 @@ impl Bar {
     }
 
     fn sync_outside_click(&mut self, cx: &mut Context<Self>) {
-        if self.pinned || self.tray_reveal.visible {
+        if self.pinned || self.tray_reveal.visible || self.wifi.visible {
             return;
         }
         if let Some(handle) = self.outside_click.take() {
@@ -479,7 +503,13 @@ impl Bar {
         let toasting = self.toasts.iter().any(|toast| toast.reveal.visible);
         // The launcher takes input everywhere while open; moving over the toasts mustn't close it.
         let launching = self.launcher.visible;
-        if over_toasts && toasting && !self.hover_open && !self.pinned && !launching {
+        if over_toasts
+            && toasting
+            && !self.hover_open
+            && !self.pinned
+            && !launching
+            && !self.wifi.visible
+        {
             self.hover_open = true;
             self.sync_dropdown(cx);
         } else if self.hover_open && !over_toasts && !over_island && !over_section {
@@ -549,6 +579,7 @@ impl Bar {
         !self.bar.hidden()
             || !self.peeks.is_empty()
             || !self.dropdown.hidden()
+            || !self.wifi.hidden()
             || !self.launcher.hidden()
             || !self.copied.hidden()
             || !self.toasts.is_empty()
@@ -578,6 +609,7 @@ impl Bar {
         redraw_on(&sources.launcher, cx);
         // Modules without their own view are rendered inline from these sources.
         redraw_on(&sources.clock, cx);
+        redraw_on(&sources.wifi, cx);
         redraw_on(&sources.system, cx); // CPU, memory and disk
         redraw_on(&sources.brightness, cx);
         redraw_on(&sources.caffeine, cx);
@@ -610,6 +642,7 @@ impl Bar {
         let do_not_disturb = sources.notifications.read(cx).do_not_disturb;
 
         Self {
+            notification_hovers: RefCell::new(HashMap::new()),
             sources,
             profile_icon: cx.new(|cx| ProfileIcon::new(power, cx)),
             bell_icon: cx.new(|_| AnimatedIcon::new(bell_icon, bell_color).upward()),
@@ -623,7 +656,21 @@ impl Bar {
             bell_mode: Tween::new(f32::from(u8::from(do_not_disturb)), Instant::now())
                 .with_duration(Duration::from_millis(150)),
             bell_width: Rc::new(std::cell::Cell::new(crate::bar_module::HEIGHT)),
-            bell_layers: [1., 1.].map(|width| Rc::new(std::cell::Cell::new(width))),
+            wifi_width: Rc::new(Cell::new(crate::bar_module::HEIGHT)),
+            wifi: Reveal::new(false, Instant::now()),
+            wifi_progress: 0.,
+            wifi_auto_scan: true,
+            wifi_scan_task: None,
+            wifi_scan_error: None,
+            wifi_selected: None,
+            wifi_password: None,
+            wifi_connect_task: None,
+            wifi_connect_error: false,
+            wifi_password_reveal: Reveal::new(false, Instant::now()),
+            wifi_scroll: gpui::ScrollHandle::new(),
+            wifi_scroll_bounds: Rc::default(),
+            wifi_scroll_drag: false,
+            wifi_island: Rc::default(),
             volume_button: cx.new(|cx| VolumeButton::new(volume, cx)),
             battery: cx.new(|cx| BatteryIndicator::new(battery, cx)),
             actions,
@@ -898,6 +945,8 @@ impl Bar {
             self.tray_reveal.set(true, reduce_motion, now);
         }
         if self.tray_reveal.visible {
+            self.set_wifi(false, cx);
+            self.unhover(cx);
             self.set_launcher(false, cx);
         }
         if self.tray_reveal.visible && self.pinned {
@@ -1054,6 +1103,461 @@ impl Bar {
         .inset_0()
     }
 
+    pub fn open_wifi(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let open = !self.wifi.visible;
+        if open {
+            self.watch_outside_clicks(window, cx);
+        }
+        self.set_wifi(open, cx);
+    }
+
+    fn select_wifi(
+        &mut self,
+        network: crate::data_source::wifi::WifiNetwork,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.wifi_connect_task.is_some() {
+            return;
+        }
+        self.wifi_password = None;
+        self.wifi_connect_error = false;
+        self.wifi_selected = Some(network.clone());
+        self.wifi_password_reveal = Reveal::new(false, Instant::now());
+        if network.secured {
+            let input = cx.new(crate::wifi_password::WifiPassword::new);
+            cx.subscribe(&input, |this, _, _: &crate::wifi_password::Submit, cx| {
+                this.connect_wifi(cx)
+            })
+            .detach();
+            input.update(cx, |input, cx| input.focus(window, cx));
+            self.wifi_password = Some(input);
+            self.wifi_password_reveal
+                .set(true, cx.reduce_motion(), Instant::now());
+        } else {
+            self.connect_wifi(cx);
+        }
+        cx.notify();
+    }
+
+    fn connect_wifi(&mut self, cx: &mut Context<Self>) {
+        if self.wifi_connect_task.is_some() {
+            return;
+        }
+        let Some(network) = self.wifi_selected.take() else {
+            return;
+        };
+        let password = self
+            .wifi_password
+            .take()
+            .map(|input| input.update(cx, |input, cx| input.take(cx)));
+        self.wifi_password_reveal
+            .set(false, cx.reduce_motion(), Instant::now());
+        self.wifi_connect_error = false;
+        let executor = cx.background_executor().clone();
+        self.wifi_connect_task = Some(cx.spawn(async move |this, cx| {
+            let failed = executor
+                .spawn(async move {
+                    crate::data_source::wifi::connect(network, password)
+                        .await
+                        .is_err()
+                })
+                .await;
+            let _ = this.update(cx, |this, cx| {
+                this.wifi_connect_task = None;
+                this.wifi_connect_error = failed;
+                cx.notify();
+            });
+        }));
+        cx.notify();
+    }
+
+    fn set_wifi(&mut self, open: bool, cx: &mut Context<Self>) {
+        if !self.wifi.set(open, cx.reduce_motion(), Instant::now()) {
+            return;
+        }
+        if !open {
+            self.wifi_password = None;
+            self.wifi_selected = None;
+            self.wifi_scroll_drag = false;
+            self.wifi_connect_error = false;
+        }
+        self.set_wifi_auto_scan(open, cx);
+        if open {
+            self.set_launcher(false, cx);
+            self.close_tray_menu(cx);
+            self.unhover(cx);
+            if self.pinned {
+                let _ = self.actions.unbounded_send(ModuleAction::Notifications(
+                    NotificationAction::CloseDropdown,
+                ));
+            }
+        }
+        self.sync_outside_click(cx);
+        cx.notify();
+    }
+
+    fn set_wifi_auto_scan(&mut self, enabled: bool, cx: &mut Context<Self>) {
+        self.wifi_auto_scan = enabled;
+        self.wifi_scan_task = None;
+        self.wifi_scan_error = None;
+        if enabled && self.wifi.visible {
+            let executor = cx.background_executor().clone();
+            self.wifi_scan_task = Some(cx.spawn(async move |this, cx| {
+                loop {
+                    let result = executor
+                        .spawn(async {
+                            crate::data_source::wifi::request_scan()
+                                .await
+                                .map_err(|error| error.to_string())
+                        })
+                        .await;
+                    if this
+                        .update(cx, |this, cx| {
+                            this.wifi_scan_error = result.err();
+                            cx.notify();
+                        })
+                        .is_err()
+                    {
+                        break;
+                    }
+                    async_io::Timer::after(Duration::from_secs(15)).await;
+                }
+            }));
+        }
+        cx.notify();
+    }
+
+    fn wifi_scroll_to(&self, y: Pixels) {
+        let Some(bounds) = self.wifi_scroll_bounds.get() else {
+            return;
+        };
+        let height = f32::from(bounds.size.height);
+        let max = f32::from(self.wifi_scroll.max_offset().y);
+        let thumb = (height * height / (height + max)).max(24.).min(height);
+        let travel = height - thumb;
+        if travel > 0. {
+            let progress = ((f32::from(y - bounds.origin.y) - thumb / 2.) / travel).clamp(0., 1.);
+            self.wifi_scroll
+                .set_offset(gpui::point(px(0.), px(-max * progress)));
+        }
+    }
+
+    fn wifi_scrollbar(&self, cx: &mut Context<Self>) -> Stateful<Div> {
+        let bounds = self.wifi_scroll_bounds.clone();
+        let height = bounds
+            .get()
+            .map_or(1., |bounds| f32::from(bounds.size.height));
+        let max = f32::from(self.wifi_scroll.max_offset().y);
+        let thumb = (height * height / (height + max)).max(24.).min(height);
+        let progress = if max > 0. {
+            (-f32::from(self.wifi_scroll.offset().y) / max).clamp(0., 1.)
+        } else {
+            0.
+        };
+        div()
+            .id("wifi-scrollbar")
+            .absolute()
+            .right_0()
+            .top_0()
+            .bottom_0()
+            .w(px(12.))
+            .cursor_pointer()
+            .child(
+                canvas(move |area, _, _| bounds.set(Some(area)), |_, _, _, _| {})
+                    .absolute()
+                    .inset_0(),
+            )
+            .when(max > 0., |track| {
+                track.child(
+                    div()
+                        .absolute()
+                        .right(px(SCROLLBAR_INSET))
+                        .top(px((height - thumb) * progress))
+                        .w(px(3.))
+                        .h(px(thumb))
+                        .rounded_full()
+                        .bg(theme::SCROLLBAR),
+                )
+            })
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, event: &MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.wifi_scroll_drag = true;
+                    this.wifi_scroll_to(event.position.y);
+                    cx.notify();
+                }),
+            )
+            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, cx| {
+                if this.wifi_scroll_drag {
+                    this.wifi_scroll_to(event.position.y);
+                    cx.notify();
+                }
+            }))
+            .on_mouse_up(
+                MouseButton::Left,
+                cx.listener(|this, _, _, _| this.wifi_scroll_drag = false),
+            )
+            .on_mouse_up_out(
+                MouseButton::Left,
+                cx.listener(|this, _, _, _| this.wifi_scroll_drag = false),
+            )
+    }
+
+    fn wifi_island(&self, cx: &mut Context<Self>) -> Stateful<Div> {
+        let scrollbar = self.wifi_scrollbar(cx);
+        let data = self.sources.wifi.read(cx);
+        let state = data.state.target.as_ref();
+        let color = if state.is_some_and(|state| state.enabled && state.ssid.is_some()) {
+            theme::WIFI_ACCENT
+        } else {
+            theme::MUTED
+        };
+        let icon = match state {
+            Some(state) if state.enabled => Icon::Wifi,
+            Some(_) => Icon::WifiOff,
+            None => Icon::Unknown,
+        };
+        let status = data.error.clone().unwrap_or_else(|| match state {
+            Some(state) if !state.enabled => "Wi-Fi off".into(),
+            Some(state) => state.ssid.clone().unwrap_or_else(|| "Disconnected".into()),
+            None => "Wi-Fi unavailable".into(),
+        });
+        let details = state
+            .and_then(|state| state.current.as_ref())
+            .map(|network| {
+                format!(
+                    "{} · {} MHz · signal {}% · RSSI unavailable",
+                    network.band().unwrap_or("Unknown band"),
+                    network.frequency,
+                    network.strength
+                )
+            })
+            .unwrap_or_else(|| "No active connection".into());
+        let networks = state
+            .filter(|state| state.enabled)
+            .map(|state| state.networks.as_slice())
+            .unwrap_or_default();
+        let progress = self.wifi_progress;
+        let reveal = self.bar_progress.max(progress);
+        let module = self
+            .module(Module::Wifi, static_icon(icon, color), color)
+            .cursor_pointer()
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, event: &MouseDownEvent, window, cx| {
+                    if !event.modifiers.platform {
+                        this.watch_outside_clicks(window, cx);
+                    }
+                }),
+            )
+            .on_click(cx.listener(|this, event: &gpui::ClickEvent, _, cx| {
+                if event.modifiers().platform {
+                    let _ = this.actions.unbounded_send(ModuleAction::ToggleWifi);
+                } else {
+                    this.set_wifi(!this.wifi.visible, cx);
+                }
+            }))
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(|this, _, _, cx| {
+                    cx.stop_propagation();
+                    let _ = this.actions.unbounded_send(ModuleAction::ToggleWifi);
+                }),
+            );
+        let width = self.wifi_width.clone();
+        let module = module.child(
+            canvas(
+                move |area, _, _| width.set(f32::from(area.size.width)),
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .inset_0(),
+        );
+        let bounds = self.wifi_island.clone();
+        div()
+            .id("wifi-island")
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Right, |_, _, cx| cx.stop_propagation())
+            .flex()
+            .flex_col()
+            .items_end()
+            .overflow_hidden()
+            .h(px(crate::bar_module::HEIGHT + WIFI_BODY_HEIGHT * progress))
+            .child(
+                div()
+                    .flex()
+                    .relative()
+                    .justify_end()
+                    .min_w(px(WIFI_WIDTH * progress))
+                    .when(progress > 0., |header| {
+                        header.child(
+                            div().absolute().left_0().right(px(self.wifi_width.get() + HEADER_CLOSE_SLOT * progress + HEADER_ICON_GAP)).top_0()
+                                .h(px(crate::bar_module::HEIGHT)).flex().items_center()
+                                .overflow_hidden().opacity(progress)
+                                .child(div().flex_1().min_w_0().pl_1p5().overflow_hidden().whitespace_nowrap().child("WiFi"))
+                                .when(self.wifi.visible, |header| header.child(
+                                bar_module(
+                                    "wifi-auto-rescan",
+                                    static_icon(Icon::History, if self.wifi_auto_scan { theme::WIFI_ACCENT } else { theme::MUTED }),
+                                    theme::WIFI_ACCENT,
+                                    self.wifi_auto_scan,
+                                )
+                                .flex_shrink_0()
+                                .cursor_pointer()
+                                .hoverable_tooltip(static_tooltip("Auto-rescan".into(), theme::WIFI_ACCENT))
+                                .on_click(cx.listener(
+                                    |this, _, _, cx| {
+                                        this.set_wifi_auto_scan(!this.wifi_auto_scan, cx);
+                                    },
+                                )),
+                            )),
+                        )
+                    })
+                    .child(module)
+                    .child(
+                        div()
+                            .relative()
+                            .flex_shrink_0()
+                            .w(px(HEADER_CLOSE_SLOT * progress))
+                            .h(px(crate::bar_module::HEIGHT))
+                            .overflow_hidden()
+                            .opacity(progress)
+                            .when(progress > 0., |slot| {
+                                slot.child(
+                                    bar_module(
+                                        "wifi-close",
+                                        static_icon(Icon::Close, theme::WIFI_ACCENT),
+                                        theme::WIFI_ACCENT,
+                                        false,
+                                    )
+                                    .absolute()
+                                    .left(px(HEADER_ICON_GAP))
+                                    .w(px(crate::bar_module::HEIGHT))
+                                    .justify_center()
+                                    .cursor_pointer()
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.set_wifi(false, cx);
+                                    })),
+                                )
+                            }),
+                    ),
+            )
+            .when(progress > 0., |island| {
+                island.child(
+                    div().w(px(WIFI_WIDTH * progress)).overflow_hidden().child(
+                        div()
+                            .w(px(WIFI_WIDTH))
+                            .h(px(WIFI_BODY_HEIGHT))
+                            .px(px(LIST_PAD))
+                            .py_2()
+                            .flex()
+                            .flex_col()
+                            .gap_2()
+                            .child(
+                                div()
+                                    .flex_shrink_0()
+                                    .flex()
+                                    .flex_col()
+                                    .gap_1()
+                                    .child(
+                                        div()
+                                            .text_color(theme::FOREGROUND)
+                                            .overflow_hidden()
+                                            .text_ellipsis()
+                                            .child(status),
+                                    )
+                                    .child(
+                                        div()
+                                            .text_size(px(12.))
+                                            .text_color(theme::MUTED)
+                                            .child(details),
+                                    ),
+                            )
+                            .child(div().flex_shrink_0().h(px(1.)).bg(theme::MODULE_HOVER))
+                            .children(self.wifi_scan_error.as_ref().map(|error| {
+                                div()
+                                    .flex_shrink_0()
+                                    .text_size(px(12.))
+                                    .text_color(theme::MUTED)
+                                    .child(format!("Scan: {error}"))
+                            }))
+                            .when(self.wifi_connect_task.is_some() || self.wifi_connect_error, |body| body.child(
+                                div().text_size(px(12.)).text_color(theme::MUTED).child(if self.wifi_connect_error { "Connection failed. Select a network to retry." } else { "Connecting…" })
+                            ))
+                            .child(
+                                div().relative().flex_1().min_h_0()
+                                .child(div()
+                                    .id("wifi-networks")
+                                    .flex_1()
+                                    .min_h_0()
+                                    .h_full()
+                                    .pr_3()
+                                    .track_scroll(&self.wifi_scroll)
+                                    .on_scroll_wheel(cx.listener(|_, _, _, cx| cx.notify()))
+                                    .overflow_y_scroll()
+                                    .flex()
+                                    .flex_col()
+                                    .gap_2()
+                                    .when(networks.is_empty(), |list| {
+                                        list.child(
+                                            div()
+                                                .text_color(theme::MUTED)
+                                                .child("No nearby networks"),
+                                        )
+                                    })
+                                    .children(networks.iter().enumerate().map(|(index, network)| {
+                                        let selected = self.wifi_selected.as_ref().is_some_and(|selected| selected.ssid == network.ssid);
+                                        let chosen = network.clone();
+                                        div().id(("wifi-network", index)).cursor_pointer()
+                                            .on_click(cx.listener(move |this, _, window, cx| this.select_wifi(chosen.clone(), window, cx)))
+                                            .flex_shrink_0()
+                                            .flex()
+                                            .flex_col()
+                                            .child(
+                                                div()
+                                                    .text_color(theme::FOREGROUND)
+                                                    .overflow_hidden()
+                                                    .text_ellipsis()
+                                                    .child(network.ssid.clone()),
+                                            )
+                                            .child(
+                                                div()
+                                                    .text_size(px(12.))
+                                                    .text_color(theme::MUTED)
+                                                    .child(format!(
+                                                        "{} · signal {}%",
+                                                        network.band().unwrap_or("Unknown band"),
+                                                        network.strength
+                                                    )),
+                                            )
+                                            .when(selected, |row| row.child(collapse("wifi-password", self.wifi_password_reveal.progress(Instant::now()),
+                                                div().id("wifi-password-controls").flex().gap_2().py_2()
+                                                    .on_click(|_, _, cx| cx.stop_propagation())
+                                                    .children(self.wifi_password.clone().map(|input| div().flex_1().child(input)))
+                                                    .child(div().id("wifi-connect").cursor_pointer().child("Connect")
+                                                        .on_click(cx.listener(|this, _, _, cx| { cx.stop_propagation(); this.connect_wifi(cx); })))
+                                            )))
+                                    })))
+                                    .child(scrollbar),
+                            ),
+                    ),
+                )
+            })
+            .relative()
+            .top(px(slide_offset(reveal) - self.row_offset()))
+            .when(!self.wifi.hidden(), |island| {
+                island
+                    .child(self.liquid_anchor(reveal, None, [!self.bar.hidden(); 2]))
+                    .child(
+                        canvas(move |area, _, _| bounds.set(Some(area)), |_, _, _, _| {})
+                            .absolute()
+                            .inset_0(),
+                    )
+            })
+    }
+
     fn clickable(element: Stateful<Div>, module: Module, cx: &mut Context<Self>) -> Stateful<Div> {
         element
             .cursor_pointer()
@@ -1163,10 +1667,7 @@ impl Bar {
                 .opacity(count_shown)
                 .child(div().pl_1().whitespace_nowrap().child(text))
         });
-        // Open, the mode's name grows in before the bell, crossfading (and easing its width)
-        // when the mode changes.
-        // Each mode is its name (grown in while open) and its bell, swiped vertically as one:
-        // the new mode always enters from below. The width eases between theirs.
+        // Swipe only the icons, keeping the main module's width independent of expansion.
         const LINE: f32 = 1.25;
         let t = self.bell_mode.value(now);
         let (normal_y, quiet_y) = if notifications.do_not_disturb {
@@ -1174,10 +1675,7 @@ impl Bar {
         } else {
             (t * LINE, -(1. - t) * LINE)
         };
-        let [normal_width, quiet_width] = self.bell_layers.clone();
-        let width = normal_width.get() + (quiet_width.get() - normal_width.get()) * t;
-        let layer = |id: &'static str, text: &'static str, icon: AnyElement, y: f32, measured| {
-            let measured: Rc<std::cell::Cell<f32>> = measured;
+        let layer = |icon: AnyElement, y: f32| {
             div()
                 .absolute()
                 .left_0()
@@ -1185,41 +1683,18 @@ impl Bar {
                 .h(rems(LINE))
                 .flex()
                 .items_center()
-                .whitespace_nowrap()
-                .child(collapse(id, dropdown, div().pr_1p5().child(text)))
                 .child(icon)
-                .child(
-                    canvas(
-                        move |bounds, window, _| {
-                            // In rems, as the bell is scaled while it's revealed.
-                            let rem = f32::from(window.rem_size());
-                            measured.set(f32::from(bounds.size.width) / rem);
-                        },
-                        |_, _, _, _| {},
-                    )
-                    .absolute()
-                    .inset_0(),
-                )
         };
         let modes = div()
             .relative()
             .flex_shrink_0()
-            .w(rems(width))
+            .w(rems(1.))
             .h(rems(LINE))
             .overflow_hidden()
+            .child(layer(self.bell_icon.clone().into_any_element(), normal_y))
             .child(layer(
-                "notifications-label",
-                "Notifications",
-                self.bell_icon.clone().into_any_element(),
-                normal_y,
-                normal_width,
-            ))
-            .child(layer(
-                "do-not-disturb-label",
-                "Do not disturb",
                 static_icon(Icon::BellOff, color).into_any_element(),
                 quiet_y,
-                quiet_width,
             ));
         let bell = div()
             .flex()
@@ -1229,7 +1704,6 @@ impl Bar {
             .children(count);
         let scale = START_SCALE + (1. - START_SCALE) * progress;
         let bell_width = self.bell_width.clone();
-        let closed = self.dropdown.hidden();
         let bell = bar_module(
             Module::Notifications.name(),
             scaled(scale, bell),
@@ -1237,17 +1711,14 @@ impl Bar {
             false,
         )
         .flex_shrink_0()
-        // Closed, its width is the close button's, which takes its place when open.
-        .when(closed, |bell| {
-            bell.child(
-                canvas(
-                    move |bounds, _, _| bell_width.set(f32::from(bounds.size.width)),
-                    |_, _, _, _| {},
-                )
-                .absolute()
-                .inset_0(),
+        .child(
+            canvas(
+                move |bounds, _, _| bell_width.set(f32::from(bounds.size.width)),
+                |_, _, _, _| {},
             )
-        })
+            .absolute()
+            .inset_0(),
+        )
         .cursor_pointer()
         // Open, it toggles do not disturb; closed, it opens (or, right- or super-clicked,
         // toggles do not disturb).
@@ -1271,72 +1742,88 @@ impl Bar {
             MouseButton::Left,
             cx.listener(|this, _, window, cx| this.watch_outside_clicks(window, cx)),
         );
-        // Where the closed bell was, exactly, so a second click there closes it.
-        let close = (dropdown > 0.).then(|| {
-            collapse(
-                "notifications-close",
-                dropdown,
-                div()
-                    .id("notifications-close")
-                    .relative()
-                    .w(px(self.bell_width.get()))
-                    .h(px(crate::bar_module::HEIGHT))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded(px(4.))
-                    .cursor_pointer()
-                    .child(background("background"))
-                    .child(static_icon(Icon::Close, theme::MUTED))
-                    .on_click(cx.listener(|this, _, _, _| {
-                        let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
-                        let _ = this.actions.unbounded_send(action);
-                    })),
-            )
-        });
-        // The controls are positioned over the header, so they never affect the island's width
-        // (which would jump as they appear or disappear). They go as soon as it starts closing.
+        // Reserve the main module and animated close slot so extras never overlap them.
         let header = div()
             .relative()
             .flex()
             .justify_end()
             .min_w(px(DROPDOWN_WIDTH * dropdown))
-            .when(dropdown > 0. && self.dropdown.visible, |header| {
+            .when(dropdown > 0., |header| {
                 header.child(
                     div()
                         .absolute()
                         .left_0()
+                        .right(px(self.bell_width.get()
+                            + HEADER_CLOSE_SLOT * dropdown
+                            + HEADER_ICON_GAP))
                         .top_0()
+                        .h(px(crate::bar_module::HEIGHT))
                         .flex()
                         .items_center()
-                        .gap_1()
-                        .pl(px(LIST_PAD))
+                        .overflow_hidden()
                         .opacity(dropdown)
-                        .child(self.control(
-                            "show-read",
-                            Icon::History,
-                            show_read,
-                            NotificationAction::ToggleShowRead,
-                            cx,
-                        ))
-                        .child(self.control(
-                            "mark-all-read",
-                            Icon::CheckCheck,
-                            false,
-                            NotificationAction::MarkAllRead,
-                            cx,
-                        )),
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .pl_1p5()
+                                .overflow_hidden()
+                                .whitespace_nowrap()
+                                .child("Notifications"),
+                        )
+                        .when(self.dropdown.visible, |header| {
+                            header.child(
+                                div()
+                                    .flex()
+                                    .flex_shrink_0()
+                                    .items_center()
+                                    .gap(px(HEADER_ICON_GAP))
+                                    .child(self.control(
+                                        "show-read",
+                                        Icon::History,
+                                        show_read,
+                                        NotificationAction::ToggleShowRead,
+                                        cx,
+                                    ))
+                                    .child(self.control(
+                                        "mark-all-read",
+                                        Icon::CheckCheck,
+                                        false,
+                                        NotificationAction::MarkAllRead,
+                                        cx,
+                                    )),
+                            )
+                        }),
                 )
             })
             .child(bell)
-            .children(close);
+            .child(
+                div()
+                    .relative()
+                    .flex_shrink_0()
+                    .w(px(HEADER_CLOSE_SLOT * dropdown))
+                    .h(px(crate::bar_module::HEIGHT))
+                    .overflow_hidden()
+                    .opacity(dropdown)
+                    .when(dropdown > 0., |slot| {
+                        slot.child(
+                            self.control(
+                                "notifications-close",
+                                Icon::Close,
+                                false,
+                                NotificationAction::CloseDropdown,
+                                cx,
+                            )
+                            .absolute()
+                            .left(px(HEADER_ICON_GAP)),
+                        )
+                    }),
+            );
 
         let rows = self.list_rows.value(Instant::now());
         let island = self.island.clone();
         div()
             .id("notifications-island")
-            // Room between the controls and the module before them.
-            .ml(px(LIST_PAD * dropdown))
             .flex()
             .flex_col()
             .items_end()
@@ -1360,18 +1847,7 @@ impl Bar {
                                 .w(px(DROPDOWN_WIDTH))
                                 .flex()
                                 .flex_col()
-                                .child(
-                                    div()
-                                        .flex_shrink_0()
-                                        .h(px(TITLE_HEIGHT))
-                                        .px(px(LIST_PAD + 2.))
-                                        .flex()
-                                        .items_end()
-                                        .text_size(px(15.))
-                                        .font_weight(gpui::FontWeight::MEDIUM)
-                                        .text_color(theme::FOREGROUND)
-                                        .child("Notifications"),
-                                )
+                                .pt(px(TITLE_HEIGHT))
                                 .child(self.notification_list(cx)),
                         ),
                 )
@@ -1529,6 +2005,18 @@ impl Bar {
 
     /// The toasts: each card at exactly where the dropdown draws it. Each is its own pane of
     /// glass (the liquid's tint, over blur) until the dropdown's liquid grows around it.
+    fn notification_hover(&self, id: i32, cx: &mut Context<Self>) -> Entity<HoverFade> {
+        self.notification_hovers
+            .borrow_mut()
+            .entry(id)
+            .or_insert_with(|| {
+                let state = cx.new(|_| HoverFade::new(theme::CARD));
+                cx.observe(&state, |_, _, cx| cx.notify()).detach();
+                state
+            })
+            .clone()
+    }
+
     fn toasts_element(&self, width: Pixels, now: Instant, cx: &mut Context<Self>) -> Stateful<Div> {
         let bounds = toast_bounds(width, self.toast_rows.value(now));
         let timestamp = self.zoned_now(cx);
@@ -1557,7 +2045,10 @@ impl Bar {
                         &toast.notification,
                         &timestamp,
                         Tick::Space,
-                        true,
+                        Some((
+                            self.notification_hover(id, cx),
+                            ("toast", id as usize).into(),
+                        )),
                     ))
                     .child(
                         div()
@@ -1766,7 +2257,7 @@ impl Bar {
                     .map(|other| other.gap(now))
                     .sum();
                 let swipe = removal.swipe(now);
-                notification_card(&removal.notification, timestamp, Tick::Icon, false)
+                notification_card(&removal.notification, timestamp, Tick::Icon, None)
                     .absolute()
                     .top(px(ROW_GAP + above))
                     .left(px(
@@ -1794,7 +2285,12 @@ impl Bar {
             &notification,
             timestamp,
             if read { Tick::None } else { Tick::Space },
-            true,
+            (!self.toast_covers(id)).then(|| {
+                (
+                    self.notification_hover(id, cx),
+                    ("notification", id as usize).into(),
+                )
+            }),
         )
         .absolute()
         .top(px(ROW_GAP + offset))
@@ -2063,7 +2559,7 @@ fn notification_card(
     notification: &Notification,
     now: &jiff::Zoned,
     tick_: Tick,
-    hover: bool,
+    hover: Option<(Entity<HoverFade>, ElementId)>,
 ) -> Div {
     const GAP: f32 = 10.;
     // Notification text is plain (no body-markup capability), but may span lines.
@@ -2117,9 +2613,10 @@ fn notification_card(
         .items_center()
         .gap(px(GAP))
         .map(|card| {
-            if hover {
+            if let Some((state, owner)) = hover {
                 card.relative().child(
                     background("card-background")
+                        .shared(state, owner)
                         .rest(theme::CARD)
                         .radius(px(8.)),
                 )
@@ -2203,6 +2700,12 @@ impl Render for Bar {
                 self.scroll_tween = None;
             }
         }
+        self.wifi_password_reveal.settle(now);
+        if self.wifi_password_reveal.animating() {
+            window.request_animation_frame();
+        }
+        self.wifi.settle(now);
+        self.wifi_progress = self.wifi.progress(now);
         self.dropdown.settle(now);
         self.dropdown_progress = self.dropdown.progress(now);
         self.launcher.settle(now);
@@ -2249,6 +2752,10 @@ impl Render for Bar {
             }
         }
         self.toasts.retain(|toast| !toast.reveal.hidden());
+        self.notification_hovers.get_mut().retain(|id, _| {
+            visible.iter().any(|notification| notification.id == *id)
+                || self.toasts.iter().any(|toast| toast.notification.id == *id)
+        });
         let toast_rows = (self.toasts.iter())
             .filter(|toast| toast.reveal.visible)
             .map(|toast| toast.row.value(now) + 1.)
@@ -2280,6 +2787,11 @@ impl Render for Bar {
         } else {
             HEIGHT
         }
+        .max(if self.wifi.hidden() {
+            0.
+        } else {
+            HEIGHT + WIFI_BODY_HEIGHT
+        })
         .max(tray_height.unwrap_or(0.).ceil())
         .max(if self.copied.hidden() {
             0.
@@ -2303,6 +2815,7 @@ impl Render for Bar {
         self.removals.retain(|removal| !removal.done(now));
         self.sync_launcher_window(window, cx);
         if self.bar.animating()
+            || self.wifi.animating()
             || self.dropdown.animating()
             || self.tray_reveal.animating()
             || self.launcher.animating()
@@ -2337,6 +2850,8 @@ impl Render for Bar {
         let input_bar = self.bar.visible;
         let input_island = self.dropdown.visible;
         let island = self.island.clone();
+        let input_wifi = self.wifi.visible;
+        let wifi_island = self.wifi_island.clone();
         let input_tray = self.tray_reveal.visible;
         let tray_island = self.tray_island.clone();
         let input_everywhere = self.launcher.visible;
@@ -2537,6 +3052,7 @@ impl Render for Bar {
         ]);
         let clock = self.launcher_island(clock, tooltips_enabled, now, cx);
         let center = self.section([shown("clock", clock)]);
+        let wifi = self.wifi_island(cx);
         let notifications = self.notifications_island(window, cx);
         let section = self.section.clone();
         let right = self
@@ -2544,6 +3060,7 @@ impl Render for Bar {
                 shown("caffeine", caffeine),
                 brightness,
                 shown("volume", volume),
+                shown("wifi", wifi),
                 shown("notifications", notifications),
             ]))
             .child(
@@ -2608,6 +3125,7 @@ impl Render for Bar {
                         window.on_mouse_event(move |_: &MouseDownEvent, phase, _, cx| {
                             if phase == DispatchPhase::Bubble {
                                 bar.update(cx, |bar, cx| {
+                                    bar.set_wifi(false, cx);
                                     bar.close_tray_menu(cx);
                                     bar.set_launcher(false, cx);
                                 });
@@ -2632,6 +3150,9 @@ impl Render for Bar {
                             ));
                         }
                         if input_island && let Some(island) = island.get() {
+                            input.push(island.dilate(px(BLOB_PAD_X)));
+                        }
+                        if input_wifi && let Some(island) = wifi_island.get() {
                             input.push(island.dilate(px(BLOB_PAD_X)));
                         }
                         if input_tray && let Some(island) = tray_island.get() {
@@ -2681,7 +3202,7 @@ const TOAST_PAD: f32 = 8.;
 const TOAST_SLIDE: f32 = 48.;
 /// Above the dropdown's list, keeping the toast clear of the bar.
 const TITLE_HEIGHT: f32 = 28.;
-/// The dropdown's first card: below the bell, the title, the list's padding and the row's gap.
+/// The dropdown's first card: below the bell, the top padding and the list's padding.
 const CARD_TOP: f32 = PAD_Y + crate::bar_module::HEIGHT + TITLE_HEIGHT + LIST_PAD;
 const TOAST_TOP: f32 = CARD_TOP - TOAST_PAD;
 const CARD_WIDTH: f32 = DROPDOWN_WIDTH - 2. * LIST_PAD;

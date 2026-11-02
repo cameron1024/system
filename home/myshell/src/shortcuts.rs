@@ -15,6 +15,8 @@ pub enum Command {
     Activate(Module),
     Adjust(Module, i32),
     ToggleDoNotDisturb,
+    OpenWifi,
+    ToggleWifi,
 }
 
 struct Shortcuts {
@@ -57,6 +59,15 @@ impl Shortcuts {
 
     fn toggle_do_not_disturb(&self) -> zbus::fdo::Result<()> {
         self.send(Command::ToggleDoNotDisturb)
+    }
+
+    /// Opens the Wi-Fi menu on the focused display.
+    fn open_wifi(&self) -> zbus::fdo::Result<()> {
+        self.send(Command::OpenWifi)
+    }
+
+    fn toggle_wifi(&self) -> zbus::fdo::Result<()> {
+        self.send(Command::ToggleWifi)
     }
 
     fn activate(&self, module: &str) -> zbus::fdo::Result<()> {

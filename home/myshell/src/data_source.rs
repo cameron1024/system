@@ -8,6 +8,7 @@ pub mod power_profile;
 pub mod system;
 pub mod tray;
 pub mod volume;
+pub mod wifi;
 
 use std::future::Future;
 
