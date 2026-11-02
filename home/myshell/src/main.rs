@@ -4,6 +4,7 @@ mod bar_module;
 mod battery_indicator;
 mod blur;
 mod caffeine;
+mod collapse;
 mod command;
 mod data_source;
 mod desktop_entry;

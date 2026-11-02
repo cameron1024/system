@@ -52,6 +52,7 @@ use crate::bar_module::Module;
 use crate::bar_module::bar_module;
 use crate::battery_indicator::BatteryIndicator;
 use crate::blur::Blur;
+use crate::collapse::collapse;
 use crate::data_source::Data;
 use crate::data_source::DataSource;
 use crate::data_source::tray::TrayItem;
@@ -184,6 +185,9 @@ fn fillets(body: Body) -> impl Iterator<Item = liquid::Outline> {
         .map(move |((x, left), _)| liquid::fillet(x, neighbour_bottom, radius, left))
 }
 
+/// A section's module: its key, how far it's shown, and the module.
+type SectionModule = (SharedString, f32, Stateful<Div>);
+
 /// How far the content row is slid up out of view.
 fn slide_offset(progress: f32) -> f32 {
     -HEIGHT * (1. - progress)
@@ -198,6 +202,12 @@ pub struct Bar {
     bell_color: Fade,
     bell_count: Tween,
     bell_count_text: SharedString,
+    /// 0 normally, 1 in do not disturb: which name shows while open.
+    bell_mode: Tween,
+    /// Each mode's name and bell's width, in rems: normal, then do not disturb.
+    bell_layers: [Rc<std::cell::Cell<f32>>; 2],
+    /// The closed bell's width, which the close button takes.
+    bell_width: Rc<std::cell::Cell<f32>>,
     volume_button: Entity<VolumeButton>,
     battery: Entity<BatteryIndicator>,
     actions: mpsc::UnboundedSender<ModuleAction>,
@@ -229,6 +239,11 @@ pub struct Bar {
     dragged: bool,
     /// The key of the item whose tray menu is shown (including while closing).
     tray_menu: Option<String>,
+
+    /// The tray's items, including removed ones while they fade out.
+    tray_items: Vec<(TrayItem, Reveal)>,
+    /// Modules that come and go (see `presence`).
+    presence: std::collections::HashMap<&'static str, Reveal>,
     tray_reveal: Reveal,
     tray_progress: f32,
     /// The open tray menu's bounds, recorded during prepaint for the input region.
@@ -301,6 +316,7 @@ pub enum NotificationAction {
     ToggleShowRead,
     LoadMore,
     CloseDropdown,
+    ToggleDoNotDisturb,
 }
 
 impl Bar {
@@ -580,11 +596,18 @@ impl Bar {
         let volume = sources.volume.clone();
         let battery = sources.battery.clone();
         cx.observe(&sources.notifications, |this, notifications, cx| {
+            let do_not_disturb = f32::from(u8::from(notifications.read(cx).do_not_disturb));
             let bell = bell(notifications.read(cx));
             this.set_bell(bell, cx);
+            if cx.reduce_motion() {
+                this.bell_mode.snap(do_not_disturb, Instant::now());
+            } else {
+                this.bell_mode.set(do_not_disturb, Instant::now());
+            }
         })
         .detach();
         let (bell_icon, bell_color, bell_count) = bell(sources.notifications.read(cx));
+        let do_not_disturb = sources.notifications.read(cx).do_not_disturb;
 
         Self {
             sources,
@@ -597,6 +620,10 @@ impl Bar {
                 .map(|count| count.to_string())
                 .unwrap_or_default()
                 .into(),
+            bell_mode: Tween::new(f32::from(u8::from(do_not_disturb)), Instant::now())
+                .with_duration(Duration::from_millis(150)),
+            bell_width: Rc::new(std::cell::Cell::new(crate::bar_module::HEIGHT)),
+            bell_layers: [1., 1.].map(|width| Rc::new(std::cell::Cell::new(width))),
             volume_button: cx.new(|cx| VolumeButton::new(volume, cx)),
             battery: cx.new(|cx| BatteryIndicator::new(battery, cx)),
             actions,
@@ -618,6 +645,9 @@ impl Bar {
             dragged: false,
             swipe_blocked: None,
             tray_menu: None,
+
+            tray_items: Vec::new(),
+            presence: Default::default(),
             tray_reveal: Reveal::new(false, Instant::now()),
             tray_progress: 0.,
             tray_island: Rc::default(),
@@ -814,9 +844,10 @@ impl Bar {
         });
         let bounds = self.tray_island.clone();
         island
-            // Room between the title and the module before. Nothing after it moves, so neither
-            // does the item's own module.
-            .ml(px(LIST_PAD * progress))
+            // Room between the title and the module before, if any (first, it would only widen
+            // the section's body past the menu). Nothing after it moves, so neither does the
+            // item's own module.
+            .when(!first, |island| island.ml(px(LIST_PAD * progress)))
             .flex()
             .flex_col()
             .items_end()
@@ -898,35 +929,100 @@ impl Bar {
     }
 
     /// A group of modules (skipping any that are None) with separators between them, sharing one
-    /// body of liquid unless modules are peeking.
-    fn section(&self, modules: impl IntoIterator<Item = Option<Stateful<Div>>>) -> Div {
+    /// body of liquid unless modules are peeking. Each module has a key and a presence (see
+    /// `presence`): appearing and disappearing, it fades and its width eases, with a separator.
+    fn section(&self, modules: impl IntoIterator<Item = Option<SectionModule>>) -> Div {
         let peeking = self.bar.hidden();
         // Top-aligned, so a dropdown in the section grows downwards without moving the rest.
-        let mut section = div()
-            .flex()
-            .items_start()
-            .gap_1()
-            .when(!peeking, |section| {
-                // Always bar-height: a dropdown's taller body joins it with a fillet.
-                section.child(self.liquid_anchor(self.bar_progress, Some(HEIGHT), [false; 2]))
-            });
-        for (index, module) in modules.into_iter().flatten().enumerate() {
-            if index > 0 {
-                // Kept in layout while peeking, so peeked modules don't move.
-                section = section.child(
-                    div()
-                        .w(px(1.))
-                        .h(px(14.))
-                        .mt(px((crate::bar_module::HEIGHT - 14.) / 2.))
-                        .flex_shrink_0()
-                        .bg(theme::SEPARATOR)
-                        .opacity(self.bar_progress)
-                        .when(peeking, |separator| separator.invisible()),
-                );
-            }
-            section = section.child(module);
+        let mut section = div().flex().items_start().when(!peeking, |section| {
+            // Always bar-height: a dropdown's taller body joins it with a fillet.
+            section.child(self.liquid_anchor(self.bar_progress, Some(HEIGHT), [false; 2]))
+        });
+        let modules: Vec<_> = modules.into_iter().flatten().collect();
+        // Each separator goes with the module after it, except that a first module that's
+        // coming or going takes the one after it instead.
+        let first_moving = modules.len() > 1 && modules[0].1 < 1.;
+        // Kept in layout while peeking, so peeked modules don't move.
+        let separator = || {
+            div()
+                .w(px(1.))
+                .h(px(14.))
+                .mx_1()
+                .mt(px((crate::bar_module::HEIGHT - 14.) / 2.))
+                .flex_shrink_0()
+                .bg(theme::SEPARATOR)
+                .opacity(self.bar_progress)
+                .when(peeking, |separator| separator.invisible())
+        };
+        for (index, (key, progress, module)) in modules.into_iter().enumerate() {
+            let leading = index > 0 && !(index == 1 && first_moving);
+            let trailing = index == 0 && first_moving;
+            let item = div()
+                .flex()
+                .items_start()
+                .when(leading, |item| item.child(separator()))
+                .child(module)
+                .when(trailing, |item| item.child(separator()));
+            section = section.child(collapse(key, progress, item));
         }
         section
+    }
+
+    /// How far something that comes and goes (e.g. the battery module) is shown, or None once
+    /// it's gone. Present from the start, it's shown at once.
+    fn presence(
+        &mut self,
+        key: &'static str,
+        visible: bool,
+        now: Instant,
+        reduce_motion: bool,
+    ) -> Option<f32> {
+        let reveal = (self.presence)
+            .entry(key)
+            .or_insert_with(|| Reveal::new(visible, now));
+        reveal.set(visible, reduce_motion, now);
+        reveal.settle(now);
+        (!reveal.hidden()).then(|| reveal.progress(now))
+    }
+
+    /// Follows the tray's items: new ones fade in, and removed ones fade out where they were.
+    fn sync_tray(&mut self, current: Vec<TrayItem>, now: Instant, reduce_motion: bool) {
+        let mut old: Vec<(String, Option<(TrayItem, Reveal)>)> =
+            (std::mem::take(&mut self.tray_items).into_iter())
+                .map(|(item, reveal)| (item.key.clone(), Some((item, reveal))))
+                .collect();
+        let mut next: Vec<(TrayItem, Reveal)> = (current.into_iter())
+            .map(|item| {
+                let mut reveal = (old.iter_mut())
+                    .find(|(key, _)| *key == item.key)
+                    .and_then(|(_, entry)| entry.take())
+                    .map_or_else(|| Reveal::new(false, now), |(_, reveal)| reveal);
+                reveal.set(true, reduce_motion, now);
+                (item, reveal)
+            })
+            .collect();
+        // Each removed item stays after the item that was before it.
+        let mut at = 0;
+        for (key, entry) in old {
+            match entry {
+                Some((item, mut reveal)) => {
+                    reveal.set(false, reduce_motion, now);
+                    reveal.settle(now);
+                    if !reveal.hidden() {
+                        next.insert(at, (item, reveal));
+                        at += 1;
+                    }
+                }
+                None => {
+                    at = (next.iter().position(|(item, _)| item.key == key))
+                        .map_or(at, |index| index + 1)
+                }
+            }
+        }
+        for (_, reveal) in &mut next {
+            reveal.settle(now);
+        }
+        self.tray_items = next;
     }
 
     /// Records its parent's horizontal bounds, so a body `progress` of the way through being
@@ -982,13 +1078,19 @@ impl Bar {
     }
 }
 
-/// The bell's icon, colour, and unread count (if shown). Do not disturb hides the count, and
-/// greys it out.
+/// The bell's icon outside do not disturb (which swipes to its own), its colour, and unread
+/// count (if shown). Do not disturb hides the count, and greys it out.
 fn bell(notifications: &Notifications) -> (Icon, Rgba, Option<usize>) {
-    match (notifications.do_not_disturb, notifications.unread()) {
-        (true, _) => (Icon::BellOff, theme::MUTED, None),
-        (false, 0) => (Icon::Bell, theme::MUTED, None),
-        (false, unread) => (Icon::BellDot, theme::NOTIFICATION_ACCENT, Some(unread)),
+    let unread = notifications.unread();
+    let icon = if unread > 0 {
+        Icon::BellDot
+    } else {
+        Icon::Bell
+    };
+    match (notifications.do_not_disturb, unread) {
+        (true, _) => (icon, theme::MUTED, None),
+        (false, 0) => (icon, theme::NOTIFICATION_ACCENT, None),
+        (false, unread) => (icon, theme::NOTIFICATION_ACCENT, Some(unread)),
     }
 }
 
@@ -1061,24 +1163,137 @@ impl Bar {
                 .opacity(count_shown)
                 .child(div().pl_1().whitespace_nowrap().child(text))
         });
+        // Open, the mode's name grows in before the bell, crossfading (and easing its width)
+        // when the mode changes.
+        // Each mode is its name (grown in while open) and its bell, swiped vertically as one:
+        // the new mode always enters from below. The width eases between theirs.
+        const LINE: f32 = 1.25;
+        let t = self.bell_mode.value(now);
+        let (normal_y, quiet_y) = if notifications.do_not_disturb {
+            (-t * LINE, (1. - t) * LINE)
+        } else {
+            (t * LINE, -(1. - t) * LINE)
+        };
+        let [normal_width, quiet_width] = self.bell_layers.clone();
+        let width = normal_width.get() + (quiet_width.get() - normal_width.get()) * t;
+        let layer = |id: &'static str, text: &'static str, icon: AnyElement, y: f32, measured| {
+            let measured: Rc<std::cell::Cell<f32>> = measured;
+            div()
+                .absolute()
+                .left_0()
+                .top(rems(y))
+                .h(rems(LINE))
+                .flex()
+                .items_center()
+                .whitespace_nowrap()
+                .child(collapse(id, dropdown, div().pr_1p5().child(text)))
+                .child(icon)
+                .child(
+                    canvas(
+                        move |bounds, window, _| {
+                            // In rems, as the bell is scaled while it's revealed.
+                            let rem = f32::from(window.rem_size());
+                            measured.set(f32::from(bounds.size.width) / rem);
+                        },
+                        |_, _, _, _| {},
+                    )
+                    .absolute()
+                    .inset_0(),
+                )
+        };
+        let modes = div()
+            .relative()
+            .flex_shrink_0()
+            .w(rems(width))
+            .h(rems(LINE))
+            .overflow_hidden()
+            .child(layer(
+                "notifications-label",
+                "Notifications",
+                self.bell_icon.clone().into_any_element(),
+                normal_y,
+                normal_width,
+            ))
+            .child(layer(
+                "do-not-disturb-label",
+                "Do not disturb",
+                static_icon(Icon::BellOff, color).into_any_element(),
+                quiet_y,
+                quiet_width,
+            ));
         let bell = div()
             .flex()
             .items_center()
             .text_color(color)
-            .child(self.bell_icon.clone())
+            .child(modes)
             .children(count);
         let scale = START_SCALE + (1. - START_SCALE) * progress;
+        let bell_width = self.bell_width.clone();
+        let closed = self.dropdown.hidden();
         let bell = bar_module(
             Module::Notifications.name(),
             scaled(scale, bell),
             color,
-            self.dropdown.visible,
+            false,
         )
-        .flex_shrink_0();
-        let bell = Self::clickable(bell, Module::Notifications, cx).on_mouse_down(
+        .flex_shrink_0()
+        // Closed, its width is the close button's, which takes its place when open.
+        .when(closed, |bell| {
+            bell.child(
+                canvas(
+                    move |bounds, _, _| bell_width.set(f32::from(bounds.size.width)),
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .inset_0(),
+            )
+        })
+        .cursor_pointer()
+        // Open, it toggles do not disturb; closed, it opens (or, right- or super-clicked,
+        // toggles do not disturb).
+        .on_click(cx.listener(|this, event: &gpui::ClickEvent, _, _| {
+            let action = if this.dropdown.visible || event.modifiers().platform {
+                ModuleAction::Notifications(NotificationAction::ToggleDoNotDisturb)
+            } else {
+                ModuleAction::Click(Module::Notifications)
+            };
+            let _ = this.actions.unbounded_send(action);
+        }))
+        .on_mouse_down(
+            MouseButton::Right,
+            cx.listener(|this, _, _, cx| {
+                cx.stop_propagation();
+                let action = ModuleAction::Notifications(NotificationAction::ToggleDoNotDisturb);
+                let _ = this.actions.unbounded_send(action);
+            }),
+        )
+        .on_mouse_down(
             MouseButton::Left,
             cx.listener(|this, _, window, cx| this.watch_outside_clicks(window, cx)),
         );
+        // Where the closed bell was, exactly, so a second click there closes it.
+        let close = (dropdown > 0.).then(|| {
+            collapse(
+                "notifications-close",
+                dropdown,
+                div()
+                    .id("notifications-close")
+                    .relative()
+                    .w(px(self.bell_width.get()))
+                    .h(px(crate::bar_module::HEIGHT))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(4.))
+                    .cursor_pointer()
+                    .child(background("background"))
+                    .child(static_icon(Icon::Close, theme::MUTED))
+                    .on_click(cx.listener(|this, _, _, _| {
+                        let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
+                        let _ = this.actions.unbounded_send(action);
+                    })),
+            )
+        });
         // The controls are positioned over the header, so they never affect the island's width
         // (which would jump as they appear or disappear). They go as soon as it starts closing.
         let header = div()
@@ -1113,7 +1328,8 @@ impl Bar {
                         )),
                 )
             })
-            .child(bell);
+            .child(bell)
+            .children(close);
 
         let rows = self.list_rows.value(Instant::now());
         let island = self.island.clone();
@@ -2091,8 +2307,11 @@ impl Render for Bar {
             || self.tray_reveal.animating()
             || self.launcher.animating()
             || self.copied.animating()
+            || self.tray_items.iter().any(|(_, reveal)| reveal.animating())
+            || self.presence.values().any(Reveal::animating)
             || self.bell_color.animating(now)
             || self.bell_count.animating(now)
+            || self.bell_mode.animating(now)
             || self.launcher_rows.animating(now)
             || self.toasts.iter().any(|toast| toast.reveal.animating())
             || self.toasts.iter().any(|toast| toast.row.animating(now))
@@ -2292,22 +2511,40 @@ impl Render for Bar {
         let brightness = Self::clickable(brightness, Module::Brightness, cx);
         let brightness = Self::adjustable(brightness, Module::Brightness, cx);
 
-        let battery = sources.battery.read(cx).available.then_some(battery);
-        let brightness = sources.brightness.read(cx).available.then_some(brightness);
+        let battery_available = sources.battery.read(cx).available;
+        let brightness_available = sources.brightness.read(cx).available;
         let tray: Vec<TrayItem> = (sources.tray.read(cx).state.target.clone()).unwrap_or_default();
-        let tray: Vec<_> = (tray.into_iter().enumerate())
-            .map(|(index, item)| self.tray_module(item, index == 0, tooltips_enabled, cx))
+        let reduce_motion = cx.reduce_motion();
+        let battery = (self.presence("battery", battery_available, now, reduce_motion))
+            .map(|progress| ("battery".into(), progress, battery));
+        let brightness = (self.presence("brightness", brightness_available, now, reduce_motion))
+            .map(|progress| ("brightness".into(), progress, brightness));
+        self.sync_tray(tray, now, reduce_motion);
+        let tray: Vec<SectionModule> = (self.tray_items.iter().enumerate())
+            .map(|(index, (item, reveal))| {
+                let key = SharedString::from(format!("tray-{}", item.key));
+                let module = self.tray_module(item.clone(), index == 0, tooltips_enabled, cx);
+                (key, reveal.progress(now), module)
+            })
             .collect();
-        let left = self.section([Some(profile), battery, Some(cpu), Some(memory), Some(disk)]);
-        let center = self.section([Some(self.launcher_island(clock, tooltips_enabled, now, cx))]);
+        let shown = |key: &'static str, module| Some((SharedString::from(key), 1., module));
+        let left = self.section([
+            shown("profile", profile),
+            battery,
+            shown("cpu", cpu),
+            shown("memory", memory),
+            shown("disk", disk),
+        ]);
+        let clock = self.launcher_island(clock, tooltips_enabled, now, cx);
+        let center = self.section([shown("clock", clock)]);
         let notifications = self.notifications_island(window, cx);
         let section = self.section.clone();
         let right = self
             .section((tray.into_iter().map(Some)).chain([
-                Some(caffeine),
+                shown("caffeine", caffeine),
                 brightness,
-                Some(volume),
-                Some(notifications),
+                shown("volume", volume),
+                shown("notifications", notifications),
             ]))
             .child(
                 canvas(

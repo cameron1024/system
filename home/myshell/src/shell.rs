@@ -66,6 +66,7 @@ pub struct Shell {
     /// One hide deadline per peeked module. Finished timers linger until replaced or cleared,
     /// which bounds this by the number of modules.
     peek_timers: Vec<(Module, Task<()>)>,
+
     actions: mpsc::UnboundedSender<ModuleAction>,
     _actions_task: Task<()>,
 }
@@ -103,6 +104,7 @@ impl Shell {
             },
         )
         .detach();
+
         let (actions, mut receiver) = mpsc::unbounded::<ModuleAction>();
         let targets = sources.clone();
         // Apply targets immediately on the UI; Data queues the actual writes in the background.
@@ -123,10 +125,18 @@ impl Shell {
                                 NotificationAction::LoadMore => notifications.load_more(),
                                 // Mark-all-read animates, so the bar applies it directly.
                                 NotificationAction::MarkAllRead
-                                | NotificationAction::CloseDropdown => {}
+                                | NotificationAction::CloseDropdown
+                                | NotificationAction::ToggleDoNotDisturb => {}
                             });
-                        if matches!(action, NotificationAction::CloseDropdown) {
-                            let _ = this.update(cx, |shell, cx| shell.set_dropdown(false, cx));
+                        match action {
+                            NotificationAction::CloseDropdown => {
+                                let _ = this.update(cx, |shell, cx| shell.set_dropdown(false, cx));
+                            }
+                            NotificationAction::ToggleDoNotDisturb => {
+                                let _ =
+                                    this.update(cx, |shell, cx| shell.toggle_do_not_disturb(cx));
+                            }
+                            _ => {}
                         }
                     }
                     ModuleAction::Click(Module::PowerProfile) => {
@@ -172,6 +182,7 @@ impl Shell {
             visible: true,
             dropdown: false,
             peek_timers: Vec::new(),
+
             actions,
             _actions_task: actions_task,
         }
@@ -195,24 +206,27 @@ impl Shell {
                 shell.close_launcher_except(bar.into(), cx);
                 let _ = bar.update(cx, |bar, _, cx| bar.open_menu(menu, cx));
             }),
-            Command::ToggleDoNotDisturb => {
-                let notifications = self.sources.notifications.clone();
-                notifications.update(cx, |notifications, cx| {
-                    notifications.toggle_do_not_disturb(cx)
-                });
-                if notifications.read(cx).do_not_disturb {
-                    for bar in &self.bars {
-                        let _ = bar.update(cx, |bar, _, cx| bar.hide_toasts(cx));
-                    }
-                }
-                // Shows the new state while the bar is hidden.
-                self.peek(Module::Notifications, cx);
-            }
+            Command::ToggleDoNotDisturb => self.toggle_do_not_disturb(cx),
             Command::Activate(module) => self.act(ModuleAction::Click(module), module, cx),
             Command::Adjust(module, steps) => {
                 self.act(ModuleAction::Adjust(module, steps), module, cx)
             }
         }
+    }
+
+    /// Turning it on dismisses any toasts.
+    fn toggle_do_not_disturb(&mut self, cx: &mut Context<Self>) {
+        let notifications = self.sources.notifications.clone();
+        notifications.update(cx, |notifications, cx| {
+            notifications.toggle_do_not_disturb(cx)
+        });
+        if notifications.read(cx).do_not_disturb {
+            for bar in &self.bars {
+                let _ = bar.update(cx, |bar, _, cx| bar.hide_toasts(cx));
+            }
+        }
+        // Shows the new state while the bar is hidden.
+        self.peek(Module::Notifications, cx);
     }
 
     /// Performs the action, briefly showing its module if the bar is hidden. The notifications

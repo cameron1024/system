@@ -86,6 +86,7 @@ with lib; {
   };
 
   config = mkIf config.services'.desktop.enable {
+    i18n.defaultLocale = "en_GB.UTF-8";
     i18n.inputMethod = {
       enable = true;
       type = "fcitx5";

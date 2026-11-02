@@ -631,6 +631,7 @@ binds {
     // Mod+N { spawn "swaync-client" "-t" "-sw"; }
     Mod+B repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.ToggleBar"; }
     Super+C repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "clock"; }
+    Super+Shift+C hotkey-overlay-title="Caffeine" repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "caffeine"; }
     Super+M repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "volume"; }
     Super+P repeat=false { spawn "gdbus" "call" "--session" "--dest" "org.myshell.Shell" "--object-path" "/org/myshell/Shell" "--method" "org.myshell.Shell.Activate" "power-profile"; }
 
