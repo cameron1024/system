@@ -1,13 +1,178 @@
 {
-  "semantic_tokens": "off",
-  "buffer_line_height": {
-    "custom": 1.4
+  "cursor_animation": {
+    "enabled": true
   },
+  "cursor_blink": false,
+  "diff_view_style": "split",
+  "log": {
+    // "worktree": "debug",
+  },
+  "search": {
+    "regex": true,
+  },
+  "file_scan_inclusions": [".git"],
+  "completions": {
+    "words": "enabled"
+  },
+  "expand_excerpt_lines": 5,
+  "server_url": "https://zed.dev",
+  "proxy": "",
+  "context_servers": {
+    
+  },
+  "agent_servers": {
+    "mistral-vibe": {
+      "type": "registry"
+    }
+  },
+  "language_models": {
+    "openai_compatible": {
+      "GLM 5.2 Baseten": {
+        "api_url": "https://inference.baseten.co/v1",
+        "available_models": [
+          {
+            "name": "zai-org/GLM-5.2",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false
+            }
+          }
+        ]
+      },
+      "Kimi K3 Baseten": {
+        "api_url": "https://inference.baseten.co/v1",
+        "available_models": [
+          {
+            "name": "moonshotai/Kimi-K3",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false
+            }
+          }
+        ]
+      }
+    },
+    "lmstudio": {
+      "api_url": "http://camerons-pc:1234/api/v0"
+    }
+  },
+  "feature_flags": {
+    "lsp-tool": "on",
+    "agent-settings-ui": "on",
+    "sandboxing": "off",
+  },
+  "helix_mode": false,
+  "cli_default_open_behavior": "existing_window",
+  "ssh_connections": [
+    {
+      "host": "mini",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/cameron/system"
+          ]
+        }
+      ]
+    },
+    {
+      "host": "mini",
+      "username": "cameron",
+      "args": [],
+      "projects": []
+    },
+    {
+      "host": "raina",
+      "username": "raina",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/raina/Projects/brainfuck_assignment"
+          ]
+        },
+        {
+          "paths": [
+            "/home/raina/System"
+          ]
+        }
+      ]
+    },
+    {
+      "host": "raina",
+      "username": "raina",
+      "args": [],
+      "projects": []
+    }
+  ],
+  "status_bar": {
+    "show_active_file": true
+  },
+  "telemetry": {
+    "anthropic_retention": true,
+    "diagnostics": false,
+    "metrics": false
+  },
+  "inline_code_actions": false,
+  "gutter": {
+    "min_line_number_digits": 2,
+    "folds": false,
+    "runnables": false,
+    "breakpoints": false
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "debugger": {
+    "timeout": 2000,
+    "dock": "bottom"
+  },
+  "document_folding_ranges": "on",
+  "auto_indent_on_paste": false,
+  "git_panel": {
+    "dock": "left",
+    "tree_view": true
+  },
+  "indent_guides": {
+    "coloring": "indent_aware",
+    "enabled": true,
+    "background_coloring": "disabled",
+    "active_line_width": 2,
+    "line_width": 1
+  },
+  "toolbar": {
+    "agent_review": false,
+    "selections_menu": false,
+    "quick_actions": false,
+    "breadcrumbs": false
+  },
+  "tab_bar": {
+    "show": false
+  },
+  "semantic_tokens": "combined",
   "disable_ai": false,
   "which_key": {
+    "delay_ms": 1000,
     "enabled": true,
   },
   "git": {
+    "show_stage_restore_buttons": false,
+    "path_style": "file_name_first",
+    "enable_diff": true,
     "inline_blame": {
       "enabled": true,
     },
@@ -22,30 +187,105 @@
   "use_on_type_format": false,
   "remove_trailing_whitespace_on_save": false,
   "languages": {
+    "Dart": {
+      "indent_guides": {
+        "active_line_width": 4,
+        "line_width": 4
+      }
+    },
     "Rust": {
       "use_on_type_format": false,
+      
     },
   },
   "relative_line_numbers": "enabled",
-  "icon_theme": "Colored Zed Icons Theme Dark",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Colored Zed Icons Theme Dark",
+    "dark": "Colored Zed Icons Theme Dark"
+  },
   "audio": {
     "experimental.auto_microphone_volume": true,
-    "experimental.rodio_audio": true,
+  },
+  "markdown_preview": {
+    "limit_content_width": false
   },
   "agent": {
-    "show_turn_stats": true,
-    "play_sound_when_agent_done": true,
-    "use_modifier_to_send": true,
-    "always_allow_tool_actions": true,
-    "default_profile": "write",
     "default_model": {
-      "enable_thinking": true,
+      "effort": "medium",
+      "speed": "standard",
       "provider": "zed.dev",
-      "model": "claude-opus-4-5",
+      "model": "claude-opus-5-5",
+      "enable_thinking": true
     },
+    "sandbox_permissions": {
+      "warn_confusable_unicode": true,
+      "write_paths": [
+        "/home/cameron/.cache/nix"
+      ],
+      "network_hosts": [
+        "docs.rs",
+        "crates.io",
+        "static.crates.io",
+        "index.crates.io",
+        "github.com",
+        "cache.nixos.org",
+        "*.cachix.org",
+        "channels.nixos.org",
+        "api.github.com",
+        "*.githubusercontent.com"
+      ],
+      "allow_unsandboxed": false
+    },
+    "favorite_models": [
+      {
+        "provider": "copilot_chat",
+        "model": "gpt-5.3-codex",
+        "enable_thinking": true,
+        "effort": "high"
+      },
+      {
+        "provider": "openai-subscribed",
+        "model": "gpt-5.6-sol",
+        "enable_thinking": false,
+        "effort": "medium"
+      },
+      {
+        "provider": "openai-subscribed",
+        "model": "gpt-6-astra",
+        "enable_thinking": true,
+        "effort": "medium"
+      }
+    ],
+    "max_content_width": 2000.0,
+    "default_profile": "write",
+    "enabled": true,
+    "flexible": true,
+    "sidebar_side": "right",
+    "dock": "right",
+    "tool_permissions": {
+      "tools": {
+        "open": {
+          "default": "allow"
+        }
+      },
+      "default": "allow"
+    },
+    "show_turn_stats": true,
+    "play_sound_when_agent_done": "never",
+    "use_modifier_to_send": true,
+    // "default_model": {
+    //   "effort": "high",
+    //   "speed": "fast",
+    //   "enable_thinking": true,
+    //   "provider": "copilot_chat",
+    //   "model": "gpt-5.3-codex",
+    // },
     "model_parameters": [],
   },
   "project_panel": {
+    "dock": "left",
+    "bold_folder_labels": true,
     "indent_guides": {
       "show": "always",
     },
@@ -53,17 +293,17 @@
   "rounded_selection": true,
   "use_smartcase_search": true,
   "collaboration_panel": {
-    "dock": "right",
+    "dock": "left",
   },
-  // "disable_ai": true,
   "edit_predictions": {
+    "provider": "zed",
     "mode": "subtle",
   },
   "use_system_prompts": true,
   "active_pane_modifiers": {
     "inactive_opacity": 0.7,
   },
-  "hover_popover_enabled": false,
+  "hover_popover_enabled": true,
   "diagnostics": {
     "button": true,
     "include_warnings": true,
@@ -72,7 +312,7 @@
       "debounce_ms": 50,
     },
     "inline": {
-      "enabled": true,
+      "enabled": false,
       "update_debounce_ms": 50,
       "padding": 4,
       "min_column": 0,
@@ -80,6 +320,7 @@
     },
   },
   "vim_mode": true,
+  // "autosave": "on_exit_insert_mode",
   "autosave": {
     "after_delay": {
       "milliseconds": 1000,
@@ -90,44 +331,48 @@
       "program": "fish",
     },
   },
-  "use_system_path_prompts": false,
+  "use_system_path_prompts": true,
 
   "format_on_save": "off",
 
-  // "window_decorations": "server",
+  "window_decorations": "server",
 
-  // "lsp": {
-  //   "rust-analyzer": {
-  //     "initialization_options": {
-  //       // "checkOnSave": false,
-  //       // "check": {
-  //       //   "overrideCommand": ["cargo", "build", "--message-format=json"]
-  //       // }
-  //     }
-  //   }
-  // },
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        // "check": {
+        //   "command": "clippy"
+        // }
+      }
+    }
+  },
 
   /* ============= */
   /* === THEME === */
 
-  "buffer_font_family": "Fira Code",
-  "buffer_font_size": 18,
+  "buffer_font_family": "FiraCode Nerd Font",
+  "buffer_font_weight": 300,
+  "buffer_font_size": 16.0,
   "buffer_font_features": {
     "calt": true,
     "clig": true,
   },
   "ui_font_family": "Josefin Sans",
-  "ui_font_size": 18,
+  "ui_font_size": 16.0,
   "theme": {
     "mode": "dark",
     "light": "One Light",
     "dark": "Everforest Dark Hard (regular)",
   },
-  // lighter green than fallback #193b2d44
-  // lighter blue than fallback #11326444
-  "experimental.theme_overrides": {
-    // "editor.foreground": "#FF0000",
+  "buffer_line_height": {
+    "custom": 1.4
   },
+
+  "dev": {
+    "experimental.theme_overrides": {
+      "status_bar.background": "#000000"
+    }
+  }
 
   // "theme": {
   //   "mode": "dark",

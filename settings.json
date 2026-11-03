@@ -1,7 +1,19 @@
 {
-  "diff_view_style": "unified",
+  "instrumentation": {
+    "performance_profiler": {
+      "enabled": true,
+    },
+  },
+  "cursor_animation": {
+    "enabled": true
+  },
+  "cursor_blink": false,
+  "diff_view_style": "split",
   "log": {
     // "worktree": "debug",
+  },
+  "search": {
+    "regex": true,
   },
   "file_scan_inclusions": [".git"],
   "completions": {
@@ -14,17 +26,7 @@
     
   },
   "agent_servers": {
-    "foo-agent": {
-      "type": "custom",
-      "command": "asdasdfasdf",
-      "args": [
-        "--whatever"
-      ],
-      "env": {
-        "asdf": "sdfg"
-      }
-    },
-    "opencode": {
+    "mistral-vibe": {
       "type": "registry"
     }
   },
@@ -35,6 +37,25 @@
         "available_models": [
           {
             "name": "zai-org/GLM-5.2",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false
+            }
+          }
+        ]
+      },
+      "Kimi K3 Baseten": {
+        "api_url": "https://inference.baseten.co/v1",
+        "available_models": [
+          {
+            "name": "moonshotai/Kimi-K3",
             "max_tokens": 200000,
             "max_output_tokens": 32000,
             "max_completion_tokens": 200000,
@@ -80,16 +101,27 @@
       "projects": []
     },
     {
-      "host": "rainapersonal",
+      "host": "raina",
       "username": "raina",
       "args": [],
       "projects": [
         {
           "paths": [
-            "/home/raina/System/./"
+            "/home/raina/Projects/brainfuck_assignment"
+          ]
+        },
+        {
+          "paths": [
+            "/home/raina/System"
           ]
         }
       ]
+    },
+    {
+      "host": "raina",
+      "username": "raina",
+      "args": [],
+      "projects": []
     }
   ],
   "status_bar": {
@@ -151,7 +183,6 @@
     },
   },
   "sticky_scroll": { "enabled": true },
-
   // "features": {
   //   "edit_prediction_provider": {
   //     "experimental": "sweep",
@@ -177,19 +208,19 @@
     "light": "Colored Zed Icons Theme Dark",
     "dark": "Colored Zed Icons Theme Dark"
   },
-  "audio": {
-    "experimental.auto_microphone_volume": true,
-  },
   "markdown_preview": {
     "limit_content_width": false
   },
   "agent": {
+    "threads_sidebar": {
+      "position": "right"
+    },
     "default_model": {
+      "effort": "low",
       "speed": "fast",
-      "provider": "zed.dev",
-      "model": "claude-fable-5",
-      "enable_thinking": true,
-      "effort": "high"
+      "provider": "openai-subscribed",
+      "model": "gpt-6.1-sol",
+      "enable_thinking": true
     },
     "sandbox_permissions": {
       "warn_confusable_unicode": true,
@@ -206,41 +237,12 @@
         "*.cachix.org",
         "channels.nixos.org",
         "api.github.com",
-        "*.githubusercontent.com"
+        "*.githubusercontent.com",
+        "codeberg.org"
       ],
       "allow_unsandboxed": false
     },
     "favorite_models": [
-      {
-        "provider": "zed.dev",
-        "model": "gpt-5.5",
-        "enable_thinking": true,
-        "effort": "medium"
-      },
-      {
-        "provider": "zed.dev",
-        "model": "gemini-3.1-pro-preview",
-        "enable_thinking": true,
-        "effort": "HIGH"
-      },
-      {
-        "provider": "zed.dev",
-        "model": "claude-fable-5",
-        "enable_thinking": true,
-        "effort": "high"
-      },
-      {
-        "provider": "zed.dev",
-        "model": "claude-opus-4-8",
-        "enable_thinking": true,
-        "effort": "high",
-        "speed": "fast"
-      },
-      {
-        "provider": "GLM 5.2 Baseten",
-        "model": "zai-org/GLM-5.2",
-        "enable_thinking": false
-      },
       {
         "provider": "copilot_chat",
         "model": "gpt-5.3-codex",
@@ -248,18 +250,34 @@
         "effort": "high"
       },
       {
-        "provider": "zed.dev",
-        "model": "gpt-5.6-sol",
+        "provider": "openai-subscribed",
+        "model": "gpt-6-astra",
         "enable_thinking": true,
-        "effort": "high",
-        "speed": "fast"
+        "effort": "medium"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "gpt-6.1-sol",
+        "enable_thinking": true,
+        "effort": "medium"
+      },
+      {
+        "provider": "openai-subscribed",
+        "model": "gpt-6.1-sol",
+        "enable_thinking": true,
+        "effort": "low"
+      },
+      {
+        "provider": "zed.dev",
+        "model": "claude-opus-5-5",
+        "enable_thinking": true,
+        "effort": "medium"
       }
     ],
     "max_content_width": 2000.0,
     "default_profile": "write",
     "enabled": true,
     "flexible": true,
-    "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
       "tools": {
