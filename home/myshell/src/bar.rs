@@ -225,6 +225,8 @@ pub struct Bar {
     wifi_connect_error: bool,
     wifi_password_reveal: Reveal,
     wifi_scroll: gpui::ScrollHandle,
+    // A fresh capture per selection prevents old layouts from scrolling a different SSID.
+    wifi_scroll_reveal: Rc<Cell<Option<f32>>>,
     wifi_scroll_bounds: Rc<Cell<Option<Bounds<Pixels>>>>,
     wifi_scroll_drag: bool,
     wifi_island: Rc<Cell<Option<Bounds<Pixels>>>>,
@@ -668,6 +670,7 @@ impl Bar {
             wifi_connect_error: false,
             wifi_password_reveal: Reveal::new(false, Instant::now()),
             wifi_scroll: gpui::ScrollHandle::new(),
+            wifi_scroll_reveal: Rc::default(),
             wifi_scroll_bounds: Rc::default(),
             wifi_scroll_drag: false,
             wifi_island: Rc::default(),
@@ -1120,11 +1123,26 @@ impl Bar {
         if self.wifi_connect_task.is_some() {
             return;
         }
+        self.wifi_scroll_reveal.set(None);
+        if self.wifi_password.is_some()
+            && self
+                .wifi_selected
+                .as_ref()
+                .is_some_and(|selected| selected.ssid == network.ssid)
+        {
+            self.wifi_password = None;
+            self.wifi_password_reveal
+                .set(false, cx.reduce_motion(), Instant::now());
+            cx.notify();
+            return;
+        }
         self.wifi_password = None;
         self.wifi_connect_error = false;
         self.wifi_selected = Some(network.clone());
         self.wifi_password_reveal = Reveal::new(false, Instant::now());
         if network.secured {
+            self.wifi_scroll_reveal =
+                Rc::new(Cell::new(Some(f32::from(self.wifi_scroll.offset().y))));
             let input = cx.new(crate::wifi_password::WifiPassword::new);
             cx.subscribe(&input, |this, _, _: &crate::wifi_password::Submit, cx| {
                 this.connect_wifi(cx)
@@ -1144,6 +1162,7 @@ impl Bar {
         if self.wifi_connect_task.is_some() {
             return;
         }
+        self.wifi_scroll_reveal.set(None);
         let Some(network) = self.wifi_selected.take() else {
             return;
         };
@@ -1177,6 +1196,7 @@ impl Bar {
             return;
         }
         if !open {
+            self.wifi_scroll_reveal.set(None);
             self.wifi_password = None;
             self.wifi_selected = None;
             self.wifi_scroll_drag = false;
@@ -1284,6 +1304,7 @@ impl Bar {
                 MouseButton::Left,
                 cx.listener(|this, event: &MouseDownEvent, _, cx| {
                     cx.stop_propagation();
+                    this.wifi_scroll_reveal.set(None);
                     this.wifi_scroll_drag = true;
                     this.wifi_scroll_to(event.position.y);
                     cx.notify();
@@ -1315,7 +1336,13 @@ impl Bar {
             theme::MUTED
         };
         let icon = match state {
-            Some(state) if state.enabled => Icon::Wifi,
+            Some(state) if state.enabled => Icon::wifi_strength(
+                state
+                    .current
+                    .as_ref()
+                    .filter(|_| state.ssid.is_some())
+                    .map_or(0, |network| network.strength),
+            ),
             Some(_) => Icon::WifiOff,
             None => Icon::Unknown,
         };
@@ -1328,7 +1355,7 @@ impl Bar {
             .and_then(|state| state.current.as_ref())
             .map(|network| {
                 format!(
-                    "{} · {} MHz · signal {}% · RSSI unavailable",
+                    "{} · {} MHz · signal {}%",
                     network.band().unwrap_or("Unknown band"),
                     network.frequency,
                     network.strength
@@ -1402,7 +1429,7 @@ impl Bar {
                                     "wifi-auto-rescan",
                                     static_icon(Icon::History, if self.wifi_auto_scan { theme::WIFI_ACCENT } else { theme::MUTED }),
                                     theme::WIFI_ACCENT,
-                                    self.wifi_auto_scan,
+                                    false,
                                 )
                                 .flex_shrink_0()
                                 .cursor_pointer()
@@ -1428,8 +1455,8 @@ impl Bar {
                                 slot.child(
                                     bar_module(
                                         "wifi-close",
-                                        static_icon(Icon::Close, theme::WIFI_ACCENT),
-                                        theme::WIFI_ACCENT,
+                                        static_icon(Icon::Close, theme::FOREGROUND),
+                                        theme::FOREGROUND,
                                         false,
                                     )
                                     .absolute()
@@ -1495,7 +1522,10 @@ impl Bar {
                                     .h_full()
                                     .pr_3()
                                     .track_scroll(&self.wifi_scroll)
-                                    .on_scroll_wheel(cx.listener(|_, _, _, cx| cx.notify()))
+                                    .on_scroll_wheel(cx.listener(|this, _, _, cx| {
+                                                                            this.wifi_scroll_reveal.set(None);
+                                                                            cx.notify();
+                                                                        }))
                                     .overflow_y_scroll()
                                     .flex()
                                     .flex_col()
@@ -1507,10 +1537,15 @@ impl Bar {
                                                 .child("No nearby networks"),
                                         )
                                     })
-                                    .children(networks.iter().enumerate().map(|(index, network)| {
+                                    .children(networks.iter().map(|network| {
                                         let selected = self.wifi_selected.as_ref().is_some_and(|selected| selected.ssid == network.ssid);
                                         let chosen = network.clone();
-                                        div().id(("wifi-network", index)).cursor_pointer()
+                                        div().id(SharedString::from(format!("wifi-network-{}", network.ssid))).cursor_pointer()
+                                            .relative()
+                                            .rounded(px(8.))
+                                            .px_2()
+                                            .py_1()
+                                            .child(background("network-background").radius(px(8.)).selected(selected))
                                             .on_click(cx.listener(move |this, _, window, cx| this.select_wifi(chosen.clone(), window, cx)))
                                             .flex_shrink_0()
                                             .flex()
@@ -1532,13 +1567,44 @@ impl Bar {
                                                         network.strength
                                                     )),
                                             )
-                                            .when(selected, |row| row.child(collapse("wifi-password", self.wifi_password_reveal.progress(Instant::now()),
-                                                div().id("wifi-password-controls").flex().gap_2().py_2()
-                                                    .on_click(|_, _, cx| cx.stop_propagation())
-                                                    .children(self.wifi_password.clone().map(|input| div().flex_1().child(input)))
-                                                    .child(div().id("wifi-connect").cursor_pointer().child("Connect")
-                                                        .on_click(cx.listener(|this, _, _, cx| { cx.stop_propagation(); this.connect_wifi(cx); })))
-                                            )))
+                                            .when(selected, |row| {
+                                                let progress = self.wifi_password_reveal.progress(Instant::now());
+                                                let capture = self.wifi_scroll_reveal.clone();
+                                                let viewport = self.wifi_scroll_bounds.clone();
+                                                let scroll = self.wifi_scroll.clone();
+                                                row.child(
+                                                    canvas(move |area, window, _| {
+                                                        let (Some(start), Some(viewport)) = (capture.get(), viewport.get()) else { return; };
+                                                        let offset = f32::from(scroll.offset().y);
+                                                        // Reconstruct final bounds at the starting offset, even while
+                                                        // the row and the available scroll range are still growing.
+                                                        let top = f32::from(area.origin.y) - offset + start;
+                                                        let bottom = top + f32::from(area.size.height) + 48. * (1. - progress);
+                                                        let adjustment = (f32::from(viewport.bottom()) - bottom).min(0.)
+                                                            .max(f32::from(viewport.origin.y) - top);
+                                                        let target = (start + adjustment * progress)
+                                                            .clamp(-f32::from(scroll.max_offset().y), 0.);
+                                                        if (target - offset).abs() > 0.01 {
+                                                            scroll.set_offset(gpui::point(scroll.offset().x, px(target)));
+                                                            window.request_animation_frame();
+                                                        } else if progress >= 1. {
+                                                            capture.set(None);
+                                                        }
+                                                    }, |_, _, _, _| {}).absolute().inset_0()
+                                                ).child(
+                                                    div().id("wifi-password").relative().w_full().flex_shrink_0()
+                                                        .h(px(48. * progress)).overflow_hidden().opacity(progress)
+                                                        .child(
+                                                            div().id("wifi-password-controls").absolute().top_0().left_0()
+                                                                .w_full().h(px(48.)).flex().items_center().gap_2().py_2()
+                                                                .on_click(|_, _, cx| cx.stop_propagation())
+                                                                .children(self.wifi_password.clone().map(|input| div().flex_1().min_w_0().h(px(32.)).child(input)))
+                                                                .child(div().id("wifi-connect").w(px(72.)).h(px(32.)).flex_shrink_0()
+                                                                    .flex().items_center().justify_center().cursor_pointer().child("Connect")
+                                                                    .on_click(cx.listener(|this, _, _, cx| { cx.stop_propagation(); this.connect_wifi(cx); })))
+                                                        )
+                                                )
+                                            })
                                     })))
                                     .child(scrollbar),
                             ),
@@ -2701,6 +2767,9 @@ impl Render for Bar {
             }
         }
         self.wifi_password_reveal.settle(now);
+        if self.wifi_password_reveal.hidden() && self.wifi_password.is_none() {
+            self.wifi_selected = None;
+        }
         if self.wifi_password_reveal.animating() {
             window.request_animation_frame();
         }
@@ -3095,6 +3164,23 @@ impl Render for Bar {
         self.liquid.borrow_mut().clear();
         let liquid = self.liquid.clone();
         div()
+            .track_focus(&self.launcher_focus)
+            .on_key_down(cx.listener(|this, event: &gpui::KeyDownEvent, window, cx| {
+                if event.keystroke.key == "escape" {
+                    this.set_wifi(false, cx);
+                    this.set_launcher(false, cx);
+                    this.close_tray_menu(cx);
+                    this.unhover(cx);
+                    if this.pinned {
+                        let action = ModuleAction::Notifications(NotificationAction::CloseDropdown);
+                        let _ = this.actions.unbounded_send(action);
+                    }
+                    window.blur(cx);
+                    cx.stop_propagation();
+                } else if this.launcher.visible {
+                    this.launcher_key(event, cx);
+                }
+            }))
             .size_full()
             .relative()
             .overflow_hidden()

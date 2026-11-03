@@ -23,6 +23,9 @@ pub struct WifiPassword {
     text: String,
     selection: Range<usize>,
     marked: Option<Range<usize>>,
+    caret_visible: bool,
+    blink_task: Option<gpui::Task<()>>,
+    last_edit: std::time::Instant,
 }
 
 impl EventEmitter<Submit> for WifiPassword {}
@@ -46,6 +49,9 @@ impl WifiPassword {
             text: String::new(),
             selection: 0..0,
             marked: None,
+            caret_visible: true,
+            blink_task: None,
+            last_edit: std::time::Instant::now(),
         }
     }
 
@@ -74,6 +80,8 @@ impl WifiPassword {
             .map(|range| self.bytes(range))
             .or_else(|| self.marked.clone())
             .unwrap_or_else(|| self.selection.clone());
+        self.caret_visible = true;
+        self.last_edit = std::time::Instant::now();
         self.text.replace_range(range.clone(), text);
         self.selection = range.start + text.len()..range.start + text.len();
         self.marked = None;
@@ -84,9 +92,7 @@ impl WifiPassword {
         let key = &event.keystroke;
         match key.key.as_str() {
             "enter" => cx.emit(Submit),
-            "escape" => {
-                self.take(cx);
-            }
+            "escape" => return,
             "a" if key.modifiers.control || key.modifiers.platform => {
                 self.selection = 0..self.text.len();
             }
@@ -126,6 +132,8 @@ impl WifiPassword {
             }
             _ => return,
         }
+        self.caret_visible = true;
+        self.last_edit = std::time::Instant::now();
         cx.stop_propagation();
         cx.notify();
     }
@@ -263,9 +271,62 @@ mod tests {
 }
 
 impl Render for WifiPassword {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let entity = cx.entity();
         let focus = self.focus.clone();
+        let focused = self.focus.is_focused(window);
+        if focused && self.blink_task.is_none() {
+            self.caret_visible = true;
+            self.blink_task = Some(cx.spawn(async move |this, cx| {
+                loop {
+                    async_io::Timer::after(std::time::Duration::from_millis(500)).await;
+                    if this
+                        .update(cx, |this, cx| {
+                            if this.last_edit.elapsed() >= std::time::Duration::from_millis(500) {
+                                this.caret_visible = !this.caret_visible;
+                                cx.notify();
+                            }
+                        })
+                        .is_err()
+                    {
+                        break;
+                    }
+                }
+            }));
+        } else if !focused {
+            self.blink_task = None;
+        }
+        let show_caret = focused && self.caret_visible && self.selection.is_empty();
+        let caret = self.text[..self.selection.end].chars().count();
+        let selected = self.text[..self.selection.start].chars().count()..caret;
+        let content = div()
+            .flex()
+            .items_center()
+            .children(self.text.chars().enumerate().map(|(index, _)| {
+                div()
+                    .relative()
+                    .flex_shrink_0()
+                    .w(gpui::px(9.))
+                    .when(focused && selected.contains(&index), |cell| {
+                        cell.bg(crate::theme::SELECTED)
+                    })
+                    .when(show_caret && index == caret, |cell| {
+                        cell.border_l_1().border_color(crate::theme::WIFI_ACCENT)
+                    })
+                    .child("•")
+            }))
+            .when(
+                show_caret && caret == self.text.chars().count(),
+                |content| {
+                    content.child(
+                        div()
+                            .flex_shrink_0()
+                            .w(gpui::px(1.))
+                            .h(gpui::px(16.))
+                            .bg(crate::theme::WIFI_ACCENT),
+                    )
+                },
+            );
         div()
             .track_focus(&self.focus)
             .on_key_down(cx.listener(Self::key))
@@ -274,10 +335,44 @@ impl Render for WifiPassword {
                 cx.listener(|this, _, window, cx| this.focus(window, cx)),
             )
             .relative()
-            .min_w(gpui::px(120.))
-            .min_h(gpui::px(24.))
+            .w_full()
+            .min_w_0()
+            .h(gpui::px(32.))
+            .px_2()
+            .flex()
+            .items_center()
+            .rounded(gpui::px(4.))
+            .border_1()
+            .border_color(if focused {
+                crate::theme::WIFI_ACCENT
+            } else {
+                crate::theme::MUTED
+            })
+            .bg(crate::theme::CARD)
+            .text_color(crate::theme::FOREGROUND)
+            .text_size(gpui::px(14.))
+            .cursor_text()
             .overflow_hidden()
-            .child("•".repeat(self.text.chars().count()))
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_w_0()
+                    .h(gpui::px(20.))
+                    .flex()
+                    .items_center()
+                    .overflow_hidden()
+                    .when(self.text.is_empty(), |field| {
+                        field.child(
+                            div()
+                                .absolute()
+                                .left_0()
+                                .text_color(crate::theme::MUTED)
+                                .child("Password"),
+                        )
+                    })
+                    .child(content),
+            )
             .child(
                 canvas(
                     move |bounds, _, _| bounds,

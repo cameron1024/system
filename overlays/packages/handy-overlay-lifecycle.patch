@@ -1,0 +1,205 @@
+--- a/src/overlay/RecordingOverlay.tsx
++++ b/src/overlay/RecordingOverlay.tsx
+@@ -1,4 +1,4 @@
+-import { listen } from "@tauri-apps/api/event";
++import { listen, type EventCallback, type EventName } from "@tauri-apps/api/event";
+ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+ import { useTranslation } from "react-i18next";
+ import "./RecordingOverlay.css";
+@@ -71,8 +71,35 @@
+   const direction = getLanguageDirection(i18n.language);
+ 
+   useEffect(() => {
+-    const setupEventListeners = async () => {
+-      const unlistenShow = await listen("show-overlay", async (event) => {
++    let disposed = false;
++    let showGeneration = 0;
++    const unlisteners: Array<() => void> = [];
++
++    // Registrations can resolve after cleanup (including React StrictMode).
++    const register = (registration: Promise<() => void>) => {
++      void registration
++        .then((unlisten) => {
++          if (disposed) unlisten();
++          else unlisteners.push(unlisten);
++        })
++        .catch((error) => {
++          console.error("Failed to register overlay listener:", error);
++        });
++    };
++    const listenWhileMounted = <T,>(
++      name: EventName,
++      handler: EventCallback<T>,
++    ) => {
++      register(
++        listen<T>(name, (event) => {
++          if (!disposed) handler(event);
++        }),
++      );
++    };
++
++    const setupEventListeners = () => {
++      listenWhileMounted("show-overlay", async (event) => {
++        const generation = ++showGeneration;
+         const overlayState = event.payload as OverlayState;
+         // Reset synchronously before settings I/O. A fast microphone can emit
+         // recording-ready while the awaits below are in flight; resetting after
+@@ -84,12 +111,27 @@
+           setStreamText({ committed: "", tentative: "" });
+         }
+ 
++        setState(overlayState);
++        if (overlayState === "streaming") {
++          setPhase("listening");
++          setWorkKind("transcribing");
++          setElapsed(0);
++          setLoadNoticeShown(false);
++          setSession((s) => s + 1); // remount the card fresh for this session
++        }
++        setIsVisible(true);
++
+         await syncLanguageFromSettings();
++        if (disposed || generation !== showGeneration) return;
+         // The Live panel flows downward from a top overlay and upward from a
+         // bottom one; read the placement so the layout can flip to match.
+         try {
+           const settings = await commands.getAppSettings();
+-          if (settings.status === "ok") {
++          if (
++            !disposed &&
++            generation === showGeneration &&
++            settings.status === "ok"
++          ) {
+             setPosition(
+               settings.data.overlay_position === "top" ? "top" : "bottom",
+             );
+@@ -97,28 +139,20 @@
+         } catch {
+           // Keep the previous/default placement if settings can't be read.
+         }
+-        setState(overlayState);
+-        if (overlayState === "streaming") {
+-          setPhase("listening");
+-          setWorkKind("transcribing");
+-          setElapsed(0);
+-          setLoadNoticeShown(false);
+-          setSession((s) => s + 1); // remount the card fresh for this session
+-        }
+-        setIsVisible(true);
+       });
+ 
+-      const unlistenHide = await listen("hide-overlay", () => {
++      listenWhileMounted("hide-overlay", () => {
++        ++showGeneration;
+         setIsVisible(false);
+         setCaptureReady(false);
+       });
+ 
+-      const unlistenReady = await listen("recording-ready", () => {
++      listenWhileMounted("recording-ready", () => {
+         setElapsed(0);
+         setCaptureReady(true);
+       });
+ 
+-      const unlistenLevel = await listen<number[]>("mic-level", (event) => {
++      listenWhileMounted<number[]>("mic-level", (event) => {
+         const newLevels = event.payload as number[];
+         // Exponential smoothing across the 16 buckets, then take the first N
+         // bars for the shared waveform.
+@@ -130,21 +164,27 @@
+         setLevels(smoothed.slice(0, WAVE_BARS));
+       });
+ 
+-      const unlistenStream = await events.streamTextEvent.listen((event) => {
+-        setStreamText(event.payload);
+-      });
++      register(
++        events.streamTextEvent.listen((event) => {
++          if (disposed) return;
++          setStreamText(event.payload);
++        }),
++      );
+ 
+-      const unlistenPhase = await events.streamPhaseEvent.listen((event) => {
+-        const payload: StreamPhaseEvent = event.payload;
+-        setPhase(payload.phase);
+-        if (payload.kind) setWorkKind(payload.kind);
+-      });
++      register(
++        events.streamPhaseEvent.listen((event) => {
++          if (disposed) return;
++          const payload: StreamPhaseEvent = event.payload;
++          setPhase(payload.phase);
++          if (payload.kind) setWorkKind(payload.kind);
++        }),
++      );
+ 
+       // The backend ends every `loading_started` with exactly one of completed
+       // or failed, so only those end a load. Other events (e.g. `unloaded` from
+       // the idle watcher) aren't ordered against an in-flight load and must not
+       // clear it.
+-      const unlistenModel = await listen<ModelStateEvent>(
++      listenWhileMounted<ModelStateEvent>(
+         "model-state-changed",
+         (event) => {
+           const type = event.payload.event_type;
+@@ -166,20 +206,15 @@
+           }
+         },
+       );
+-
+-      return () => {
+-        unlistenShow();
+-        unlistenHide();
+-        unlistenReady();
+-        unlistenLevel();
+-        unlistenStream();
+-        unlistenPhase();
+-        unlistenModel();
+-        clearTimeout(modelLoadTimerRef.current);
+-      };
+     };
+ 
+     setupEventListeners();
++    return () => {
++      disposed = true;
++      ++showGeneration;
++      unlisteners.forEach((unlisten) => unlisten());
++      clearTimeout(modelLoadTimerRef.current);
++    };
+   }, []);
+ 
+   // Elapsed capture timer starts only once microphone samples are flowing.
+@@ -211,7 +246,8 @@
+     setOverflowing(false);
+   }, [session]);
+ 
+-  if (!isVisible) return null;
++  // Keep the DOM mounted so .leaving (300ms) and .ov-fade (200ms)
++  // can finish before the native window is hidden after 300ms.
+ 
+   // Re-pin when the user is within ~a line of the bottom; unpin otherwise.
+   const handleStreamScroll = () => {
+--- a/src-tauri/src/overlay.rs
++++ b/src-tauri/src/overlay.rs
+@@ -700,11 +700,15 @@
+         let window_clone = overlay_window.clone();
+         std::thread::spawn(move || {
+             std::thread::sleep(std::time::Duration::from_millis(300));
+-            if OVERLAY_SHOW_GENERATION.load(Ordering::SeqCst) != scheduled_at {
+-                log::debug!("Skipping stale overlay hide: a newer session is showing the overlay");
+-                return;
+-            }
+-            let _ = window_clone.hide();
++            // Serialize the check and hide with show_overlay_state_on_main;
++            // a show must not slip between the generation check and hide().
++            let _ = window_clone.clone().run_on_main_thread(move || {
++                if OVERLAY_SHOW_GENERATION.load(Ordering::SeqCst) != scheduled_at {
++                    log::debug!("Skipping stale overlay hide: a newer session is showing the overlay");
++                    return;
++                }
++                let _ = window_clone.hide();
++            });
+         });
+     }
+ }

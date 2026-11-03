@@ -26,6 +26,9 @@ pub enum Icon {
     Scales,
     Speaker,
     Wifi,
+    WifiZero,
+    WifiLow,
+    WifiMedium,
     WifiOff,
     Muted,
     Cpu,
@@ -63,12 +66,24 @@ pub enum Icon {
 }
 
 impl Icon {
+    pub fn wifi_strength(strength: u8) -> Self {
+        match strength {
+            0 => Self::WifiZero,
+            1..=33 => Self::WifiLow,
+            34..=66 => Self::WifiMedium,
+            _ => Self::Wifi,
+        }
+    }
+
     fn data(self) -> Option<&'static [u8]> {
         match self {
             Self::Rocket => Some(include_bytes!("../assets/icons/rocket.svg")),
             Self::Leaf => Some(include_bytes!("../assets/icons/leaf.svg")),
             Self::Scales => Some(include_bytes!("../assets/icons/scale.svg")),
             Self::Wifi => Some(include_bytes!("../assets/icons/wifi.svg")),
+            Self::WifiZero => Some(include_bytes!("../assets/icons/wifi-zero.svg")),
+            Self::WifiLow => Some(include_bytes!("../assets/icons/wifi-low.svg")),
+            Self::WifiMedium => Some(include_bytes!("../assets/icons/wifi-medium.svg")),
             Self::WifiOff => Some(include_bytes!("../assets/icons/wifi-off.svg")),
             Self::Speaker => Some(include_bytes!("../assets/icons/volume-2.svg")),
             Self::Muted => Some(include_bytes!("../assets/icons/volume-x.svg")),
@@ -272,6 +287,19 @@ impl Render for AnimatedIcon {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn wifi_strength_levels() {
+        for strength in 0..=u8::MAX {
+            let expected = match strength {
+                0 => Icon::WifiZero,
+                1..=33 => Icon::WifiLow,
+                34..=66 => Icon::WifiMedium,
+                67..=u8::MAX => Icon::Wifi,
+            };
+            assert_eq!(Icon::wifi_strength(strength), expected);
+        }
+    }
 
     #[test]
     fn icons_move_down_and_interruption_preserves_positions() {

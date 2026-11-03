@@ -131,7 +131,11 @@ in
           google-chrome
           inputs.hexecute.packages.${pkgs.system}.default
           s-tui
-          inputs.handy.packages.${pkgs.system}.default
+          (inputs.handy.packages.${pkgs.system}.default.overrideAttrs (old: {
+            patches = (old.patches or []) ++ [
+              ../../overlays/packages/handy-overlay-lifecycle.patch
+            ];
+          }))
           wtype
           dotool
         ])

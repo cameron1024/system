@@ -92,34 +92,23 @@ fn pass_cli() -> String {
 /// hold secrets (e.g. if it includes items' contents), so its values are never logged, and every
 /// copy of them is zeroed once read. Its shape (keys and types) is logged, to debug parsing.
 pub async fn passwords() -> Vec<Entry> {
-    let arguments = ["item", "list", "--output", "json"];
-    eprintln!("passwords: running {} {}", pass_cli(), arguments.join(" "));
-    let (status, stdout, stderr) = match run_secret(&arguments).await {
-        Ok(output) => output,
-        Err(error) => {
-            eprintln!("passwords: couldn't run {}: {error}", pass_cli());
-            return Vec::new();
-        }
-    };
-    eprintln!(
-        "passwords: item list exited with {status}, {} bytes of output, stderr: {:?}",
-        stdout.len(),
-        stderr.trim()
-    );
-    if !status.success() {
+    // item list has no all-vaults option and otherwise requires a configured default.
+    let Some(mut vaults) = password_list(&["vault", "list", "--output", "json"]).await else {
         return Vec::new();
-    }
-    let mut json = match serde_json::from_slice::<serde_json::Value>(&stdout) {
-        Ok(json) => json,
-        Err(error) => {
-            eprintln!("passwords: item list isn't JSON: {error}");
-            return Vec::new();
-        }
     };
-    eprintln!("passwords: item list's shape: {}", shape(&json, 0));
     let mut items = Vec::new();
-    password_items(&json, None, &mut items);
-    zeroize_strings(&mut json);
+    if let Some(shares) = vault_share_ids(&vaults) {
+        for share in shares {
+            let arguments = ["item", "list", "--share-id", share, "--output", "json"];
+            if let Some(mut json) = password_list(&arguments).await {
+                password_items(&json, Some(share), &mut items);
+                zeroize_strings(&mut json);
+            }
+        }
+    } else {
+        eprintln!("passwords: vault list has an unexpected JSON structure");
+    }
+    zeroize_strings(&mut vaults);
     let with_share = (items.iter())
         .filter(|item| matches!(&item.action, Action::Password(Some(_), _)))
         .count();
@@ -129,6 +118,45 @@ pub async fn passwords() -> Vec<Entry> {
     );
     items.sort_by_key(|item| item.name.to_lowercase());
     items
+}
+
+/// The vault list's documented wrapper; use share IDs, not vault IDs or names.
+fn vault_share_ids(value: &serde_json::Value) -> Option<Vec<&str>> {
+    value
+        .get("vaults")?
+        .as_array()?
+        .iter()
+        .map(|vault| vault.get("share_id")?.as_str().filter(|id| !id.is_empty()))
+        .collect()
+}
+
+async fn password_list(arguments: &[&str]) -> Option<serde_json::Value> {
+    let kind = arguments[0];
+    eprintln!("passwords: running {} {kind} list", pass_cli());
+    let (status, stdout, stderr) = match run_secret(arguments).await {
+        Ok(output) => output,
+        Err(error) => {
+            eprintln!("passwords: couldn't run {}: {error}", pass_cli());
+            return None;
+        }
+    };
+    eprintln!(
+        "passwords: {kind} list exited with {status}, {} bytes of output, stderr: {:?}",
+        stdout.len(),
+        stderr.trim()
+    );
+    if !status.success() {
+        return None;
+    }
+    let json = match serde_json::from_slice::<serde_json::Value>(&stdout) {
+        Ok(json) => json,
+        Err(error) => {
+            eprintln!("passwords: {kind} list isn't JSON: {error}");
+            return None;
+        }
+    };
+    eprintln!("passwords: {kind} list's shape: {}", shape(&json, 0));
+    Some(json)
 }
 
 /// Runs pass-cli, returning its status, its output (zeroed on drop), and its error output.
@@ -427,6 +455,40 @@ mod tests {
             shape,
             r#"{"items": [1 x {"title": str, "password": str, "n": number}]}"#
         );
+    }
+
+    #[test]
+    fn vaults_use_share_ids_and_require_the_expected_schema() {
+        let json = serde_json::json!({"vaults": [
+            {"name": "Personal", "vault_id": "v1", "share_id": "s1"},
+            {"name": "Work", "vault_id": "v2", "share_id": "s2"}
+        ]});
+        assert_eq!(vault_share_ids(&json), Some(vec!["s1", "s2"]));
+        assert_eq!(
+            vault_share_ids(&serde_json::json!({"vaults": []})),
+            Some(vec![])
+        );
+        for json in [
+            serde_json::json!({}),
+            serde_json::json!({"vaults": [{"vault_id": "v1"}]}),
+            serde_json::json!({"vaults": [{"share_id": ""}]}),
+        ] {
+            assert_eq!(vault_share_ids(&json), None);
+        }
+    }
+
+    #[test]
+    fn password_items_inherit_the_queried_vault() {
+        let json = serde_json::json!({"items": [{"id": "i1", "title": "Example"}]});
+        let mut items = Vec::new();
+        password_items(&json, Some("s1"), &mut items);
+        password_items(&json, Some("s2"), &mut items);
+        assert_eq!(items.len(), 2);
+        for (item, expected) in items.iter().zip(["s1", "s2"]) {
+            assert!(
+                matches!(&item.action, Action::Password(Some(share), id) if share == expected && id == "i1")
+            );
+        }
     }
 
     #[test]

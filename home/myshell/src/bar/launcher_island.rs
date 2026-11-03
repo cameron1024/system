@@ -68,22 +68,25 @@ impl Bar {
         (self.sources.launcher).update(cx, |launcher, cx| launcher.open(Some(menu), cx));
     }
 
-    /// While the launcher is open, the bar has the keyboard (focused on the launcher).
+    /// The launcher and password take the keyboard; other panels accept it on demand.
     pub(super) fn sync_launcher_window(&mut self, window: &mut Window, cx: &mut App) {
         use KeyboardInteractivity::*;
         let keyboard = if self.launcher.visible || self.wifi_password.is_some() {
             Exclusive
-        } else if self.launcher_keyboard != None && self.outside_click.is_some() {
-            // Handing over to a group watching for outside clicks: niri ends a popup grab
-            // (dismissing it, as if clicked outside) when its parent loses the keyboard, so keep
-            // it until that group closes.
+        } else if self.wifi.visible
+            || self.tray_reveal.visible
+            || self.dropdown.visible
+            || self.outside_click.is_some()
+        {
+            // Keep keyboard access while handing over to an outside-click grab: niri
+            // dismisses the popup if its parent loses the keyboard.
             OnDemand
         } else {
             None
         };
         if keyboard != self.launcher_keyboard {
             window.set_keyboard_interactivity(keyboard);
-            if keyboard == Exclusive {
+            if keyboard != None {
                 if let Some(input) = &self.wifi_password {
                     input.update(cx, |input, cx| input.focus(window, cx));
                 } else {
@@ -94,7 +97,7 @@ impl Bar {
         self.launcher_keyboard = keyboard;
     }
 
-    fn launcher_key(&mut self, event: &KeyDownEvent, cx: &mut Context<Self>) {
+    pub(super) fn launcher_key(&mut self, event: &KeyDownEvent, cx: &mut Context<Self>) {
         let keystroke = &event.keystroke;
         let modifiers = keystroke.modifiers;
         let (control, shift) = (modifiers.control, modifiers.shift);
@@ -108,7 +111,6 @@ impl Bar {
             (Motion::Left, Motion::Right)
         };
         match (keystroke.key.as_str(), control) {
-            ("escape", _) => self.set_launcher(false, cx),
             // Ctrl-Enter copies an emoji, rather than typing it.
             ("enter", copy) => self.launch(None, copy, cx),
             // Ctrl-h/j/k/l are the arrow keys, as in vim.
@@ -359,8 +361,6 @@ impl Bar {
             // Its own presses mustn't close it first.
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down(MouseButton::Right, |_, _, cx| cx.stop_propagation())
-            .track_focus(&self.launcher_focus)
-            .on_key_down(cx.listener(|this, event, _, cx| this.launcher_key(event, cx)))
             .flex()
             .flex_col()
             .items_center()
