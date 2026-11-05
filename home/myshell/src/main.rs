@@ -1,4 +1,5 @@
 mod animated_icon;
+mod backdrop;
 mod bar;
 mod bar_module;
 mod battery_indicator;

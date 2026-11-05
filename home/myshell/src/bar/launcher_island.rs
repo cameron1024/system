@@ -25,8 +25,44 @@ const RESULT_HEIGHT: f32 = 46.;
 pub(super) const COPIED_HEIGHT: f32 = 20.;
 
 /// Below the clock, at rest: the search field, then `rows` results (or a message).
-fn body_height(rows: f32) -> f32 {
+const fn body_height(rows: f32) -> f32 {
     LIST_PAD / 2. + SEARCH_HEIGHT + LIST_PAD / 2. + rows.max(1.) * RESULT_HEIGHT + LIST_PAD_BOTTOM
+}
+
+/// The bar's surface while it's open: tall enough for the most results.
+pub(super) const SURFACE_HEIGHT: f32 = HEIGHT + body_height(VISIBLE as f32);
+
+/// The first protrusion: about the clock's liquid, which isn't shown while the bar is hidden.
+/// Half its width.
+const DRIP_HALF: f32 = 38.;
+/// Use the full reveal for the spring's settling tail.
+pub(super) const DRIPPED: f32 = 1.;
+/// When the protrusion is out, through the drip.
+const PROTRUDED: f32 = 0.12;
+
+/// With the bar hidden, the launcher drips down: a clock-sized protrusion, which then widens and
+/// deepens into the open launcher. `body.progress` is linear in time.
+pub(super) fn drip(body: Body) -> Option<liquid::Outline> {
+    let t = (body.progress / DRIPPED).clamp(0., 1.);
+    let centre = (body.left + body.right) / 2.;
+    let (half, height, progress) = if t < PROTRUDED {
+        let x = t / PROTRUDED;
+        (DRIP_HALF, HEIGHT, 1. - (1. - x) * (1. - x))
+    } else {
+        // Stretch out of the small top-edge seed, overshoot, then settle into the full island.
+        let u = crate::reveal::island_motion((t - PROTRUDED) / (1. - PROTRUDED));
+        let rest_half = (body.right - body.left) / 2. + BLOB_PAD_X;
+        let half = DRIP_HALF + (rest_half - DRIP_HALF) * u;
+        (half, HEIGHT + (body.height - HEIGHT) * u, 1.)
+    };
+    blob(Body {
+        left: centre - half + BLOB_PAD_X,
+        right: centre + half - BLOB_PAD_X,
+        height,
+        progress,
+        drip: false,
+        ..body
+    })
 }
 
 impl Bar {
@@ -95,6 +131,44 @@ impl Bar {
             }
         }
         self.launcher_keyboard = keyboard;
+    }
+
+    /// Opens once the launcher has, since creating it would stall the animation, and goes as soon
+    /// as the launcher starts closing, so presses pass through.
+    pub(super) fn sync_backdrop(
+        &mut self,
+        inset: f32,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let inset = px(inset);
+        match &self.backdrop {
+            Some((_, backdrop)) if self.launcher.visible => backdrop.update(cx, |backdrop, cx| {
+                if backdrop.inset != inset {
+                    backdrop.inset = inset;
+                    cx.notify();
+                }
+            }),
+            Some(_) => {
+                let (handle, _) = self.backdrop.take().unwrap();
+                cx.defer(move |cx| {
+                    let _ = handle.update(cx, |_, window, _| window.remove_window());
+                });
+            }
+            None if self.launcher.visible && !self.launcher.animating() => {
+                cx.defer_in(window, move |this, window, cx| {
+                    if this.backdrop.is_some() || !this.launcher.visible {
+                        return;
+                    }
+                    let bar = cx.entity().downgrade();
+                    let close = move |cx: &mut App| {
+                        let _ = bar.update(cx, |bar, cx| bar.set_launcher(false, cx));
+                    };
+                    this.backdrop = crate::backdrop::open(window, inset, close, cx);
+                });
+            }
+            None => {}
+        }
     }
 
     pub(super) fn launcher_key(&mut self, event: &KeyDownEvent, cx: &mut Context<Self>) {
@@ -228,10 +302,10 @@ impl Bar {
             || peek.is_some()
             || !self.launcher.hidden()
             || !self.copied.hidden();
-        let scale = START_SCALE + (1. - START_SCALE) * progress;
+        let scale = START_SCALE + (1. - START_SCALE) * island_motion(progress);
         let expanded = self.launcher.visible;
-        // Expanded, the date shows beside the time: "Monday · 01/01/2025 · 09:41".
-        let date = (expanded)
+
+        let date = expanded
             .then(|| self.sources.clock.read(cx).state.target.as_ref())
             .flatten()
             .map(|clock| (clock.weekday.clone(), clock.numeric_date.clone()));
@@ -249,7 +323,7 @@ impl Bar {
             })
             .child(time);
         let clock = if expanded {
-            // Just the time: closing is the button beside it.
+            // Without button or hover decoration: like the rest of the header, it closes it.
             div()
                 .id(Module::Clock.name())
                 .px_1p5()
@@ -283,57 +357,38 @@ impl Bar {
                 let _ = this.actions.unbounded_send(action);
             }))
         };
-        // Grows in with the header, so it doesn't widen the island all at once.
-        let close = (expanded && open > 0.).then(|| {
-            div()
-                .w(px((crate::bar_module::HEIGHT + 4.) * open))
-                .flex_shrink_0()
-                .flex()
-                .justify_end()
-                .overflow_hidden()
-                .opacity(open)
-                .child(
-                    div()
-                        .id("launcher-close")
-                        .relative()
-                        .size(px(crate::bar_module::HEIGHT))
-                        .flex_shrink_0()
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .rounded(px(4.))
-                        .cursor_pointer()
-                        .child(background("background"))
-                        .child(static_icon(Icon::Close, theme::MUTED))
-                        .on_click(cx.listener(|this, _, _, cx| this.set_launcher(false, cx))),
-                )
-        });
         // The controls fill the space left of the clock, clipped to it as the header widens.
-        // With no width of their own, they never affect the island's.
+        // With no width of their own, they never affect the island's. A menu has no modes, but
+        // shows its prompt there instead.
         let launcher = self.sources.launcher.read(cx);
         let (mode, _) = launcher.mode();
-        let title = launcher.prompt().unwrap_or(mode.name()).to_owned();
-        let selector = (mode != Mode::Menu).then(|| {
-            div().flex().items_center().gap_1().children(
+        let controls = if mode == Mode::Menu {
+            (launcher.prompt())
+                .map(|prompt| {
+                    div()
+                        .overflow_hidden()
+                        .whitespace_nowrap()
+                        .text_ellipsis()
+                        .text_color(theme::FOREGROUND)
+                        .child(prompt.to_owned())
+                })
+                .map(IntoElement::into_any_element)
+        } else {
+            let selector = div().flex().items_center().gap_1().children(
                 Mode::SELECTABLE.map(|option| self.launcher_mode(option, option == mode, cx)),
-            )
-        });
+            );
+            Some(selector.into_any_element())
+        };
+        // Anywhere else along the top closes it.
         let header = div()
+            .id("launcher-header")
             .relative()
             .flex()
-            .min_w(px(WIDTH * open))
-            .when(self.launcher.visible && open > 0., |header| {
-                header.child(
-                    div()
-                        .absolute()
-                        .inset_0()
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .opacity(open)
-                        .text_color(theme::FOREGROUND)
-                        .child(title),
-                )
+            .min_w(px(WIDTH * island_motion(open)))
+            .when(self.launcher.visible, |header| {
+                header
+                    .cursor_pointer()
+                    .on_click(cx.listener(|this, _, _, cx| this.set_launcher(false, cx)))
             })
             .child(
                 div()
@@ -349,13 +404,21 @@ impl Bar {
                                 .flex()
                                 .items_center()
                                 .opacity(open)
-                                .children(selector),
+                                .children(controls),
                         )
                     }),
             )
-            .child(clock)
-            .children(close);
-        let rows = self.launcher_rows.value(now);
+            .child(clock);
+        let rows = self.launcher_rows.value(now).max(1.);
+        // Dripping down, the contents fade in as the drop fills out, rather than sliding.
+        let drip = (self.launcher_slides && !self.launcher.hidden()).then(|| {
+            let t = self.launcher.linear(now);
+            (t, ((t - PROTRUDED) / 0.5).clamp(0., 1.))
+        });
+        let (opacity, offset) = match drip {
+            Some((_, fade)) => (fade, 0.),
+            None => (progress, slide_offset(progress)),
+        };
         div()
             .id("launcher-island")
             // Its own presses mustn't close it first.
@@ -366,15 +429,15 @@ impl Bar {
             .items_center()
             .overflow_hidden()
             .h(px(crate::bar_module::HEIGHT
-                + body_height(rows) * open
-                + COPIED_HEIGHT * copied))
-            .opacity(progress)
+                + body_height(rows) * island_motion(open)
+                + COPIED_HEIGHT * island_motion(copied)))
+            .opacity(opacity)
             .child(header)
             .when(open > 0., |island| {
                 // Clipped to the animated width from the middle; the contents stay full width.
                 island.child(
                     div()
-                        .w(px(WIDTH * open))
+                        .w(px(WIDTH * island_motion(open)))
                         .flex()
                         .justify_center()
                         .overflow_hidden()
@@ -384,7 +447,7 @@ impl Bar {
             .when(copied > 0., |island| {
                 island.child(
                     div()
-                        .h(px(COPIED_HEIGHT * copied))
+                        .h(px(COPIED_HEIGHT * island_motion(copied)))
                         .flex_shrink_0()
                         .overflow_hidden()
                         .opacity(copied)
@@ -401,9 +464,11 @@ impl Bar {
             })
             // Offset visually only, like other peeked modules, and against the content row's.
             .relative()
-            .top(px(slide_offset(progress) - self.row_offset()))
+            .top(px(offset - self.row_offset()))
             .map(|island| {
-                if shown {
+                if let Some((t, _)) = drip {
+                    island.child(self.liquid_body(t, None, [false; 2], true))
+                } else if shown {
                     island.child(self.liquid_anchor(progress, None, [false; 2]))
                 } else {
                     island.invisible()
@@ -437,6 +502,8 @@ impl Bar {
             }))
             .hoverable_tooltip(static_tooltip(tooltip.into(), theme::CLOCK_ACCENT))
             .on_click(cx.listener(move |this, _, _, cx| {
+                // Not the header's, which closes the launcher.
+                cx.stop_propagation();
                 (this.sources.launcher).update(cx, |launcher, cx| launcher.set_mode(mode, cx))
             }))
     }

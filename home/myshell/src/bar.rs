@@ -49,6 +49,7 @@ use gpui::uniform_list;
 use crate::animated_icon::AnimatedIcon;
 use crate::animated_icon::Icon;
 use crate::animated_icon::static_icon;
+use crate::backdrop::Backdrop;
 use crate::bar_module::Module;
 use crate::bar_module::bar_module;
 use crate::battery_indicator::BatteryIndicator;
@@ -70,6 +71,7 @@ use crate::outside_click::OutsideClick;
 use crate::profile_icon::ProfileIcon;
 use crate::reveal::Reveal;
 use crate::reveal::Tween;
+use crate::reveal::island_motion;
 use crate::scaled::REM;
 use crate::scaled::scaled;
 use crate::shell::Sources;
@@ -140,6 +142,8 @@ struct Body {
     fillets: [bool; 2],
     /// Those bodies' progress, which may differ (e.g. an open dropdown stays while the bar hides).
     neighbours: f32,
+    /// Revealed as the launcher dripping down (see `launcher_island::drip`) rather than a blob.
+    drip: bool,
 }
 
 /// While revealing, a body starts narrow and bump-shaped (each side's flare and rounded bottom
@@ -147,10 +151,12 @@ struct Body {
 /// shape as it drops.
 fn blob(body: Body) -> Option<liquid::Outline> {
     let progress = body.progress.clamp(0., 1.);
-    let bottom = body.height * progress;
+    let motion = crate::reveal::island_motion(progress);
+    let bottom = body.height * motion;
     let centre = (body.left + body.right) / 2.;
     let rest_half = (body.right - body.left) / 2. + BLOB_PAD_X;
-    let half = rest_half * (START_WIDTH + (1. - START_WIDTH) * progress);
+    // The horizontal stretch leads the drop, then gently contracts as the body settles.
+    let half = rest_half * (START_WIDTH + (1. - START_WIDTH) * motion);
     // From the bump (at 0) to the resting shape (at 1).
     let morph = |bump: f32, rest: f32| bump + (rest - bump) * progress;
     let flare_x = morph(half, liquid::FLARE);
@@ -179,11 +185,12 @@ fn fillets(body: Body) -> impl Iterator<Item = liquid::Outline> {
     let progress = body.progress.clamp(0., 1.);
     // With no neighbour left, this is exactly the blob's own flare, so it can stay.
     let neighbour_bottom = HEIGHT * body.neighbours.clamp(0., 1.);
-    let radius = liquid::FLARE.min((body.height * progress - neighbour_bottom) / 2.);
+    let motion = crate::reveal::island_motion(progress);
+    let radius = liquid::FLARE.min((body.height * motion - neighbour_bottom) / 2.);
     // Matches blob's sides.
     let centre = (body.left + body.right) / 2.;
-    let half = ((body.right - body.left) / 2. + BLOB_PAD_X)
-        * (START_WIDTH + (1. - START_WIDTH) * progress);
+    let half =
+        ((body.right - body.left) / 2. + BLOB_PAD_X) * (START_WIDTH + (1. - START_WIDTH) * motion);
     [(centre - half, true), (centre + half, false)]
         .into_iter()
         .zip(body.fillets)
@@ -196,7 +203,7 @@ type SectionModule = (SharedString, f32, Stateful<Div>);
 
 /// How far the content row is slid up out of view.
 fn slide_offset(progress: f32) -> f32 {
-    -HEIGHT * (1. - progress)
+    -HEIGHT * (1. - crate::reveal::island_motion(progress))
 }
 
 pub struct Bar {
@@ -206,6 +213,7 @@ pub struct Bar {
     /// The bell, its colour, and how far its unread count shows (keeping the last count while
     /// it goes).
     bell_icon: Entity<AnimatedIcon>,
+    wifi_icon: Entity<AnimatedIcon>,
     bell_color: Fade,
     bell_count: Tween,
     bell_count_text: SharedString,
@@ -272,6 +280,8 @@ pub struct Bar {
     tray_island: Rc<Cell<Option<Bounds<Pixels>>>>,
     /// Watches for clicks outside the shell while a group is open.
     outside_click: Option<WindowHandle<OutsideClick>>,
+    /// Catches presses elsewhere on the display while the launcher is open.
+    backdrop: Option<(WindowHandle<Backdrop>, Entity<Backdrop>)>,
     launcher: Reveal,
     launcher_progress: f32,
     /// "Copied" below the clock, after the launcher copies something.
@@ -438,7 +448,7 @@ impl Bar {
         self.toasts.push(Toast {
             notification: newest,
             reveal,
-            row: Tween::new(0., now),
+            row: Tween::new(0., now).spring(),
         });
         self.restart_toast_timer(cx);
         cx.notify();
@@ -611,7 +621,13 @@ impl Bar {
         redraw_on(&sources.launcher, cx);
         // Modules without their own view are rendered inline from these sources.
         redraw_on(&sources.clock, cx);
-        redraw_on(&sources.wifi, cx);
+        cx.observe(&sources.wifi, |this, wifi, cx| {
+            let (icon, color) = wifi_icon(wifi.read(cx).state.target.as_ref());
+            this.wifi_icon
+                .update(cx, |view, cx| view.set(icon, color, cx));
+            cx.notify();
+        })
+        .detach();
         redraw_on(&sources.system, cx); // CPU, memory and disk
         redraw_on(&sources.brightness, cx);
         redraw_on(&sources.caffeine, cx);
@@ -643,13 +659,17 @@ impl Bar {
         let (bell_icon, bell_color, bell_count) = bell(sources.notifications.read(cx));
         let do_not_disturb = sources.notifications.read(cx).do_not_disturb;
 
+        let (wifi_icon, wifi_color) = wifi_icon(sources.wifi.read(cx).state.target.as_ref());
+
         Self {
             notification_hovers: RefCell::new(HashMap::new()),
             sources,
             profile_icon: cx.new(|cx| ProfileIcon::new(power, cx)),
             bell_icon: cx.new(|_| AnimatedIcon::new(bell_icon, bell_color).upward()),
+            wifi_icon: cx.new(|_| AnimatedIcon::new(wifi_icon, wifi_color)),
             bell_color: Fade::new(bell_color),
             bell_count: Tween::new(f32::from(u8::from(bell_count.is_some())), Instant::now())
+                .spring()
                 .with_duration(Duration::from_millis(100)),
             bell_count_text: bell_count
                 .map(|count| count.to_string())
@@ -702,6 +722,7 @@ impl Bar {
             tray_progress: 0.,
             tray_island: Rc::default(),
             outside_click: None,
+            backdrop: None,
             launcher: Reveal::new(false, Instant::now()),
             launcher_progress: 0.,
             copied: Reveal::new(false, Instant::now()),
@@ -709,7 +730,7 @@ impl Bar {
             copied_timer: Task::ready(()),
             pending_type: None,
             launcher_slides: false,
-            launcher_rows: Tween::new(1., Instant::now()),
+            launcher_rows: Tween::new(1., Instant::now()).spring(),
             launcher_focus: cx.focus_handle(),
             launcher_keyboard: gpui::layer_shell::KeyboardInteractivity::None,
             list_scroll: UniformListScrollHandle::new(),
@@ -722,8 +743,8 @@ impl Bar {
             hovered: false,
             scroll_tween: None,
             scroll_to_read: false,
-            toast_rows: Tween::new(0., Instant::now()),
-            list_rows: Tween::new(0., Instant::now()),
+            toast_rows: Tween::new(0., Instant::now()).spring(),
+            list_rows: Tween::new(0., Instant::now()).spring(),
         }
     }
 
@@ -759,7 +780,7 @@ impl Bar {
             Some(progress) => progress,
             None => 0.,
         };
-        let scale = START_SCALE + (1. - START_SCALE) * progress;
+        let scale = START_SCALE + (1. - START_SCALE) * island_motion(progress);
         let element = bar_module(id, scaled(scale, content), accent, selected)
             .flex_shrink_0()
             .opacity(progress);
@@ -850,7 +871,7 @@ impl Bar {
         // no width of its own, it never affects the island's.
         let header = div()
             .flex()
-            .min_w(px(TRAY_MENU_WIDTH * progress))
+            .min_w(px(TRAY_MENU_WIDTH * island_motion(progress)))
             .child(
                 // Padding goes inside: even at zero width, it would take space.
                 div()
@@ -897,19 +918,21 @@ impl Bar {
             // Room between the title and the module before, if any (first, it would only widen
             // the section's body past the menu). Nothing after it moves, so neither does the
             // item's own module.
-            .when(!first, |island| island.ml(px(LIST_PAD * progress)))
+            .when(!first, |island| {
+                island.ml(px(LIST_PAD * island_motion(progress)))
+            })
             .flex()
             .flex_col()
             .items_end()
             .overflow_hidden()
             .h(px(
-                crate::bar_module::HEIGHT + tray_body(&item.menu) * progress
+                crate::bar_module::HEIGHT + tray_body(&item.menu) * island_motion(progress)
             ))
             .child(header)
             .child(
                 // Clipped to the animated width; the menu itself stays full width.
                 div()
-                    .w(px(TRAY_MENU_WIDTH * progress))
+                    .w(px(TRAY_MENU_WIDTH * island_motion(progress)))
                     .flex()
                     .justify_end()
                     .overflow_hidden()
@@ -1086,6 +1109,16 @@ impl Bar {
         height: Option<f32>,
         fillets: [bool; 2],
     ) -> impl IntoElement {
+        self.liquid_body(progress, height, fillets, false)
+    }
+
+    fn liquid_body(
+        &self,
+        progress: f32,
+        height: Option<f32>,
+        fillets: [bool; 2],
+        drip: bool,
+    ) -> impl IntoElement {
         let liquid = self.liquid.clone();
         // Fillets join the section's body, which follows the bar.
         let neighbours = self.bar_progress;
@@ -1098,6 +1131,7 @@ impl Bar {
                     progress,
                     fillets,
                     neighbours,
+                    drip,
                 })
             },
             |_, _, _, _| {},
@@ -1330,22 +1364,7 @@ impl Bar {
         let scrollbar = self.wifi_scrollbar(cx);
         let data = self.sources.wifi.read(cx);
         let state = data.state.target.as_ref();
-        let color = if state.is_some_and(|state| state.enabled && state.ssid.is_some()) {
-            theme::WIFI_ACCENT
-        } else {
-            theme::MUTED
-        };
-        let icon = match state {
-            Some(state) if state.enabled => Icon::wifi_strength(
-                state
-                    .current
-                    .as_ref()
-                    .filter(|_| state.ssid.is_some())
-                    .map_or(0, |network| network.strength),
-            ),
-            Some(_) => Icon::WifiOff,
-            None => Icon::Unknown,
-        };
+        let (_, color) = wifi_icon(state);
         let status = data.error.clone().unwrap_or_else(|| match state {
             Some(state) if !state.enabled => "Wi-Fi off".into(),
             Some(state) => state.ssid.clone().unwrap_or_else(|| "Disconnected".into()),
@@ -1369,28 +1388,30 @@ impl Bar {
         let progress = self.wifi_progress;
         let reveal = self.bar_progress.max(progress);
         let module = self
-            .module(Module::Wifi, static_icon(icon, color), color)
+            .module(Module::Wifi, self.wifi_icon.clone(), color)
             .cursor_pointer()
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, event: &MouseDownEvent, window, cx| {
-                    if !event.modifiers.platform {
+                    if !this.wifi.visible && !event.modifiers.platform {
                         this.watch_outside_clicks(window, cx);
                     }
                 }),
             )
             .on_click(cx.listener(|this, event: &gpui::ClickEvent, _, cx| {
-                if event.modifiers().platform {
+                if this.wifi.visible || event.modifiers().platform {
                     let _ = this.actions.unbounded_send(ModuleAction::ToggleWifi);
                 } else {
-                    this.set_wifi(!this.wifi.visible, cx);
+                    this.set_wifi(true, cx);
                 }
             }))
             .on_mouse_down(
                 MouseButton::Right,
                 cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
-                    let _ = this.actions.unbounded_send(ModuleAction::ToggleWifi);
+                    if !this.wifi.visible {
+                        let _ = this.actions.unbounded_send(ModuleAction::ToggleWifi);
+                    }
                 }),
             );
         let width = self.wifi_width.clone();
@@ -1411,16 +1432,16 @@ impl Bar {
             .flex_col()
             .items_end()
             .overflow_hidden()
-            .h(px(crate::bar_module::HEIGHT + WIFI_BODY_HEIGHT * progress))
+            .h(px(crate::bar_module::HEIGHT + WIFI_BODY_HEIGHT * island_motion(progress)))
             .child(
                 div()
                     .flex()
                     .relative()
                     .justify_end()
-                    .min_w(px(WIFI_WIDTH * progress))
+                    .min_w(px(WIFI_WIDTH * island_motion(progress)))
                     .when(progress > 0., |header| {
                         header.child(
-                            div().absolute().left_0().right(px(self.wifi_width.get() + HEADER_CLOSE_SLOT * progress + HEADER_ICON_GAP)).top_0()
+                            div().absolute().left_0().right(px(self.wifi_width.get() + HEADER_CLOSE_SLOT * island_motion(progress) + HEADER_ICON_GAP)).top_0()
                                 .h(px(crate::bar_module::HEIGHT)).flex().items_center()
                                 .overflow_hidden().opacity(progress)
                                 .child(div().flex_1().min_w_0().pl_1p5().overflow_hidden().whitespace_nowrap().child("WiFi"))
@@ -1447,7 +1468,7 @@ impl Bar {
                         div()
                             .relative()
                             .flex_shrink_0()
-                            .w(px(HEADER_CLOSE_SLOT * progress))
+                            .w(px(HEADER_CLOSE_SLOT * island_motion(progress)))
                             .h(px(crate::bar_module::HEIGHT))
                             .overflow_hidden()
                             .opacity(progress)
@@ -1473,7 +1494,7 @@ impl Bar {
             )
             .when(progress > 0., |island| {
                 island.child(
-                    div().w(px(WIFI_WIDTH * progress)).overflow_hidden().child(
+                    div().w(px(WIFI_WIDTH * island_motion(progress))).overflow_hidden().child(
                         div()
                             .w(px(WIFI_WIDTH))
                             .h(px(WIFI_BODY_HEIGHT))
@@ -1593,7 +1614,7 @@ impl Bar {
                                                     }, |_, _, _, _| {}).absolute().inset_0()
                                                 ).child(
                                                     div().id("wifi-password").relative().w_full().flex_shrink_0()
-                                                        .h(px(48. * progress)).overflow_hidden().opacity(progress)
+                                                        .h(px(48. * island_motion(progress))).overflow_hidden().opacity(progress)
                                                         .child(
                                                             div().id("wifi-password-controls").absolute().top_0().left_0()
                                                                 .w_full().h(px(48.)).flex().items_center().gap_2().py_2()
@@ -1714,7 +1735,7 @@ impl Bar {
         let now = Instant::now();
         let color = self.bell_color.value(now);
         // The count's width (with the gap before it) eases in and out, keeping its last value.
-        let count_shown = self.bell_count.value(now);
+        let count_shown = self.bell_count.value(now).max(0.);
         let count = (count_shown > 0.).then(|| {
             let text = self.bell_count_text.clone();
             let run = gpui::TextRun {
@@ -1730,7 +1751,7 @@ impl Bar {
                 .w(rems((0.25 + f32::from(width.width) / REM) * count_shown))
                 .flex_shrink_0()
                 .overflow_hidden()
-                .opacity(count_shown)
+                .opacity(count_shown.clamp(0., 1.))
                 .child(div().pl_1().whitespace_nowrap().child(text))
         });
         // Swipe only the icons, keeping the main module's width independent of expansion.
@@ -1768,7 +1789,7 @@ impl Bar {
             .text_color(color)
             .child(modes)
             .children(count);
-        let scale = START_SCALE + (1. - START_SCALE) * progress;
+        let scale = START_SCALE + (1. - START_SCALE) * island_motion(progress);
         let bell_width = self.bell_width.clone();
         let bell = bar_module(
             Module::Notifications.name(),
@@ -1813,14 +1834,14 @@ impl Bar {
             .relative()
             .flex()
             .justify_end()
-            .min_w(px(DROPDOWN_WIDTH * dropdown))
+            .min_w(px(DROPDOWN_WIDTH * island_motion(dropdown)))
             .when(dropdown > 0., |header| {
                 header.child(
                     div()
                         .absolute()
                         .left_0()
                         .right(px(self.bell_width.get()
-                            + HEADER_CLOSE_SLOT * dropdown
+                            + HEADER_CLOSE_SLOT * island_motion(dropdown)
                             + HEADER_ICON_GAP))
                         .top_0()
                         .h(px(crate::bar_module::HEIGHT))
@@ -1867,7 +1888,7 @@ impl Bar {
                 div()
                     .relative()
                     .flex_shrink_0()
-                    .w(px(HEADER_CLOSE_SLOT * dropdown))
+                    .w(px(HEADER_CLOSE_SLOT * island_motion(dropdown)))
                     .h(px(crate::bar_module::HEIGHT))
                     .overflow_hidden()
                     .opacity(dropdown)
@@ -1886,7 +1907,7 @@ impl Bar {
                     }),
             );
 
-        let rows = self.list_rows.value(Instant::now());
+        let rows = self.list_rows.value(Instant::now()).max(0.);
         let island = self.island.clone();
         div()
             .id("notifications-island")
@@ -1894,16 +1915,16 @@ impl Bar {
             .flex_col()
             .items_end()
             .overflow_hidden()
-            .h(px(
-                crate::bar_module::HEIGHT + (TITLE_HEIGHT + list_height(rows)) * dropdown
-            ))
+            .h(px(crate::bar_module::HEIGHT
+                + (TITLE_HEIGHT + list_height(rows))
+                    * island_motion(dropdown)))
             .opacity(progress)
             .child(header)
             .when(dropdown > 0., |this| {
                 // Clipped to the animated width; the list itself stays full width.
                 this.child(
                     div()
-                        .w(px(DROPDOWN_WIDTH * dropdown))
+                        .w(px(DROPDOWN_WIDTH * island_motion(dropdown)))
                         .flex()
                         .justify_end()
                         .overflow_hidden()
@@ -2010,7 +2031,7 @@ impl Bar {
         let offset = scroll.offset();
         // The visible part of the rows, below the list's top padding.
         let top = -f32::from(offset.y) - (LIST_PAD - ROW_GAP);
-        let bottom = top + list_height(self.list_rows.value(now));
+        let bottom = top + list_height(self.list_rows.value(now).max(0.));
         let first = ((top / slot).floor().max(0.) as usize).min(unread);
         let end = ((bottom / slot).ceil().max(0.) as usize).clamp(first, unread);
         let animated: Vec<Notification> = visible[first..end].to_vec();
@@ -2084,7 +2105,7 @@ impl Bar {
     }
 
     fn toasts_element(&self, width: Pixels, now: Instant, cx: &mut Context<Self>) -> Stateful<Div> {
-        let bounds = toast_bounds(width, self.toast_rows.value(now));
+        let bounds = toast_bounds(width, self.toast_rows.value(now).max(0.));
         let timestamp = self.zoned_now(cx);
         let glass = 1. - self.dropdown_progress;
         let cards: Vec<_> = (self.toast_cards(now).collect::<Vec<_>>().into_iter())
@@ -2210,7 +2231,7 @@ impl Bar {
         let now = Instant::now();
         let notifications = self.sources.notifications.read(cx);
         let visible = notifications.visible().len();
-        let height = px(list_height(self.list_rows.value(now)));
+        let height = px(list_height(self.list_rows.value(now).max(0.)));
         if visible == 0 && self.removals.is_empty() {
             return div()
                 .flex_shrink_0()
@@ -2558,7 +2579,7 @@ impl Removal {
 
     /// The space it still occupies.
     fn gap(&self, now: Instant) -> f32 {
-        (ROW_HEIGHT + ROW_GAP) * (1. - self.phase(now, SWIPE, COLLAPSE))
+        (ROW_HEIGHT + ROW_GAP) * island_motion(1. - self.phase(now, SWIPE, COLLAPSE))
     }
 
     fn done(&self, now: Instant) -> bool {
@@ -2784,7 +2805,7 @@ impl Render for Bar {
         // The results' height eases to fit them, except while closed.
         let rows =
             (self.sources.launcher.read(cx).results().len()).clamp(1, crate::launcher::VISIBLE);
-        if self.launcher.hidden() {
+        if self.launcher.hidden() || cx.reduce_motion() {
             self.launcher_rows.snap(rows as f32, now);
         } else {
             self.launcher_rows.set(rows as f32, now);
@@ -2813,7 +2834,13 @@ impl Render for Bar {
             let row = (visible.iter())
                 .position(|entry| entry.id == toast.notification.id && !entry.is_read());
             match row {
-                Some(row) if row < MAX_TOASTS => toast.row.set(row as f32, now),
+                Some(row) if row < MAX_TOASTS => {
+                    if reduce_motion {
+                        toast.row.snap(row as f32, now);
+                    } else {
+                        toast.row.set(row as f32, now);
+                    }
+                }
                 _ if toast.reveal.visible => {
                     toast.reveal.set(false, reduce_motion, now);
                 }
@@ -2831,12 +2858,14 @@ impl Render for Bar {
             .fold(0., f32::max);
         if self.toasts.is_empty() {
             self.toast_rows.snap(1., now);
+        } else if reduce_motion {
+            self.toast_rows.snap(toast_rows, now);
         } else if toast_rows > 0. {
             self.toast_rows.set(toast_rows, now);
         }
         // The dropdown's height eases to fit its rows, except while closed.
         let list_rows = self.list_rows_target(now, cx);
-        if self.dropdown.hidden() {
+        if self.dropdown.hidden() || reduce_motion {
             self.list_rows.snap(list_rows, now);
         } else {
             self.list_rows.set(list_rows, now);
@@ -2844,18 +2873,18 @@ impl Render for Bar {
 
         // The surface grows to fit the dropdown while it's shown. Its transparent remainder
         // passes input through, and the reserved space is set separately.
-        let surface_height = if !self.launcher.hidden() {
-            // Covering the display, so clicks anywhere else on it close the launcher.
-            (window.display(cx)).map_or(MAX_DROPDOWN_HEIGHT, |display| {
-                f32::from(display.bounds().size.height)
-            })
-        } else if !self.dropdown.hidden() {
+        let surface_height = if !self.dropdown.hidden() {
             MAX_DROPDOWN_HEIGHT
         } else if !self.toasts.is_empty() {
             TOAST_TOP + MAX_TOASTS as f32 * (ROW_HEIGHT + ROW_GAP) + 2. * TOAST_PAD
         } else {
             HEIGHT
         }
+        .max(if self.launcher.hidden() {
+            0.
+        } else {
+            launcher_island::SURFACE_HEIGHT
+        })
         .max(if self.wifi.hidden() {
             0.
         } else {
@@ -2868,6 +2897,8 @@ impl Render for Bar {
             HEIGHT + launcher_island::COPIED_HEIGHT
         });
 
+        // The transparent surface must also contain the spring's overshoot.
+        let surface_height = (surface_height * 1.12).ceil();
         if self.surface_height != surface_height {
             let width = window.viewport_size().width;
             window.resize(gpui::size(width, px(surface_height)));
@@ -2883,6 +2914,7 @@ impl Render for Bar {
         }
         self.removals.retain(|removal| !removal.done(now));
         self.sync_launcher_window(window, cx);
+        self.sync_backdrop(surface_height, window, cx);
         if self.bar.animating()
             || self.wifi.animating()
             || self.dropdown.animating()
@@ -2928,7 +2960,7 @@ impl Render for Bar {
         let toast = (self.toasts_shown()).then(|| self.toasts_element(width, now, cx));
         let toast_bounds = toast
             .is_some()
-            .then(|| toast_bounds(width, self.toast_rows.value(now)));
+            .then(|| toast_bounds(width, self.toast_rows.value(now).max(0.)));
         // Includes everywhere above them that the dropdown's liquid would cover (e.g. its title
         // and controls, and the modules beside the bell).
         self.toast_area = toast_bounds.map(|toasts| {
@@ -3250,7 +3282,14 @@ impl Render for Bar {
                         input.extend(toast_area);
                         window.set_input_region(Some(&input));
                         let outlines: Vec<_> = (liquid.borrow().iter().copied())
-                            .flat_map(|body| blob(body).into_iter().chain(fillets(body)))
+                            .flat_map(|body| {
+                                let outline = if body.drip {
+                                    launcher_island::drip(body)
+                                } else {
+                                    blob(body)
+                                };
+                                outline.into_iter().chain(fillets(body))
+                            })
                             .collect();
                         if let Some(path) = liquid::path(&outlines) {
                             window.paint_path(path, theme::BACKGROUND);
@@ -3344,7 +3383,9 @@ mod tests {
             if HEIGHT * progress < 6. {
                 continue;
             }
-            for (width, height) in [(20., HEIGHT), (400., HEIGHT), (360., 500.)] {
+            let blobs = [(20., HEIGHT), (400., HEIGHT), (360., 500.)].map(|size| (size, false));
+            let drops = [(640., 140.), (640., 470.)].map(|size| (size, true));
+            for ((width, height), drip) in blobs.into_iter().chain(drops) {
                 let body = Body {
                     left: 100.,
                     right: 100. + width,
@@ -3352,8 +3393,14 @@ mod tests {
                     progress,
                     fillets: [false; 2],
                     neighbours: progress,
+                    drip,
                 };
-                let Some(outline) = blob(body) else {
+                let outline = if drip {
+                    launcher_island::drip(body)
+                } else {
+                    blob(body)
+                };
+                let Some(outline) = outline else {
                     continue;
                 };
                 let corners = liquid::tests::sharp_corners(&outline, 2., 60.);
@@ -3367,4 +3414,24 @@ mod tests {
         }
         assert!(failures.is_empty(), "{}", failures.join("\n"));
     }
+}
+
+fn wifi_icon(state: Option<&crate::data_source::wifi::WifiState>) -> (Icon, Rgba) {
+    let color = if state.is_some_and(|state| state.enabled && state.ssid.is_some()) {
+        theme::WIFI_ACCENT
+    } else {
+        theme::MUTED
+    };
+    let icon = match state {
+        Some(state) if state.enabled => Icon::wifi_strength(
+            state
+                .current
+                .as_ref()
+                .filter(|_| state.ssid.is_some())
+                .map_or(0, |network| network.strength),
+        ),
+        Some(_) => Icon::WifiOff,
+        None => Icon::Unknown,
+    };
+    (icon, color)
 }

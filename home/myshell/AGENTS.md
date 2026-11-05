@@ -30,3 +30,23 @@ GPUI is built from `vendor/zed` (gitignored): `patches/gpui.sh` checks out the p
 
 It is safe to assume this project will never be built without nix. This means it's safe to hardcode dependencies injected via env vars, which can be set in a devshell/nix build environment.
 
+## Design
+
+The shell should be all of the following:
+- simple
+- functional
+- elegant
+
+This applies to UI design, layout, animations, UX patterns, and more. Assume the user is paying attention, and has good reaction times.
+
+Some specific realisations of these principles:
+- simple:
+  - the UI uses a simple transparent blur effect, rather than a liquid-glass-like shader
+  - icons are used instead of text, where the meaning is obvious
+- functional:
+  - animations should be fast, and *non-blocking*
+    - "fast" means "less than 300ms, likely even faster than that"
+    - "non-blocking" means that, once the user has taken an action that changes the UI state in a way that triggers an animation, the "new state" should be interactible immediately". In other words, the user should never have to wait for an animation to finish
+  - layout shift is evil - UI elements should move *when a user tells them to move*, and should avoid moving in any other circumstances. Sometimes this is not always possible, but it's a goal. A good example is the notification hover UI. It is specifically designed so that, when a notification appears and it is hovered, it does not move as the full notification shade appears.
+- elegant:
+  - state transitions are animated - for example, the performance profile switcher

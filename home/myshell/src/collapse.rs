@@ -56,7 +56,7 @@ impl RenderOnce for Collapse {
         // measured (appearing), it takes no space until the frame after.
         let size = size.unwrap_or_default();
         wrapper
-            .w(size.width * self.progress)
+            .w(size.width * crate::reveal::island_motion(self.progress))
             .h(size.height)
             .overflow_hidden()
             .opacity(self.progress)

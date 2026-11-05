@@ -72,7 +72,11 @@ pub const MODULE_HOVER: Rgba = Rgba {
     ..palette::FG
 };
 pub const POWER_ACCENT: Rgba = palette::ORANGE;
-pub const CLOCK_ACCENT: Rgba = palette::GREEN;
+pub const CLOCK_ACCENT: Rgba = if cfg!(release_profile) {
+    palette::GREEN
+} else {
+    palette::BLUE
+};
 pub const VOLUME_ACCENT: Rgba = palette::BLUE;
 pub const WIFI_ACCENT: Rgba = palette::GREEN;
 pub const SYSTEM_ACCENT: Rgba = palette::PURPLE;
